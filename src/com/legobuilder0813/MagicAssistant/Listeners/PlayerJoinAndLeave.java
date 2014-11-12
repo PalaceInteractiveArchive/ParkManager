@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import com.legobuilder0813.MagicAssistant.Utils.PlayerUtil;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
@@ -80,7 +81,7 @@ public class PlayerJoinAndLeave implements Listener {
 			out.writeUTF(reason);
 			out.writeBoolean(permanent);
 			out.writeLong(expiration.getTime());
-			Bukkit.getOnlinePlayers()[0].sendPluginMessage(pl, "BungeeCord",
+			PlayerUtil.onlinePlayers().get(0).sendPluginMessage(pl, "BungeeCord",
 					b.toByteArray());
 		} catch (IOException e) {
 			e.printStackTrace();

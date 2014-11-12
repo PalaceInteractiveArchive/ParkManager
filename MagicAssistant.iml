@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot" level="project" />
     <orderEntry type="library" name="MCMagicCore" level="project" />
+    <orderEntry type="library" name="WorldGuard" level="project" />
   </component>
 </module>

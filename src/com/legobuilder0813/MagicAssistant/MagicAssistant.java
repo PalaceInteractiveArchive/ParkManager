@@ -6,13 +6,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Material;
+import com.legobuilder0813.MagicAssistant.Commands.*;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -27,22 +24,20 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.legobuilder0813.MagicAssistant.Commands.Command_Tp;
-import com.legobuilder0813.MagicAssistant.Commands.Command_day;
-import com.legobuilder0813.MagicAssistant.Commands.Command_night;
-import com.legobuilder0813.MagicAssistant.Commands.Command_noon;
 import com.legobuilder0813.MagicAssistant.Listeners.ChatListener;
 import com.legobuilder0813.MagicAssistant.Listeners.PlayerJoinAndLeave;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
 	public static MagicAssistant plugin;
 	public static Inventory ni;
 	public int randomNumber = 0;
-	public final HashMap<Player, ArrayList<Block>> watching = new HashMap<Player, ArrayList<Block>>();
-	public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<Player, ArrayList<Block>>();
-	private WorldEditPlugin we;
+	public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
+	public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
+	public static List<Warp> warps;
+	public static String serverName;
+	public static Location spawn;
+	public static Location hub;
 	private WorldGuardPlugin wg;
 
 	public void onEnable() {
@@ -57,10 +52,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 		getLogger().info("Magic Assistant is ready to help!");
 	}
 
-	public WorldEditPlugin getWE() {
-		return we;
-	}
-
 	public WorldGuardPlugin getWG() {
 		return wg;
 	}
@@ -71,7 +62,76 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (label.equalsIgnoreCase("day")) {
+		if (label.equalsIgnoreCase("mb")) {
+			Command_mb.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("bc")) {
+			Command_bc.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("fly")) {
+			Command_fly.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("vanish")
+				|| label.equalsIgnoreCase("v")) {
+			Command_vanish.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("warp")) {
+			Command_warp.execute(label, sender, args);
+			return true;
+		} else if (label.equalsIgnoreCase("setwarp")) {
+			Command_setwarp.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("uwarp")) {
+			Command_uwarp.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("wrl")) {
+			Command_wrl.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("invsee")) {
+			Command_invsee.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("enderchest")) {
+			Command_enderchest.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("give")
+				|| label.equalsIgnoreCase("item")
+				|| label.equalsIgnoreCase("i")) {
+			Command_give.execute(sender, label, args);
+		} else if (label.equalsIgnoreCase("delwarp")
+				|| label.equalsIgnoreCase("removewarp")) {
+			Command_delwarp.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("delay")) {
+			Command_delay.execute(sender, args);
+			return true;
+		} else if (label.equalsIgnoreCase("spawn")) {
+			Command_spawn.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("setspawn")) {
+			Command_setspawn.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("smite")) {
+			Command_smite.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("more")) {
+			Command_more.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("heal")) {
+			Command_heal.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("helpop")
+				|| label.equalsIgnoreCase("ac")) {
+			Command_helpop.execute(sender, label, args);
+		} else if (label.equalsIgnoreCase("ptime")) {
+			Command_ptime.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("pweather")) {
+			Command_pweather.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("invcheck")) {
+			Command_invcheck.execute(sender, label, args);
+			return true;
+		} else if (label.equalsIgnoreCase("day")) {
 			Command_day.execute(label, args, sender);
 			return true;
 		} else if (label.equalsIgnoreCase("night")) {
@@ -319,124 +379,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	public void checkInventories() {
-		List<Player> onlinePlayers = Arrays.asList(Bukkit.getServer()
-				.getOnlinePlayers());
-		Iterator<Player> iterator = onlinePlayers.iterator();
-		while (iterator.hasNext()) {
-			Player onlinePlayer = iterator.next();
-			PlayerInventory pi = onlinePlayer.getInventory();
-			Inventory pec = onlinePlayer.getEnderChest();
-			if (!(onlinePlayer.hasPermission("magicassistant.invcheck.bypass"))) {
-				pi.remove(Material.TNT);
-				pi.remove(Material.PUMPKIN);
-				pi.remove(Material.JACK_O_LANTERN);
-				pi.remove(Material.DIODE);
-				pi.remove(Material.IRON_INGOT);
-				pi.remove(Material.REDSTONE_COMPARATOR);
-				pi.remove(Material.STONE_PLATE);
-				pi.remove(Material.WOOD_PLATE);
-				pi.remove(Material.BOAT);
-				pi.remove(Material.TORCH);
-				pi.remove(Material.RAILS);
-				pi.remove(Material.POWERED_RAIL);
-				pi.remove(Material.DETECTOR_RAIL);
-				pi.remove(Material.ACTIVATOR_RAIL);
-				pi.remove(Material.MILK_BUCKET);
-				pi.remove(Material.LEVER);
-				pi.remove(Material.COMMAND);
-				pi.remove(Material.MINECART);
-				pi.remove(Material.CACTUS);
-				pi.remove(Material.WORKBENCH);
-				pi.remove(Material.WOOD);
-				pi.remove(Material.WOOD_BUTTON);
-				pi.remove(Material.STONE_BUTTON);
-				pi.remove(Material.REDSTONE_TORCH_ON);
-				pi.remove(Material.REDSTONE_TORCH_OFF);
-				pi.remove(Material.REDSTONE);
-				pi.remove(Material.ITEM_FRAME);
-				pi.remove(Material.FIREWORK);
-				pi.remove(Material.PAINTING);
-				pi.remove(Material.LAVA_BUCKET);
-				pi.remove(Material.WATER_BUCKET);
-				pi.remove(Material.BUCKET);
-				pi.remove(Material.GOLD_SWORD);
-				pi.remove(Material.ENCHANTED_BOOK);
-				pi.remove(Material.STONE);
-				pi.remove(Material.GRASS);
-				pi.remove(Material.ARROW);
-				pi.remove(Material.BOW);
-				pi.remove(Material.EXP_BOTTLE);
-				pi.remove(Material.LEASH);
-				pi.remove(Material.WOOD_AXE);
-				pi.remove(Material.STONE_AXE);
-				pi.remove(Material.IRON_AXE);
-				pi.remove(Material.DIAMOND_AXE);
-				pi.remove(Material.GOLD_AXE);
-				pi.remove(Material.BRICK);
-				pi.remove(Material.WOOD_PICKAXE);
-				pi.remove(Material.STONE_PICKAXE);
-				pi.remove(Material.IRON_PICKAXE);
-				pi.remove(Material.DIAMOND_PICKAXE);
-				pi.remove(Material.GOLD_PICKAXE);
-				pi.remove(Material.FIREWORK_CHARGE);
-				pec.remove(Material.TNT);
-				pec.remove(Material.DIODE);
-				pec.remove(Material.IRON_INGOT);
-				pec.remove(Material.REDSTONE_COMPARATOR);
-				pec.remove(Material.STONE_PLATE);
-				pec.remove(Material.WOOD_PLATE);
-				pec.remove(Material.PUMPKIN);
-				pec.remove(Material.JACK_O_LANTERN);
-				pec.remove(Material.BOAT);
-				pec.remove(Material.TORCH);
-				pec.remove(Material.RAILS);
-				pec.remove(Material.POWERED_RAIL);
-				pec.remove(Material.DETECTOR_RAIL);
-				pec.remove(Material.ACTIVATOR_RAIL);
-				pec.remove(Material.MILK_BUCKET);
-				pec.remove(Material.LEVER);
-				pec.remove(Material.COMMAND);
-				pec.remove(Material.MINECART);
-				pec.remove(Material.CACTUS);
-				pec.remove(Material.WORKBENCH);
-				pec.remove(Material.WOOD);
-				pec.remove(Material.WOOD_BUTTON);
-				pec.remove(Material.STONE_BUTTON);
-				pec.remove(Material.REDSTONE_TORCH_ON);
-				pec.remove(Material.REDSTONE_TORCH_OFF);
-				pec.remove(Material.REDSTONE);
-				pec.remove(Material.ITEM_FRAME);
-				pec.remove(Material.FIREWORK);
-				pec.remove(Material.PAINTING);
-				pec.remove(Material.LAVA_BUCKET);
-				pec.remove(Material.WATER_BUCKET);
-				pec.remove(Material.BUCKET);
-				pec.remove(Material.GOLD_SWORD);
-				pec.remove(Material.ENCHANTED_BOOK);
-				pec.remove(Material.STONE);
-				pec.remove(Material.GRASS);
-				pec.remove(Material.ARROW);
-				pec.remove(Material.BOW);
-				pec.remove(Material.EXP_BOTTLE);
-				pec.remove(Material.LEASH);
-				pec.remove(Material.WOOD_AXE);
-				pec.remove(Material.STONE_AXE);
-				pec.remove(Material.IRON_AXE);
-				pec.remove(Material.DIAMOND_AXE);
-				pec.remove(Material.GOLD_AXE);
-				pec.remove(Material.BRICK);
-				pec.remove(Material.WOOD_PICKAXE);
-				pec.remove(Material.STONE_PICKAXE);
-				pec.remove(Material.IRON_PICKAXE);
-				pec.remove(Material.DIAMOND_PICKAXE);
-				pec.remove(Material.GOLD_PICKAXE);
-				pec.remove(Material.FIREWORK_CHARGE);
-			}
 		}
 	}
 
