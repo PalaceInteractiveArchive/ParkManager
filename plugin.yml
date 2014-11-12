@@ -1,0 +1,58 @@
+name: MagicAssistant
+author: legobuilder0813
+version: 1.0
+description: Assists Admins Automagically
+main: com.legobuilder0813.MagicAssistant.MagicAssistant
+commands:
+   tot:
+      description: Custom commands for The Tower of Terror!
+      permission: magicassistant.tot
+      permission-message: §4You don’t have permission for this command
+   vanish:
+      description: Hides you from the Guests!
+      permission: vanish.standard
+      permission-message: §4You don’t have permission for this command
+   v:
+      description: Hides you from the Guests!
+      permission: vanish.standard
+      permission-message: §4You don’t have permission for this command
+   joinarcade:
+      description: Sends you to the MCMagic Arcade
+      permission: magicassistant.joinarcade
+      permission-message: §4You don’t have permission for this command
+   stitch:
+      description: Custom commands for Stitch’s Great Escape!
+      permission: magicassistant.stitch
+      permission-message: §4You don’t have permission for this command
+   invcheck:
+      description: This clears all banned items!
+      permission: magicassistant.invcheck
+      permission-message: §4Only Cast Members can use this command!
+   hub:
+      description: This brings the player to the hub.
+      permission: magicassistant.hub
+      permission-message: §4Please notify a Cast Member that you can’t do this.
+   gwts:
+      description: Glow With The Show!
+      permission: magicassistant.gwts
+      permission-message: §4You don’t have permission to do this!
+   magicassistant:
+      description: Describes the plugin.
+      permission: magicassistant.magicassistant
+      permission-message: §4Only Cast Members can use this command!
+   sethub:
+      description: Set’s the hub location.
+      permissions: magicassistant.sethub
+      permission-message: §4Only Cast Members can use this command!
+   save:
+      description: Saves all the worlds
+      permissions: magicassistant.save
+      permission-message: §4Only Cast Members can use this command!
+   head:
+      description: Gives the player a head of another player.
+      permission: magicassistant.head
+      permission-message: §4Only Cast Members can use this command!
+   delay:
+      description: Resets rides automagically!
+      permission: magicassistant.delay
+      permission-message: §4Only Cast Members can use this command!
