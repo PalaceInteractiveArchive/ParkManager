@@ -12,11 +12,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,11 +26,11 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
-import com.legobuilder0813.MagicAssistant.Commands.Command_delay;
-import com.legobuilder0813.MagicAssistant.Commands.Command_vanish;
+import com.legobuilder0813.MagicAssistant.Commands.Command_Tp;
+import com.legobuilder0813.MagicAssistant.Commands.Command_day;
+import com.legobuilder0813.MagicAssistant.Commands.Command_night;
+import com.legobuilder0813.MagicAssistant.Commands.Command_noon;
 import com.legobuilder0813.MagicAssistant.Listeners.ChatListener;
 import com.legobuilder0813.MagicAssistant.Listeners.PlayerJoinAndLeave;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -54,12 +50,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 		pm.registerEvents(this, this);
 		pm.registerEvents(new ChatListener(this), this);
 		pm.registerEvents(new StitchEscape(this), this);
-		pm.registerEvents(new ScoreboardClass(this), this);
 		pm.registerEvents(new PlayerJoinAndLeave(this), this);
 		getConfig().options().copyDefaults(true);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		saveConfig();
-		getLogger().info("[MagicAssistant] Magic Assistant is ready to help!");
+		getLogger().info("Magic Assistant is ready to help!");
 	}
 
 	public WorldEditPlugin getWE() {
@@ -71,334 +66,20 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 	}
 
 	public void onDisable() {
-		getLogger().info(
-				"[MagicAssistant] Magic Assistant is taking a coffee break.");
+		getLogger().info("Magic Assistant is taking a coffee break.");
 	}
 
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if (label.equalsIgnoreCase("vanish") || label.equalsIgnoreCase("v")) {
-			Command_vanish.execute(sender, label, args);
+		if (label.equalsIgnoreCase("day")) {
+			Command_day.execute(label, args, sender);
 			return true;
-		} else if (label.equalsIgnoreCase("joinarcade")) {
-			if (!(sender instanceof Player)) {
-				if (args.length == 1) {
-					String pname = args[0];
-					sendToServer(Bukkit.getPlayer(pname), "Arcade");
-					return true;
-				}
-			} else {
-				sender.sendMessage(ChatColor.WHITE
-						+ "Unknown command. Type \"/help\" for help.");
-			}
-		} else if (label.equalsIgnoreCase("delay")) {
-			Command_delay.execute(sender, label, args);
+		} else if (label.equalsIgnoreCase("night")) {
+			Command_night.execute(label, args, sender);
 			return true;
-		} else if (label.equalsIgnoreCase("tot")) {
-			if (!(sender instanceof Player)) {
-				if (args.length == 4) {
-					if (args[0].equalsIgnoreCase("star")) {
-						if (isInt(args[1]) && isInt(args[2]) && isInt(args[3])) {
-							World world = Bukkit.getOnlinePlayers()[0]
-									.getWorld();
-							int x = Integer.parseInt(args[1]);
-							int y = Integer.parseInt(args[2]);
-							int z = Integer.parseInt(args[3]);
-							Location loc = new Location(world, x, y, z);
-							/*
-							 * Firework fw = world.spawn(loc, Firework.class);
-							 * ((
-							 * CraftWorld)world).getHandle().broadcastEntityEffect
-							 * (((CraftFirework)fw).getHandle(), (byte)17);
-							 * ((CraftFirework)fw).getHandle().die();
-							 */
-							try {
-								ParticleEffectClass.playFirework(world, loc);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-		} else if (label.equalsIgnoreCase("stitch")) {
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-				if (args.length == 0) {
-					player.sendMessage(ChatColor.BLUE
-							+ "Stitch's Great Escape "
-							+ ChatColor.GOLD
-							+ "v"
-							+ Bukkit.getPluginManager()
-									.getPlugin(this.getName()).getDescription()
-									.getVersion() + " " + ChatColor.AQUA
-							+ "by: Legobuilder0813");
-					player.sendMessage(ChatColor.BLUE
-							+ "/stitch leave = leave the show");
-					return true;
-				}
-				if (args.length == 1) {
-					if (args[0].equalsIgnoreCase("leave")) {
-						StitchEscape.leaveShow(player);
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("lock")) {
-						if (player.hasPermission("stitch.lock")) {
-							StitchEscape.lockShow(player);
-							return true;
-						} else {
-							player.sendMessage(ChatColor.RED
-									+ "You don't have permission to use this command!");
-						}
-					}
-					if (args[0].equalsIgnoreCase("setlocation")) {
-						if (player.hasPermission("stitch.setlocation")) {
-							Location loc = player.getLocation();
-							double x = loc.getX();
-							double y = loc.getY();
-							double z = loc.getZ();
-							double yaw = loc.getYaw();
-							double pitch = loc.getPitch();
-							int num = getConfig().getInt("stitch.amount") + 1;
-							getConfig().set("stitch." + num + ".x", x);
-							getConfig().set("stitch." + num + ".y", y);
-							getConfig().set("stitch." + num + ".z", z);
-							getConfig().set("stitch." + num + ".yaw", yaw);
-							getConfig().set("stitch." + num + ".pitch", pitch);
-							getConfig().set("stitch." + num + ".inuse", false);
-							getConfig().set("stitch.amount", num);
-							saveConfig();
-							player.sendMessage(ChatColor.BLUE
-									+ "Location number " + ChatColor.GOLD + num
-									+ ChatColor.BLUE + " has been set!");
-						}
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("eject")) {
-						if (player.hasPermission("stitch.lock")) {
-							for (Player tp : Bukkit.getOnlinePlayers()) {
-								if (watching.containsKey(tp)) {
-									watching.remove(tp);
-									tp.sendMessage(ChatColor.BLUE
-											+ "Stitch's Great Escape has ended. You are free to move again.");
-								}
-							}
-							int amount = getConfig().getInt("stitch.amount");
-							for (int i = 1; i <= amount; i++) {
-								if (getConfig().getBoolean(
-										"stitch." + i + ".inuse") != false) {
-									getConfig().set("stitch." + i + ".inuse",
-											false);
-									saveConfig();
-								}
-							}
-							player.sendMessage(ChatColor.BLUE
-									+ "All guests have been ejected. The show is ready to run again!");
-						} else {
-							player.sendMessage(ChatColor.RED
-									+ "You don't have permission to use this command!");
-						}
-					}
-				}
-				return true;
-			}
-			if (args.length == 1) {
-				if (args[0].equalsIgnoreCase("dark")) {
-					for (Player tp : Bukkit.getOnlinePlayers()) {
-						if (watching.containsKey(tp)) {
-							tp.addPotionEffect(new PotionEffect(
-									PotionEffectType.BLINDNESS, 10000, 1));
-						}
-					}
-					return true;
-				}
-				if (args[0].equalsIgnoreCase("light")) {
-					for (Player tp : Bukkit.getOnlinePlayers()) {
-						if (watching.containsKey(tp)
-								&& tp.hasPotionEffect(PotionEffectType.BLINDNESS)) {
-							tp.removePotionEffect(PotionEffectType.BLINDNESS);
-						}
-					}
-					return true;
-				}
-				if (args[0].equalsIgnoreCase("burp")) {
-					for (Player tp : Bukkit.getOnlinePlayers()) {
-						if (watching.containsKey(tp)) {
-							tp.addPotionEffect(new PotionEffect(
-									PotionEffectType.CONFUSION, 5, 1));
-						}
-					}
-					return true;
-				}
-				return true;
-			}
-			if (args.length == 2) {
-				if (args[0].equalsIgnoreCase("add")) {
-					OfflinePlayer tp = Bukkit.getOfflinePlayer(args[1]);
-					if (tp.isOnline()) {
-						Player target = Bukkit.getPlayer(args[1]);
-						StitchEscape.joinShow(target);
-					}
-					return true;
-				}
-				if (args[0].equalsIgnoreCase("effect")) {
-					if (args[1].equalsIgnoreCase("spit")) {
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1742, 64, -1211),
-										Effect.POTION_BREAK, 6);
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1745, 64, -1208),
-										Effect.POTION_BREAK, 6);
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1748, 64, -1211),
-										Effect.POTION_BREAK, 6);
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1745, 64, -1214),
-										Effect.POTION_BREAK, 6);
-						return true;
-					}
-					if (args[1].equalsIgnoreCase("burp")) {
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1742, 64, -1211),
-										Effect.POTION_BREAK, 4);
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1745, 64, -1208),
-										Effect.POTION_BREAK, 4);
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1748, 64, -1211),
-										Effect.POTION_BREAK, 4);
-						Bukkit.getWorld(
-								Bukkit.getOnlinePlayers()[0].getWorld()
-										.getName())
-								.playEffect(
-										new Location(
-												Bukkit.getOnlinePlayers()[0]
-														.getWorld(),
-												-1745, 64, -1214),
-										Effect.POTION_BREAK, 4);
-					}
-				}
-			}
-		} else if (label.equalsIgnoreCase("invcheck")) {
-			if (!(sender instanceof Player)) {
-				checkInventories();
-				Bukkit.broadcast(ChatColor.GOLD
-						+ "All banned items were removed by "
-						+ ChatColor.DARK_GREEN + "Utilidors",
-						"magicassistant.invcheck");
-			} else {
-				Player player = (Player) sender;
-				checkInventories();
-				Bukkit.broadcast(ChatColor.GOLD
-						+ "All banned items were removed by "
-						+ ChatColor.DARK_GREEN + player.getName(),
-						"magicassistant.invcheck");
-			}
-		} else if (label.equalsIgnoreCase("sethub")) {
-			Player player = (Player) sender;
-			if (player.isOp()) {
-				double x = player.getLocation().getX();
-				double y = player.getLocation().getY();
-				double z = player.getLocation().getZ();
-				double yaw = player.getLocation().getYaw();
-				double pitch = player.getLocation().getPitch();
-				getConfig().set("hub.x", x);
-				getConfig().set("hub.y", y);
-				getConfig().set("hub.z", z);
-				getConfig().set("hub.yaw", yaw);
-				getConfig().set("hub.pitch", pitch);
-				getConfig().set("hubworld", player.getWorld().getName());
-				saveConfig();
-				player.sendMessage(ChatColor.DARK_AQUA
-						+ "The hub location has been set!");
-			} else {
-				player.sendMessage(ChatColor.RED
-						+ "You do not have permission to use this command!");
-			}
-		} else if (label.equalsIgnoreCase("hub")) {
-			double x = getConfig().getDouble("hub.x");
-			double y = getConfig().getDouble("hub.y");
-			double z = getConfig().getDouble("hub.z");
-			float yaw = getConfig().getInt("hub.yaw");
-			float pitch = getConfig().getInt("hub.pitch");
-			String world = getConfig().getString("hubworld");
-			if (args.length == 0) {
-				Player player = (Player) sender;
-				player.sendMessage(ChatColor.DARK_AQUA
-						+ "You have arrived at the hub!");
-				player.teleport(new Location(Bukkit.getWorld(world), x, y, z,
-						yaw, pitch));
-				return true;
-			} else if (args.length == 1) {
-				Player player = (Player) sender;
-				if (player.hasPermission("magicassistant.hub.otherplayer")) {
-					boolean proceed = false;
-					Player targetPlayer = Bukkit.getOnlinePlayers()[0];
-					for (Player tp : Bukkit.getOnlinePlayers()) {
-						if (tp.getName().toLowerCase()
-								.equals(args[0].toLowerCase())) {
-							proceed = true;
-						}
-					}
-					if (!proceed) {
-						player.sendMessage(ChatColor.RED
-								+ "That player isn't online!");
-						return true;
-					}
-					targetPlayer.teleport(new Location(Bukkit.getWorld(world),
-							x, y, z, yaw, pitch));
-					player.sendMessage(ChatColor.DARK_AQUA
-							+ targetPlayer.getName()
-							+ " has arrived at the hub!");
-					targetPlayer.sendMessage(ChatColor.DARK_AQUA
-							+ "You have arrived at the hub!");
-					return true;
-				}
-				return true;
-			}
+		} else if (label.equalsIgnoreCase("noon")) {
+			Command_noon.execute(label, args, sender);
+			return true;
 		} else if (label.equalsIgnoreCase("gwts")) {
 			// List of types of hats:
 			ItemStack clear = new ItemStack(Material.AIR);
@@ -603,54 +284,30 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 							+ ChatColor.BLUE + " Configuration reloaded!");
 				}
 			}
-		} else if (label.equalsIgnoreCase("rp")) {
-			sender.sendMessage(ChatColor.YELLOW
-					+ "Get our resource pack with custom items, music, and more at this link:");
-			sender.sendMessage(ChatColor.LIGHT_PURPLE
-					+ getConfig().getString("rplink"));
-		} else if (label.equalsIgnoreCase("mumble")) {
-			Player player = (Player) sender;
-			player.sendMessage(ChatColor.DARK_GREEN
-					+ "----------------------------------------------------");
-			player.sendMessage(ChatColor.DARK_AQUA + "Our mumble ip is: "
-					+ getConfig().getString("mumble.ip"));
-			player.sendMessage(ChatColor.DARK_AQUA + "Use the port: "
-					+ getConfig().getString("mumble.port"));
-			player.sendMessage(ChatColor.DARK_AQUA
-					+ "Use your in-game-name for your username");
-			player.sendMessage(ChatColor.DARK_AQUA
-					+ "We do not have a password on our mumble.");
-			player.sendMessage(ChatColor.AQUA
-					+ "Here's the download link for mumble: "
-					+ getConfig().getString("mumble.downloadlink"));
-			player.sendMessage(ChatColor.DARK_GREEN
-					+ "----------------------------------------------------");
 		} else if (label.equalsIgnoreCase("save")) {
+			if (!(sender instanceof Player)) {
+				return true;
+			}
 			Player player = (Player) sender;
 			player.performCommand("save-all");
+		} else if (label.equalsIgnoreCase("tp")) {
+			Command_Tp.execute(label, args, sender);
+			return true;
 		} else if (label.equalsIgnoreCase("head")) {
 			Player player = (Player) sender;
-			if (getConfig().getString("headcmd").equals("false")) {
-				player.sendMessage(ChatColor.RED + "That command is disabled.");
-			} else if (getConfig().getString("headcmd").equals("true")) {
-				Player pl = (Player) sender;
-				PlayerInventory pi = pl.getInventory();
-				if (args.length == 1) {
-					ItemStack head = new ItemStack(Material.SKULL_ITEM, 1,
-							(short) 3);
-					SkullMeta headm = (SkullMeta) head.getItemMeta();
-					headm.setOwner(args[0]);
-					head.setItemMeta(headm);
-					pi.addItem(head);
-					pl.sendMessage(ChatColor.AQUA + "[MagicAssistant]"
-							+ ChatColor.BLUE + " Enjoy your new head of "
-							+ args[0] + "!");
-				} else {
-					pl.sendMessage(ChatColor.RED + "/head [playerhead]");
-				}
+			PlayerInventory pi = player.getInventory();
+			if (args.length == 1) {
+				ItemStack head = new ItemStack(Material.SKULL_ITEM, 1,
+						(short) 3);
+				SkullMeta headm = (SkullMeta) head.getItemMeta();
+				headm.setOwner(args[0]);
+				head.setItemMeta(headm);
+				pi.addItem(head);
+				player.sendMessage(ChatColor.AQUA + "[MagicAssistant]"
+						+ ChatColor.BLUE + " Enjoy your new head of " + args[0]
+						+ "!");
 			} else {
-				getConfig().set("headcmd", "false");
-				player.sendMessage(ChatColor.RED + "That command is disabled.");
+				player.sendMessage(ChatColor.RED + "/head [playerhead]");
 			}
 		}
 		return false;

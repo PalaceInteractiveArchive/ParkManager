@@ -199,7 +199,7 @@ public class InventorySql {
 		}
 	}
 
-	public static ItemStack[] endInvContents(Player player) {
+	public synchronized static ItemStack[] endInvContents(Player player) {
 		openConnection();
 		try {
 			PreparedStatement sql = connection

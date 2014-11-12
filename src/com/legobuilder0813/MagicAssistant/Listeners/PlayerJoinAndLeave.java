@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.legobuilder0813.MagicAssistant.MagicAssistant;
-import com.legobuilder0813.MagicAssistant.Commands.Command_vanish;
 import com.legobuilder0813.MagicAssistant.Utils.InventorySql;
 
 public class PlayerJoinAndLeave implements Listener {
@@ -28,33 +27,9 @@ public class PlayerJoinAndLeave implements Listener {
 		pl = instance;
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		if (!player.hasPermission("arcade.staff")) {
-			Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
-				public void run() {
-					for (Player tp : Bukkit.getOnlinePlayers()) {
-						if (Command_vanish.hidden.containsKey(tp)) {
-							player.hidePlayer(tp);
-						}
-					}
-				}
-			});
-			// } else {
-			// Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
-			// public void run() {
-			// for (Player tp : Bukkit.getOnlinePlayers()) {
-			// if (Command_vanish.hidden.containsKey(tp)) {
-			// if (!tp.hasPermission("vanish.standard")) {
-			// player.hidePlayer(tp);
-			// }
-			// }
-			// }
-			// }
-			// });
-		}
 		Bukkit.getScheduler().runTaskLaterAsynchronously(
 				Bukkit.getPluginManager().getPlugin("MagicAssistant"),
 				new Runnable() {
@@ -125,9 +100,5 @@ public class PlayerJoinAndLeave implements Listener {
 				}
 			}
 		});
-	}
-
-	public void banPluginMessage(Player player, String reason,
-			boolean permanent, long release) {
 	}
 }
