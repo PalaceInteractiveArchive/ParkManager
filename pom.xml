@@ -12,6 +12,10 @@
             <id>md_5</id>
             <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -21,6 +25,11 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>LATEST</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
-
 </project>

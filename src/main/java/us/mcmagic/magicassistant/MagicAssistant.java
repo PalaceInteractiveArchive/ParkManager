@@ -1,12 +1,6 @@
 package us.mcmagic.magicassistant;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -21,11 +15,16 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
+import us.mcmagic.magicassistant.Commands.*;
 import us.mcmagic.magicassistant.Listeners.ChatListener;
 import us.mcmagic.magicassistant.Listeners.PlayerJoinAndLeave;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import us.mcmagic.magicassistant.Commands.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
 	public static MagicAssistant plugin;
