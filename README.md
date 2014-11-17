@@ -1,4 +1,4 @@
 MagicAssistant
 ==============
 
-MCMagic Family of Server Park Server Plugin
+MCMagic Family of Servers Park Server Plugin
