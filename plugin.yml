@@ -1,8 +1,8 @@
 name: MagicAssistant
 author: legobuilder0813
 version: 1.0
-description: Assists Admins Automagically
-main: com.legobuilder0813.MagicAssistant.MagicAssistant
+description: Yay MCMagic plugin
+main: us.mcmagic.magicassistant.MagicAssistant
 commands:
    gwts:
       description: Glow With The Show!
