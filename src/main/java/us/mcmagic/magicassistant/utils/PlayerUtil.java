@@ -17,7 +17,7 @@ public class PlayerUtil {
         return null;
     }
 
-    public static List<Player> onlinePlayers() {
+    public static Player[] onlinePlayers() {
         return Bukkit.getOnlinePlayers();
     }
 }
