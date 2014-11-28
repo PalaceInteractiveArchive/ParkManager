@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.Utils;
+package us.mcmagic.magicassistant.utils;
 
 import com.legobuilder0813.MCMagicCore.MCMagicCore;
 import us.mcmagic.magicassistant.MagicAssistant;

@@ -1,11 +1,11 @@
-package us.mcmagic.magicassistant.Listeners;
+package us.mcmagic.magicassistant.listeners;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-import us.mcmagic.magicassistant.Utils.PlayerUtil;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.Utils.InventorySql;
+import us.mcmagic.magicassistant.utils.InventorySql;
 
 public class PlayerJoinAndLeave implements Listener {
 	public static MagicAssistant pl;

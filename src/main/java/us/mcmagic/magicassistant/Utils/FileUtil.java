@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.Utils;
+package us.mcmagic.magicassistant.utils;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;

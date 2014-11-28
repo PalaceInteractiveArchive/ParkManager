@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.Commands;
+package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.Listeners;
+package us.mcmagic.magicassistant.listeners;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

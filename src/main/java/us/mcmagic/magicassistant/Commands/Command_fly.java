@@ -1,6 +1,6 @@
-package us.mcmagic.magicassistant.Commands;
+package us.mcmagic.magicassistant.commands;
 
-import us.mcmagic.magicassistant.Utils.PlayerUtil;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,14 +13,14 @@ public class Command_fly {
 				Player player = PlayerUtil.findPlayer(args[0]);
 				if (player == null) {
 					sender.sendMessage(ChatColor.RED
-							+ "I can't find that player!");
+							+ "I can'commands find that player!");
 					return;
 				}
 				if (player.isFlying()) {
 					player.setAllowFlight(false);
 					player.setFlying(false);
-					player.sendMessage(ChatColor.RED + "You can't fly anymore!");
-					sender.sendMessage(player.getName() + " can't fly anymore!");
+					player.sendMessage(ChatColor.RED + "You can'commands fly anymore!");
+					sender.sendMessage(player.getName() + " can'commands fly anymore!");
 					return;
 				}
 				player.setAllowFlight(true);
@@ -37,14 +37,14 @@ public class Command_fly {
 		if (args.length == 1) {
 			Player tp = PlayerUtil.findPlayer(args[0]);
 			if (tp == null) {
-				player.sendMessage(ChatColor.RED + "I can't find that player!");
+				player.sendMessage(ChatColor.RED + "I can'commands find that player!");
 				return;
 			}
 			if (tp.isFlying()) {
 				tp.setAllowFlight(false);
 				tp.setFlying(false);
-				tp.sendMessage(ChatColor.RED + "You can't fly anymore!");
-				player.sendMessage(tp.getName() + " can't fly anymore!");
+				tp.sendMessage(ChatColor.RED + "You can'commands fly anymore!");
+				player.sendMessage(tp.getName() + " can'commands fly anymore!");
 				return;
 			}
 			tp.setAllowFlight(true);
@@ -57,7 +57,7 @@ public class Command_fly {
 		if (player.isFlying()) {
 			player.setAllowFlight(false);
 			player.setFlying(false);
-			player.sendMessage(ChatColor.RED + "You can't fly anymore!");
+			player.sendMessage(ChatColor.RED + "You can'commands fly anymore!");
 			return;
 		}
 		player.setAllowFlight(true);

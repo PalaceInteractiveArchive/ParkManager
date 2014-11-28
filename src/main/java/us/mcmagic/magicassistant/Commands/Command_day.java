@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.Commands;
+package us.mcmagic.magicassistant.commands;
 
 import net.md_5.bungee.api.ChatColor;
 

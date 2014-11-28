@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.Listeners;
+package us.mcmagic.magicassistant.listeners;
 
 import net.md_5.bungee.api.ChatColor;
 

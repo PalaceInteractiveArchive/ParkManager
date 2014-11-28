@@ -1,6 +1,6 @@
-package us.mcmagic.magicassistant.Commands;
+package us.mcmagic.magicassistant.commands;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.Utils.WarpUtil;
+import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.magicassistant.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,7 +21,7 @@ public class Command_uwarp {
 			final String w = args[0];
 			if (!WarpUtil.warpExists(w)) {
 				player.sendMessage(ChatColor.RED
-						+ "A warp doesn't exist by that name! To add a warp, type /setwarp [Warp Name]");
+						+ "A warp doesn'commands exist by that name! To add a warp, type /setwarp [Warp Name]");
 				return;
 			}
 			Location loc = player.getLocation();

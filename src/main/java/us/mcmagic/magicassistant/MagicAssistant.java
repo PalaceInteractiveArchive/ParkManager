@@ -15,9 +15,9 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.mcmagic.magicassistant.Commands.*;
-import us.mcmagic.magicassistant.Listeners.ChatListener;
-import us.mcmagic.magicassistant.Listeners.PlayerJoinAndLeave;
+import us.mcmagic.magicassistant.commands.*;
+import us.mcmagic.magicassistant.listeners.ChatListener;
+import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

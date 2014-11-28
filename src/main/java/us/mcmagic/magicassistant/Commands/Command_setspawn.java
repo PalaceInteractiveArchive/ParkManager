@@ -1,7 +1,7 @@
-package us.mcmagic.magicassistant.Commands;
+package us.mcmagic.magicassistant.commands;
 
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.Utils.FileUtil;
+import us.mcmagic.magicassistant.utils.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

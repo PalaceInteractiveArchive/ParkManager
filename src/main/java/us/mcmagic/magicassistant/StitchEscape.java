@@ -34,7 +34,7 @@ public class StitchEscape implements Listener{
 				player.teleport(seat);
 				if(!pl.chattimeout.containsKey(player)){
 					player.sendMessage(ChatColor.AQUA + "------------------------------------------------");
-					player.sendMessage(ChatColor.BLUE + "Please don't leave your seat during the show.");
+					player.sendMessage(ChatColor.BLUE + "Please don'commands leave your seat during the show.");
 					player.sendMessage(ChatColor.BLUE + "If you wish to leave, type /stitch leave");
 					player.sendMessage(ChatColor.AQUA + "------------------------------------------------");
 					pl.chattimeout.put(player, null);
