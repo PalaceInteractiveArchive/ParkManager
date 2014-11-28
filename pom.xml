@@ -13,12 +13,16 @@
             <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
         <repository>
-            <id>sk89q-repo</id>
+            <id>mcmagic</id>
+            <url>http://mcmagic.us:8081/artifactory/repo/</url>
+        </repository>
+        <repository>
+            <id>sk89q</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
-            <id>mcmagic-core</id>
-            <url>http://mcmagic.us:8081/artifactory/repo/</url>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
     </repositories>
     <dependencies>
