@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
-public class Command_tp {
+public class Command_tpee {
 
 	public static void execute(String cmd, String[] args, CommandSender sender) {
 		if (!(sender instanceof Player)) {
