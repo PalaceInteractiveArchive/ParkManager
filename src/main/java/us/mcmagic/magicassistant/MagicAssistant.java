@@ -18,6 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.listeners.ChatListener;
 import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
+import us.mcmagic.magicassistant.utils.FileUtil;
+import us.mcmagic.magicassistant.utils.ScoreboardUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -46,9 +48,14 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new StitchEscape(this), this);
         pm.registerEvents(new PlayerJoinAndLeave(this), this);
+        pm.registerEvents(new ScoreboardUtil(this), this);
         getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         saveConfig();
+        FileUtil.setupConfig();
+        FileUtil.setupFoodFile();
+        hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
+        spawn = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
         serverName = getConfig().getString("server-name");
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
