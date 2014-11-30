@@ -93,15 +93,17 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
-            public void run() {
-                if (InventorySql.playerDataContainsPlayer(player)) {
-                    InventorySql.updateInventory(player);
+        if (MagicAssistant.crossServerInv) {
+            Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+                public void run() {
+                    if (InventorySql.playerDataContainsPlayer(player)) {
+                        InventorySql.updateInventory(player);
+                    }
+                    if (InventorySql.endPlayerDataContainsPlayer(player)) {
+                        InventorySql.updateEndInventory(player);
+                    }
                 }
-                if (InventorySql.endPlayerDataContainsPlayer(player)) {
-                    InventorySql.updateEndInventory(player);
-                }
-            }
-        });
+            });
+        }
     }
 }
