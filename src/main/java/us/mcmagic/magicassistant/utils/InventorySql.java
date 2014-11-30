@@ -1,12 +1,12 @@
 package us.mcmagic.magicassistant.utils;
 
+import com.legobuilder0813.MCMagicCore.MCMagicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
