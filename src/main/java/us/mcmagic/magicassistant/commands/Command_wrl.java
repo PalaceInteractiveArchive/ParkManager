@@ -1,8 +1,9 @@
 package us.mcmagic.magicassistant.commands;
-import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.WarpUtil;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.WarpUtil;
 
 public class Command_wrl {
 

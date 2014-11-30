@@ -19,6 +19,7 @@ import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.listeners.ChatListener;
 import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
 import us.mcmagic.magicassistant.utils.FileUtil;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.ScoreboardUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -87,6 +88,44 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             return true;
         } else if (label.equalsIgnoreCase("warp")) {
             Command_warp.execute(label, sender, args);
+            return true;
+        } else if (label.equalsIgnoreCase("sethub")) {
+            Player player = (Player) sender;
+            if (player.isOp()) {
+                double x = player.getLocation().getX();
+                double y = player.getLocation().getY();
+                double z = player.getLocation().getZ();
+                double yaw = player.getLocation().getYaw();
+                double pitch = player.getLocation().getPitch();
+                getConfig().set("hub.x", x);
+                getConfig().set("hub.y", y);
+                getConfig().set("hub.z", z);
+                getConfig().set("hub.yaw", yaw);
+                getConfig().set("hub.pitch", pitch);
+                getConfig().set("hubworld", player.getWorld().getName());
+                saveConfig();
+                player.sendMessage(ChatColor.DARK_AQUA
+                        + "The hub location has been set!");
+            } else {
+                player.sendMessage(ChatColor.RED
+                        + "You do not have permission to use this command!");
+            }
+            return true;
+        } else if (label.equalsIgnoreCase("hub")) {
+            if (!(sender instanceof Player)) {
+                if (args.length > 0) {
+                    Player tp = PlayerUtil.findPlayer(args[0]);
+                    if (tp == null) {
+                        sender.sendMessage(ChatColor.RED + "Player not found!");
+                        return true;
+                    }
+                    tp.teleport(hub);
+                    tp.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
+                }
+                return true;
+            }
+            ((Player) sender).teleport(hub);
+            sender.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
             return true;
         } else if (label.equalsIgnoreCase("setwarp")) {
             Command_setwarp.execute(sender, label, args);

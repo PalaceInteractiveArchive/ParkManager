@@ -1,9 +1,10 @@
 package us.mcmagic.magicassistant.commands;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 public class Command_heal {
 

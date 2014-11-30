@@ -1,16 +1,15 @@
 package us.mcmagic.magicassistant.utils;
 
-import java.util.Iterator;
-
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-
 import us.mcmagic.magicassistant.MagicAssistant;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import java.util.Iterator;
 
 public class WorldGuardClass implements Listener {
 	static MagicAssistant pl;

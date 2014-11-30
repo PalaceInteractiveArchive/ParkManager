@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.utils;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -8,9 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
-import com.legobuilder0813.AK.AK;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import us.mcmagic.magicassistant.MagicAssistant;
 
 public class ScoreboardUtil implements Listener {
