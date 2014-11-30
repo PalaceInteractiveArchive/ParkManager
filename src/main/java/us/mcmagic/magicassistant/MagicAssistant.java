@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -40,6 +41,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Location hub;
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
+    public static FileConfiguration config = Bukkit.getPluginManager().getPlugin("MagicAssistant").getConfig();
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config
             .getStringList("join-messages");
