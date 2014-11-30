@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
     public static MagicAssistant plugin;
@@ -40,6 +41,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
     private WorldGuardPlugin wg;
+    public static List<String> joinMessages = config
+            .getStringList("join-messages");
+    public static Map<Integer, Integer> items = new HashMap<>();
+    public static List<String> newJoinMessage = new ArrayList<>();
 
     public void onEnable() {
         registerListeners();
@@ -102,6 +107,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 getConfig().set("hub.yaw", yaw);
                 getConfig().set("hub.pitch", pitch);
                 getConfig().set("hubworld", player.getWorld().getName());
+                hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
                 saveConfig();
                 player.sendMessage(ChatColor.DARK_AQUA
                         + "The hub location has been set!");
