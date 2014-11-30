@@ -44,15 +44,6 @@ public class ChatListener implements Listener {
         }
         String msg = event.getMessage();
         String name = player.getName();
-        if (((this.time.containsKey(name)) && (System.currentTimeMillis() < this.time
-                .get(name)))
-                && !player.hasPermission("chatdelay.exempt")) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(
-                    ChatColor.RED + "You have to wait " + silenceTimeMS / 1000
-                            + " seconds before chatting!");
-            return;
-        }
         if (!player.hasPermission("chat.exempt")) {
             if (msg.length() >= 5) {
                 msg = stripCaps(msg);
@@ -76,9 +67,7 @@ public class ChatListener implements Listener {
         } else {
             emsg = msg;
         }
-        String servername = YamlConfiguration.loadConfiguration(
-                new File("plugins/magicassistant/config.yml")).getString(
-                "server-name");
+        String servername = MagicAssistant.serverName;
         String message = ChatColor.WHITE + "[" + ChatColor.GREEN + servername
                 + ChatColor.WHITE + "] " + "" + tag + ChatColor.WHITE + " "
                 + ChatColor.GRAY + player.getName() + ": " + ChatColor.WHITE
