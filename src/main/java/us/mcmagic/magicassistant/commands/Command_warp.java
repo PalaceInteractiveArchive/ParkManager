@@ -1,12 +1,12 @@
 package us.mcmagic.magicassistant.commands;
 
-import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
-import us.mcmagic.magicassistant.utils.WarpUtil;
-import us.mcmagic.magicassistant.Warp;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.Warp;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.magicassistant.utils.WarpUtil;
 
 import java.util.List;
 

@@ -1,47 +1,47 @@
 package us.mcmagic.magicassistant;
 
 public class FoodLocation {
-	private String name;
-	private String warp;
-	private int type;
-	private byte data;
+    private String name;
+    private String warp;
+    private int type;
+    private byte data;
 
-	public FoodLocation(String name, String warp, int type, byte data) {
-		this.name = name;
-		this.warp = warp;
-		this.type = type;
-		this.data = data;
-	}
+    public FoodLocation(String name, String warp, int type, byte data) {
+        this.name = name;
+        this.warp = warp;
+        this.type = type;
+        this.data = data;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getWarp() {
-		return warp;
-	}
+    public String getWarp() {
+        return warp;
+    }
 
-	public int getType() {
-		return type;
-	}
+    public int getType() {
+        return type;
+    }
 
-	public byte getData() {
-		return data;
-	}
+    public byte getData() {
+        return data;
+    }
 
-	public void setName(String newName) {
-		name.equals(newName);
-	}
+    public void setName(String newName) {
+        name.equals(newName);
+    }
 
-	public void setWarp(String newWarp) {
-		warp.equals(newWarp);
-	}
+    public void setWarp(String newWarp) {
+        warp.equals(newWarp);
+    }
 
-	public void setType(int newType) {
-		type = newType;
-	}
+    public void setType(int newType) {
+        type = newType;
+    }
 
-	public void setData(byte newData) {
-		data = newData;
-	}
+    public void setData(byte newData) {
+        data = newData;
+    }
 }

@@ -1,12 +1,11 @@
 package us.mcmagic.magicassistant.utils;
 
-import java.util.ArrayList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-
 import us.mcmagic.magicassistant.MagicAssistant;
+
+import java.util.ArrayList;
 
 public class VisibleUtil implements Listener {
     public static ArrayList<Player> hideall = new ArrayList<>();
