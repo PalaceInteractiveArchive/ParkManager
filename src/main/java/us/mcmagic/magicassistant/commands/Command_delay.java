@@ -34,7 +34,7 @@ public class Command_delay {
                             b.setType(Material.REDSTONE_BLOCK);
                             Bukkit.getScheduler().runTaskLater(
                                     Bukkit.getPluginManager().getPlugin(
-                                            "magicassistant"), new Runnable() {
+                                            "MagicAssistant"), new Runnable() {
                                         public void run() {
                                             b.setType(Material.AIR);
                                         }
