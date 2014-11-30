@@ -21,6 +21,7 @@ import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
 import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.ScoreboardUtil;
+import us.mcmagic.magicassistant.utils.WarpUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -32,6 +33,7 @@ import java.util.List;
 public class MagicAssistant extends JavaPlugin implements Listener {
     public static MagicAssistant plugin;
     public static Inventory ni;
+    public static List<FoodLocation> foodLocations = new ArrayList<>();
     public int randomNumber = 0;
     public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
     public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
@@ -52,9 +54,14 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new ScoreboardUtil(this), this);
         getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        List<Warp> warps = WarpUtil.getWarps();
+        for (Warp warp : warps) {
+            MagicAssistant.warps.add(warp);
+        }
         saveConfig();
         FileUtil.setupConfig();
         FileUtil.setupFoodFile();
+        setupFoodLocations();
         hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
         spawn = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
         serverName = getConfig().getString("server-name");
@@ -459,5 +466,22 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             }
         }
         return false;
+    }
+
+    public void setupFoodLocations() {
+        File file = new File("plugins/MagicAssistant/food.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        List<String> locations = config.getStringList("food-names");
+        for (String location : locations) {
+            String name = config
+                    .getString("food." + location + ".name");
+            String warp = config
+                    .getString("food." + location + ".warp");
+            int type = config.getInt("food." + location + ".type");
+            byte data = (byte) config.getInt("food." + location
+                    + ".data");
+            FoodLocation loc = new FoodLocation(name, warp, type, data);
+            foodLocations.add(loc);
+        }
     }
 }
