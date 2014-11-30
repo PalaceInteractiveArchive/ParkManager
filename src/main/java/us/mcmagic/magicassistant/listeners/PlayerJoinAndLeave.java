@@ -29,27 +29,31 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskLaterAsynchronously(
-                Bukkit.getPluginManager().getPlugin("magicassistant"),
-                new Runnable() {
-                    public void run() {
-                        if (!InventorySql.playerDataContainsPlayer(player)) {
-                            player.performCommand("spawn");
-                            InventorySql.setupData(player);
-                        } else {
-                            player.getInventory().setContents(
-                                    InventorySql.invContents(player));
-                            player.getInventory().setArmorContents(
-                                    InventorySql.armorContents(player));
+        if (MagicAssistant.spawnOnJoin) {
+            player.performCommand("spawn");
+        }
+        if (MagicAssistant.crossServerInv) {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
+                    new Runnable() {
+                        public void run() {
+                            if (!InventorySql.playerDataContainsPlayer(player)) {
+                                player.performCommand("spawn");
+                                InventorySql.setupData(player);
+                            } else {
+                                player.getInventory().setContents(
+                                        InventorySql.invContents(player));
+                                player.getInventory().setArmorContents(
+                                        InventorySql.armorContents(player));
+                            }
+                            if (!InventorySql.endPlayerDataContainsPlayer(player)) {
+                                InventorySql.setupEndData(player);
+                            } else {
+                                player.getEnderChest().setContents(
+                                        InventorySql.endInvContents(player));
+                            }
                         }
-                        if (!InventorySql.endPlayerDataContainsPlayer(player)) {
-                            InventorySql.setupEndData(player);
-                        } else {
-                            player.getEnderChest().setContents(
-                                    InventorySql.endInvContents(player));
-                        }
-                    }
-                }, 20L);
+                    }, 20L);
+        }
     }
 
     @EventHandler

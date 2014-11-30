@@ -29,7 +29,7 @@ public class ChatListener implements Listener {
     }
 
     public static int silenceTimeMS = 3;
-    private HashMap<String, Long> time = new HashMap<String, Long>();
+    private HashMap<String, Long> time = new HashMap<>();
     public static List<String> whitelistedDomains = Arrays.asList("mcmagic.us",
             "mcmagic.us/servers/downloads");
     public YamlConfiguration config = YamlConfiguration
@@ -46,7 +46,7 @@ public class ChatListener implements Listener {
         String msg = event.getMessage();
         String name = player.getName();
         if (((this.time.containsKey(name)) && (System.currentTimeMillis() < this.time
-                .get(name).longValue()))
+                .get(name)))
                 && !player.hasPermission("chatdelay.exempt")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(
