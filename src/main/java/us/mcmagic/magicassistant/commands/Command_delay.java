@@ -28,7 +28,7 @@ public class Command_delay {
                     z);
             final Block b = loc.getBlock();
             Bukkit.getScheduler().scheduleSyncDelayedTask(
-                    Bukkit.getPluginManager().getPlugin("magicassistant"),
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     new Runnable() {
                         public void run() {
                             b.setType(Material.REDSTONE_BLOCK);
