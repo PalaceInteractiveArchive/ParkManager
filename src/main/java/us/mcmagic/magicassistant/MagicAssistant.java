@@ -40,7 +40,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Location spawn;
     public static Location hub;
     public static boolean spawnOnJoin;
-    public static boolean crossServerInv;
+    public static boolean crossServerInv = false;
     public FileConfiguration config = this.getConfig();
     private WorldGuardPlugin wg;
     public List<String> joinMessages = config
@@ -61,7 +61,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         spawn = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
         serverName = getConfig().getString("server-name");
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
-        crossServerInv = getConfig().getBoolean("transfer-inventories");
+        // crossServerInv = getConfig().getBoolean("transfer-inventories");
         getLogger().info("Magic Assistant is ready to help!");
     }
 
