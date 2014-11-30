@@ -90,7 +90,7 @@ public class ChatListener implements Listener {
             out.writeUTF(player.getName());
             out.writeUTF(message);
             player.sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("magicassistant"),
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     "BungeeCord", b.toByteArray());
             event.setCancelled(true);
         } catch (IOException e) {
