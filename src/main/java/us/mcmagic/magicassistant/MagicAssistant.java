@@ -35,7 +35,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public int randomNumber = 0;
     public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
     public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
-    public static List<Warp> warps;
+    public static List<Warp> warps = new ArrayList<>();
     public static String serverName;
     public static Location spawn;
     public static Location hub;
