@@ -18,18 +18,17 @@ public class ScoreboardUtil implements Listener {
         pl = instance;
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
-        Team admin = sb.registerNewTeam("admin");
-        Team cm = sb.registerNewTeam("cm");
-        Team sg = sb.registerNewTeam("specialguest");
-        Team intern = sb.registerNewTeam("intern");
-        Team character = sb.registerNewTeam("character");
-        Team donor = sb.registerNewTeam("donor");
-        Team guest = sb.registerNewTeam("guest");
+        final Team admin = sb.registerNewTeam("admin");
+        final Team cm = sb.registerNewTeam("cm");
+        final Team sg = sb.registerNewTeam("specialguest");
+        final Team intern = sb.registerNewTeam("intern");
+        final Team character = sb.registerNewTeam("character");
+        final Team donor = sb.registerNewTeam("donor");
+        final Team guest = sb.registerNewTeam("guest");
         admin.setPrefix(ChatColor.GOLD + "");
         cm.setPrefix(ChatColor.GREEN + "");
         sg.setPrefix(ChatColor.DARK_PURPLE + "");
@@ -38,26 +37,31 @@ public class ScoreboardUtil implements Listener {
         donor.setPrefix(ChatColor.AQUA + "");
         guest.setPrefix(ChatColor.GRAY + "");
         player.setScoreboard(sb);
-        for (Player tp : Bukkit.getOnlinePlayers()) {
-            setScoreboardColorForOtherPlayer(tp, player);
-            if (isInPermGroup(tp, "mayor") || isInPermGroup(tp, "technician")
-                    || isInPermGroup(tp, "manager")) {
-                admin.addPlayer(tp);
-            } else if (isInPermGroup(tp, "moderator")) {
-                cm.addPlayer(tp);
-            } else if (isInPermGroup(tp, "specialguest")) {
-                sg.addPlayer(tp);
-            } else if (isInPermGroup(tp, "character")
-                    || isInPermGroup(tp, "characterguest")) {
-                character.addPlayer(tp);
-            } else if (isInPermGroup(tp, "intern")) {
-                intern.addPlayer(tp);
-            } else if (isInPermGroup(tp, "donor")) {
-                donor.addPlayer(tp);
-            } else {
-                guest.addPlayer(tp);
+        Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+            @Override
+            public void run() {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
+                    setScoreboardColorForOtherPlayer(tp, player);
+                    if (isInPermGroup(tp, "mayor") || isInPermGroup(tp, "technician")
+                            || isInPermGroup(tp, "manager")) {
+                        admin.addPlayer(tp);
+                    } else if (isInPermGroup(tp, "moderator")) {
+                        cm.addPlayer(tp);
+                    } else if (isInPermGroup(tp, "specialguest")) {
+                        sg.addPlayer(tp);
+                    } else if (isInPermGroup(tp, "character")
+                            || isInPermGroup(tp, "characterguest")) {
+                        character.addPlayer(tp);
+                    } else if (isInPermGroup(tp, "intern")) {
+                        intern.addPlayer(tp);
+                    } else if (isInPermGroup(tp, "donor")) {
+                        donor.addPlayer(tp);
+                    } else {
+                        guest.addPlayer(tp);
+                    }
+                }
             }
-        }
+        });
     }
 
     public static void setScoreboardColorForOtherPlayer(Player player, Player tp) {
