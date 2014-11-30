@@ -16,12 +16,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.commands.*;
-import us.mcmagic.magicassistant.listeners.ChatListener;
-import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
-import us.mcmagic.magicassistant.utils.FileUtil;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
-import us.mcmagic.magicassistant.utils.ScoreboardUtil;
-import us.mcmagic.magicassistant.utils.WarpUtil;
+import us.mcmagic.magicassistant.listeners.*;
+import us.mcmagic.magicassistant.utils.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -46,13 +42,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     private WorldGuardPlugin wg;
 
     public void onEnable() {
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(this, this);
-        pm.registerEvents(new ChatListener(this), this);
-        pm.registerEvents(new PlayerJoinAndLeave(this), this);
-        pm.registerEvents(new ScoreboardUtil(this), this);
+        registerListeners();
         getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
         List<Warp> warps = WarpUtil.getWarps();
         for (Warp warp : warps) {
             MagicAssistant.warps.add(warp);
@@ -482,5 +475,20 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             FoodLocation loc = new FoodLocation(name, warp, type, data);
             foodLocations.add(loc);
         }
+    }
+
+    public void registerListeners() {
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(this, this);
+        pm.registerEvents(new ChatListener(this), this);
+        pm.registerEvents(new PlayerJoinAndLeave(this), this);
+        pm.registerEvents(new ScoreboardUtil(this), this);
+        pm.registerEvents(new SignChange(this), this);
+        pm.registerEvents(new BlockEdit(this), this);
+        pm.registerEvents(new InventoryClick(this), this);
+        pm.registerEvents(new PlayerDropItem(this), this);
+        pm.registerEvents(new PlayerInteract(this), this);
+        pm.registerEvents(new VisibleUtil(this), this);
+        pm.registerEvents(new WarpUtil(this), this);
     }
 }
