@@ -137,19 +137,18 @@ public class WarpUtil implements Listener {
                     .prepareStatement("SELECT * FROM `warps`");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
-                Warp warp = new Warp(result.getString("name"),
+                warps.add(new Warp(result.getString("name"),
                         result.getString("server"), result.getDouble("x"),
                         result.getDouble("y"), result.getDouble("z"),
                         result.getFloat("yaw"), result.getFloat("pitch"),
-                        result.getString("world"));
-                warps.add(warp);
+                        result.getString("world")));
             }
             result.close();
             sql.close();
             return warps;
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         } finally {
             closeConnection();
         }

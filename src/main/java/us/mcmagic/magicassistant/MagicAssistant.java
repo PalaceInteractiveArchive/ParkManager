@@ -53,10 +53,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
-        List<Warp> warps = WarpUtil.getWarps();
-        for (Warp warp : warps) {
-            MagicAssistant.warps.add(warp);
-        }
         saveConfig();
         FileUtil.setupConfig();
         FileUtil.setupFoodFile();
