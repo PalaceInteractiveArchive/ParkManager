@@ -19,7 +19,7 @@ public class Command_ptime {
                 args[0] = args[0].toLowerCase().replaceAll("ticks", "");
                 switch (args[0]) {
                     case "day":
-                        tp.setPlayerTime(1000, true);
+                        tp.setPlayerTime(1000, false);
                         tp.sendMessage(ChatColor.GREEN
                                 + "Your time has been set to "
                                 + ChatColor.DARK_AQUA + tp.getPlayerTime()
@@ -30,7 +30,7 @@ public class Command_ptime {
                                 + "!");
                         break;
                     case "noon":
-                        tp.setPlayerTime(6000, true);
+                        tp.setPlayerTime(6000, false);
                         tp.sendMessage(ChatColor.GREEN
                                 + "Your time has been set to "
                                 + ChatColor.DARK_AQUA + tp.getPlayerTime()
@@ -41,7 +41,7 @@ public class Command_ptime {
                                 + "!");
                         break;
                     case "night":
-                        tp.setPlayerTime(16000, true);
+                        tp.setPlayerTime(16000, false);
                         tp.sendMessage(ChatColor.GREEN
                                 + "Your time has been set to "
                                 + ChatColor.DARK_AQUA + tp.getPlayerTime()
@@ -61,15 +61,16 @@ public class Command_ptime {
                         break;
                     default:
                         if (NumberUtil.isInt(args[0])) {
-                            tp.setPlayerTime(Integer.parseInt(args[0]), true);
+                            int time = Integer.parseInt(args[0]);
+                            tp.setPlayerTime(time, false);
                             tp.sendMessage(ChatColor.GREEN
                                     + "Your time has been set to "
-                                    + ChatColor.DARK_AQUA + tp.getPlayerTime()
+                                    + ChatColor.DARK_AQUA + time
                                     + ChatColor.GREEN + "!");
                             sender.sendMessage(ChatColor.DARK_AQUA + tp.getName()
                                     + "'s " + ChatColor.GREEN
                                     + "time has been set to " + ChatColor.DARK_AQUA
-                                    + Integer.parseInt(args[0]) + ChatColor.GREEN
+                                    + time + ChatColor.GREEN
                                     + "!");
                         } else {
                             sender.sendMessage(ChatColor.RED

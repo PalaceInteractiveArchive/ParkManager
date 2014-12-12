@@ -40,9 +40,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.legobuilder0813</groupId>
+            <groupId>us.mcmagic</groupId>
             <artifactId>MCMagicCore</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>1.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

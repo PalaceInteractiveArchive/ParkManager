@@ -17,6 +17,7 @@ public class FileUtil {
             YamlConfiguration config = YamlConfiguration
                     .loadConfiguration(file);
             config.set("server-name", "Hub");
+            config.set("transfer-inventories", "false");
         } catch (IOException e) {
             e.printStackTrace();
         }
