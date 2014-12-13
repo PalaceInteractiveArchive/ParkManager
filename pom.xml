@@ -37,12 +37,14 @@
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
             <version>LATEST</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>us.mcmagic</groupId>
             <artifactId>MCMagicCore</artifactId>
             <version>1.4-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
