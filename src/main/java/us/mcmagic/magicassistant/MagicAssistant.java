@@ -446,7 +446,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             out.writeUTF("Connect");
             out.writeUTF(server);
             player.sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("magicassistant"),
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED

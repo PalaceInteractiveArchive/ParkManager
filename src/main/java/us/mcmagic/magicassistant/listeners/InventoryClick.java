@@ -15,6 +15,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
+import us.mcmagic.mcmagiccore.coins.Coins;
 
 import java.util.Arrays;
 import java.util.List;
@@ -142,8 +143,9 @@ public class InventoryClick implements Listener {
                 return;
             }
             if (clicked.getType().equals(Material.GOLD_NUGGET)) {
+                String message = ChatColor.GREEN + "You currently have " + ChatColor.YELLOW + "" + ChatColor.BOLD + Coins.getSqlCoins(player) + ChatColor.GREEN + " Coins";
                 player.closeInventory();
-                player.performCommand("balance");
+                player.sendMessage(message);
                 return;
             }
             if (clicked.equals(back)) {

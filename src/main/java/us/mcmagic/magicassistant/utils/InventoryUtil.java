@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.coins.Coins;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,7 @@ public class InventoryUtil {
             ItemStack bal = new ItemStack(Material.GOLD_NUGGET);
             ItemMeta balm = bal.getItemMeta();
             balm.setDisplayName(ChatColor.GREEN + "Balance");
+            balm.setLore(Arrays.asList("" + ChatColor.GREEN + Coins.getSqlCoins(player) + " Coins"));
             bal.setItemMeta(balm);
             mb.setItem(0, server);
             mb.setItem(1, park);
