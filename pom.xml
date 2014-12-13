@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>us.mcmagic</groupId>
-            <artifactId>MCMagicCore</artifactId>
+            <artifactId>mcmagiccore</artifactId>
             <version>1.4-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
