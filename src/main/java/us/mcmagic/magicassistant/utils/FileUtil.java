@@ -13,6 +13,9 @@ public class FileUtil {
     public static void setupConfig() {
         try {
             File file = new File("plugins/MagicAssistant/config.yml");
+            if (file.exists()) {
+                return;
+            }
             file.createNewFile();
             YamlConfiguration config = YamlConfiguration
                     .loadConfiguration(file);
@@ -26,6 +29,9 @@ public class FileUtil {
     public static void setupFoodFile() {
         try {
             File file = new File("plugins/MagicAssistant/food.yml");
+            if (file.exists()) {
+                return;
+            }
             file.createNewFile();
             YamlConfiguration config = YamlConfiguration
                     .loadConfiguration(file);
