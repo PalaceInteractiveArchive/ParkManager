@@ -34,7 +34,7 @@ public class StitchEscape implements Listener {
                 player.teleport(seat);
                 if (!pl.chattimeout.containsKey(player)) {
                     player.sendMessage(ChatColor.AQUA + "------------------------------------------------");
-                    player.sendMessage(ChatColor.BLUE + "Please don'commands leave your seat during the show.");
+                    player.sendMessage(ChatColor.BLUE + "Please don't leave your seat during the show.");
                     player.sendMessage(ChatColor.BLUE + "If you wish to leave, type /stitch leave");
                     player.sendMessage(ChatColor.AQUA + "------------------------------------------------");
                     pl.chattimeout.put(player, null);
@@ -53,7 +53,7 @@ public class StitchEscape implements Listener {
         if (!locked && !pl.watching.containsKey(player)) {
             int amount = pl.getConfig().getInt("stitch.amount");
             for (int i = 1; i <= amount; i++) {
-                if (pl.getConfig().getBoolean("stitch." + i + ".inuse") == false) {
+                if (!pl.getConfig().getBoolean("stitch." + i + ".inuse")) {
                     double x = pl.getConfig().getDouble("stitch." + i + ".x");
                     double y = pl.getConfig().getDouble("stitch." + i + ".y");
                     double z = pl.getConfig().getDouble("stitch." + i + ".z");

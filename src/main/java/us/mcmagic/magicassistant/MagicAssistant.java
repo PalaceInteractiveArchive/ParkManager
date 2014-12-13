@@ -491,7 +491,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(this, this);
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new PlayerJoinAndLeave(this), this);
-        pm.registerEvents(new ScoreboardUtil(this), this);
         pm.registerEvents(new SignChange(this), this);
         pm.registerEvents(new BlockEdit(this), this);
         pm.registerEvents(new InventoryClick(this), this);

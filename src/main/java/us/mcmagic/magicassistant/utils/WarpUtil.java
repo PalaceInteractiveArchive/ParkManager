@@ -1,12 +1,12 @@
 package us.mcmagic.magicassistant.utils;
 
-import com.legobuilder0813.MCMagicCore.MCMagicCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.Warp;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

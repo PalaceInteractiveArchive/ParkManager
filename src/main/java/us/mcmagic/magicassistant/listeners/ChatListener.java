@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.listeners;
 
-import com.legobuilder0813.MCMagicCore.Chat.ChatManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -59,8 +60,7 @@ public class ChatListener implements Listener {
                 return;
             }
         }
-        String tag = ChatManager.tag(player);
-        ChatColor chatColor = ChatManager.getChatColor(player);
+        Rank rank = PlayerUtil.getUser(player.getUniqueId()).getRank();
         String emsg;
         if (player.hasPermission("chat.color")) {
             emsg = ChatColor.translateAlternateColorCodes('&', msg);
@@ -69,9 +69,9 @@ public class ChatListener implements Listener {
         }
         String servername = MagicAssistant.serverName;
         String message = ChatColor.WHITE + "[" + ChatColor.GREEN + servername
-                + ChatColor.WHITE + "] " + "" + tag + ChatColor.WHITE + " "
+                + ChatColor.WHITE + "] " + "" + rank.getNameWithBrackets() + ChatColor.WHITE + " "
                 + ChatColor.GRAY + player.getName() + ": " + ChatColor.WHITE
-                + chatColor + emsg;
+                + rank.getChatColor() + emsg;
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {

@@ -21,7 +21,7 @@ public class VisibleUtil implements Listener {
         Bukkit.getScheduler().runTask(pl, new Runnable() {
             public void run() {
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.getName() != player.getName()) {
+                    if (!tp.getName().equals(player.getName())) {
                         if (!tp.hasPermission("band.stayvisible")) {
                             player.hidePlayer(tp);
                         }
@@ -37,7 +37,7 @@ public class VisibleUtil implements Listener {
         Bukkit.getScheduler().runTask(pl, new Runnable() {
             public void run() {
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.getName() != player.getName()) {
+                    if (!tp.getName().equals(player.getName())) {
                         if (!tp.hasPermission("band.stayvisible")) {
                             player.showPlayer(tp);
                         }
