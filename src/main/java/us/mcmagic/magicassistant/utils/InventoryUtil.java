@@ -99,10 +99,6 @@ public class InventoryUtil implements Listener {
     @SuppressWarnings("deprecation")
     public static void openInventory(final Player player, InventoryType inv) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        ItemStack back = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
-        ItemMeta backm = back.getItemMeta();
-        backm.setDisplayName(ChatColor.GREEN + "Back");
-        back.setItemMeta(backm);
         switch (inv) {
             case MAINMENU:
                 final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
@@ -187,7 +183,7 @@ public class InventoryUtil implements Listener {
                         }
                         amount++;
                     }
-                    foodMenu.setItem(22, back);
+                    foodMenu.setItem(22, BandUtil.getBackItem());
                     if (foodLocations.size() > 7) {
                         foodMenu.setItem(23, next);
                     }
@@ -215,7 +211,7 @@ public class InventoryUtil implements Listener {
                         }
                         amount++;
                     }
-                    foodMenu.setItem(22, back);
+                    foodMenu.setItem(22, BandUtil.getBackItem());
                     if (foodLocations.size() > 7) {
                         foodMenu.setItem(23, next);
                     }

@@ -49,6 +49,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public void onEnable() {
         registerListeners();
         InventoryUtil.initialize();
+        BandUtil.initialize();
         getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));

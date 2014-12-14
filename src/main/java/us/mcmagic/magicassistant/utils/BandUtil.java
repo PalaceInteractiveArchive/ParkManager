@@ -20,7 +20,14 @@ import java.util.Date;
  * Created by Marc on 12/13/14
  */
 public class BandUtil {
-    public static Connection connection;
+    private static Connection connection;
+    private static ItemStack back = new ItemStack(Material.PAPER);
+
+    public static void initialize() {
+        ItemMeta bm = back.getItemMeta();
+        bm.setDisplayName(ChatColor.GREEN + "Back");
+        back.setItemMeta(bm);
+    }
 
     public synchronized static void closeConnection() {
         try {
@@ -87,6 +94,10 @@ public class BandUtil {
         } finally {
             closeConnection();
         }
+    }
+
+    public static ItemStack getBackItem() {
+        return back;
     }
 
     public static BandColor getBandColor(String string) {
