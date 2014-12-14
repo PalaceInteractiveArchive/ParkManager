@@ -75,6 +75,24 @@ public class BandUtil {
         }
     }
 
+    public static long getOnlineTime(String uuid) {
+        openConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM `player_data` WHERE uuid=?");
+            sql.setString(1, uuid);
+            ResultSet result = sql.executeQuery();
+            Timestamp time = result.getTimestamp("");
+            result.close();
+            sql.close();
+            return time.getTime();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return System.currentTimeMillis();
+        } finally {
+            closeConnection();
+        }
+    }
+
     public static BandColor getBandColor(String string) {
         switch (string) {
             case "red":

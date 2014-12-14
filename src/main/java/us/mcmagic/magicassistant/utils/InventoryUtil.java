@@ -4,17 +4,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.coins.Coins;
+import us.mcmagic.mcmagiccore.credits.Credits;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class InventoryUtil {
+public class InventoryUtil implements Listener {
+    public static MagicAssistant pl;
     public static ItemStack rna = new ItemStack(Material.MINECART);
     public static ItemStack sne = new ItemStack(Material.FIREWORK);
     public static ItemStack hnr = new ItemStack(Material.BED);
@@ -32,6 +39,10 @@ public class InventoryUtil {
     public static ItemStack seasonal = new ItemStack(Material.RED_ROSE, 1, (byte) 2);
     public static ItemStack next = new ItemStack(Material.ARROW);
     public static ItemStack last = new ItemStack(Material.ARROW);
+
+    public InventoryUtil(MagicAssistant instance) {
+        pl = instance;
+    }
 
     public static void initialize() {
         ItemMeta rnam = rna.getItemMeta();
@@ -88,16 +99,16 @@ public class InventoryUtil {
     }
 
     @SuppressWarnings("deprecation")
-    public static void openInventory(Player player, InventoryType inv) {
+    public static void openInventory(final Player player, InventoryType inv) {
         ItemStack back = new ItemStack(Material.PAPER, 1);
         ItemMeta backm = back.getItemMeta();
         backm.setDisplayName(ChatColor.GREEN + "Back");
         back.setItemMeta(backm);
         switch (inv) {
             case MAINMENU:
-                Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
+                final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
                         + player.getName() + "'s MagicBand");
-                ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                final ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
                 SkullMeta sm = (SkullMeta) playerInfo.getItemMeta();
                 sm.setOwner(player.getName());
                 sm.setDisplayName(ChatColor.GREEN + "Player Info");
@@ -122,6 +133,23 @@ public class InventoryUtil {
                 main.setItem(17, creative);
                 main.setItem(26, seasonal);
                 player.openInventory(main);
+                Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
+                    @Override
+                    public void run() {
+                        User user = PlayerUtil.getUser(player.getUniqueId());
+                        Rank rank = user.getRank();
+                        SkullMeta pm = (SkullMeta) playerInfo.getItemMeta();
+                        pm.setDisplayName(ChatColor.GREEN + "Player Info");
+                        pm.setOwner(player.getName());
+                        List<String> lore = Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + player.getName(),
+                                ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
+                                ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + Coins.getSqlCoins(player),
+                                ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(player),
+                                ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + DateUtil.formatDateDiff(BandUtil.getOnlineTime(player.getUniqueId() + "")));
+                        pm.setLore(lore);
+                        main.setItem(15, playerInfo);
+                    }
+                }, 40L);
                 return;
             case PARK:
                 return;
@@ -170,7 +198,6 @@ public class InventoryUtil {
             case HOTELSANDRESORTS:
                 return;
             case PARKMAP:
-                return;
         }
     }
 }
