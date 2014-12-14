@@ -151,7 +151,8 @@ public class InventoryUtil implements Listener {
                                 ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(player),
                                 ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + DateUtil.formatDateDiff(BandUtil.getOnlineTime(player.getUniqueId() + "")));
                         pm.setLore(lore);
-                        main.setItem(15, playerInfo);
+                        pinfo2.setItemMeta(pm);
+                        main.setItem(15, pinfo2);
                     }
                 }, 40L);
                 return;

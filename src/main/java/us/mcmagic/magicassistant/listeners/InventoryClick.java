@@ -32,8 +32,8 @@ public class InventoryClick implements Listener {
         }
         String name = ChatColor.stripColor(inv.getName());
         if (name.equals(player.getName() + "'s MagicBand")) {
-            event.setCancelled(true);
             MainMenuClick.handle(clicked, player);
+            event.setCancelled(true);
             return;
         }
         switch (name) {
