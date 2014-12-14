@@ -36,9 +36,11 @@ public class PlayerInteract implements Listener {
             return;
         }
         PlayerInventory pi = player.getInventory();
+        player.sendMessage(pi.getHeldItemSlot() + "");
         if (pi.getHeldItemSlot() != 8) {
             return;
         }
+        player.sendMessage(pi.getItemInHand() + "");
         ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
         ItemMeta mbm = mb.getItemMeta();
         mbm.setDisplayName(data.getBandName() + "MagicBand");
