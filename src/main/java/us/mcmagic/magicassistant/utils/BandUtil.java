@@ -75,6 +75,7 @@ public class BandUtil {
             PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM `player_data` WHERE uuid=?");
             sql.setString(1, uuid);
             ResultSet result = sql.executeQuery();
+            result.next();
             Timestamp time = result.getTimestamp("lastseen");
             result.close();
             sql.close();
