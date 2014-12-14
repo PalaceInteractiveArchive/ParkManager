@@ -51,6 +51,8 @@ public class MainMenuClick {
                     VisibleUtil.removeFromHideAll(player);
                 }
                 return;
+            case WATCH:
+                return;
             case GOLD_BOOTS:
                 player.closeInventory();
                 player.sendMessage(ChatColor.RED + "This feature is coming soon!");

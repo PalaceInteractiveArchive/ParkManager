@@ -29,7 +29,7 @@ public class InventoryUtil implements Listener {
     public static ItemStack toggleon = new ItemStack(Material.WOOL, 1, (byte) 14);
     public static ItemStack toggleoff = new ItemStack(Material.WOOL, 1, (byte) 5);
     public static ItemStack shop = new ItemStack(Material.GOLD_BOOTS);
-    public static ItemStack food = new ItemStack(Material.POTATO);
+    public static ItemStack food = new ItemStack(Material.POTATO_ITEM);
     public static ItemStack hub = new ItemStack(Material.ENDER_PEARL);
     public static ItemStack time = new ItemStack(Material.WATCH);
     public static ItemStack map = new ItemStack(Material.NETHER_STAR);
@@ -80,6 +80,7 @@ public class InventoryUtil implements Listener {
         sem.setDisplayName(ChatColor.GREEN + "Seasonal");
         nm.setDisplayName(ChatColor.GREEN + "Next Page");
         lam.setDisplayName(ChatColor.GREEN + "Last Page");
+        sem.setLore(Arrays.asList(ChatColor.YELLOW + "Where Seasonal Events", ChatColor.YELLOW + "are held for the server!"));
         rna.setItemMeta(rnam);
         sne.setItemMeta(snem);
         hnr.setItemMeta(hnrm);
@@ -111,8 +112,7 @@ public class InventoryUtil implements Listener {
                 final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
                         + player.getName() + "'s MagicBand");
                 final ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
-                SkullMeta sm = (SkullMeta) playerInfo.getItemMeta();
-                sm.setOwner(player.getName());
+                ItemMeta sm = playerInfo.getItemMeta();
                 sm.setDisplayName(ChatColor.GREEN + "Player Info");
                 sm.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
                 playerInfo.setItemMeta(sm);
@@ -141,6 +141,7 @@ public class InventoryUtil implements Listener {
                     public void run() {
                         User user = PlayerUtil.getUser(player.getUniqueId());
                         Rank rank = user.getRank();
+                        ItemStack pinfo2 = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
                         SkullMeta pm = (SkullMeta) playerInfo.getItemMeta();
                         pm.setDisplayName(ChatColor.GREEN + "Player Info");
                         pm.setOwner(player.getName());

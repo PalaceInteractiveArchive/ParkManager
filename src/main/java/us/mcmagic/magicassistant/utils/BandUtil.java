@@ -61,7 +61,6 @@ public class BandUtil {
             result.close();
             sql.close();
             MagicAssistant.playerData.add(data);
-            player.sendMessage(BandUtil.getBandMaterial(data.getBandColor()).name() + data.getBandColor());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
