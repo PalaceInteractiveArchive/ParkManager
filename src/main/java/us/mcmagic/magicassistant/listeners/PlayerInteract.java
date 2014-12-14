@@ -36,7 +36,6 @@ public class PlayerInteract implements Listener {
             return;
         }
         PlayerInventory pi = player.getInventory();
-        player.sendMessage(pi.getHeldItemSlot() + "");
         if (pi.getHeldItemSlot() != 8) {
             return;
         }
@@ -46,9 +45,7 @@ public class PlayerInteract implements Listener {
         mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                 ChatColor.GREEN + "the MagicBand menu!"));
         mb.setItemMeta(mbm);
-        player.sendMessage(pi.getItemInHand() + " " + ChatColor.RESET + mb);
         if (pi.getItemInHand().equals(mb)) {
-            player.sendMessage("Opening Main Menu");
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }

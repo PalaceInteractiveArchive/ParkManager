@@ -65,9 +65,6 @@ public class InventoryClick implements Listener {
                 return;
             case "Food Menu":
                 event.setCancelled(true);
-                return;
-            default:
-                event.setCancelled(true);
         }
     }
 
