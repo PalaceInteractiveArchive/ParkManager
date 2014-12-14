@@ -3,8 +3,6 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.magicassistant.magicband.BandColor;
@@ -19,13 +17,6 @@ import java.util.*;
  */
 public class BandUtil {
     public static Connection connection;
-    public static ItemStack back;
-
-    public static void initialize() {
-        ItemMeta bm = back.getItemMeta();
-        bm.setDisplayName(ChatColor.GREEN + "Back");
-        back.setItemMeta(bm);
-    }
 
     public synchronized static void closeConnection() {
         try {
