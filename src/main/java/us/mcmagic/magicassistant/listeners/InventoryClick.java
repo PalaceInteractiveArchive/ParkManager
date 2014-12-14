@@ -10,15 +10,10 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
-import us.mcmagic.magicassistant.utils.VisibleUtil;
-import us.mcmagic.mcmagiccore.coins.Coins;
+import us.mcmagic.magicassistant.magicband.MainMenuClick;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class InventoryClick implements Listener {
     static MagicAssistant pl;
@@ -27,13 +22,63 @@ public class InventoryClick implements Listener {
         pl = instance;
     }
 
+    @EventHandler
+    public void onPlayerInventoryClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        Inventory inv = event.getInventory();
+        ItemStack clicked = event.getCurrentItem();
+        if (clicked.equals(null)) {
+            return;
+        }
+        String name = ChatColor.stripColor(inv.getName());
+        if (name.equals(player.getName() + "'s MagicBand")) {
+            MainMenuClick.handle(clicked, player);
+            return;
+        }
+        switch (ChatColor.stripColor(inv.getName())) {
+            case "My Profile":
+                event.setCancelled(true);
+                return;
+            case "Shows and Events":
+                event.setCancelled(true);
+                return;
+            case "Customize Menu":
+                event.setCancelled(true);
+                return;
+            case "Customize Band Color":
+                event.setCancelled(true);
+                return;
+            case "Customize Name Color":
+                event.setCancelled(true);
+                return;
+            case "Park Menu":
+                event.setCancelled(true);
+                return;
+            case "Rides and Attractions":
+                event.setCancelled(true);
+                return;
+            case "Rides":
+                event.setCancelled(true);
+                return;
+            case "Attractions":
+                event.setCancelled(true);
+                return;
+            case "Food Menu":
+                event.setCancelled(true);
+                return;
+            default:
+                event.setCancelled(true);
+        }
+    }
+
+    /*
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
         ItemStack clicked = event.getCurrentItem();
-        if (clicked == null) {
+        if (clicked.equals(null)) {
             return;
         }
         if (inv.getName().equals(ChatColor.BLUE + "MagicBand Menu")) {
@@ -149,7 +194,7 @@ public class InventoryClick implements Listener {
                 return;
             }
             if (clicked.equals(back)) {
-                InventoryUtil.openInventory(player, InventoryType.MAGICBAND);
+                InventoryUtil.openInventory(player, InventoryType.MAINMENU);
                 return;
             }
             if (clicked.getType().equals(Material.DIAMOND_BLOCK)) {
@@ -205,6 +250,7 @@ public class InventoryClick implements Listener {
                 return;
             }
             for (FoodLocation loc : MagicAssistant.foodLocations) {
+                //event.getSlot()
                 if (clicked.getTypeId() == loc.getType()
                         && clicked.getData().getData() == loc.getData()) {
                     player.closeInventory();
@@ -229,6 +275,7 @@ public class InventoryClick implements Listener {
             }
         }
     }
+    */
 
     @EventHandler
     public void onInventoryCreative(InventoryCreativeEvent event) {

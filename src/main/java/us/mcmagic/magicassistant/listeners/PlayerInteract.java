@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.PlayerData;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 
@@ -29,18 +31,22 @@ public class PlayerInteract implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         if (event.getAction().equals(Action.PHYSICAL)) {
             return;
         }
         PlayerInventory pi = player.getInventory();
-        ItemStack mb = new ItemStack(Material.PAPER);
+        if (pi.getHeldItemSlot() != 8) {
+            return;
+        }
+        ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
         ItemMeta mbm = mb.getItemMeta();
-        mbm.setDisplayName(ChatColor.GOLD + "MagicBand");
+        mbm.setDisplayName(data.getBandName() + "MagicBand");
         mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                 ChatColor.GREEN + "the MagicBand menu!"));
         mb.setItemMeta(mbm);
         if (pi.getItemInHand().equals(mb)) {
-            InventoryUtil.openInventory(player, InventoryType.MAGICBAND);
+            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }
 

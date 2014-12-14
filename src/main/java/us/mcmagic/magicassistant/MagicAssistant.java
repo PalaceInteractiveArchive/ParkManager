@@ -23,15 +23,13 @@ import us.mcmagic.magicassistant.utils.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
     public static MagicAssistant plugin;
     public static Inventory ni;
     public static List<FoodLocation> foodLocations = new ArrayList<>();
+    public static List<PlayerData> playerData = new ArrayList<>();
     public int randomNumber = 0;
     public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
     public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
@@ -50,6 +48,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
     public void onEnable() {
         registerListeners();
+        BandUtil.initialize();
+        InventoryUtil.initialize();
         getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
@@ -467,6 +467,15 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             }
         }
         return false;
+    }
+
+    public static PlayerData getPlayerData(UUID uuid) {
+        for (PlayerData data : playerData) {
+            if (data.getUuid().equals(uuid)) {
+                return data;
+            }
+        }
+        return null;
     }
 
     public void setupFoodLocations() {

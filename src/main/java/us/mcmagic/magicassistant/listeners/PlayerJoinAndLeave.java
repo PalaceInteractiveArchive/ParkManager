@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 
 import java.io.ByteArrayOutputStream;
@@ -32,6 +33,12 @@ public class PlayerJoinAndLeave implements Listener {
         if (MagicAssistant.spawnOnJoin) {
             player.performCommand("spawn");
         }
+        Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+            @Override
+            public void run() {
+                BandUtil.setupPlayerData(player);
+            }
+        });
         if (MagicAssistant.crossServerInv) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
                     new Runnable() {
@@ -52,7 +59,7 @@ public class PlayerJoinAndLeave implements Listener {
                                         InventorySql.endInvContents(player));
                             }
                         }
-                    }, 20L);
+                    }, 40L);
         }
     }
 
@@ -68,7 +75,6 @@ public class PlayerJoinAndLeave implements Listener {
             // BanUtil.banPlayer(player.getUniqueId() + "", reason,
             // permanent,
             // entry.getExpiration(), "Console");
-            return;
         }
     }
 
