@@ -1,13 +1,19 @@
 package us.mcmagic.magicassistant.magicband;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
+
+import java.util.Arrays;
 
 /**
  * Created by Marc on 12/13/14
@@ -15,7 +21,10 @@ import us.mcmagic.magicassistant.utils.VisibleUtil;
 public class MainMenuClick {
 
     @SuppressWarnings("deprecation")
-    public static void handle(ItemStack item, Player player) {
+    public static void handle(InventoryClickEvent event) {
+        ItemStack item = event.getCurrentItem();
+        Player player = (Player) event.getWhoClicked();
+        Inventory inv = event.getInventory();
         if (item.getType().equals(Material.SKULL_ITEM)) {
             return;
         }
@@ -38,6 +47,12 @@ public class MainMenuClick {
                 }
                 return;
             case WATCH:
+                ItemStack time = new ItemStack(Material.WATCH);
+                ItemMeta tm = time.getItemMeta();
+                tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
+                tm.setLore(Arrays.asList(ChatColor.YELLOW + BandUtil.currentTime()));
+                time.setItemMeta(tm);
+                inv.setItem(4, time);
                 return;
             case GOLD_BOOTS:
                 player.closeInventory();
