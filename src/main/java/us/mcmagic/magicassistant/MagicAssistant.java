@@ -39,6 +39,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Location hub;
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
+    public static boolean resortsServer;
     public FileConfiguration config = this.getConfig();
     private WorldGuardPlugin wg;
     public List<String> joinMessages = config
@@ -64,6 +65,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         serverName = getConfig().getString("server-name");
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
+        resortsServer = serverName == "Resorts";
         getLogger().info("Magic Assistant is ready to help!");
     }
 

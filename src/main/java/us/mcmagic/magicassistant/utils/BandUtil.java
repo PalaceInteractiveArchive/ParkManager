@@ -169,7 +169,7 @@ public class BandUtil {
         String second = new SimpleDateFormat("ss").format(current);
         String hour;
         if (Integer.parseInt(h) > 12) {
-            hour = (Integer.parseInt(h) - 12) + "";
+            hour = (Integer.parseInt(h) - 12) + ":" + minute + ":" + second;
         } else {
             hour = h + ":" + minute + ":" + second;
         }

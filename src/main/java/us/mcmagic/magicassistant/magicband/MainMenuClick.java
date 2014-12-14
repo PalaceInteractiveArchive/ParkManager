@@ -36,7 +36,11 @@ public class MainMenuClick {
                 InventoryUtil.openInventory(player, InventoryType.SHOWSANDEVENTS);
                 return;
             case BED:
-                InventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+                if (MagicAssistant.resortsServer) {
+                    InventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+                } else {
+                    MagicAssistant.sendToServer(player, "Resorts");
+                }
                 return;
             case WOOL:
                 byte data = item.getData().getData();
