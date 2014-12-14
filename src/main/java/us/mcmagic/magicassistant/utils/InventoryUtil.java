@@ -162,7 +162,7 @@ public class InventoryUtil implements Listener {
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                 // If odd amount of items
                 int place = 13;
-                if (((double) foodLocations.size() / 2) != 0) {
+                if (((double) foodLocations.size() / 2) != 0.0) {
                     int amount = 1;
                     for (FoodLocation loc : foodLocations) {
                         if (place > 16) {
@@ -176,9 +176,11 @@ public class InventoryUtil implements Listener {
                                 + loc.getWarp()));
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
-                        if (((double) amount / 2) != 0) {
+                        if (((double) amount / 2) != 0.0) {
+                            player.sendMessage("odd" + place + " " + amount);
                             place -= amount;
                         } else {
+                            player.sendMessage("even " + place + " " + amount);
                             place += amount;
                         }
                         amount++;
