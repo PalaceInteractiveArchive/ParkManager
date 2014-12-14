@@ -53,7 +53,7 @@ public class PlayerJoinAndLeave implements Listener {
                                         InventorySql.endInvContents(player));
                             }
                         }
-                    }, 40L);
+                    }, 10L);
         }
         Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
             @Override
