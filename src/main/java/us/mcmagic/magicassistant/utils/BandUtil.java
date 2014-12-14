@@ -162,6 +162,6 @@ public class BandUtil {
         } else {
             hour = h;
         }
-        return null;
+        return hour;
     }
 }
