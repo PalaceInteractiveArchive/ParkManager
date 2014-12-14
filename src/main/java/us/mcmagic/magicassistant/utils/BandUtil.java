@@ -160,7 +160,7 @@ public class BandUtil {
         if (Integer.parseInt(h) > 12) {
             hour = (Integer.parseInt(h) - 12) + "";
         } else {
-            hour = h;
+            hour = h + ":" + minute + ":" + second;
         }
         return hour;
     }
