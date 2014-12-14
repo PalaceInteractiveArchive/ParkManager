@@ -177,10 +177,10 @@ public class InventoryUtil implements Listener {
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
                         if (((double) amount / 2) != 0.0) {
-                            player.sendMessage("odd" + place + " " + amount);
+                            player.sendMessage("odd" + place + " " + amount + " " + amount / 2);
                             place -= amount;
                         } else {
-                            player.sendMessage("even " + place + " " + amount);
+                            player.sendMessage("even " + place + " " + amount + " " + amount / 2);
                             place += amount;
                         }
                         amount++;
