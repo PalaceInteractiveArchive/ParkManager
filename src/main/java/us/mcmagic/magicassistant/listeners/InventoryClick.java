@@ -12,6 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.magicband.MainMenuClick;
+import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 import java.util.Arrays;
 
@@ -28,6 +31,10 @@ public class InventoryClick implements Listener {
         Inventory inv = event.getInventory();
         ItemStack clicked = event.getCurrentItem();
         if (clicked.equals(null)) {
+            return;
+        }
+        if (clicked.getType().equals(BandUtil.getBandMaterial(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
+            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
         String name = ChatColor.stripColor(inv.getName());
@@ -68,6 +75,8 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
         }
     }
+
+
 
     /*
     @SuppressWarnings("deprecation")

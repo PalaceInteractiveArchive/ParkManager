@@ -12,7 +12,9 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.uuidconverter.UUIDConverter;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 /**
  * Created by Marc on 12/13/14
@@ -147,5 +149,19 @@ public class BandUtil {
                 ChatColor.GREEN + "the MagicBand menu!"));
         mb.setItemMeta(mbm);
         player.getInventory().setItem(8, mb);
+    }
+
+    public static String currentTime() {
+        Date current = new Date(System.currentTimeMillis() + 10800);
+        String h = new SimpleDateFormat("HH").format(current);
+        String minute = new SimpleDateFormat("mm").format(current);
+        String second = new SimpleDateFormat("ss").format(current);
+        String hour;
+        if (Integer.parseInt(h) > 12) {
+            hour = (Integer.parseInt(h) - 12) + "";
+        } else {
+            hour = h;
+        }
+        return null;
     }
 }
