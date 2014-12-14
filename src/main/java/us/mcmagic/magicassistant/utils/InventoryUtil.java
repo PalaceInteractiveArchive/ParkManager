@@ -164,8 +164,10 @@ public class InventoryUtil implements Listener {
                         + "Food Menu");
                 player.closeInventory();
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
+                // If odd amount of items
+                int place = 13;
                 if (((double) foodLocations.size() / 2) != 0) {
-                    int place = 13;
+                    int amount = 1;
                     for (FoodLocation loc : foodLocations) {
                         if (place > 16) {
                             break;
@@ -178,14 +180,46 @@ public class InventoryUtil implements Listener {
                                 + loc.getWarp()));
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
-                        place++;
+                        if (((double) amount / 2) != 0) {
+                            place -= amount;
+                        } else {
+                            place += amount;
+                        }
+                        amount++;
                     }
                     foodMenu.setItem(22, back);
                     if (foodLocations.size() > 7) {
                         foodMenu.setItem(23, next);
                     }
                     player.openInventory(foodMenu);
+                    // If even amount of items
                 } else {
+                    place++;
+                    int amount = 1;
+                    for (FoodLocation loc : foodLocations) {
+                        if (place > 16) {
+                            break;
+                        }
+                        ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
+                        ItemMeta fm = food.getItemMeta();
+                        fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
+                                loc.getName()));
+                        fm.setLore(Arrays.asList(ChatColor.GREEN + "/warp "
+                                + loc.getWarp()));
+                        food.setItemMeta(fm);
+                        foodMenu.setItem(place, food);
+                        if (((double) amount / 2) != 0) {
+                            place -= amount;
+                        } else {
+                            place += amount;
+                        }
+                        amount++;
+                    }
+                    foodMenu.setItem(22, back);
+                    if (foodLocations.size() > 7) {
+                        foodMenu.setItem(23, next);
+                    }
+                    player.openInventory(foodMenu);
                 }
                 return;
             case PROFILE:

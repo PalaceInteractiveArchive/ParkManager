@@ -89,9 +89,11 @@ public class MainMenuClick {
                 MagicAssistant.sendToServer(player, "Arcade");
                 return;
             case GRASS:
+                player.closeInventory();
                 MagicAssistant.sendToServer(player, "Creative");
                 return;
             case RED_ROSE:
+                player.closeInventory();
                 MagicAssistant.sendToServer(player, "Seasonal");
         }
     }
