@@ -40,12 +40,12 @@ public class PlayerInteract implements Listener {
         if (pi.getHeldItemSlot() != 8) {
             return;
         }
-        player.sendMessage(pi.getItemInHand() + "");
         ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
         ItemMeta mbm = mb.getItemMeta();
         mbm.setDisplayName(data.getBandName() + "MagicBand");
         mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                 ChatColor.GREEN + "the MagicBand menu!"));
+        player.sendMessage(pi.getItemInHand() + " " + ChatColor.RESET + mb);
         mb.setItemMeta(mbm);
         if (pi.getItemInHand().equals(mb)) {
             player.sendMessage("Opening Main Menu");
