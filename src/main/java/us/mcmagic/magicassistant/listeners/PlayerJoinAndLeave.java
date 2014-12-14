@@ -33,12 +33,6 @@ public class PlayerJoinAndLeave implements Listener {
         if (MagicAssistant.spawnOnJoin) {
             player.performCommand("spawn");
         }
-        Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
-            @Override
-            public void run() {
-                BandUtil.setupPlayerData(player);
-            }
-        });
         if (MagicAssistant.crossServerInv) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
                     new Runnable() {
@@ -61,6 +55,12 @@ public class PlayerJoinAndLeave implements Listener {
                         }
                     }, 40L);
         }
+        Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+            @Override
+            public void run() {
+                BandUtil.setupPlayerData(player);
+            }
+        });
     }
 
     @EventHandler

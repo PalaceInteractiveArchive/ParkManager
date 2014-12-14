@@ -59,6 +59,7 @@ public class BandUtil {
             result.close();
             sql.close();
             MagicAssistant.playerData.add(data);
+            player.sendMessage(data.getBandName() + " test " + data.getFriendList().values() + "");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
