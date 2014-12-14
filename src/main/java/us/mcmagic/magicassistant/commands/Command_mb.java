@@ -1,14 +1,9 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
+import us.mcmagic.magicassistant.utils.BandUtil;
 
 public class Command_mb {
 
@@ -19,17 +14,7 @@ public class Command_mb {
             return;
         }
         Player player = (Player) sender;
-        PlayerInventory pi = player.getInventory();
-        ItemStack mb = new ItemStack(Material.PAPER);
-        ItemMeta mbm = mb.getItemMeta();
-        mbm.setDisplayName(ChatColor.GOLD + "MagicBand");
-        mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
-                ChatColor.GREEN + "the MagicBand menu!"));
-        mb.setItemMeta(mbm);
-        if (pi.contains(mb)) {
-            pi.remove(mb);
-        }
-        pi.setItem(8, mb);
+        BandUtil.giveBandToPlayer(player);
         player.sendMessage(ChatColor.GRAY + "MagicBand has been restored!");
     }
 }

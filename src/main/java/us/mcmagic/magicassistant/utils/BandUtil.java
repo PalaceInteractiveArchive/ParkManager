@@ -3,6 +3,8 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.magicassistant.magicband.BandColor;
@@ -134,5 +136,16 @@ public class BandUtil {
             default:
                 return Material.PAPER;
         }
+    }
+
+    public static void giveBandToPlayer(Player player) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+        ItemMeta mbm = mb.getItemMeta();
+        mbm.setDisplayName(data.getBandName() + "MagicBand");
+        mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
+                ChatColor.GREEN + "the MagicBand menu!"));
+        mb.setItemMeta(mbm);
+        player.getInventory().setItem(8, mb);
     }
 }

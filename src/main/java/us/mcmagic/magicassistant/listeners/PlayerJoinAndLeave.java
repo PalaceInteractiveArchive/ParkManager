@@ -59,6 +59,7 @@ public class PlayerJoinAndLeave implements Listener {
             @Override
             public void run() {
                 BandUtil.setupPlayerData(player);
+                BandUtil.giveBandToPlayer(player);
             }
         });
     }
