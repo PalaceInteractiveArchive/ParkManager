@@ -114,6 +114,7 @@ public class InventoryUtil implements Listener {
                 SkullMeta sm = (SkullMeta) playerInfo.getItemMeta();
                 sm.setOwner(player.getName());
                 sm.setDisplayName(ChatColor.GREEN + "Player Info");
+                sm.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
                 playerInfo.setItemMeta(sm);
                 main.setItem(0, rna);
                 main.setItem(9, sne);
