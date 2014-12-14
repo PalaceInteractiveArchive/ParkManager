@@ -507,5 +507,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerInteract(this), this);
         pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new WarpUtil(this), this);
+        pm.registerEvents(new InventoryUtil(this), this);
     }
 }
