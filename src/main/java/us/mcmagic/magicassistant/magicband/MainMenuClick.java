@@ -19,7 +19,7 @@ public class MainMenuClick {
     public static ItemStack toggleon = new ItemStack(Material.WOOL, 1, (byte) 14);
     public static ItemStack toggleoff = new ItemStack(Material.WOOL, 1, (byte) 5);
     public static ItemStack shop = new ItemStack(Material.GOLD_BOOTS);
-    public static ItemStack food = new ItemStack(Material.POTATO);
+    public static ItemStack food = new ItemStack(Material.POTATO_ITEM);
     public static ItemStack hub = new ItemStack(Material.ENDER_PEARL);
     public static ItemStack time = new ItemStack(Material.WATCH);
     public static ItemStack map = new ItemStack(Material.NETHER_STAR);
