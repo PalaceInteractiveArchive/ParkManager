@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.credits.Credits;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -100,7 +101,8 @@ public class InventoryUtil implements Listener {
 
     @SuppressWarnings("deprecation")
     public static void openInventory(final Player player, InventoryType inv) {
-        ItemStack back = new ItemStack(Material.PAPER, 1);
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        ItemStack back = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
         ItemMeta backm = back.getItemMeta();
         backm.setDisplayName(ChatColor.GREEN + "Back");
         back.setItemMeta(backm);
