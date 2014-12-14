@@ -116,6 +116,7 @@ public class InventoryUtil implements Listener {
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
                 tm.setLore(Arrays.asList(ChatColor.YELLOW + BandUtil.currentTime()));
+                time.setItemMeta(tm);
                 main.setItem(0, rna);
                 main.setItem(9, sne);
                 main.setItem(18, hnr);
