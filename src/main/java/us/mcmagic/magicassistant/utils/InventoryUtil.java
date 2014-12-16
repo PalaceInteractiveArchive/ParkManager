@@ -217,6 +217,7 @@ public class InventoryUtil implements Listener {
                         if (place > 16) {
                             break;
                         }
+                        player.sendMessage(place + " " + amount + " " + (amount % 2));
                         ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
                         ItemMeta fm = food.getItemMeta();
                         fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
@@ -225,7 +226,6 @@ public class InventoryUtil implements Listener {
                                 + loc.getWarp()));
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
-                        player.sendMessage(place + " " + amount + " " + (amount % 2));
                         if (amount % 2 == 0) {
                             player.sendMessage("odd" + place + " " + amount + " " + (amount % 2));
                             place -= amount;
