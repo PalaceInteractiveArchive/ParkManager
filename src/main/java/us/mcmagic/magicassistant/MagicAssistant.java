@@ -40,7 +40,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
     public static boolean resortsServer;
-    public FileConfiguration config = this.getConfig();
+    public static FileConfiguration config = Bukkit.getPluginManager().getPlugin("MCMagicCore").getConfig();
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config
             .getStringList("join-messages");
