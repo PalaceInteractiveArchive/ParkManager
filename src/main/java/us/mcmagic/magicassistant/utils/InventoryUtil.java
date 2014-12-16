@@ -211,7 +211,7 @@ public class InventoryUtil implements Listener {
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                 // If odd amount of items
                 int place = 13;
-                player.sendMessage("" + foodLocations.size() % 2);
+                player.sendMessage("Test " + foodLocations.size() % 2);
                 if (foodLocations.size() % 2 == 0) {
                     int amount = 1;
                     for (FoodLocation loc : foodLocations) {
