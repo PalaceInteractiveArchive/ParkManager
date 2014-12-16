@@ -113,10 +113,10 @@ public class InventoryClick implements Listener {
             ItemMeta hotelm = hotel.getItemMeta();
             hotelm.setDisplayName(ChatColor.GREEN + "Hotels and Resorts");
             hotel.setItemMeta(hotelm);
-            ItemStack locker = new ItemStack(Material.ENDER_CHEST);
-            ItemMeta lockerm = locker.getItemMeta();
+            ItemStack report = new ItemStack(Material.ENDER_CHEST);
+            ItemMeta lockerm = report.getItemMeta();
             lockerm.setDisplayName(ChatColor.GREEN + "Locker");
-            locker.setItemMeta(lockerm);
+            report.setItemMeta(lockerm);
             ItemStack tp = new ItemStack(Material.NETHER_STAR);
             ItemMeta tpm = tp.getItemMeta();
             tpm.setDisplayName(ChatColor.GREEN + "Toggle Players");
@@ -180,7 +180,7 @@ public class InventoryClick implements Listener {
                 MagicAssistant.sendToServer(player, "Resorts");
                 return;
             }
-            if (clicked.equals(locker)) {
+            if (clicked.equals(report)) {
                 player.openInventory(player.getEnderChest());
                 return;
             }

@@ -63,7 +63,7 @@ public class BandUtil {
             Collections.addAll(flist, friends);
             for (String friend : flist) {
                 String name = UUIDConverter.convert(friend);
-                UUID uuid = UUID.fromString(friend);
+                UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
                 friendlist.put(uuid, name);
             }
             PlayerData data = new PlayerData(player.getUniqueId(), getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")), friendlist);

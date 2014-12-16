@@ -80,10 +80,11 @@ public class MainMenuClick {
                 MagicAssistant.sendToServer(player, "Hub");
                 return;
             case NETHER_STAR:
-                InventoryUtil.openInventory(player, InventoryType.PARKMAP);
+                InventoryUtil.openInventory(player, InventoryType.PARK);
                 return;
-            case ENDER_CHEST:
-                player.openInventory(player.getEnderChest());
+            case COMPASS:
+                player.closeInventory();
+                player.sendMessage(ChatColor.RED + "This feature is coming soon!");
                 return;
             case PAPER:
                 InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);

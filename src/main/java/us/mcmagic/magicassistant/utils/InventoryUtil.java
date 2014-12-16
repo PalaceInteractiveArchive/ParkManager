@@ -33,7 +33,7 @@ public class InventoryUtil implements Listener {
     public static ItemStack food = new ItemStack(Material.POTATO_ITEM);
     public static ItemStack hub = new ItemStack(Material.ENDER_PEARL);
     public static ItemStack map = new ItemStack(Material.NETHER_STAR);
-    public static ItemStack locker = new ItemStack(Material.ENDER_CHEST);
+    public static ItemStack report = new ItemStack(Material.COMPASS);
     public static ItemStack custom = new ItemStack(Material.PAPER);
     public static ItemStack arcade = new ItemStack(Material.GLOWSTONE_DUST);
     public static ItemStack creative = new ItemStack(Material.GRASS);
@@ -63,7 +63,7 @@ public class InventoryUtil implements Listener {
         ItemMeta fm = food.getItemMeta();
         ItemMeta hm = hub.getItemMeta();
         ItemMeta mm = map.getItemMeta();
-        ItemMeta lm = locker.getItemMeta();
+        ItemMeta rm = report.getItemMeta();
         ItemMeta cm = custom.getItemMeta();
         ItemMeta am = arcade.getItemMeta();
         ItemMeta crm = creative.getItemMeta();
@@ -78,8 +78,8 @@ public class InventoryUtil implements Listener {
         sm.setDisplayName(ChatColor.GREEN + "Shop");
         fm.setDisplayName(ChatColor.GREEN + "Find Food");
         hm.setDisplayName(ChatColor.GREEN + "Return to Hub");
-        mm.setDisplayName(ChatColor.GREEN + "Park Map");
-        lm.setDisplayName(ChatColor.GREEN + "Locker");
+        mm.setDisplayName(ChatColor.GREEN + "Park Menu");
+        rm.setDisplayName(ChatColor.GREEN + "Create a Report");
         cm.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
         am.setDisplayName(ChatColor.GREEN + "Arcade");
         crm.setDisplayName(ChatColor.GREEN + "Creative");
@@ -96,7 +96,7 @@ public class InventoryUtil implements Listener {
         food.setItemMeta(fm);
         hub.setItemMeta(hm);
         map.setItemMeta(mm);
-        locker.setItemMeta(lm);
+        report.setItemMeta(rm);
         custom.setItemMeta(cm);
         arcade.setItemMeta(am);
         creative.setItemMeta(crm);
@@ -166,7 +166,7 @@ public class InventoryUtil implements Listener {
                 main.setItem(4, time);
                 main.setItem(13, hub);
                 main.setItem(22, map);
-                main.setItem(6, locker);
+                main.setItem(6, report);
                 main.setItem(15, playerInfo);
                 main.setItem(24, custom);
                 main.setItem(8, arcade);
@@ -225,6 +225,7 @@ public class InventoryUtil implements Listener {
                                 + loc.getWarp()));
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
+                        player.sendMessage(place + " " + amount + " " + (amount % 2));
                         if (amount % 2 == 0) {
                             player.sendMessage("odd" + place + " " + amount + " " + (amount % 2));
                             place -= amount;
@@ -286,8 +287,8 @@ public class InventoryUtil implements Listener {
             case ATTRACTIONS:
                 return;
             case HOTELSANDRESORTS:
-                return;
-            case PARKMAP:
+                player.closeInventory();
+                player.sendMessage(ChatColor.RED + "This feature is coming soon!");
         }
     }
 }
