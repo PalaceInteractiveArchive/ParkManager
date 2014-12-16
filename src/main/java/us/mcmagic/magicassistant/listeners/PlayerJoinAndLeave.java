@@ -59,13 +59,13 @@ public class PlayerJoinAndLeave implements Listener {
                         }
                     }, 10L);
         }
-        Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override
             public void run() {
                 BandUtil.setupPlayerData(player);
                 BandUtil.giveBandToPlayer(player);
             }
-        });
+        }, 20L);
     }
 
     @EventHandler
