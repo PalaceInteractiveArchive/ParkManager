@@ -14,6 +14,7 @@ import us.mcmagic.magicassistant.utils.InventoryUtil;
  */
 public class FoodMenuClick {
 
+    @SuppressWarnings("deprecation")
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
@@ -22,11 +23,16 @@ public class FoodMenuClick {
             return;
         }
         for (FoodLocation loc : MagicAssistant.foodLocations) {
-            if (item.getTypeId() == loc.getType()
-                    && item.getData().getData() == loc.getData()) {
-                player.closeInventory();
-                player.performCommand("warp " + loc.getWarp());
-                return;
+            if (item.getTypeId() == loc.getType()) {
+                if (loc.getData() == 0) {
+                    player.closeInventory();
+                    player.performCommand("warp " + loc.getWarp());
+                    return;
+                } else if (item.getData().getData() == loc.getData()) {
+                    player.closeInventory();
+                    player.performCommand("warp " + loc.getWarp());
+                    return;
+                }
             }
             return;
         }
