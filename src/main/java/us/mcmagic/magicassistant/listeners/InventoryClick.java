@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.magicband.FoodMenuClick;
 import us.mcmagic.magicassistant.magicband.MainMenuClick;
+import us.mcmagic.magicassistant.magicband.ParkMenuClick;
 
 import java.util.Arrays;
 
@@ -61,6 +62,7 @@ public class InventoryClick implements Listener {
                 return;
             case "Park Menu":
                 event.setCancelled(true);
+                ParkMenuClick.handle(event);
                 return;
             case "Rides and Attractions":
                 event.setCancelled(true);

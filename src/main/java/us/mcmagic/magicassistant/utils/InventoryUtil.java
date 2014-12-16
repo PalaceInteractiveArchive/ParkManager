@@ -23,6 +23,7 @@ import java.util.List;
 
 public class InventoryUtil implements Listener {
     public static MagicAssistant pl;
+    //Main Menu Items
     public static ItemStack rna = new ItemStack(Material.MINECART);
     public static ItemStack sne = new ItemStack(Material.FIREWORK);
     public static ItemStack hnr = new ItemStack(Material.BED);
@@ -39,12 +40,20 @@ public class InventoryUtil implements Listener {
     public static ItemStack seasonal = new ItemStack(Material.RED_ROSE, 1, (byte) 2);
     public static ItemStack next = new ItemStack(Material.ARROW);
     public static ItemStack last = new ItemStack(Material.ARROW);
+    //Park Menu Items
+    public static ItemStack mk = new ItemStack(Material.DIAMOND_HOE);
+    public static ItemStack epcot = new ItemStack(Material.SNOW_BALL);
+    public static ItemStack hws = new ItemStack(Material.JUKEBOX);
+    public static ItemStack ak = new ItemStack(Material.SAPLING);
+    public static ItemStack tl = new ItemStack(Material.WATER_BUCKET);
+    public static ItemStack dcl = new ItemStack(Material.BOAT);
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
     }
 
     public static void initialize() {
+        //Main Menu Items
         ItemMeta rnam = rna.getItemMeta();
         ItemMeta snem = sne.getItemMeta();
         ItemMeta hnrm = hnr.getItemMeta();
@@ -94,6 +103,37 @@ public class InventoryUtil implements Listener {
         seasonal.setItemMeta(sem);
         next.setItemMeta(nm);
         last.setItemMeta(lam);
+        //Park Menu Items
+        ItemMeta mkm = mk.getItemMeta();
+        ItemMeta em = epcot.getItemMeta();
+        ItemMeta hwsm = hws.getItemMeta();
+        ItemMeta akm = ak.getItemMeta();
+        ItemMeta tlm = tl.getItemMeta();
+        ItemMeta dclm = dcl.getItemMeta();
+        mkm.setDisplayName(ChatColor.AQUA + "Magic Kingdom");
+        em.setDisplayName(ChatColor.AQUA + "Epcot");
+        hwsm.setDisplayName(ChatColor.AQUA + "Hollywood Studios");
+        akm.setDisplayName(ChatColor.AQUA + "Animal Kingdom");
+        tlm.setDisplayName(ChatColor.AQUA + "Typhoon Lagoon");
+        dclm.setDisplayName(ChatColor.AQUA + "Disney Cruise Line");
+        List<String> mkl = Arrays.asList(ChatColor.GREEN + "/join MK");
+        List<String> el = Arrays.asList(ChatColor.GREEN + "/join Epcot");
+        List<String> hwsl = Arrays.asList(ChatColor.GREEN + "/join HWS");
+        List<String> akl = Arrays.asList(ChatColor.GREEN + "/join AK");
+        List<String> tll = Arrays.asList(ChatColor.GREEN + "/join Typhoon");
+        List<String> dcll = Arrays.asList(ChatColor.GREEN + "/join DCL");
+        mkm.setLore(mkl);
+        em.setLore(el);
+        hwsm.setLore(hwsl);
+        akm.setLore(akl);
+        tlm.setLore(tll);
+        dclm.setLore(dcll);
+        mk.setItemMeta(mkm);
+        epcot.setItemMeta(em);
+        hws.setItemMeta(hwsm);
+        ak.setItemMeta(akm);
+        tl.setItemMeta(tlm);
+        dcl.setItemMeta(dclm);
     }
 
     @SuppressWarnings("deprecation")
@@ -154,6 +194,15 @@ public class InventoryUtil implements Listener {
                 }, 20L);
                 return;
             case PARK:
+                Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
+                park.setItem(10, mk);
+                park.setItem(11, epcot);
+                park.setItem(12, hws);
+                park.setItem(14, ak);
+                park.setItem(15, tl);
+                park.setItem(16, dcl);
+                park.setItem(22, BandUtil.getBackItem());
+                player.openInventory(park);
                 return;
             case FOOD:
                 Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE
@@ -176,11 +225,11 @@ public class InventoryUtil implements Listener {
                                 + loc.getWarp()));
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
-                        if (((double) amount / 2) != 0.0) {
-                            player.sendMessage("odd" + place + " " + amount + " " + amount / 2);
+                        if (((double) amount / 2) != 0) {
+                            player.sendMessage("odd" + place + " " + amount + " " + ((double) (amount / 2)));
                             place -= amount;
                         } else {
-                            player.sendMessage("even " + place + " " + amount + " " + amount / 2);
+                            player.sendMessage("even " + place + " " + amount + " " + (amount / 2));
                             place += amount;
                         }
                         amount++;
