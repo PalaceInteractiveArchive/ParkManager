@@ -73,8 +73,8 @@ public class InventoryUtil implements Listener {
         rnam.setDisplayName(ChatColor.GREEN + "Rides and Attractions");
         snem.setDisplayName(ChatColor.GREEN + "Shows and Events");
         hnrm.setDisplayName(ChatColor.GREEN + "Hotels and Resorts");
-        tom.setDisplayName(ChatColor.GREEN + "Toggle Players On");
-        tofm.setDisplayName(ChatColor.RED + "Toggle Players Off");
+        tom.setDisplayName(ChatColor.AQUA + "Player Visibility " + ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden");
+        tofm.setDisplayName(ChatColor.AQUA + "Player Visibility " + ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible");
         sm.setDisplayName(ChatColor.GREEN + "Shop");
         fm.setDisplayName(ChatColor.GREEN + "Find Food");
         hm.setDisplayName(ChatColor.GREEN + "Return to Hub");

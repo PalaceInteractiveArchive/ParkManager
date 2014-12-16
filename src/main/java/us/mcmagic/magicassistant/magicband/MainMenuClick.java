@@ -2,6 +2,7 @@ package us.mcmagic.magicassistant.magicband;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -45,11 +46,8 @@ public class MainMenuClick {
             case WOOL:
                 byte data = item.getData().getData();
                 if (data == 5) {
-                    ItemStack off = new ItemStack(Material.WOOL, 1, (byte) 14);
-                    ItemMeta om = off.getItemMeta();
-                    om.setDisplayName(ChatColor.GREEN + "Toggle Players On");
-                    off.setItemMeta(om);
-                    inv.setItem(2, off);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 0);
+                    player.closeInventory();
                     VisibleUtil.addToHideAll(player);
                 } else {
                     ItemStack on = new ItemStack(Material.WOOL, 1, (byte) 5);
