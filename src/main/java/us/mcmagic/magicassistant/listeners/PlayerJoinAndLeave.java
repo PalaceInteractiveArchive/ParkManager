@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.listeners;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
@@ -30,6 +31,9 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        for (String msg : MagicAssistant.joinMessages) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+        }
         if (MagicAssistant.spawnOnJoin) {
             player.performCommand("spawn");
         }

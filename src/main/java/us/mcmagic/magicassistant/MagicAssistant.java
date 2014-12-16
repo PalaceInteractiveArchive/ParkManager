@@ -42,7 +42,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean resortsServer;
     public FileConfiguration config = this.getConfig();
     private WorldGuardPlugin wg;
-    public List<String> joinMessages = config
+    public static List<String> joinMessages = config
             .getStringList("join-messages");
     public static Map<Integer, Integer> items = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
@@ -61,7 +61,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         WarpUtil.refreshWarps();
         setupFoodLocations();
         hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
-        spawn = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
+        spawn = new Location(Bukkit.getWorld(getConfig().getString("spawn.world")), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
         serverName = getConfig().getString("server-name");
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
