@@ -211,6 +211,7 @@ public class InventoryUtil implements Listener {
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                 // If odd amount of items
                 int place = 13;
+                player.sendMessage("" + foodLocations.size() % 2);
                 if (foodLocations.size() % 2 == 0) {
                     int amount = 1;
                     for (FoodLocation loc : foodLocations) {
@@ -248,6 +249,7 @@ public class InventoryUtil implements Listener {
                         if (place > 16) {
                             break;
                         }
+                        player.sendMessage(place + " " + amount + " " + (amount % 2));
                         ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
                         ItemMeta fm = food.getItemMeta();
                         fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
