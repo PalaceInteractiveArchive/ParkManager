@@ -46,13 +46,13 @@ public class MainMenuClick {
             case WOOL:
                 byte data = item.getData().getData();
                 if (data == 5) {
-                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 5);
-                    player.sendMessage(ChatColor.GREEN + "You can now see players!");
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
+                    player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
                     player.closeInventory();
                     VisibleUtil.addToHideAll(player);
                 } else {
                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 5);
-                    player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
+                    player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
                     VisibleUtil.removeFromHideAll(player);
                 }

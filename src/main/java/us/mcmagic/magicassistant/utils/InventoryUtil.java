@@ -229,13 +229,14 @@ public class InventoryUtil implements Listener {
                                 + loc.getWarp()));
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
-                        if (amount % 2 == 0) {
+                        if (amount % 2 == 1) {
                             player.sendMessage("odd" + place + " " + amount + " " + (amount % 2));
                             place -= amount;
                         } else {
                             player.sendMessage("even " + place + " " + amount + " " + (amount % 2));
                             place += amount;
                         }
+                        amount++;
                     }
                     foodMenu.setItem(22, BandUtil.getBackItem());
                     Achievement t = new Achievement("", "", 1, 1, Block.getById(1), null);
