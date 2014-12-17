@@ -12,7 +12,9 @@ public class Command_bc {
             return;
         }
         String message = "";
-        for (String s : args) message += s + " ";
+        for (String s : args) {
+            message += s + " ";
+        }
         Bukkit.broadcastMessage(ChatColor.WHITE + "[" + ChatColor.AQUA
                 + "Information" + ChatColor.WHITE + "] " + ChatColor.GREEN
                 + ChatColor.translateAlternateColorCodes('&', message));

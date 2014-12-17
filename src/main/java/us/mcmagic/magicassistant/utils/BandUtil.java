@@ -57,14 +57,16 @@ public class BandUtil {
             sql.setString(1, player.getUniqueId() + "");
             ResultSet result = sql.executeQuery();
             result.next();
-            String[] friends = result.getString("friends").split(" ");
-            List<String> flist = new ArrayList<>();
             HashMap<UUID, String> friendlist = new HashMap<>();
-            Collections.addAll(flist, friends);
-            for (String friend : flist) {
-                String name = UUIDConverter.convert(friend);
-                UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
-                friendlist.put(uuid, name);
+            if (!result.getString("friends").equals("")) {
+                String[] friends = result.getString("friends").split(" ");
+                List<String> flist = new ArrayList<>();
+                Collections.addAll(flist, friends);
+                for (String friend : flist) {
+                    String name = UUIDConverter.convert(friend);
+                    UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
+                    friendlist.put(uuid, name);
+                }
             }
             PlayerData data = new PlayerData(player.getUniqueId(), getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")), friendlist);
             result.close();
