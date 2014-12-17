@@ -68,7 +68,6 @@ public class PlayerInteract implements Listener {
                     player.sendMessage(ChatColor.BLUE + "You have arrived at "
                             + ChatColor.WHITE + "[" + ChatColor.GREEN + warp.getName()
                             + ChatColor.WHITE + "]");
-                    return;
                 }
             }
         }
