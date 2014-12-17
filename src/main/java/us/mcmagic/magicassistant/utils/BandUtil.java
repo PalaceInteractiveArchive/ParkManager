@@ -77,6 +77,13 @@ public class BandUtil {
         }
     }
 
+    public static void removePlayerData(Player player) {
+        try {
+            MagicAssistant.playerData.remove(MagicAssistant.getPlayerData(player.getUniqueId()));
+        } catch (Exception ignored) {
+        }
+    }
+
     public static long getOnlineTime(String uuid) {
         openConnection();
         try {

@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
+import us.mcmagic.magicassistant.utils.VisibleUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -115,6 +116,11 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
             });
+        }
+        BandUtil.removePlayerData(player);
+        try {
+            VisibleUtil.hideall.remove(player);
+        } catch (Exception ignored) {
         }
     }
 }
