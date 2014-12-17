@@ -92,6 +92,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 || label.equalsIgnoreCase("v")) {
             Command_vanish.execute(sender, label, args);
             return true;
+        } else if (label.equalsIgnoreCase("msg") || label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("whisper")) {
+            Command_msg.execute(sender, label, args);
+            return true;
         } else if (label.equalsIgnoreCase("warp")) {
             Command_warp.execute(label, sender, args);
             return true;

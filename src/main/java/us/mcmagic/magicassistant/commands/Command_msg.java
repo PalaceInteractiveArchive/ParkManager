@@ -13,7 +13,7 @@ public class Command_msg {
     public static void execute(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length < 2) {
-                sender.sendMessage(ChatColor.RED + "/msg [Player] [Message]");
+                sender.sendMessage(ChatColor.RED + "/" + label + " [Player] [Message]");
                 return;
             }
             String msg = "";
