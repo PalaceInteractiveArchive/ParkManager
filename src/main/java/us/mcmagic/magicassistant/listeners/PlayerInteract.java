@@ -37,25 +37,27 @@ public class PlayerInteract implements Listener {
             return;
         }
         Material type = event.getClickedBlock().getType();
-        if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
-            Sign s = (Sign) event.getClickedBlock().getState();
-            if (s.getLine(0).equals("[" + ChatColor.BLUE + "Disposal" + ChatColor.RESET + "]")) {
-                player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
-                return;
-            }
-            if (s.getLine(0).equals("[" + ChatColor.BLUE + "Warp" + ChatColor.RESET + "]")) {
-                Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
-                if (warp == null) {
-                    player.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
+        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
+                Sign s = (Sign) event.getClickedBlock().getState();
+                if (s.getLine(0).equals("[" + ChatColor.BLUE + "Disposal" + ChatColor.RESET + "]")) {
+                    player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
                     return;
                 }
-                player.teleport(warp.getLocation());
-                player.sendMessage(ChatColor.BLUE + "You have arrived at "
-                        + ChatColor.WHITE + "[" + ChatColor.GREEN + warp.getName()
-                        + ChatColor.WHITE + "]");
+                if (s.getLine(0).equals("[" + ChatColor.BLUE + "Warp" + ChatColor.RESET + "]")) {
+                    Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
+                    if (warp == null) {
+                        player.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
+                        return;
+                    }
+                    player.teleport(warp.getLocation());
+                    player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                            + ChatColor.WHITE + "[" + ChatColor.GREEN + warp.getName()
+                            + ChatColor.WHITE + "]");
+                    return;
+                }
                 return;
             }
-            return;
         }
         PlayerInventory pi = player.getInventory();
         if (pi.getHeldItemSlot() != 8) {
