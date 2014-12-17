@@ -36,8 +36,22 @@ public class PlayerInteract implements Listener {
         if (event.getAction().equals(Action.PHYSICAL)) {
             return;
         }
+        PlayerInventory pi = player.getInventory();
+        if (pi.getHeldItemSlot() != 8) {
+            return;
+        }
+        ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+        ItemMeta mbm = mb.getItemMeta();
+        mbm.setDisplayName(data.getBandName() + "MagicBand");
+        mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
+                ChatColor.GREEN + "the MagicBand menu!"));
+        mb.setItemMeta(mbm);
+        if (pi.getItemInHand().equals(mb)) {
+            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            return;
+        }
         Material type = event.getClickedBlock().getType();
-        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
                 if (s.getLine(0).equals("[" + ChatColor.BLUE + "Disposal" + ChatColor.RESET + "]")) {
@@ -56,21 +70,7 @@ public class PlayerInteract implements Listener {
                             + ChatColor.WHITE + "]");
                     return;
                 }
-                return;
             }
-        }
-        PlayerInventory pi = player.getInventory();
-        if (pi.getHeldItemSlot() != 8) {
-            return;
-        }
-        ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
-        ItemMeta mbm = mb.getItemMeta();
-        mbm.setDisplayName(data.getBandName() + "MagicBand");
-        mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
-                ChatColor.GREEN + "the MagicBand menu!"));
-        mb.setItemMeta(mbm);
-        if (pi.getItemInHand().equals(mb)) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }
 }
