@@ -36,8 +36,8 @@ public class PlayerInteract implements Listener {
         if (event.getAction().equals(Action.PHYSICAL)) {
             return;
         }
-        Material type = event.getClickedBlock().getType();
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            Material type = event.getClickedBlock().getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
                 if (s.getLine(0).equals("[" + ChatColor.BLUE + "Disposal" + ChatColor.RESET + "]")) {
