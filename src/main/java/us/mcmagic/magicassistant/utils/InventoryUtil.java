@@ -1,7 +1,5 @@
 package us.mcmagic.magicassistant.utils;
 
-import net.minecraft.server.v1_7_R4.Achievement;
-import net.minecraft.server.v1_7_R4.Block;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -214,7 +212,7 @@ public class InventoryUtil implements Listener {
                 // If odd amount of items
                 int place = 13;
                 player.sendMessage("Test " + foodLocations.size() % 2);
-                if (foodLocations.size() % 2 == 0) {
+                if (foodLocations.size() % 2 == 1) {
                     int amount = 1;
                     for (FoodLocation loc : foodLocations) {
                         if (place > 16) {
@@ -239,7 +237,6 @@ public class InventoryUtil implements Listener {
                         amount++;
                     }
                     foodMenu.setItem(22, BandUtil.getBackItem());
-                    Achievement t = new Achievement("", "", 1, 1, Block.getById(1), null);
                     if (foodLocations.size() > 7) {
                         foodMenu.setItem(23, next);
                     }
