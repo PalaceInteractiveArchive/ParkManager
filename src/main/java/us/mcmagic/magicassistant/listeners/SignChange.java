@@ -25,12 +25,11 @@ public class SignChange implements Listener {
                 event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
             }
             if (event.getLine(0).equalsIgnoreCase("[warp]")) {
-                event.setLine(0, "[" + ChatColor.BLUE + "Warp"
-                        + ChatColor.RESET + "]");
+                event.setLine(0, PlayerInteract.warp);
                 return;
             }
             if (event.getLine(0).equalsIgnoreCase("[disposal]")) {
-                event.setLine(0, "[" + ChatColor.BLUE + "Disposal" + ChatColor.RESET + "]");
+                event.setLine(0, PlayerInteract.disposal);
             }
         }
     }

@@ -493,8 +493,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             String warp = config
                     .getString("food." + location + ".warp");
             int type = config.getInt("food." + location + ".type");
-            byte data = (byte) config.getInt("food." + location
-                    + ".data");
+            byte data;
+            if (config.contains("food." + location + ".data")) {
+                data = (byte) config.getInt("food." + location
+                        + ".data");
+            } else {
+                data = 0;
+            }
             FoodLocation loc = new FoodLocation(name, warp, type, data);
             foodLocations.add(loc);
         }

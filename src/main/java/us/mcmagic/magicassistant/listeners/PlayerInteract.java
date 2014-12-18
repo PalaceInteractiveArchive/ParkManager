@@ -23,6 +23,8 @@ import us.mcmagic.magicassistant.utils.WarpUtil;
 import java.util.Arrays;
 
 public class PlayerInteract implements Listener {
+    public static String disposal = ChatColor.BLUE + "[Disposal]";
+    public static String warp = ChatColor.BLUE + "[Warp]";
     static MagicAssistant pl;
 
     public PlayerInteract(MagicAssistant instance) {
@@ -40,11 +42,11 @@ public class PlayerInteract implements Listener {
             Material type = event.getClickedBlock().getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
-                if (s.getLine(0).equals("[" + ChatColor.BLUE + "Disposal" + ChatColor.RESET + "]")) {
+                if (s.getLine(0).equals(disposal)) {
                     player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
                     return;
                 }
-                if (s.getLine(0).equals("[" + ChatColor.BLUE + "Warp" + ChatColor.RESET + "]")) {
+                if (s.getLine(0).equals(warp)) {
                     Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
                     if (warp == null) {
                         player.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");

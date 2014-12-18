@@ -22,6 +22,7 @@ public class FoodMenuClick {
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
+        player.sendMessage(item.getTypeId() + ":" + item.getData().getData());
         for (FoodLocation loc : MagicAssistant.foodLocations) {
             if (item.getTypeId() == loc.getType()) {
                 if (loc.getData() == 0) {

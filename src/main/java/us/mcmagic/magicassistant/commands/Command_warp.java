@@ -31,6 +31,10 @@ public class Command_warp {
                 String targetServer = warp.getServer();
                 String currentServer = MagicAssistant.serverName;
                 if (targetServer.equals(currentServer)) {
+                    if (tp.isInsideVehicle()) {
+                        tp.sendMessage(ChatColor.RED + "You can't warp while in a ride!");
+                        return;
+                    }
                     tp.teleport(warp.getLocation());
                     tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                             + ChatColor.WHITE + "[" + ChatColor.GREEN + w
@@ -61,6 +65,10 @@ public class Command_warp {
             String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
             if (targetServer.equals(currentServer)) {
+                if (player.isInsideVehicle()) {
+                    player.sendMessage(ChatColor.RED + "You can't warp while in a ride!");
+                    return;
+                }
                 player.teleport(warp.getLocation());
                 player.sendMessage(ChatColor.BLUE + "You have arrived at "
                         + ChatColor.WHITE + "[" + ChatColor.GREEN + w
@@ -89,6 +97,10 @@ public class Command_warp {
             final String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
             if (targetServer.equals(currentServer)) {
+                if (tp.isInsideVehicle()) {
+                    tp.sendMessage(ChatColor.RED + "You can't warp while in a ride!");
+                    return;
+                }
                 tp.teleport(warp.getLocation());
                 tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                         + ChatColor.WHITE + "[" + ChatColor.GREEN + w
