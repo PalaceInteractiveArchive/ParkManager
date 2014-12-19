@@ -22,9 +22,7 @@ public class FoodMenuClick {
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
-        player.sendMessage("Item: " + item.getTypeId() + ":" + item.getData().getData());
         for (FoodLocation loc : MagicAssistant.foodLocations) {
-            player.sendMessage("Location: " + loc.getType() + ":" + loc.getData());
             if (item.getTypeId() == loc.getType()) {
                 if (loc.getData() == 0) {
                     player.closeInventory();
@@ -36,7 +34,6 @@ public class FoodMenuClick {
                     return;
                 }
             }
-            return;
         }
     }
 }
