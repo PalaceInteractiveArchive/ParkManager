@@ -24,11 +24,7 @@ public class FoodMenuClick {
         }
         for (FoodLocation loc : MagicAssistant.foodLocations) {
             if (item.getTypeId() == loc.getType()) {
-                if (loc.getData() == 0) {
-                    player.closeInventory();
-                    player.performCommand("warp " + loc.getWarp());
-                    return;
-                } else if (item.getData().getData() == loc.getData()) {
+                if (item.getData().getData() == loc.getData()) {
                     player.closeInventory();
                     player.performCommand("warp " + loc.getWarp());
                     return;
