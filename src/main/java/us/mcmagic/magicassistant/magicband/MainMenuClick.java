@@ -66,8 +66,7 @@ public class MainMenuClick {
                 inv.setItem(4, time);
                 return;
             case GOLD_BOOTS:
-                player.closeInventory();
-                player.sendMessage(ChatColor.RED + "This feature is coming soon!");
+                InventoryUtil.featureComingSoon(player);
                 return;
             case POTATO_ITEM:
                 InventoryUtil.openInventory(player, InventoryType.FOOD);
@@ -80,8 +79,7 @@ public class MainMenuClick {
                 InventoryUtil.openInventory(player, InventoryType.PARK);
                 return;
             case COMPASS:
-                player.closeInventory();
-                player.sendMessage(ChatColor.RED + "This feature is coming soon!");
+                InventoryUtil.featureComingSoon(player);
                 return;
             case PAPER:
                 InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);

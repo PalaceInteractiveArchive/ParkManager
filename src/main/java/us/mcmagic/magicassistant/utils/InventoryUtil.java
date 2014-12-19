@@ -3,6 +3,7 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -211,14 +212,12 @@ public class InventoryUtil implements Listener {
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                 // If odd amount of items
                 int place = 13;
-                player.sendMessage("Test " + foodLocations.size() % 2);
                 if (foodLocations.size() % 2 == 1) {
                     int amount = 1;
                     for (FoodLocation loc : foodLocations) {
                         if (place > 16) {
                             break;
                         }
-                        player.sendMessage(place + " " + amount + " " + (amount % 2));
                         ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
                         ItemMeta fm = food.getItemMeta();
                         fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
@@ -228,10 +227,8 @@ public class InventoryUtil implements Listener {
                         food.setItemMeta(fm);
                         foodMenu.setItem(place, food);
                         if (amount % 2 == 1) {
-                            player.sendMessage("odd" + place + " " + amount + " " + (amount % 2));
                             place -= amount;
                         } else {
-                            player.sendMessage("even " + place + " " + amount + " " + (amount % 2));
                             place += amount;
                         }
                         amount++;
@@ -249,7 +246,6 @@ public class InventoryUtil implements Listener {
                         if (place > 16) {
                             break;
                         }
-                        player.sendMessage(place + " " + amount + " " + (amount % 2));
                         ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
                         ItemMeta fm = food.getItemMeta();
                         fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
@@ -288,8 +284,13 @@ public class InventoryUtil implements Listener {
             case ATTRACTIONS:
                 return;
             case HOTELSANDRESORTS:
-                player.closeInventory();
-                player.sendMessage(ChatColor.RED + "This feature is coming soon!");
+                featureComingSoon(player);
         }
+    }
+
+    public static void featureComingSoon(Player player) {
+        player.playSound(player.getLocation(), Sound.ITEM_BREAK, 100, 0);
+        player.closeInventory();
+        player.sendMessage(ChatColor.RED + "This feature is coming soon!");
     }
 }
