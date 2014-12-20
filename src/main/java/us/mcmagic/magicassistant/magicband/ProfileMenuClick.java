@@ -51,6 +51,7 @@ public class ProfileMenuClick {
                 return;
             case "Friends List":
                 PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+                InventoryUtil.openInventory(player, InventoryType.FRIENDLIST);
                 return;
             case "Locker":
                 player.openInventory(player.getEnderChest());

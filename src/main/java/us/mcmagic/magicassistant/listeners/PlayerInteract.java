@@ -71,6 +71,7 @@ public class PlayerInteract implements Listener {
                 ChatColor.GREEN + "the MagicBand menu!"));
         mb.setItemMeta(mbm);
         if (pi.getItemInHand().equals(mb)) {
+            event.setCancelled(true);
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }

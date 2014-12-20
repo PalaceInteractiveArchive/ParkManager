@@ -49,7 +49,7 @@ public class InventoryUtil implements Listener {
     public static ItemStack dcl = new ItemStack(Material.BOAT);
     //Player Info
     public static ItemStack dvc = new ItemStack(Material.DIAMOND);
-    public static ItemStack web = new ItemStack(Material.REDSTONE_WIRE);
+    public static ItemStack web = new ItemStack(Material.REDSTONE);
     public static ItemStack flist = new ItemStack(Material.BOOK);
     public static ItemStack locker = new ItemStack(Material.ENDER_CHEST);
     public static ItemStack ach = new ItemStack(Material.EMERALD);
