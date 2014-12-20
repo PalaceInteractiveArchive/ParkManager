@@ -325,10 +325,11 @@ public class InventoryUtil implements Listener {
                     return;
                 }
                 List<String> friendNames = new ArrayList<>();
-                List<ItemStack> items = new ArrayList<>();
                 for (Map.Entry<UUID, String> entry : fl.entrySet()) {
                     friendNames.add(entry.getValue());
                 }
+                List<String> test = data.getPages().get(0);
+                List<ItemStack> items = new ArrayList<>();
                 Collections.sort(friendNames);
                 for (String name : friendNames) {
                     ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
@@ -347,6 +348,8 @@ public class InventoryUtil implements Listener {
                     items.add(head);
                 }
                 int pages = (int) Math.ceil(items.size() / 7);
+                if (pages > 1) {
+                }
                 int i = 10;
                 for (ItemStack item : items) {
                     if (i > 16) {
@@ -355,6 +358,7 @@ public class InventoryUtil implements Listener {
                     flist.setItem(i, item);
                     i++;
                 }
+                flist.setItem(22, BandUtil.getBackItem());
                 player.openInventory(flist);
                 break;
             case SHOWSANDEVENTS:
@@ -374,6 +378,71 @@ public class InventoryUtil implements Listener {
             case HOTELSANDRESORTS:
                 featureComingSoon(player);
         }
+    }
+
+    public static void openFriendListPage(Player player, int page) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        HashMap<UUID, String> fl = data.getFriendList();
+        Inventory flist;
+        if (fl.size() > 7) {
+            flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List " + ChatColor.GRAY + "(Page " + page + ")");
+        } else {
+            flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List");
+        }
+        if (fl.isEmpty()) {
+            ItemStack empty = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+            SkullMeta skullMeta = (SkullMeta) empty.getItemMeta();
+            skullMeta.setOwner("Herobrine");
+            skullMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+            skullMeta.setLore(Arrays.asList(ChatColor.RED + "It seems like your", ChatColor.RED + "Friends List is", ChatColor.RED + "empty! Type /friend" + ChatColor.RED + "for more info!"));
+            empty.setItemMeta(skullMeta);
+            flist.setItem(13, empty);
+            player.openInventory(flist);
+            return;
+        }
+        List<String> pageList = data.getPages().get(page - 1);
+        List<ItemStack> items = new ArrayList<>();
+        Collections.sort(pageList);
+        for (String name : pageList) {
+            ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+            for (Map.Entry<UUID, String> entry : fl.entrySet()) {
+                if (entry.getValue().equals(name)) {
+                    SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
+                    skullMeta.setOwner(entry.getValue());
+                    skullMeta.setDisplayName(ChatColor.GREEN + entry.getValue());
+                    head.setItemMeta(skullMeta);
+                    break;
+                }
+            }
+            if (head.getItemMeta() == null) {
+                continue;
+            }
+            items.add(head);
+        }
+        int i = 10;
+        for (ItemStack item : items) {
+            if (i > 16) {
+                break;
+            }
+            flist.setItem(i, item);
+            i++;
+        }
+        if (page > 1) {
+            ItemStack lastPage = new ItemStack(Material.ARROW);
+            ItemMeta lpm = lastPage.getItemMeta();
+            lpm.setDisplayName(ChatColor.GREEN + "Last Page");
+            lastPage.setItemMeta(lpm);
+            flist.setItem(21, lastPage);
+        }
+        if (pageList.size() > page) {
+            ItemStack nextPage = new ItemStack(Material.ARROW);
+            ItemMeta npm = nextPage.getItemMeta();
+            npm.setDisplayName(ChatColor.GREEN + "Next Page (Page " + (page + 1) + ")");
+            nextPage.setItemMeta(npm);
+            flist.setItem(23, nextPage);
+        }
+        flist.setItem(22, BandUtil.getBackItem());
+        player.openInventory(flist);
     }
 
     public static void featureComingSoon(Player player) {

@@ -58,6 +58,7 @@ public class BandUtil {
             ResultSet result = sql.executeQuery();
             result.next();
             HashMap<UUID, String> friendlist = new HashMap<>();
+            int pages;
             if (!result.getString("friends").equals("")) {
                 String[] friends = result.getString("friends").split(" ");
                 List<String> flist = new ArrayList<>();
@@ -67,8 +68,29 @@ public class BandUtil {
                     UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
                     friendlist.put(uuid, name);
                 }
+                pages = (int) Math.ceil(flist.size() / 7);
+            } else {
+                pages = 1;
             }
-            PlayerData data = new PlayerData(player.getUniqueId(), getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")), friendlist);
+            HashMap<Integer, List<String>> plist = new HashMap<>();
+            if (pages > 1) {
+                int i = 1;
+                for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
+                    if (i >= 8) {
+                        i = 0;
+                    }
+                    if (i == 1) {
+                        plist.put(i, Arrays.asList(entry.getValue()));
+                    } else {
+                        plist.get(i).add(entry.getValue());
+                    }
+                    i++;
+                }
+            }
+            PlayerData data = new PlayerData(player.getUniqueId(),
+                    getBandNameColor(result.getString("namecolor")),
+                    getBandColor(result.getString("bandcolor")),
+                    friendlist, plist);
             result.close();
             sql.close();
             MagicAssistant.playerData.add(data);
