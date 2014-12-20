@@ -6,8 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -57,7 +55,6 @@ public class ProfileMenuClick {
                 sendPluginMessage(player, "website");
                 return;
             case "Friends List":
-                PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
                 InventoryUtil.openInventory(player, InventoryType.FRIENDLIST);
                 return;
             case "Locker":
