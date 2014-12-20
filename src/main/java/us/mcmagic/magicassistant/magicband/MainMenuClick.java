@@ -27,6 +27,7 @@ public class MainMenuClick {
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
         if (item.getType().equals(Material.SKULL_ITEM)) {
+            InventoryUtil.openInventory(player, InventoryType.PLAYERINFO);
             return;
         }
         switch (item.getType()) {

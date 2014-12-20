@@ -19,8 +19,7 @@ import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 import us.mcmagic.mcmagiccore.player.User;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class InventoryUtil implements Listener {
     public static MagicAssistant pl;
@@ -48,6 +47,14 @@ public class InventoryUtil implements Listener {
     public static ItemStack ak = new ItemStack(Material.SAPLING);
     public static ItemStack tl = new ItemStack(Material.WATER_BUCKET);
     public static ItemStack dcl = new ItemStack(Material.BOAT);
+    //Player Info
+    public static ItemStack dvc = new ItemStack(Material.DIAMOND);
+    public static ItemStack web = new ItemStack(Material.REDSTONE_WIRE);
+    public static ItemStack flist = new ItemStack(Material.BOOK);
+    public static ItemStack locker = new ItemStack(Material.ENDER_CHEST);
+    public static ItemStack ach = new ItemStack(Material.EMERALD);
+    public static ItemStack mumble = new ItemStack(Material.COMPASS);
+    public static ItemStack packs = new ItemStack(Material.NOTE_BLOCK);
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
@@ -135,6 +142,28 @@ public class InventoryUtil implements Listener {
         ak.setItemMeta(akm);
         tl.setItemMeta(tlm);
         dcl.setItemMeta(dclm);
+        //Player Info
+        ItemMeta dvcm = dvc.getItemMeta();
+        ItemMeta wm = web.getItemMeta();
+        ItemMeta frm = flist.getItemMeta();
+        ItemMeta lm = locker.getItemMeta();
+        ItemMeta achm = ach.getItemMeta();
+        ItemMeta mum = mumble.getItemMeta();
+        ItemMeta pm = packs.getItemMeta();
+        dvcm.setDisplayName(ChatColor.AQUA + "Become a DVC Member!");
+        wm.setDisplayName(ChatColor.GREEN + "Website");
+        frm.setDisplayName(ChatColor.YELLOW + "Friends List");
+        lm.setDisplayName(ChatColor.GREEN + "Locker");
+        achm.setDisplayName(ChatColor.GREEN + "Achievements");
+        mum.setDisplayName(ChatColor.GREEN + "Mumble");
+        pm.setDisplayName(ChatColor.GREEN + "Resource/Audio Packs");
+        dvc.setItemMeta(dvcm);
+        web.setItemMeta(wm);
+        flist.setItemMeta(frm);
+        locker.setItemMeta(lm);
+        ach.setItemMeta(achm);
+        mumble.setItemMeta(mum);
+        packs.setItemMeta(pm);
     }
 
     @SuppressWarnings("deprecation")
@@ -267,8 +296,66 @@ public class InventoryUtil implements Listener {
                     player.openInventory(foodMenu);
                 }
                 return;
-            case PROFILE:
+            case PLAYERINFO:
+                Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
+                Rank rank = PlayerUtil.getUser(player.getUniqueId()).getRank();
+                pmenu.setItem(10, web);
+                pmenu.setItem(11, flist);
+                pmenu.setItem(12, locker);
+                if (rank.equals(Rank.GUEST)) {
+                    pmenu.setItem(13, dvc);
+                }
+                pmenu.setItem(14, ach);
+                pmenu.setItem(15, mumble);
+                pmenu.setItem(16, packs);
+                player.openInventory(pmenu);
                 return;
+            case FRIENDLIST:
+                Inventory flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List");
+                HashMap<UUID, String> fl = data.getFriendList();
+                if (fl.isEmpty()) {
+                    ItemStack empty = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                    SkullMeta skullMeta = (SkullMeta) empty.getItemMeta();
+                    skullMeta.setOwner("Herobrine");
+                    skullMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+                    skullMeta.setLore(Arrays.asList(ChatColor.RED + "It seems like your", ChatColor.RED + "Friends List is", ChatColor.RED + "empty! Type /friend" + ChatColor.RED + "for more info!"));
+                    empty.setItemMeta(skullMeta);
+                    flist.setItem(13, empty);
+                    player.openInventory(flist);
+                    return;
+                }
+                List<String> friendNames = new ArrayList<>();
+                List<ItemStack> items = new ArrayList<>();
+                for (Map.Entry<UUID, String> entry : fl.entrySet()) {
+                    friendNames.add(entry.getValue());
+                }
+                Collections.sort(friendNames);
+                for (String name : friendNames) {
+                    ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                    for (Map.Entry<UUID, String> entry : fl.entrySet()) {
+                        if (entry.getValue().equals(name)) {
+                            SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
+                            skullMeta.setOwner(entry.getValue());
+                            skullMeta.setDisplayName(ChatColor.GREEN + entry.getValue());
+                            head.setItemMeta(skullMeta);
+                            return;
+                        }
+                    }
+                    if (head.getItemMeta() == null) {
+                        continue;
+                    }
+                    items.add(head);
+                }
+                int pages = (int) Math.ceil(items.size() / 7);
+                int i = 10;
+                for (ItemStack item : items) {
+                    if (i > 16) {
+                        break;
+                    }
+                    flist.setItem(i, item);
+                    i++;
+                }
+                break;
             case SHOWSANDEVENTS:
                 return;
             case CUSTOMIZE:

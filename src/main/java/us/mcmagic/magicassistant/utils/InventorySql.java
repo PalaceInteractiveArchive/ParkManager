@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,12 +16,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Collections;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class InventorySql {
     private static Connection connection;
+    private static HashMap<String, Integer> list = new HashMap<>();
+    public static List<UUID> players = new ArrayList<>();
 
     public synchronized static void closeConnection() {
         try {
@@ -41,6 +44,24 @@ public class InventorySql {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void start() {
+        list.put("main", Bukkit.getScheduler().runTaskTimer(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
+            @Override
+            public void run() {
+                for (UUID uuid : players) {
+                    Player player = Bukkit.getPlayer(uuid);
+                    if (player == null) {
+                        continue;
+                    }
+                    player.getInventory().setContents(invContents(player));
+                    player.getInventory().setArmorContents(armorContents(player));
+                    player.getEnderChest().setContents(endInvContents(player));
+                    players.remove(uuid);
+                }
+            }
+        }, 0L, 20L).getTaskId());
     }
 
     public static synchronized boolean playerDataContainsPlayer(Player player) {
@@ -230,13 +251,9 @@ public class InventorySql {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try {
-                BukkitObjectOutputStream bos = new BukkitObjectOutputStream(os);
-                try {
+                try (BukkitObjectOutputStream bos = new BukkitObjectOutputStream(os)) {
                     bos.writeObject(inv);
-
                     return os.toByteArray();
-                } finally {
-                    bos.close();
                 }
             } finally {
                 if (Collections.singletonList(os).get(0) != null)
@@ -251,11 +268,8 @@ public class InventorySql {
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(b);
             try {
-                BukkitObjectInputStream bois = new BukkitObjectInputStream(bais);
-                try {
+                try (BukkitObjectInputStream bois = new BukkitObjectInputStream(bais)) {
                     return (ItemStack[]) bois.readObject();
-                } finally {
-                    bois.close();
                 }
             } finally {
                 if (Collections.singletonList(bais).get(0) != null)
@@ -310,7 +324,6 @@ public class InventorySql {
                     is.close();
 
             }
-
         } catch (IOException ex) {
             return null;
         } finally {

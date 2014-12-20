@@ -14,6 +14,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.magicband.FoodMenuClick;
 import us.mcmagic.magicassistant.magicband.MainMenuClick;
 import us.mcmagic.magicassistant.magicband.ParkMenuClick;
+import us.mcmagic.magicassistant.magicband.ProfileMenuClick;
 
 import java.util.Arrays;
 
@@ -47,6 +48,7 @@ public class InventoryClick implements Listener {
         switch (name) {
             case "My Profile":
                 event.setCancelled(true);
+                ProfileMenuClick.handle(event);
                 return;
             case "Shows and Events":
                 event.setCancelled(true);
