@@ -311,7 +311,6 @@ public class InventoryUtil implements Listener {
                 player.openInventory(pmenu);
                 return;
             case FRIENDLIST:
-                player.sendMessage("Loading Friends List...");
                 Inventory flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List");
                 HashMap<UUID, String> fl = data.getFriendList();
                 if (fl.isEmpty()) {
@@ -356,6 +355,7 @@ public class InventoryUtil implements Listener {
                     flist.setItem(i, item);
                     i++;
                 }
+                player.openInventory(flist);
                 break;
             case SHOWSANDEVENTS:
                 return;
