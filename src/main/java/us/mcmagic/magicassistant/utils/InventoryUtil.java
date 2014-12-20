@@ -338,7 +338,7 @@ public class InventoryUtil implements Listener {
                             skullMeta.setOwner(entry.getValue());
                             skullMeta.setDisplayName(ChatColor.GREEN + entry.getValue());
                             head.setItemMeta(skullMeta);
-                            return;
+                            break;
                         }
                     }
                     if (head.getItemMeta() == null) {
