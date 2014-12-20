@@ -35,7 +35,6 @@ public class ProfileMenuClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        player.sendMessage(name);
         switch (name) {
             case "Become a DVC Member!":
                 List<String> dvcmsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
@@ -55,7 +54,7 @@ public class ProfileMenuClick {
                 sendPluginMessage(player, "website");
                 return;
             case "Friends List":
-                InventoryUtil.openInventory(player, InventoryType.FRIENDLIST);
+                InventoryUtil.openFriendListPage(player, 1);
                 return;
             case "Locker":
                 player.openInventory(player.getEnderChest());

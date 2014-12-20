@@ -55,6 +55,9 @@ public class InventoryUtil implements Listener {
     public static ItemStack ach = new ItemStack(Material.EMERALD);
     public static ItemStack mumble = new ItemStack(Material.COMPASS);
     public static ItemStack packs = new ItemStack(Material.NOTE_BLOCK);
+    //Friend Menu
+    public static ItemStack nextPage = new ItemStack(Material.ARROW);
+    public static ItemStack lastPage = new ItemStack(Material.ARROW);
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
@@ -164,6 +167,13 @@ public class InventoryUtil implements Listener {
         ach.setItemMeta(achm);
         mumble.setItemMeta(mum);
         packs.setItemMeta(pm);
+        //Friend Menu
+        ItemMeta lpm = lastPage.getItemMeta();
+        ItemMeta npm = nextPage.getItemMeta();
+        lpm.setDisplayName(ChatColor.GREEN + "Last Page");
+        npm.setDisplayName(ChatColor.GREEN + "Next Page");
+        lastPage.setItemMeta(lpm);
+        nextPage.setItemMeta(npm);
     }
 
     @SuppressWarnings("deprecation")
@@ -428,17 +438,9 @@ public class InventoryUtil implements Listener {
             i++;
         }
         if (page > 1) {
-            ItemStack lastPage = new ItemStack(Material.ARROW);
-            ItemMeta lpm = lastPage.getItemMeta();
-            lpm.setDisplayName(ChatColor.GREEN + "Last Page");
-            lastPage.setItemMeta(lpm);
             flist.setItem(21, lastPage);
         }
-        if (pageList.size() > page) {
-            ItemStack nextPage = new ItemStack(Material.ARROW);
-            ItemMeta npm = nextPage.getItemMeta();
-            npm.setDisplayName(ChatColor.GREEN + "Next Page (Page " + (page + 1) + ")");
-            nextPage.setItemMeta(npm);
+        if (data.getPages().size() > page) {
             flist.setItem(23, nextPage);
         }
         flist.setItem(22, BandUtil.getBackItem());
