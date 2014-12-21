@@ -87,7 +87,8 @@ public class BandUtil {
                     }
                     if (i2 == 1) {
                         player.sendMessage("Adding");
-                        plist.put(i, Arrays.asList(entry.getValue()));
+                        plist.put(i, new ArrayList<String>());
+                        plist.get(i).add(entry.getValue());
                     } else {
                         player.sendMessage("Editing " + i + " " + i2);
                         player.sendMessage(plist.entrySet().toString());
