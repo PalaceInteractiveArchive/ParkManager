@@ -65,7 +65,9 @@ public class BandUtil {
                 Collections.addAll(flist, friends);
                 for (String friend : flist) {
                     String name = UUIDConverter.convert(friend);
+                    player.sendMessage(name);
                     UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
+                    player.sendMessage(uuid + "");
                     friendlist.put(uuid, name);
                 }
                 pages = (int) Math.ceil(flist.size() / 7);
@@ -86,10 +88,16 @@ public class BandUtil {
                     if (i2 == 1) {
                         plist.put(i, Arrays.asList(entry.getValue()));
                     } else {
-                        plist.get(i - 1).add(entry.getValue());
+                        plist.get(i).add(entry.getValue());
                     }
                     i2++;
                 }
+            } else {
+                List<String> list = new ArrayList<>();
+                for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
+                    list.add(entry.getValue());
+                }
+                plist.put(1, list);
             }
             PlayerData data = new PlayerData(player.getUniqueId(),
                     getBandNameColor(result.getString("namecolor")),
