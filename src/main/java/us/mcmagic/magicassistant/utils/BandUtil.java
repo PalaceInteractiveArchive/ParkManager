@@ -78,8 +78,10 @@ public class BandUtil {
                 int i = 1;
                 int i2 = 1;
                 for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
+                    player.sendMessage("Number " + i + " " + i2);
                     if (i2 >= 8) {
                         i++;
+                        i2 = 1;
                     }
                     if (i2 == 1) {
                         plist.put(i, Arrays.asList(entry.getValue()));
