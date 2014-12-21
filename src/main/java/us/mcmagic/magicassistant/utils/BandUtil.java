@@ -25,6 +25,7 @@ import java.util.Date;
 public class BandUtil {
     private static Connection connection;
     private static ItemStack back = new ItemStack(Material.PAPER);
+    private static List<UUID> loading = new ArrayList<>();
 
     public static void initialize() {
         ItemMeta bm = back.getItemMeta();
@@ -53,7 +54,12 @@ public class BandUtil {
         }
     }
 
+    public static boolean isLoading(Player player) {
+        return loading.contains(player.getUniqueId());
+    }
+
     public static void setupPlayerData(Player player) {
+        loading.add(player.getUniqueId());
         openConnection();
         try {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");
@@ -107,6 +113,7 @@ public class BandUtil {
             result.close();
             sql.close();
             MagicAssistant.playerData.add(data);
+            loading.remove(player.getUniqueId());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

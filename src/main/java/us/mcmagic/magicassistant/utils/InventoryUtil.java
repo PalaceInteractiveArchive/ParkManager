@@ -32,7 +32,7 @@ public class InventoryUtil implements Listener {
     public static ItemStack shop = new ItemStack(Material.GOLD_BOOTS);
     public static ItemStack food = new ItemStack(Material.POTATO_ITEM);
     public static ItemStack hub = new ItemStack(Material.ENDER_PEARL);
-    public static ItemStack map = new ItemStack(Material.NETHER_STAR);
+    public static ItemStack parks = new ItemStack(Material.NETHER_STAR);
     public static ItemStack report = new ItemStack(Material.COMPASS);
     public static ItemStack custom = new ItemStack(Material.PAPER);
     public static ItemStack arcade = new ItemStack(Material.GLOWSTONE_DUST);
@@ -73,7 +73,7 @@ public class InventoryUtil implements Listener {
         ItemMeta sm = shop.getItemMeta();
         ItemMeta fm = food.getItemMeta();
         ItemMeta hm = hub.getItemMeta();
-        ItemMeta mm = map.getItemMeta();
+        ItemMeta pm = parks.getItemMeta();
         ItemMeta rm = report.getItemMeta();
         ItemMeta cm = custom.getItemMeta();
         ItemMeta am = arcade.getItemMeta();
@@ -89,7 +89,7 @@ public class InventoryUtil implements Listener {
         sm.setDisplayName(ChatColor.GREEN + "Shop");
         fm.setDisplayName(ChatColor.GREEN + "Find Food");
         hm.setDisplayName(ChatColor.GREEN + "Return to Hub");
-        mm.setDisplayName(ChatColor.GREEN + "Park Menu");
+        pm.setDisplayName(ChatColor.GREEN + "Park Menu");
         rm.setDisplayName(ChatColor.GREEN + "Create a Report");
         cm.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
         am.setDisplayName(ChatColor.GREEN + "Arcade");
@@ -97,6 +97,18 @@ public class InventoryUtil implements Listener {
         sem.setDisplayName(ChatColor.GREEN + "Seasonal");
         nm.setDisplayName(ChatColor.GREEN + "Next Page");
         lam.setDisplayName(ChatColor.GREEN + "Last Page");
+        rnam.setLore(Arrays.asList(ChatColor.GREEN + "Ride or experience", ChatColor.GREEN + "a ride from Walt", ChatColor.GREEN + "Disney World!"));
+        snem.setLore(Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous MCMagic Shows!"));
+        hnrm.setLore(Arrays.asList(ChatColor.GREEN + "Visit and rent a", ChatColor.GREEN + "room from a Walt", ChatColor.GREEN + "Disney World Resort!"));
+        sm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
+        fm.setLore(Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
+        hm.setLore(Arrays.asList(ChatColor.GREEN + "Return to the", ChatColor.GREEN + "Hub Server!"));
+        pm.setLore(Arrays.asList(ChatColor.GREEN + "Visit one of the", ChatColor.GREEN + "Walt Disney World Parks!"));
+        rm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
+        cm.setLore(Arrays.asList(ChatColor.GREEN + "Make your MagicBand", ChatColor.GREEN + "perfect for you!"));
+        am.setLore(Arrays.asList(ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "MCMagic Mini-Games!"));
+        crm.setLore(Arrays.asList(ChatColor.YELLOW + "Create your own", ChatColor.RED + "M" + ChatColor.GOLD + "a"
+                + ChatColor.YELLOW + "g" + ChatColor.DARK_GREEN + "i" + ChatColor.BLUE + "c" + ChatColor.LIGHT_PURPLE + "!"));
         sem.setLore(Arrays.asList(ChatColor.YELLOW + "Where Seasonal Events", ChatColor.YELLOW + "are held for the server!"));
         rna.setItemMeta(rnam);
         sne.setItemMeta(snem);
@@ -106,7 +118,7 @@ public class InventoryUtil implements Listener {
         shop.setItemMeta(sm);
         food.setItemMeta(fm);
         hub.setItemMeta(hm);
-        map.setItemMeta(mm);
+        parks.setItemMeta(pm);
         report.setItemMeta(rm);
         custom.setItemMeta(cm);
         arcade.setItemMeta(am);
@@ -152,21 +164,21 @@ public class InventoryUtil implements Listener {
         ItemMeta lm = locker.getItemMeta();
         ItemMeta achm = ach.getItemMeta();
         ItemMeta mum = mumble.getItemMeta();
-        ItemMeta pm = packs.getItemMeta();
+        ItemMeta pam = packs.getItemMeta();
         dvcm.setDisplayName(ChatColor.AQUA + "Become a DVC Member!");
         wm.setDisplayName(ChatColor.GREEN + "Website");
         frm.setDisplayName(ChatColor.YELLOW + "Friends List");
         lm.setDisplayName(ChatColor.GREEN + "Locker");
         achm.setDisplayName(ChatColor.GREEN + "Achievements");
         mum.setDisplayName(ChatColor.GREEN + "Mumble");
-        pm.setDisplayName(ChatColor.GREEN + "Resource/Audio Packs");
+        pam.setDisplayName(ChatColor.GREEN + "Resource/Audio Packs");
         dvc.setItemMeta(dvcm);
         web.setItemMeta(wm);
         flist.setItemMeta(frm);
         locker.setItemMeta(lm);
         ach.setItemMeta(achm);
         mumble.setItemMeta(mum);
-        packs.setItemMeta(pm);
+        packs.setItemMeta(pam);
         //Friend Menu
         ItemMeta lpm = lastPage.getItemMeta();
         ItemMeta npm = nextPage.getItemMeta();
@@ -205,7 +217,7 @@ public class InventoryUtil implements Listener {
                 main.setItem(20, food);
                 main.setItem(4, time);
                 main.setItem(13, hub);
-                main.setItem(22, map);
+                main.setItem(22, parks);
                 main.setItem(6, report);
                 main.setItem(15, playerInfo);
                 main.setItem(24, custom);
