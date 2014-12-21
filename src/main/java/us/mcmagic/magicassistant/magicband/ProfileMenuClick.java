@@ -19,6 +19,7 @@ import java.util.List;
  * Created by Marc on 12/19/14
  */
 public class ProfileMenuClick {
+    public static List<String> dvcmsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -37,19 +38,12 @@ public class ProfileMenuClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Become a DVC Member!":
-                List<String> dvcmsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
                 for (String msg : dvcmsgs) {
                     player.sendMessage(msg);
                 }
                 player.closeInventory();
                 return;
             case "Website":
-                /*
-                List<String> webmsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Website Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://MCMagic.us");
-                for (String msg : webmsgs) {
-                    player.sendMessage(msg);
-                }
-                */
                 player.closeInventory();
                 sendPluginMessage(player, "website");
                 return;

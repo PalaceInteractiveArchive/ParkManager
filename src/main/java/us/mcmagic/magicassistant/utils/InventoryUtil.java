@@ -38,8 +38,6 @@ public class InventoryUtil implements Listener {
     public static ItemStack arcade = new ItemStack(Material.GLOWSTONE_DUST);
     public static ItemStack creative = new ItemStack(Material.GRASS);
     public static ItemStack seasonal = new ItemStack(Material.RED_ROSE, 1, (byte) 2);
-    public static ItemStack next = new ItemStack(Material.ARROW);
-    public static ItemStack last = new ItemStack(Material.ARROW);
     //Park Menu Items
     public static ItemStack mk = new ItemStack(Material.DIAMOND_HOE);
     public static ItemStack epcot = new ItemStack(Material.SNOW_BALL);
@@ -58,6 +56,21 @@ public class InventoryUtil implements Listener {
     //Friend Menu
     public static ItemStack nextPage = new ItemStack(Material.ARROW);
     public static ItemStack lastPage = new ItemStack(Material.ARROW);
+    //Customize Menu
+    public static ItemStack nameChange = new ItemStack(Material.JUKEBOX);
+    //Customize Name
+    public static ItemStack blueBand = new ItemStack(Material.PAPER);
+    public static ItemStack redBand = new ItemStack(Material.DIAMOND_BARDING);
+    public static ItemStack greenBand = new ItemStack(Material.IRON_BARDING);
+    public static ItemStack yellowBand = new ItemStack(Material.GOLD_BARDING);
+    //Customize Color
+    public static ItemStack red = new ItemStack(Material.WOOL, 1, (byte) 14);
+    public static ItemStack orange = new ItemStack(Material.WOOL, 1, (byte) 1);
+    public static ItemStack yellow = new ItemStack(Material.WOOL, 1, (byte) 4);
+    public static ItemStack green = new ItemStack(Material.WOOL, 1, (byte) 5);
+    public static ItemStack darkGreen = new ItemStack(Material.WOOL, 1, (byte) 13);
+    public static ItemStack blue = new ItemStack(Material.WOOL, 1, (byte) 11);
+    public static ItemStack purple = new ItemStack(Material.WOOL, 1, (byte) 10);
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
@@ -79,8 +92,6 @@ public class InventoryUtil implements Listener {
         ItemMeta am = arcade.getItemMeta();
         ItemMeta crm = creative.getItemMeta();
         ItemMeta sem = seasonal.getItemMeta();
-        ItemMeta nm = next.getItemMeta();
-        ItemMeta lam = last.getItemMeta();
         rnam.setDisplayName(ChatColor.GREEN + "Rides and Attractions");
         snem.setDisplayName(ChatColor.GREEN + "Shows and Events");
         hnrm.setDisplayName(ChatColor.GREEN + "Hotels and Resorts");
@@ -95,19 +106,17 @@ public class InventoryUtil implements Listener {
         am.setDisplayName(ChatColor.GREEN + "Arcade");
         crm.setDisplayName(ChatColor.GREEN + "Creative");
         sem.setDisplayName(ChatColor.GREEN + "Seasonal");
-        nm.setDisplayName(ChatColor.GREEN + "Next Page");
-        lam.setDisplayName(ChatColor.GREEN + "Last Page");
-        rnam.setLore(Arrays.asList(ChatColor.GREEN + "Ride or experience", ChatColor.GREEN + "a ride from Walt", ChatColor.GREEN + "Disney World!"));
+        rnam.setLore(Arrays.asList(ChatColor.GREEN + "Ride or experience", ChatColor.GREEN + "an attraction from", ChatColor.GREEN + "Walt Disney World!"));
         snem.setLore(Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous MCMagic Shows!"));
-        hnrm.setLore(Arrays.asList(ChatColor.GREEN + "Visit and rent a", ChatColor.GREEN + "room from a Walt", ChatColor.GREEN + "Disney World Resort!"));
+        hnrm.setLore(Arrays.asList(ChatColor.GREEN + "Visit and rent a room from a", ChatColor.GREEN + "Walt Disney World Resort!"));
         sm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
         fm.setLore(Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
         hm.setLore(Arrays.asList(ChatColor.GREEN + "Return to the", ChatColor.GREEN + "Hub Server!"));
-        pm.setLore(Arrays.asList(ChatColor.GREEN + "Visit one of the", ChatColor.GREEN + "Walt Disney World Parks!"));
+        pm.setLore(Arrays.asList(ChatColor.GREEN + "Visit one of the Walt", ChatColor.GREEN + "Disney World Parks!"));
         rm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
         cm.setLore(Arrays.asList(ChatColor.GREEN + "Make your MagicBand", ChatColor.GREEN + "perfect for you!"));
         am.setLore(Arrays.asList(ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "MCMagic Mini-Games!"));
-        crm.setLore(Arrays.asList(ChatColor.YELLOW + "Create your own", ChatColor.RED + "M" + ChatColor.GOLD + "a"
+        crm.setLore(Arrays.asList(ChatColor.YELLOW + "Create your", ChatColor.GREEN + "own " + ChatColor.RED + "M" + ChatColor.GOLD + "a"
                 + ChatColor.YELLOW + "g" + ChatColor.DARK_GREEN + "i" + ChatColor.BLUE + "c" + ChatColor.LIGHT_PURPLE + "!"));
         sem.setLore(Arrays.asList(ChatColor.YELLOW + "Where Seasonal Events", ChatColor.YELLOW + "are held for the server!"));
         rna.setItemMeta(rnam);
@@ -124,8 +133,6 @@ public class InventoryUtil implements Listener {
         arcade.setItemMeta(am);
         creative.setItemMeta(crm);
         seasonal.setItemMeta(sem);
-        next.setItemMeta(nm);
-        last.setItemMeta(lam);
         //Park Menu Items
         ItemMeta mkm = mk.getItemMeta();
         ItemMeta em = epcot.getItemMeta();
@@ -186,6 +193,44 @@ public class InventoryUtil implements Listener {
         npm.setDisplayName(ChatColor.GREEN + "Next Page");
         lastPage.setItemMeta(lpm);
         nextPage.setItemMeta(npm);
+        //Customize Menu
+        ItemMeta nc = nameChange.getItemMeta();
+        nc.setDisplayName(ChatColor.GREEN + "Change Name Color");
+        //Customize Name
+        ItemMeta rnm = red.getItemMeta();
+        ItemMeta onm = orange.getItemMeta();
+        ItemMeta ynm = yellow.getItemMeta();
+        ItemMeta gnm = green.getItemMeta();
+        ItemMeta dgnm = darkGreen.getItemMeta();
+        ItemMeta bnm = blue.getItemMeta();
+        ItemMeta pnm = purple.getItemMeta();
+        rnm.setDisplayName(ChatColor.RED + "Red");
+        onm.setDisplayName(ChatColor.RED + "Orange");
+        ynm.setDisplayName(ChatColor.RED + "Yellow");
+        gnm.setDisplayName(ChatColor.RED + "Green");
+        dgnm.setDisplayName(ChatColor.RED + "Dark Green");
+        bnm.setDisplayName(ChatColor.RED + "Blue");
+        pnm.setDisplayName(ChatColor.RED + "Purple");
+        red.setItemMeta(rnm);
+        orange.setItemMeta(onm);
+        yellow.setItemMeta(ynm);
+        green.setItemMeta(gnm);
+        darkGreen.setItemMeta(dgnm);
+        blue.setItemMeta(bnm);
+        purple.setItemMeta(pnm);
+        //Customize Color
+        ItemMeta bbm = blueBand.getItemMeta();
+        ItemMeta rbm = redBand.getItemMeta();
+        ItemMeta gbm = greenBand.getItemMeta();
+        ItemMeta ybm = yellowBand.getItemMeta();
+        bbm.setDisplayName(ChatColor.BLUE + "Blue (Original)");
+        rbm.setDisplayName(ChatColor.RED + "Red");
+        gbm.setDisplayName(ChatColor.DARK_GREEN + "Green");
+        ybm.setDisplayName(ChatColor.YELLOW + "Yellow");
+        blueBand.setItemMeta(bbm);
+        redBand.setItemMeta(rbm);
+        greenBand.setItemMeta(gbm);
+        yellowBand.setItemMeta(ybm);
     }
 
     @SuppressWarnings("deprecation")
@@ -285,9 +330,6 @@ public class InventoryUtil implements Listener {
                         amount++;
                     }
                     foodMenu.setItem(22, BandUtil.getBackItem());
-                    if (foodLocations.size() > 7) {
-                        foodMenu.setItem(23, next);
-                    }
                     player.openInventory(foodMenu);
                     // If even amount of items
                 } else {
@@ -312,9 +354,6 @@ public class InventoryUtil implements Listener {
                         }
                     }
                     foodMenu.setItem(22, BandUtil.getBackItem());
-                    if (foodLocations.size() > 7) {
-                        foodMenu.setItem(23, next);
-                    }
                     player.openInventory(foodMenu);
                 }
                 return;
@@ -330,6 +369,7 @@ public class InventoryUtil implements Listener {
                 pmenu.setItem(14, ach);
                 pmenu.setItem(15, mumble);
                 pmenu.setItem(16, packs);
+                pmenu.setItem(22, BandUtil.getBackItem());
                 player.openInventory(pmenu);
                 return;
             case FRIENDLIST:
@@ -386,10 +426,36 @@ public class InventoryUtil implements Listener {
             case SHOWSANDEVENTS:
                 return;
             case CUSTOMIZE:
+                Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
+                ItemStack band = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+                ItemMeta bm = band.getItemMeta();
+                bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
+                band.setItemMeta(bm);
+                custom.setItem(11, band);
+                custom.setItem(15, nameChange);
+                custom.setItem(22, BandUtil.getBackItem());
+                player.openInventory(custom);
                 return;
             case CUSTOMNAME:
+                Inventory cname = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Name Color");
+                cname.setItem(10, red);
+                cname.setItem(11, orange);
+                cname.setItem(12, yellow);
+                cname.setItem(13, green);
+                cname.setItem(14, darkGreen);
+                cname.setItem(15, blue);
+                cname.setItem(16, purple);
+                cname.setItem(22, BandUtil.getBackItem());
+                player.openInventory(cname);
                 return;
             case CUSTOMCOLOR:
+                Inventory ccolor = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Band Color");
+                ccolor.setItem(11, blueBand);
+                ccolor.setItem(12, redBand);
+                ccolor.setItem(14, greenBand);
+                ccolor.setItem(15, yellowBand);
+                ccolor.setItem(22, BandUtil.getBackItem());
+                player.openInventory(ccolor);
                 return;
             case RIDESANDATTRACTIONS:
                 return;

@@ -66,6 +66,7 @@ public class PlayerInteract implements Listener {
         }
         if (BandUtil.isLoading(player)) {
             player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
+            return;
         }
         ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
         ItemMeta mbm = mb.getItemMeta();
