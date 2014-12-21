@@ -72,19 +72,21 @@ public class BandUtil {
             } else {
                 pages = 1;
             }
+            player.sendMessage("Test " + pages);
             HashMap<Integer, List<String>> plist = new HashMap<>();
             if (pages > 1) {
                 int i = 1;
+                int i2 = 1;
                 for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
-                    if (i >= 8) {
-                        i = 0;
+                    if (i2 >= 8) {
+                        i++;
                     }
-                    if (i == 1) {
+                    if (i2 == 1) {
                         plist.put(i, Arrays.asList(entry.getValue()));
                     } else {
                         plist.get(i).add(entry.getValue());
                     }
-                    i++;
+                    i2++;
                 }
             }
             PlayerData data = new PlayerData(player.getUniqueId(),
