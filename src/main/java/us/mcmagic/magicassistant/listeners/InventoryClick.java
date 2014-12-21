@@ -11,10 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.magicband.FoodMenuClick;
-import us.mcmagic.magicassistant.magicband.MainMenuClick;
-import us.mcmagic.magicassistant.magicband.ParkMenuClick;
-import us.mcmagic.magicassistant.magicband.ProfileMenuClick;
+import us.mcmagic.magicassistant.magicband.*;
 
 import java.util.Arrays;
 
@@ -43,6 +40,11 @@ public class InventoryClick implements Listener {
         if (name.equals(player.getName() + "'s MagicBand")) {
             MainMenuClick.handle(event);
             event.setCancelled(true);
+            return;
+        }
+        if (name.startsWith("Friend List")) {
+            event.setCancelled(true);
+            FriendListClick.handle(event);
             return;
         }
         switch (name) {

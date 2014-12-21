@@ -395,7 +395,7 @@ public class InventoryUtil implements Listener {
         HashMap<UUID, String> fl = data.getFriendList();
         Inventory flist;
         if (fl.size() > 7) {
-            flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List " + ChatColor.GRAY + "(Page " + page + ")");
+            flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List Page " + page);
         } else {
             flist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Friend List");
         }

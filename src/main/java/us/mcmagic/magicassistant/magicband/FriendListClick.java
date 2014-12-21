@@ -1,10 +1,12 @@
 package us.mcmagic.magicassistant.magicband;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -29,5 +31,19 @@ public class FriendListClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
+        if (item.getType().equals(Material.SKULL_ITEM)) {
+            if (((SkullMeta) item.getItemMeta()).getOwner().equals("Herobrine")) {
+                return;
+            }
+            BandUtil.friendTeleport(player, name);
+            return;
+        }
+        switch (name) {
+            case "Next Page":
+                InventoryUtil.openFriendListPage(player, Integer.parseInt(name.replaceAll("Friend List Page ", "")) + 1);
+                return;
+            case "Last Page":
+                InventoryUtil.openFriendListPage(player, Integer.parseInt(name.replaceAll("Friend List Page ", "")) - 1);
+        }
     }
 }

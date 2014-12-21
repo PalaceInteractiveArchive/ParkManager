@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,6 +12,8 @@ import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.uuidconverter.UUIDConverter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -214,5 +217,21 @@ public class BandUtil {
             hour = h + ":" + minute + ":" + second;
         }
         return hour;
+    }
+
+    public static void friendTeleport(Player player, String friendUUID) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("FriendTeleport");
+            out.writeUTF(player.getUniqueId() + "");
+            out.writeUTF(friendUUID);
+            player.sendPluginMessage(
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
+                    "BungeeCord", b.toByteArray());
+        } catch (Exception e) {
+            player.sendMessage(ChatColor.RED
+                    + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
+        }
     }
 }
