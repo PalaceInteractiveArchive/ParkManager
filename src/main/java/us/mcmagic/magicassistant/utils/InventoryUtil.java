@@ -229,6 +229,10 @@ public class InventoryUtil implements Listener {
         gbm.setDisplayName(ChatColor.DARK_GREEN + "Green");
         ybm.setDisplayName(ChatColor.YELLOW + "Yellow");
         List<String> cost = Arrays.asList(ChatColor.GREEN + "Cost: 50 Coins");
+        bbm.setLore(cost);
+        rbm.setLore(cost);
+        gbm.setLore(cost);
+        ybm.setLore(cost);
         blueBand.setItemMeta(bbm);
         redBand.setItemMeta(rbm);
         greenBand.setItemMeta(gbm);

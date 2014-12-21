@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.commands.Command_vanish;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
@@ -58,7 +59,7 @@ public class PlayerJoinAndLeave implements Listener {
                                         InventorySql.endInvContents(player));
                             }
                         }
-                    }, 10L);
+                    }, 20L);
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override
@@ -106,20 +107,16 @@ public class PlayerJoinAndLeave implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (MagicAssistant.crossServerInv) {
-            Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
-                public void run() {
-                    if (InventorySql.playerDataContainsPlayer(player)) {
-                        InventorySql.updateInventory(player);
-                    }
-                    if (InventorySql.endPlayerDataContainsPlayer(player)) {
-                        InventorySql.updateEndInventory(player);
-                    }
-                }
-            });
+            InventorySql.updateInventory(player);
+            InventorySql.updateEndInventory(player);
         }
         BandUtil.removePlayerData(player);
         try {
             VisibleUtil.hideall.remove(player);
+        } catch (Exception ignored) {
+        }
+        try {
+            Command_vanish.hidden.remove(player);
         } catch (Exception ignored) {
         }
     }
