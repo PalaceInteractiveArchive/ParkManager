@@ -71,6 +71,7 @@ public class BandUtil {
                     UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
                     friendlist.put(uuid, name);
                 }
+                Collections.sort(flist);
                 pages = (int) Math.ceil(flist.size() / 7);
             } else {
                 pages = 1;
