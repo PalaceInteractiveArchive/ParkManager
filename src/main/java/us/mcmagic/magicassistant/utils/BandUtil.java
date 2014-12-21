@@ -65,33 +65,26 @@ public class BandUtil {
                 Collections.addAll(flist, friends);
                 for (String friend : flist) {
                     String name = UUIDConverter.convert(friend);
-                    player.sendMessage(name);
                     UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
-                    player.sendMessage(uuid + "");
                     friendlist.put(uuid, name);
                 }
                 pages = (int) Math.ceil(flist.size() / 7);
             } else {
                 pages = 1;
             }
-            player.sendMessage("Test " + pages);
             HashMap<Integer, List<String>> plist = new HashMap<>();
             if (pages > 1) {
                 int i = 1;
                 int i2 = 1;
                 for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
-                    player.sendMessage("Number " + i + " " + i2);
                     if (i2 >= 8) {
                         i++;
                         i2 = 1;
                     }
                     if (i2 == 1) {
-                        player.sendMessage("Adding");
                         plist.put(i, new ArrayList<String>());
                         plist.get(i).add(entry.getValue());
                     } else {
-                        player.sendMessage("Editing " + i + " " + i2);
-                        player.sendMessage(plist.entrySet().toString());
                         plist.get(i).add(entry.getValue());
                     }
                     i2++;

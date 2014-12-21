@@ -410,7 +410,7 @@ public class InventoryUtil implements Listener {
             player.openInventory(flist);
             return;
         }
-        List<String> pageList = data.getPages().get(page - 1);
+        List<String> pageList = data.getPages().get(page);
         List<ItemStack> items = new ArrayList<>();
         Collections.sort(pageList);
         for (String name : pageList) {
