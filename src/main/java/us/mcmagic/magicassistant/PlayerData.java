@@ -52,4 +52,12 @@ public class PlayerData {
     public HashMap<Integer, List<String>> getPages() {
         return pages;
     }
+
+    public void setBandColor(BandColor color) {
+        this.bandColor = color;
+    }
+
+    public void setBandName(ChatColor color) {
+        this.bandName = color;
+    }
 }

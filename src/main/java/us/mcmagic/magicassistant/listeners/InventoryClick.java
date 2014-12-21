@@ -57,12 +57,15 @@ public class InventoryClick implements Listener {
                 return;
             case "Customize Menu":
                 event.setCancelled(true);
+                CustomizeMenuClick.handle(event);
                 return;
             case "Customize Band Color":
                 event.setCancelled(true);
+                CustomBandClick.handle(event);
                 return;
             case "Customize Name Color":
                 event.setCancelled(true);
+                CustomNameClick.handle(event);
                 return;
             case "Park Menu":
                 event.setCancelled(true);

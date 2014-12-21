@@ -108,7 +108,7 @@ public class InventoryUtil implements Listener {
         sem.setDisplayName(ChatColor.GREEN + "Seasonal");
         rnam.setLore(Arrays.asList(ChatColor.GREEN + "Ride or experience", ChatColor.GREEN + "an attraction from", ChatColor.GREEN + "Walt Disney World!"));
         snem.setLore(Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous MCMagic Shows!"));
-        hnrm.setLore(Arrays.asList(ChatColor.GREEN + "Visit and rent a room from a", ChatColor.GREEN + "Walt Disney World Resort!"));
+        hnrm.setLore(Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
         sm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
         fm.setLore(Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
         hm.setLore(Arrays.asList(ChatColor.GREEN + "Return to the", ChatColor.GREEN + "Hub Server!"));
@@ -196,6 +196,7 @@ public class InventoryUtil implements Listener {
         //Customize Menu
         ItemMeta nc = nameChange.getItemMeta();
         nc.setDisplayName(ChatColor.GREEN + "Change Name Color");
+        nameChange.setItemMeta(nc);
         //Customize Name
         ItemMeta rnm = red.getItemMeta();
         ItemMeta onm = orange.getItemMeta();

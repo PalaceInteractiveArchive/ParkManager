@@ -147,6 +147,44 @@ public class BandUtil {
         }
     }
 
+    public static void setBandColor(Player player, BandColor color) {
+        openConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
+            sql.setString(1, color.getName());
+            sql.setString(2, player.getUniqueId() + "");
+            sql.execute();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        data.setBandColor(color);
+        giveBandToPlayer(player);
+        player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
+    }
+
+    public static void setBandName(Player player, ChatColor color) {
+        openConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandname=? WHERE uuid=?");
+            sql.setString(1, getBandNameColor(color));
+            sql.setString(2, player.getUniqueId() + "");
+            sql.execute();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        data.setBandName(color);
+        giveBandToPlayer(player);
+        player.sendMessage(ChatColor.GREEN + "You have changed the name color of your " + data.getBandName() + "MagicBand!");
+    }
+
     public static ItemStack getBackItem() {
         return back;
     }
@@ -166,6 +204,27 @@ public class BandUtil {
         }
     }
 
+    public static String getBandNameColor(ChatColor color) {
+        switch (color) {
+            case RED:
+                return "red";
+            case GOLD:
+                return "orange";
+            case YELLOW:
+                return "yellow";
+            case GREEN:
+                return "green";
+            case DARK_GREEN:
+                return "darkgreen";
+            case BLUE:
+                return "blue";
+            case DARK_PURPLE:
+                return "purple";
+            default:
+                return "orange";
+        }
+    }
+
     public static ChatColor getBandNameColor(String string) {
         switch (string) {
             case "red":
@@ -176,12 +235,12 @@ public class BandUtil {
                 return ChatColor.YELLOW;
             case "green":
                 return ChatColor.GREEN;
+            case "darkgreen":
+                return ChatColor.DARK_GREEN;
             case "blue":
                 return ChatColor.BLUE;
             case "purple":
                 return ChatColor.DARK_PURPLE;
-            case "pink":
-                return ChatColor.LIGHT_PURPLE;
             default:
                 return ChatColor.GOLD;
         }
