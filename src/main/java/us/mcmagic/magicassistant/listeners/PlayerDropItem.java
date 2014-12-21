@@ -27,7 +27,7 @@ public class PlayerDropItem implements Listener {
         ItemStack drop = event.getItemDrop().getItemStack();
         ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
         ItemMeta mbm = mb.getItemMeta();
-        mbm.setDisplayName(ChatColor.GOLD + "MagicBand");
+        mbm.setDisplayName(data.getBandName() + "MagicBand");
         mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                 ChatColor.GREEN + "the MagicBand menu!"));
         mb.setItemMeta(mbm);

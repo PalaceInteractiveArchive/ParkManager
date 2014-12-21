@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -31,13 +32,18 @@ public class CustomBandClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         BandColor color = BandUtil.getBandColor(name.toLowerCase());
+        if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
+            player.closeInventory();
+            player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
+            return;
+        }
         int coins = Coins.getSqlCoins(player);
+        player.closeInventory();
         if (coins < 50) {
             player.sendMessage(ChatColor.RED + "You need at least 50 coins to change the MagicBand Color!");
             return;
         }
         Coins.minusSqlCoins(player, 50);
-        player.closeInventory();
         BandUtil.setBandColor(player, color);
     }
 }

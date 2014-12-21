@@ -206,12 +206,12 @@ public class InventoryUtil implements Listener {
         ItemMeta bnm = blue.getItemMeta();
         ItemMeta pnm = purple.getItemMeta();
         rnm.setDisplayName(ChatColor.RED + "Red");
-        onm.setDisplayName(ChatColor.RED + "Orange");
-        ynm.setDisplayName(ChatColor.RED + "Yellow");
-        gnm.setDisplayName(ChatColor.RED + "Green");
-        dgnm.setDisplayName(ChatColor.RED + "Dark Green");
-        bnm.setDisplayName(ChatColor.RED + "Blue");
-        pnm.setDisplayName(ChatColor.RED + "Purple");
+        onm.setDisplayName(ChatColor.GOLD + "Orange");
+        ynm.setDisplayName(ChatColor.YELLOW + "Yellow");
+        gnm.setDisplayName(ChatColor.GREEN + "Green");
+        dgnm.setDisplayName(ChatColor.DARK_GREEN + "Dark Green");
+        bnm.setDisplayName(ChatColor.BLUE + "Blue");
+        pnm.setDisplayName(ChatColor.DARK_PURPLE + "Purple");
         red.setItemMeta(rnm);
         orange.setItemMeta(onm);
         yellow.setItemMeta(ynm);
@@ -228,6 +228,7 @@ public class InventoryUtil implements Listener {
         rbm.setDisplayName(ChatColor.RED + "Red");
         gbm.setDisplayName(ChatColor.DARK_GREEN + "Green");
         ybm.setDisplayName(ChatColor.YELLOW + "Yellow");
+        List<String> cost = Arrays.asList(ChatColor.GREEN + "Cost: 50 Coins");
         blueBand.setItemMeta(bbm);
         redBand.setItemMeta(rbm);
         greenBand.setItemMeta(gbm);

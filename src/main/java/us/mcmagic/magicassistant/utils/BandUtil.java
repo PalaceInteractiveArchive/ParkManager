@@ -169,7 +169,7 @@ public class BandUtil {
     public static void setBandName(Player player, ChatColor color) {
         openConnection();
         try {
-            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandname=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET namecolor=? WHERE uuid=?");
             sql.setString(1, getBandNameColor(color));
             sql.setString(2, player.getUniqueId() + "");
             sql.execute();
