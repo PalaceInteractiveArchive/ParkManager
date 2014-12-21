@@ -29,7 +29,7 @@ public class CustomNameClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        ChatColor color = BandUtil.getBandNameColor(name.toLowerCase());
+        ChatColor color = BandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
         player.closeInventory();
         BandUtil.setBandName(player, color);
     }
