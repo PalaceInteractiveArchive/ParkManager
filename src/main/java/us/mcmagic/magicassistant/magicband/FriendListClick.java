@@ -38,12 +38,13 @@ public class FriendListClick {
             BandUtil.friendTeleport(player, name);
             return;
         }
+        String invName = ChatColor.stripColor(event.getInventory().getName());
         switch (name) {
             case "Next Page":
-                InventoryUtil.openFriendListPage(player, Integer.parseInt(event.getInventory().getName().replaceAll("Friend List Page ", "")) + 1);
+                InventoryUtil.openFriendListPage(player, Integer.parseInt(invName.replaceAll("Friend List Page ", "")) + 1);
                 return;
             case "Last Page":
-                InventoryUtil.openFriendListPage(player, Integer.parseInt(event.getInventory().getName().replaceAll("Friend List Page ", "")) - 1);
+                InventoryUtil.openFriendListPage(player, Integer.parseInt(invName.replaceAll("Friend List Page ", "")) - 1);
         }
     }
 }
