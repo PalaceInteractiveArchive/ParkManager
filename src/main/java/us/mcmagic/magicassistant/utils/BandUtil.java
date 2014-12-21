@@ -66,12 +66,12 @@ public class BandUtil {
                 String[] friends = result.getString("friends").split(" ");
                 List<String> flist = new ArrayList<>();
                 Collections.addAll(flist, friends);
+                Collections.sort(flist);
                 for (String friend : flist) {
                     String name = UUIDConverter.convert(friend);
                     UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
                     friendlist.put(uuid, name);
                 }
-                Collections.sort(flist);
                 pages = (int) Math.ceil(flist.size() / 7);
             } else {
                 pages = 1;
