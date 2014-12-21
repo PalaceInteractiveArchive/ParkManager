@@ -84,7 +84,7 @@ public class BandUtil {
                     if (i2 == 1) {
                         plist.put(i, Arrays.asList(entry.getValue()));
                     } else {
-                        plist.get(i).add(entry.getValue());
+                        plist.get(i - 1).add(entry.getValue());
                     }
                     i2++;
                 }
