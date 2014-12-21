@@ -40,10 +40,10 @@ public class FriendListClick {
         }
         switch (name) {
             case "Next Page":
-                InventoryUtil.openFriendListPage(player, Integer.parseInt(name.replaceAll("Friend List Page ", "")) + 1);
+                InventoryUtil.openFriendListPage(player, Integer.parseInt(event.getInventory().getName().replaceAll("Friend List Page ", "")) + 1);
                 return;
             case "Last Page":
-                InventoryUtil.openFriendListPage(player, Integer.parseInt(name.replaceAll("Friend List Page ", "")) - 1);
+                InventoryUtil.openFriendListPage(player, Integer.parseInt(event.getInventory().getName().replaceAll("Friend List Page ", "")) - 1);
         }
     }
 }
