@@ -471,6 +471,7 @@ public class InventoryUtil implements Listener {
                 shows.setItem(13, wishes);
                 shows.setItem(15, msep);
                 shows.setItem(17, fofp);
+                player.openInventory(shows);
                 return;
             case CUSTOMIZE:
                 Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
