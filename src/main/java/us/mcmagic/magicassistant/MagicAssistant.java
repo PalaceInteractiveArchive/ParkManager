@@ -47,7 +47,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Map<Integer, Integer> items = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
     public static boolean party = false;
-    public static String partyServer = "";
+    public static List<String> partyServer = new ArrayList<>();
 
     public void onEnable() {
         registerListeners();

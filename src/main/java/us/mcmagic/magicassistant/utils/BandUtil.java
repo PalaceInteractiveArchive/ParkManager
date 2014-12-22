@@ -332,6 +332,7 @@ public class BandUtil {
 
     public static void removeParty() {
         MagicAssistant.party = false;
+        MagicAssistant.partyServer.clear();
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {

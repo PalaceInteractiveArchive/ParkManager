@@ -30,15 +30,21 @@ public class PluginMessage implements PluginMessageListener {
         }
         if (subchannel.equals("MagicParty")) {
             MagicAssistant.party = in.readBoolean();
-            MagicAssistant.partyServer = in.readUTF();
+            MagicAssistant.partyServer.add(in.readUTF());
             if (MagicAssistant.party) {
                 Bukkit.broadcast(ChatColor.GREEN + "Party Enabled, Server: " + MagicAssistant.partyServer, "arcade.bypass");
             } else {
                 Bukkit.broadcast(ChatColor.RED + "No Party", "arcade.bypass");
             }
         }
+        if (subchannel.equals("AddParty")) {
+            MagicAssistant.party = true;
+            MagicAssistant.partyServer.add(in.readUTF());
+            return;
+        }
         if (subchannel.equals("RemoveParty")) {
             MagicAssistant.party = false;
+            MagicAssistant.partyServer.clear();
         }
     }
 }
