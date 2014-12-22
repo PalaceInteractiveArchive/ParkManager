@@ -462,15 +462,16 @@ public class InventoryUtil implements Listener {
             case SHOWSANDEVENTS:
                 Inventory shows = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Shows and Events");
                 if (MagicAssistant.party) {
-                    shows.setItem(5, party);
+                    shows.setItem(4, party);
                 } else {
-                    shows.setItem(5, noparty);
+                    shows.setItem(4, noparty);
                 }
                 shows.setItem(9, fant);
                 shows.setItem(11, iroe);
                 shows.setItem(13, wishes);
                 shows.setItem(15, msep);
                 shows.setItem(17, fofp);
+                shows.setItem(22, BandUtil.getBackItem());
                 player.openInventory(shows);
                 return;
             case CUSTOMIZE:

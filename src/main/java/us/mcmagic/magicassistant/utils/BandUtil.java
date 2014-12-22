@@ -343,4 +343,18 @@ public class BandUtil {
             System.out.println("Error requesting Party Setup");
         }
     }
+
+    public static void joinParty(Player player) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("PartyJoin");
+            out.writeUTF(player.getUniqueId() + "");
+            Bukkit.getServer().sendPluginMessage(
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
+                    "BungeeCord", b.toByteArray());
+        } catch (Exception e) {
+            System.out.println("Error requesting Party Setup");
+        }
+    }
 }
