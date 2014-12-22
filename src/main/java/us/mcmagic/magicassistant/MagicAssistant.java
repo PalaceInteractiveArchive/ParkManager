@@ -548,7 +548,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } else {
             pages = (int) Math.ceil(locations.size() / 21);
         }
-        ridePages.clear();
+        if (!ridePages.isEmpty()) {
+            ridePages.clear();
+        }
         if (pages > 1) {
             int i = 1;
             int i2 = 1;
