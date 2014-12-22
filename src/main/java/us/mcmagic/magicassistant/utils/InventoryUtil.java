@@ -574,6 +574,7 @@ public class InventoryUtil implements Listener {
             }
             rlist.setItem(i, item);
             if (i == 16 || i == 25) {
+                Bukkit.broadcastMessage("New Line " + i + " " + (i + 3));
                 i += (i + 3);
             } else {
                 i++;
