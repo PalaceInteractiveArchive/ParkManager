@@ -30,6 +30,11 @@ public class Command_serverparty {
             if (args[0].equalsIgnoreCase("refresh")) {
                 player.sendMessage(ChatColor.GREEN + "Refreshing Party Data...");
                 BandUtil.askForParty();
+                return;
+            }
+            if (args[0].equalsIgnoreCase("stop")) {
+                player.sendMessage(ChatColor.RED + "Deleting Party Data...");
+                BandUtil.removeParty();
             }
         }
     }

@@ -329,4 +329,18 @@ public class BandUtil {
             System.out.println("Error requesting Party Setup");
         }
     }
+
+    public static void removeParty() {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("MagicPartyRemove");
+            out.writeUTF(MagicAssistant.serverName);
+            Bukkit.getServer().sendPluginMessage(
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
+                    "BungeeCord", b.toByteArray());
+        } catch (Exception e) {
+            System.out.println("Error requesting Party Setup");
+        }
+    }
 }
