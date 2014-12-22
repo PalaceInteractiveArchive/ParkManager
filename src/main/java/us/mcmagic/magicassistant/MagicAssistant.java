@@ -576,7 +576,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Ride getRide(String name) {
         for (Map.Entry<Integer, List<Ride>> rides : ridePages.entrySet()) {
             for (Ride ride : rides.getValue()) {
-                if (ChatColor.stripColor(ride.getDisplayName()).equals(ChatColor.stripColor(name))) {
+                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
                     return ride;
                 }
             }
