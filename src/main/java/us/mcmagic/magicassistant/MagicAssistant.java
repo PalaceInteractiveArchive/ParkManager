@@ -571,11 +571,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             }
         } else {
             getLogger().info("1 Page");
-            List<Ride> list = new ArrayList<>();
-            for (Ride ride : rides) {
-                list.add(ride);
-            }
-            ridePages.put(1, list);
+            ridePages.put(1, rides);
         }
     }
 
