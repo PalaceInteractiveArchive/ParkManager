@@ -36,7 +36,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
     public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
     public static List<Warp> warps = new ArrayList<>();
-    public static HashMap<Integer, List<Ride>> ridePages;
+    public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
     public static String serverName;
     public static Location spawn;
     public static Location hub;
@@ -549,9 +549,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } else {
             pages = (int) Math.ceil(locations.size() / 21);
         }
-        if (ridePages != null) {
-            ridePages.clear();
-        }
+        ridePages.clear();
         if (pages > 1) {
             getLogger().info("Bigger than 1");
             int i = 1;
