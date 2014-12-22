@@ -555,11 +555,13 @@ public class InventoryUtil implements Listener {
         for (Ride ride : pageList) {
             ItemStack rideItem = new ItemStack(ride.getId(), 1, ride.getData());
             for (Map.Entry<Integer, List<Ride>> entry : rl.entrySet()) {
-                if (entry.getValue().get(0).equals(ride)) {
-                    ItemMeta itemMeta = rideItem.getItemMeta();
-                    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName()));
-                    rideItem.setItemMeta(itemMeta);
-                    break;
+                for (Ride r : entry.getValue()) {
+                    if (r.getDisplayName().equals(ride)) {
+                        ItemMeta itemMeta = rideItem.getItemMeta();
+                        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName()));
+                        rideItem.setItemMeta(itemMeta);
+                        break;
+                    }
                 }
             }
             if (rideItem.getItemMeta() == null) {
@@ -573,7 +575,7 @@ public class InventoryUtil implements Listener {
                 break;
             }
             rlist.setItem(i, item);
-            /*
+            Bukkit.broadcastMessage("Message " + i);
             if (i == 16 || i == 25) {
                 Bukkit.broadcastMessage("New Line " + i + " " + (i + 3));
                 i += (i + 3);
@@ -581,7 +583,6 @@ public class InventoryUtil implements Listener {
             } else {
                 i++;
             }
-            */
             i++;
         }
         if (page > 1) {
