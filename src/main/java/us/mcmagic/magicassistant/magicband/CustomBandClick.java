@@ -9,7 +9,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
-import us.mcmagic.mcmagiccore.coins.Coins;
 
 /**
  * Created by Marc on 12/21/14
@@ -38,14 +37,6 @@ public class CustomBandClick {
             return;
         }
         player.closeInventory();
-        if (!player.hasPermission("band.change")) {
-            int coins = Coins.getSqlCoins(player);
-            if (coins < 50) {
-                player.sendMessage(ChatColor.RED + "You need at least 50 coins to change the MagicBand Color!");
-                return;
-            }
-            Coins.minusSqlCoins(player, 50);
-        }
         BandUtil.setBandColor(player, color);
     }
 }
