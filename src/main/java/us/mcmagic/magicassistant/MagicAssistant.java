@@ -18,6 +18,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.listeners.*;
+import us.mcmagic.magicassistant.magicband.Ride;
+import us.mcmagic.magicassistant.magicband.Warp;
 import us.mcmagic.magicassistant.utils.*;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +36,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
     public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
     public static List<Warp> warps = new ArrayList<>();
+    public static HashMap<Integer, List<Ride>> ridePages;
     public static String serverName;
     public static Location spawn;
     public static Location hub;
@@ -64,7 +67,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
         getLogger().info("Warps Initialized!");
+        getLogger().info("Initializing Food Locations...");
         setupFoodLocations();
+        getLogger().info("Food Locations Initialized!");
+        getLogger().info("Initializing Rides...");
+        setupRides();
+        getLogger().info("Rides Initialized!");
         hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
         spawn = new Location(Bukkit.getWorld(getConfig().getString("spawn.world")), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
         serverName = getConfig().getString("server-name");
@@ -492,7 +500,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public void setupFoodLocations() {
-        File file = new File("plugins/MagicAssistant/food.yml");
+        File file = new File("plugins/MagicAssistant/menus.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         List<String> locations = config.getStringList("food-names");
         for (String location : locations) {
@@ -511,6 +519,70 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             FoodLocation loc = new FoodLocation(name, warp, type, data);
             foodLocations.add(loc);
         }
+    }
+
+    private void setupRides() {
+        File file = new File("plugins/MagicAssistant/menus.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        List<String> locations = config.getStringList("ride-names");
+        List<Ride> rides = new ArrayList<>();
+        for (String location : locations) {
+            String name = config
+                    .getString("ride." + location + ".name");
+            String warp = config
+                    .getString("ride." + location + ".warp");
+            int type = config.getInt("ride." + location + ".type");
+            byte data;
+            if (config.contains("ride." + location + ".data")) {
+                data = (byte) config.getInt("ride." + location
+                        + ".data");
+            } else {
+                data = 0;
+            }
+            Ride ride = new Ride(name, warp, type, data);
+            rides.add(ride);
+        }
+        int pages;
+        if (locations.isEmpty()) {
+            pages = 1;
+        } else {
+            pages = (int) Math.ceil(locations.size() / 21);
+        }
+        ridePages.clear();
+        if (pages > 1) {
+            int i = 1;
+            int i2 = 1;
+            for (Ride ride : rides) {
+                if (i2 >= 8) {
+                    i++;
+                    i2 = 1;
+                }
+                if (i2 == 1) {
+                    ridePages.put(i, new ArrayList<Ride>());
+                    ridePages.get(i).add(ride);
+                } else {
+                    ridePages.get(i).add(ride);
+                }
+                i2++;
+            }
+        } else {
+            List<Ride> list = new ArrayList<>();
+            for (Ride ride : rides) {
+                list.add(ride);
+            }
+            ridePages.put(1, list);
+        }
+    }
+
+    public static Ride getRide(String name) {
+        for (Map.Entry<Integer, List<Ride>> rides : ridePages.entrySet()) {
+            for (Ride ride : rides.getValue()) {
+                if (ChatColor.stripColor(ride.getDisplayName()).equals(ChatColor.stripColor(name))) {
+                    return ride;
+                }
+            }
+        }
+        return null;
     }
 
     public void registerListeners() {

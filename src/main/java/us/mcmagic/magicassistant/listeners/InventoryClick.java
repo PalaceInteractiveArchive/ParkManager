@@ -47,6 +47,11 @@ public class InventoryClick implements Listener {
             FriendListClick.handle(event);
             return;
         }
+        if (name.startsWith("Ride List")) {
+            event.setCancelled(true);
+            RideListClick.handle(event);
+            return;
+        }
         switch (name) {
             case "My Profile":
                 event.setCancelled(true);
@@ -73,12 +78,6 @@ public class InventoryClick implements Listener {
                 ParkMenuClick.handle(event);
                 return;
             case "Rides and Attractions":
-                event.setCancelled(true);
-                return;
-            case "Rides":
-                event.setCancelled(true);
-                return;
-            case "Attractions":
                 event.setCancelled(true);
                 return;
             case "Food Menu":

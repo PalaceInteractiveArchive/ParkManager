@@ -2,7 +2,7 @@ package us.mcmagic.magicassistant.commands;
 
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.WarpUtil;
-import us.mcmagic.magicassistant.Warp;
+import us.mcmagic.magicassistant.magicband.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +32,5 @@ public class Command_delwarp {
         }
         sender.sendMessage(ChatColor.RED + "/" + label.toLowerCase()
                 + " [Warp Name]");
-        return;
     }
 }

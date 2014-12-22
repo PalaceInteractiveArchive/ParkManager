@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
+import us.mcmagic.magicassistant.magicband.Ride;
 import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.credits.Credits;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -509,12 +510,71 @@ public class InventoryUtil implements Listener {
             case RIDESANDATTRACTIONS:
                 return;
             case RIDES:
+                Inventory rides = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides Menu");
                 return;
             case ATTRACTIONS:
                 return;
             case HOTELSANDRESORTS:
                 featureComingSoon(player);
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void openRideListPage(Player player, int page) {
+        HashMap<Integer, List<Ride>> rl = MagicAssistant.ridePages;
+        Inventory rlist;
+        if (rl.size() > 7) {
+            rlist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Ride List Page " + page);
+        } else {
+            rlist = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Ride List");
+        }
+        if (rl.isEmpty()) {
+            ItemStack empty = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemMeta itemMeta = empty.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup", ChatColor.RED + "on this server!"));
+            empty.setItemMeta(itemMeta);
+            rlist.setItem(22, empty);
+            player.openInventory(rlist);
+            return;
+        }
+        List<Ride> pageList = rl.get(page);
+        List<ItemStack> items = new ArrayList<>();
+        for (Ride ride : pageList) {
+            ItemStack rideItem = new ItemStack(ride.getId(), 1, ride.getData());
+            for (Map.Entry<Integer, List<Ride>> entry : rl.entrySet()) {
+                if (entry.getValue().get(0).equals(ride)) {
+                    ItemMeta itemMeta = rideItem.getItemMeta();
+                    itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName()));
+                    rideItem.setItemMeta(itemMeta);
+                    break;
+                }
+            }
+            if (rideItem.getItemMeta() == null) {
+                continue;
+            }
+            items.add(rideItem);
+        }
+        int i = 10;
+        for (ItemStack item : items) {
+            if (i > 34) {
+                break;
+            }
+            rlist.setItem(i, item);
+            if (i == 16 || i == 25) {
+                i += (i + 3);
+            } else {
+                i++;
+            }
+        }
+        if (page > 1) {
+            rlist.setItem(48, lastPage);
+        }
+        if (rl.size() > page) {
+            rlist.setItem(50, nextPage);
+        }
+        rlist.setItem(49, BandUtil.getBackItem());
+        player.openInventory(rlist);
     }
 
     public static void openFriendListPage(Player player, int page) {

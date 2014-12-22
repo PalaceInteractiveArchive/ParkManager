@@ -83,28 +83,30 @@ public class BandUtil {
                 pages = 1;
             }
             HashMap<Integer, List<String>> plist = new HashMap<>();
-            if (pages > 1) {
-                int i = 1;
-                int i2 = 1;
-                for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
-                    if (i2 >= 8) {
-                        i++;
-                        i2 = 1;
+            if (!friendlist.isEmpty()) {
+                if (pages > 1) {
+                    int i = 1;
+                    int i2 = 1;
+                    for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
+                        if (i2 >= 8) {
+                            i++;
+                            i2 = 1;
+                        }
+                        if (i2 == 1) {
+                            plist.put(i, new ArrayList<String>());
+                            plist.get(i).add(entry.getValue());
+                        } else {
+                            plist.get(i).add(entry.getValue());
+                        }
+                        i2++;
                     }
-                    if (i2 == 1) {
-                        plist.put(i, new ArrayList<String>());
-                        plist.get(i).add(entry.getValue());
-                    } else {
-                        plist.get(i).add(entry.getValue());
+                } else {
+                    List<String> list = new ArrayList<>();
+                    for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
+                        list.add(entry.getValue());
                     }
-                    i2++;
+                    plist.put(1, list);
                 }
-            } else {
-                List<String> list = new ArrayList<>();
-                for (Map.Entry<UUID, String> entry : friendlist.entrySet()) {
-                    list.add(entry.getValue());
-                }
-                plist.put(1, list);
             }
             PlayerData data = new PlayerData(player.getUniqueId(),
                     getBandNameColor(result.getString("namecolor")),
