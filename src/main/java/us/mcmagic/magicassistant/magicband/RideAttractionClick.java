@@ -21,7 +21,7 @@ public class RideAttractionClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();

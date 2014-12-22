@@ -527,6 +527,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         List<String> locations = config.getStringList("ride-names");
         List<Ride> rides = new ArrayList<>();
         for (String location : locations) {
+            getLogger().info("Test " + location);
             String name = config
                     .getString("ride." + location + ".name");
             String warp = config
@@ -548,10 +549,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } else {
             pages = (int) Math.ceil(locations.size() / 21);
         }
-        if (!ridePages.isEmpty()) {
+        if (ridePages != null) {
             ridePages.clear();
         }
         if (pages > 1) {
+            getLogger().info("Bigger than 1");
             int i = 1;
             int i2 = 1;
             for (Ride ride : rides) {
@@ -568,6 +570,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 i2++;
             }
         } else {
+            getLogger().info("1 Page");
             List<Ride> list = new ArrayList<>();
             for (Ride ride : rides) {
                 list.add(ride);
