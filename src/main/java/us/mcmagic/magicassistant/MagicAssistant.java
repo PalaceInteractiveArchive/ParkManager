@@ -550,6 +550,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             pages = (int) Math.ceil(locations.size() / 21);
         }
         ridePages.clear();
+        getLogger().info("Derp " + ((int) Math.ceil(locations.size() / 21)) + " " + (Math.round(locations.size() / 21)));
         if (pages > 1) {
             getLogger().info("Bigger than 1 " + locations.size());
             int i = 1;
