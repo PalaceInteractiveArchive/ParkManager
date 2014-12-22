@@ -578,12 +578,11 @@ public class InventoryUtil implements Listener {
             Bukkit.broadcastMessage("Message " + i);
             if (i == 16 || i == 25) {
                 Bukkit.broadcastMessage("New Line " + i + " " + (i + 3));
-                i += (i + 3);
+                i += 3;
                 Bukkit.broadcastMessage("Test: " + i);
             } else {
                 i++;
             }
-            i++;
         }
         if (page > 1) {
             rlist.setItem(48, lastPage);
