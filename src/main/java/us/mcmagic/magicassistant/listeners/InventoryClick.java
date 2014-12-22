@@ -54,6 +54,7 @@ public class InventoryClick implements Listener {
                 return;
             case "Shows and Events":
                 event.setCancelled(true);
+                ShowEventClick.handle(event);
                 return;
             case "Customize Menu":
                 event.setCancelled(true);
