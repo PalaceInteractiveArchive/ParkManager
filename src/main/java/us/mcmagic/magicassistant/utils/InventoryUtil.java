@@ -554,16 +554,9 @@ public class InventoryUtil implements Listener {
         List<ItemStack> items = new ArrayList<>();
         for (Ride ride : pageList) {
             ItemStack rideItem = new ItemStack(ride.getId(), 1, ride.getData());
-            for (Map.Entry<Integer, List<Ride>> entry : rl.entrySet()) {
-                for (Ride r : entry.getValue()) {
-                    if (r.getDisplayName().equals(ride)) {
-                        ItemMeta itemMeta = rideItem.getItemMeta();
-                        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName()));
-                        rideItem.setItemMeta(itemMeta);
-                        break;
-                    }
-                }
-            }
+            ItemMeta itemMeta = rideItem.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName()));
+            rideItem.setItemMeta(itemMeta);
             if (rideItem.getItemMeta() == null) {
                 continue;
             }
@@ -575,11 +568,8 @@ public class InventoryUtil implements Listener {
                 break;
             }
             rlist.setItem(i, item);
-            Bukkit.broadcastMessage("Message " + i);
             if (i == 16 || i == 25) {
-                Bukkit.broadcastMessage("New Line " + i + " " + (i + 3));
                 i += 3;
-                Bukkit.broadcastMessage("Test: " + i);
             } else {
                 i++;
             }
