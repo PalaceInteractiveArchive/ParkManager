@@ -146,3 +146,11 @@ commands:
       description: Broadcast a message!
       permission: mcmagic.bc
       permission-message: §4Only Cast Members can use this command!
+   top:
+      description: Usefull for Helopoh!
+      permission: mcmagic.top
+      permission-message: §4Only Cast Members can use this command!
+   serverparty:
+      description: Create a Party!
+      permission: mcmagic.serverparty
+      permission-message: §4Only Cast Members can use this command!

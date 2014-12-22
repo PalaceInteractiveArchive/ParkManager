@@ -71,12 +71,42 @@ public class InventoryUtil implements Listener {
     public static ItemStack darkGreen = new ItemStack(Material.WOOL, 1, (byte) 13);
     public static ItemStack blue = new ItemStack(Material.WOOL, 1, (byte) 11);
     public static ItemStack purple = new ItemStack(Material.WOOL, 1, (byte) 10);
+    //Shows and Events
+    public static ItemStack fant = new ItemStack(Material.DIAMOND_HELMET);
+    public static ItemStack iroe = new ItemStack(Material.MONSTER_EGG);
+    public static ItemStack wishes = new ItemStack(Material.BLAZE_ROD);
+    public static ItemStack msep = new ItemStack(Material.GLOWSTONE_DUST);
+    public static ItemStack fofp = new ItemStack(Material.INK_SACK, 1, (byte) 12);
+    public static ItemStack party = new ItemStack(Material.WOOL, 1, (byte) 5);
+    public static ItemStack noparty = new ItemStack(Material.WOOL, 1, (byte) 14);
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
     }
 
     public static void initialize() {
+        //Shows and Events
+        ItemMeta fantm = fant.getItemMeta();
+        ItemMeta im = iroe.getItemMeta();
+        ItemMeta wim = wishes.getItemMeta();
+        ItemMeta msepm = msep.getItemMeta();
+        ItemMeta fofm = fofp.getItemMeta();
+        ItemMeta partym = party.getItemMeta();
+        ItemMeta nopartym = noparty.getItemMeta();
+        fantm.setDisplayName(ChatColor.BLUE + "Fantasmic!");
+        im.setDisplayName(ChatColor.GREEN + "IROE");
+        wim.setDisplayName(ChatColor.AQUA + "Wishes");
+        msepm.setDisplayName(ChatColor.YELLOW + "Main Street Electrical Parade");
+        fofm.setDisplayName(ChatColor.DARK_AQUA + "Festival of Fantasy Parade");
+        partym.setDisplayName(ChatColor.GREEN + "Click to join the Party!");
+        nopartym.setDisplayName(ChatColor.RED + "There is no Party right now!");
+        fant.setItemMeta(fantm);
+        iroe.setItemMeta(im);
+        wishes.setItemMeta(wim);
+        msep.setItemMeta(msepm);
+        fofp.setItemMeta(fofm);
+        party.setItemMeta(partym);
+        noparty.setItemMeta(nopartym);
         //Main Menu Items
         ItemMeta rnam = rna.getItemMeta();
         ItemMeta snem = sne.getItemMeta();
@@ -430,6 +460,17 @@ public class InventoryUtil implements Listener {
                 player.openInventory(flist);
                 break;
             case SHOWSANDEVENTS:
+                Inventory shows = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Shows and Events");
+                if (MagicAssistant.party) {
+                    shows.setItem(5, party);
+                } else {
+                    shows.setItem(5, noparty);
+                }
+                shows.setItem(9, fant);
+                shows.setItem(11, iroe);
+                shows.setItem(13, wishes);
+                shows.setItem(15, msep);
+                shows.setItem(17, fofp);
                 return;
             case CUSTOMIZE:
                 Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");

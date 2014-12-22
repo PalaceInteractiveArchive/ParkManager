@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -130,6 +131,7 @@ public class WarpUtil implements Listener {
     }
 
     public synchronized static List<Warp> getWarps() {
+        List<String> names = new ArrayList<>();
         List<Warp> warps = new ArrayList<>();
         openConnection();
         try {
@@ -137,6 +139,7 @@ public class WarpUtil implements Listener {
                     .prepareStatement("SELECT * FROM `warps`");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
+                names.add(result.getString("name"));
                 warps.add(new Warp(result.getString("name"),
                         result.getString("server"), result.getDouble("x"),
                         result.getDouble("y"), result.getDouble("z"),
@@ -145,7 +148,17 @@ public class WarpUtil implements Listener {
             }
             result.close();
             sql.close();
-            return warps;
+            Collections.sort(names);
+            List<Warp> finalWarps = new ArrayList<>();
+            for (String name : names) {
+                for (Warp warp : warps) {
+                    if (warp.getName().equals(name)) {
+                        finalWarps.add(warp);
+                        break;
+                    }
+                }
+            }
+            return finalWarps;
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -193,9 +206,9 @@ public class WarpUtil implements Listener {
 
     public static Warp findWarp(String name) {
         List<Warp> warps = MagicAssistant.warps;
-        for (int i = 0; i < warps.size(); i++) {
-            if (warps.get(i).getName().toLowerCase().equals(name.toLowerCase())) {
-                return warps.get(i);
+        for (Warp warp : warps) {
+            if (warp.getName().toLowerCase().equals(name.toLowerCase())) {
+                return warp;
             }
         }
         return null;

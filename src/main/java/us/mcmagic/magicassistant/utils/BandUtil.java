@@ -301,4 +301,32 @@ public class BandUtil {
                     + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
         }
     }
+
+    public static void askForParty() {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("PartyRequest");
+            out.writeUTF(MagicAssistant.serverName);
+            Bukkit.getServer().sendPluginMessage(
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
+                    "BungeeCord", b.toByteArray());
+        } catch (Exception e) {
+            System.out.println("Error requesting Party Info");
+        }
+    }
+
+    public static void createParty() {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("MagicPartySetup");
+            out.writeUTF(MagicAssistant.serverName);
+            Bukkit.getServer().sendPluginMessage(
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
+                    "BungeeCord", b.toByteArray());
+        } catch (Exception e) {
+            System.out.println("Error requesting Party Setup");
+        }
+    }
 }

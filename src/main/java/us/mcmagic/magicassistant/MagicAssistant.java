@@ -46,9 +46,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             .getStringList("join-messages");
     public static Map<Integer, Integer> items = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
+    public static boolean party = false;
+    public static String partyServer = "";
 
     public void onEnable() {
         registerListeners();
+        BandUtil.askForParty();
         InventoryUtil.initialize();
         BandUtil.initialize();
         getConfig().options().copyDefaults(true);
@@ -58,7 +61,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         FileUtil.setupConfig();
         FileUtil.setupFoodFile();
         warps.clear();
+        getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
+        getLogger().info("Warps Initialized!");
         setupFoodLocations();
         hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
         spawn = new Location(Bukkit.getWorld(getConfig().getString("spawn.world")), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
@@ -123,6 +128,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 player.sendMessage(ChatColor.RED
                         + "You do not have permission to use this command!");
             }
+            return true;
+        } else if (label.equalsIgnoreCase("serverparty")) {
+            Command_serverparty.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("hub")) {
             if (!(sender instanceof Player)) {

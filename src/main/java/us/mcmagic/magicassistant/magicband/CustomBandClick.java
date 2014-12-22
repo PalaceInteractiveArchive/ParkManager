@@ -37,13 +37,15 @@ public class CustomBandClick {
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
-        int coins = Coins.getSqlCoins(player);
         player.closeInventory();
-        if (coins < 50) {
-            player.sendMessage(ChatColor.RED + "You need at least 50 coins to change the MagicBand Color!");
-            return;
+        if (!player.hasPermission("band.change")) {
+            int coins = Coins.getSqlCoins(player);
+            if (coins < 50) {
+                player.sendMessage(ChatColor.RED + "You need at least 50 coins to change the MagicBand Color!");
+                return;
+            }
+            Coins.minusSqlCoins(player, 50);
         }
-        Coins.minusSqlCoins(player, 50);
         BandUtil.setBandColor(player, color);
     }
 }
