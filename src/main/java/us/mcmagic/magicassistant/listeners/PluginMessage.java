@@ -37,5 +37,8 @@ public class PluginMessage implements PluginMessageListener {
                 Bukkit.broadcast(ChatColor.RED + "No Party", "arcade.bypass");
             }
         }
+        if (subchannel.equals("RemoveParty")) {
+            MagicAssistant.party = false;
+        }
     }
 }
