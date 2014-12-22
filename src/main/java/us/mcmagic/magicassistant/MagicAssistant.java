@@ -551,7 +551,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
         ridePages.clear();
         if (pages > 1) {
-            getLogger().info("Bigger than 1");
+            getLogger().info("Bigger than 1 " + locations.size());
             int i = 1;
             int i2 = 1;
             for (Ride ride : rides) {
@@ -568,7 +568,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 i2++;
             }
         } else {
-            getLogger().info("1 Page");
+            getLogger().info("1 Page " + locations.size());
             ridePages.put(1, rides);
         }
     }
