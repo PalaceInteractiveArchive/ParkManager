@@ -574,6 +574,7 @@ public class InventoryUtil implements Listener {
                 i++;
             }
         }
+        Bukkit.broadcastMessage(rl.size() + "");
         if (page > 1) {
             rlist.setItem(48, lastPage);
         }
