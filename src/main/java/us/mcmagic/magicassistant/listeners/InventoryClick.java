@@ -79,6 +79,7 @@ public class InventoryClick implements Listener {
                 return;
             case "Rides and Attractions":
                 event.setCancelled(true);
+                RideAttractionClick.handle(event);
                 return;
             case "Food Menu":
                 event.setCancelled(true);

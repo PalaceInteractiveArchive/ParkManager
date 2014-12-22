@@ -80,6 +80,9 @@ public class InventoryUtil implements Listener {
     public static ItemStack fofp = new ItemStack(Material.INK_SACK, 1, (byte) 12);
     public static ItemStack party = new ItemStack(Material.WOOL, 1, (byte) 5);
     public static ItemStack noparty = new ItemStack(Material.WOOL, 1, (byte) 14);
+    //Rides and Attractions
+    public static ItemStack ride = new ItemStack(Material.MINECART);
+    public static ItemStack attraction = new ItemStack(Material.GLOWSTONE_DUST);
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
@@ -268,6 +271,13 @@ public class InventoryUtil implements Listener {
         redBand.setItemMeta(rbm);
         greenBand.setItemMeta(gbm);
         yellowBand.setItemMeta(ybm);
+        //Rides and Attractions
+        ItemMeta ridem = ride.getItemMeta();
+        ItemMeta attm = attraction.getItemMeta();
+        ridem.setDisplayName(ChatColor.GREEN + "Rides");
+        attm.setDisplayName(ChatColor.GREEN + "Attractions");
+        ride.setItemMeta(ridem);
+        attraction.setItemMeta(attm);
     }
 
     @SuppressWarnings("deprecation")
@@ -508,9 +518,11 @@ public class InventoryUtil implements Listener {
                 player.openInventory(ccolor);
                 return;
             case RIDESANDATTRACTIONS:
-                return;
-            case RIDES:
-                Inventory rides = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides Menu");
+                Inventory rna = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides and Attractions");
+                rna.setItem(20, ride);
+                rna.setItem(24, attraction);
+                rna.setItem(49, BandUtil.getBackItem());
+                player.openInventory(rna);
                 return;
             case ATTRACTIONS:
                 return;
