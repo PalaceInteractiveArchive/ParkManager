@@ -14,6 +14,10 @@ public class Command_mb {
             return;
         }
         Player player = (Player) sender;
+        if (BandUtil.isLoading(player)) {
+            player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
+            return;
+        }
         BandUtil.giveBandToPlayer(player);
         player.sendMessage(ChatColor.GRAY + "MagicBand has been restored!");
     }

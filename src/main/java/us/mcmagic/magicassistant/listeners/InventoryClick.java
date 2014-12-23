@@ -27,7 +27,7 @@ public class InventoryClick implements Listener {
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
         ItemStack clicked = event.getCurrentItem();
-        if (clicked.equals(null)) {
+        if (clicked == null) {
             return;
         }
         String name = ChatColor.stripColor(inv.getName());
