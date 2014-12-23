@@ -535,7 +535,7 @@ public class InventoryUtil implements Listener {
     public static void openRideListPage(Player player, int page) {
         HashMap<Integer, List<Ride>> rl = MagicAssistant.ridePages;
         Inventory rlist;
-        if (rl.size() > 7) {
+        if (rl.size() > 1) {
             rlist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride List Page " + page);
         } else {
             rlist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride List");
