@@ -31,7 +31,7 @@ public class InventoryClick implements Listener {
             return;
         }
         /*
-        if (clicked.getType().equals(BandUtil.getBandMaterial(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
+        if (clicked.getType().equals(BandUtil.getBandColor(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }

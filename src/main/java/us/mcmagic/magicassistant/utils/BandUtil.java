@@ -1,10 +1,9 @@
 package us.mcmagic.magicassistant.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
@@ -195,12 +194,18 @@ public class BandUtil {
         switch (string) {
             case "red":
                 return BandColor.RED;
+            case "orange":
+                return BandColor.ORANGE;
             case "yellow":
                 return BandColor.YELLOW;
             case "green":
                 return BandColor.GREEN;
             case "blue":
                 return BandColor.BLUE;
+            case "purple":
+                return BandColor.PURPLE;
+            case "pink":
+                return BandColor.PINK;
             default:
                 return BandColor.BLUE;
         }
@@ -248,25 +253,32 @@ public class BandUtil {
         }
     }
 
-    public static Material getBandMaterial(BandColor color) {
+    public static Color getBandColor(BandColor color) {
         switch (color) {
-            case BLUE:
-                return Material.PAPER;
-            case GREEN:
-                return Material.IRON_BARDING;
-            case YELLOW:
-                return Material.GOLD_BARDING;
             case RED:
-                return Material.DIAMOND_BARDING;
+                return Color.fromRGB(255, 0, 0);
+            case ORANGE:
+                return Color.fromRGB(255, 127, 0);
+            case YELLOW:
+                return Color.fromRGB(255, 255, 0);
+            case GREEN:
+                return Color.fromRGB(0, 127, 0);
+            case BLUE:
+                return Color.fromRGB(0, 102, 255);
+            case PURPLE:
+                return Color.fromRGB(0, 40, 174);
+            case PINK:
+                return Color.fromRGB(255, 0, 247);
             default:
-                return Material.PAPER;
+                return Color.fromRGB(0, 102, 255);
         }
     }
 
     public static void giveBandToPlayer(Player player) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
-        ItemMeta mbm = mb.getItemMeta();
+        ItemStack mb = new ItemStack(Material.FIREWORK_CHARGE);
+        FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
+        mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
         mbm.setDisplayName(data.getBandName() + "MagicBand");
         mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                 ChatColor.GREEN + "the MagicBand menu!"));

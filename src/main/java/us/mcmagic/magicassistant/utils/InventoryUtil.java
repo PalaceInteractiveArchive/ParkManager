@@ -1,13 +1,11 @@
 package us.mcmagic.magicassistant.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.FoodLocation;
@@ -483,8 +481,9 @@ public class InventoryUtil implements Listener {
                 return;
             case CUSTOMIZE:
                 Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
-                ItemStack band = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
-                ItemMeta bm = band.getItemMeta();
+                ItemStack band = new ItemStack(Material.FIREWORK_CHARGE);
+                FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
+                bm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
                 bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                 band.setItemMeta(bm);
                 custom.setItem(11, band);

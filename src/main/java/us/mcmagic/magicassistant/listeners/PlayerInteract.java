@@ -2,6 +2,7 @@ package us.mcmagic.magicassistant.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -11,7 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.magicassistant.magicband.Warp;
@@ -68,8 +69,9 @@ public class PlayerInteract implements Listener {
             player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
             return;
         }
-        ItemStack mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
-        ItemMeta mbm = mb.getItemMeta();
+        ItemStack mb = new ItemStack(Material.FIREWORK_CHARGE);
+        FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
+        mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
         mbm.setDisplayName(data.getBandName() + "MagicBand");
         mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                 ChatColor.GREEN + "the MagicBand menu!"));
