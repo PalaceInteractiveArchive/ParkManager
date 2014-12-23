@@ -32,7 +32,7 @@ public class AttractionListClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (meta.getDisplayName().equals(ChatColor.RED + "Uh oh!")) {
             player.closeInventory();
-            player.sendMessage(ChatColor.RED + "Sorry, but there are no attraction setup on this server!");
+            player.sendMessage(ChatColor.RED + "Sorry, but there are no attractions setup on this server!");
             return;
         }
         String invName = ChatColor.stripColor(event.getInventory().getName());
