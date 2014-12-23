@@ -281,6 +281,12 @@ public class InventoryUtil implements Listener {
         bbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(41, 106, 255)).build());
         pbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(176, 0, 220)).build());
         pibm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(246, 120, 255)).build());
+        List<String> lore = Arrays.asList(ChatColor.GREEN + "Cost: 500 Coins");
+        s1m.setLore(lore);
+        s2m.setLore(lore);
+        s3m.setLore(lore);
+        s4m.setLore(lore);
+        s5m.setLore(lore);
         rbm.setDisplayName(ChatColor.RED + "Red");
         obm.setDisplayName(ChatColor.GOLD + "Orange");
         ybm.setDisplayName(ChatColor.YELLOW + "Yellow");

@@ -193,7 +193,6 @@ public class BandUtil {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         ItemStack mb;
         if (data.getSpecial()) {
-            Bukkit.broadcastMessage(data.getBandColor() + " Test");
             mb = new ItemStack(getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
             mbm.setDisplayName(data.getBandName() + "MagicBand");

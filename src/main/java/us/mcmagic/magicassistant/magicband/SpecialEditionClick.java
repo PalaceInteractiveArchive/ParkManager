@@ -10,6 +10,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
+import us.mcmagic.mcmagiccore.coins.Coins;
 
 /**
  * Created by Marc on 12/23/14
@@ -40,6 +41,15 @@ public class SpecialEditionClick {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
+        }
+        int coins = Coins.getSqlCoins(player);
+        if (coins < 500) {
+            player.closeInventory();
+            player.sendMessage(ChatColor.RED + "You need at least " + ChatColor.GREEN + "500 Coins" + ChatColor.RED + " to get this!");
+            return;
+        }
+        if (!player.hasPermission("band.change")) {
+            Coins.minusSqlCoins(player, 500);
         }
         player.closeInventory();
         BandUtil.setBandColor(player, color);
