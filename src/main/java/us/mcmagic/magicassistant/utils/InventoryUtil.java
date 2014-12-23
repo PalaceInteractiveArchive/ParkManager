@@ -34,7 +34,7 @@ public class InventoryUtil implements Listener {
     public static ItemStack hub = new ItemStack(Material.ENDER_PEARL);
     public static ItemStack parks = new ItemStack(Material.NETHER_STAR);
     public static ItemStack report = new ItemStack(Material.COMPASS);
-    public static ItemStack custom = new ItemStack(Material.PAPER);
+    public static ItemStack custom = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack arcade = new ItemStack(Material.GLOWSTONE_DUST);
     public static ItemStack creative = new ItemStack(Material.GRASS);
     public static ItemStack seasonal = new ItemStack(Material.RED_ROSE, 1, (byte) 2);
@@ -124,10 +124,11 @@ public class InventoryUtil implements Listener {
         ItemMeta hm = hub.getItemMeta();
         ItemMeta pm = parks.getItemMeta();
         ItemMeta rm = report.getItemMeta();
-        ItemMeta cm = custom.getItemMeta();
+        FireworkEffectMeta cm = (FireworkEffectMeta) custom.getItemMeta();
         ItemMeta am = arcade.getItemMeta();
         ItemMeta crm = creative.getItemMeta();
         ItemMeta sem = seasonal.getItemMeta();
+        cm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 102, 255)).build());
         rnam.setDisplayName(ChatColor.GREEN + "Rides and Attractions");
         snem.setDisplayName(ChatColor.GREEN + "Shows and Events");
         hnrm.setDisplayName(ChatColor.GREEN + "Hotels and Resorts");
