@@ -75,6 +75,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Initializing Rides...");
         setupRides();
         getLogger().info("Rides Initialized!");
+        getLogger().info("Initializing Attractions...");
+        setupAttractions();
+        getLogger().info("Attractions Initialized!");
         hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
         spawn = new Location(Bukkit.getWorld(getConfig().getString("spawn.world")), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
         serverName = getConfig().getString("server-name");
