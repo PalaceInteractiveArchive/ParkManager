@@ -256,19 +256,19 @@ public class BandUtil {
     public static Color getBandColor(BandColor color) {
         switch (color) {
             case RED:
-                return Color.fromRGB(255, 0, 0);
+                return Color.fromRGB(255, 40, 40);
             case ORANGE:
-                return Color.fromRGB(255, 127, 0);
+                return Color.fromRGB(247, 140, 0);
             case YELLOW:
-                return Color.fromRGB(255, 255, 0);
+                return Color.fromRGB(239, 247, 0);
             case GREEN:
-                return Color.fromRGB(0, 127, 0);
+                return Color.fromRGB(0, 192, 13);
             case BLUE:
-                return Color.fromRGB(0, 102, 255);
+                return Color.fromRGB(41, 106, 255);
             case PURPLE:
-                return Color.fromRGB(0, 40, 174);
+                return Color.fromRGB(176, 0, 220);
             case PINK:
-                return Color.fromRGB(255, 0, 247);
+                return Color.fromRGB(246, 120, 255);
             default:
                 return Color.fromRGB(0, 102, 255);
         }
