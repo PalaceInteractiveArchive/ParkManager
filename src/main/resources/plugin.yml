@@ -154,3 +154,8 @@ commands:
       description: Create a Party!
       permission: mcmagic.serverparty
       permission-message: §4Only Cast Members can use this command!
+   msg:
+      description: Messaging for Command Blocks
+      permission: mcmagic.msg
+      permission-message: §4Only Cast Members can use this command!
+      aliases: [tell, t, w, whisper, m]

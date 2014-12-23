@@ -110,16 +110,23 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 || label.equalsIgnoreCase("v")) {
             Command_vanish.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("msg") || label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("whisper")) {
+        } else if (label.equalsIgnoreCase("msg") || label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("t")
+                || label.equalsIgnoreCase("w") || label.equalsIgnoreCase("whisper") || label.equalsIgnoreCase("m")) {
             Command_msg.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("warp")) {
+        } else if (label.equalsIgnoreCase("warp"))
+
+        {
             Command_warp.execute(label, sender, args);
             return true;
-        } else if (label.equalsIgnoreCase("top")) {
+        } else if (label.equalsIgnoreCase("top"))
+
+        {
             Command_top.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("sethub")) {
+        } else if (label.equalsIgnoreCase("sethub"))
+
+        {
             Player player = (Player) sender;
             if (player.isOp()) {
                 double x = player.getLocation().getX();
@@ -142,10 +149,14 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                         + "You do not have permission to use this command!");
             }
             return true;
-        } else if (label.equalsIgnoreCase("serverparty")) {
+        } else if (label.equalsIgnoreCase("serverparty"))
+
+        {
             Command_serverparty.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("hub")) {
+        } else if (label.equalsIgnoreCase("hub"))
+
+        {
             if (!(sender instanceof Player)) {
                 if (args.length > 0) {
                     Player tp = PlayerUtil.findPlayer(args[0]);
@@ -161,69 +172,111 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             ((Player) sender).teleport(hub);
             sender.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
             return true;
-        } else if (label.equalsIgnoreCase("setwarp")) {
+        } else if (label.equalsIgnoreCase("setwarp"))
+
+        {
             Command_setwarp.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("uwarp")) {
+        } else if (label.equalsIgnoreCase("uwarp"))
+
+        {
             Command_uwarp.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("wrl")) {
+        } else if (label.equalsIgnoreCase("wrl"))
+
+        {
             Command_wrl.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("invsee")) {
+        } else if (label.equalsIgnoreCase("invsee"))
+
+        {
             Command_invsee.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("enderchest")) {
+        } else if (label.equalsIgnoreCase("enderchest"))
+
+        {
             Command_enderchest.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("give")
                 || label.equalsIgnoreCase("item")
-                || label.equalsIgnoreCase("i")) {
+                || label.equalsIgnoreCase("i"))
+
+        {
             Command_give.execute(sender, label, args);
         } else if (label.equalsIgnoreCase("delwarp")
-                || label.equalsIgnoreCase("removewarp")) {
+                || label.equalsIgnoreCase("removewarp"))
+
+        {
             Command_delwarp.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("delay")) {
+        } else if (label.equalsIgnoreCase("delay"))
+
+        {
             Command_delay.execute(sender, args);
             return true;
-        } else if (label.equalsIgnoreCase("spawn")) {
+        } else if (label.equalsIgnoreCase("spawn"))
+
+        {
             Command_spawn.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("setspawn")) {
+        } else if (label.equalsIgnoreCase("setspawn"))
+
+        {
             Command_setspawn.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("smite")) {
+        } else if (label.equalsIgnoreCase("smite"))
+
+        {
             Command_smite.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("more")) {
+        } else if (label.equalsIgnoreCase("more"))
+
+        {
             Command_more.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("heal")) {
+        } else if (label.equalsIgnoreCase("heal"))
+
+        {
             Command_heal.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("helpop")
-                || label.equalsIgnoreCase("ac")) {
+                || label.equalsIgnoreCase("ac"))
+
+        {
             Command_helpop.execute(sender, label, args);
-        } else if (label.equalsIgnoreCase("ptime")) {
+        } else if (label.equalsIgnoreCase("ptime"))
+
+        {
             Command_ptime.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("pweather")) {
+        } else if (label.equalsIgnoreCase("pweather"))
+
+        {
             Command_pweather.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("invcheck")) {
+        } else if (label.equalsIgnoreCase("invcheck"))
+
+        {
             Command_invcheck.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("day")) {
+        } else if (label.equalsIgnoreCase("day"))
+
+        {
             Command_day.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("night")) {
+        } else if (label.equalsIgnoreCase("night"))
+
+        {
             Command_night.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("noon")) {
+        } else if (label.equalsIgnoreCase("noon"))
+
+        {
             Command_noon.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("gwts")) {
+        } else if (label.equalsIgnoreCase("gwts"))
+
+        {
             // List of types of hats:
             ItemStack clear = new ItemStack(Material.AIR);
             ItemStack red = new ItemStack(Material.LEATHER_HELMET, 1);
@@ -400,7 +453,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                     }
                 }
             }
-        } else if (label.equalsIgnoreCase("magicassistant")) {
+        } else if (label.equalsIgnoreCase("magicassistant"))
+
+        {
             if (args.length == 0) {
                 Player player = (Player) sender;
                 player.sendMessage(ChatColor.GREEN
@@ -427,16 +482,22 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                             + ChatColor.BLUE + " Configuration reloaded!");
                 }
             }
-        } else if (label.equalsIgnoreCase("save")) {
+        } else if (label.equalsIgnoreCase("save"))
+
+        {
             if (!(sender instanceof Player)) {
                 return true;
             }
             Player player = (Player) sender;
             player.performCommand("save-all");
-        } else if (label.equalsIgnoreCase("tp")) {
+        } else if (label.equalsIgnoreCase("tp"))
+
+        {
             Command_tp.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("head")) {
+        } else if (label.equalsIgnoreCase("head"))
+
+        {
             Player player = (Player) sender;
             PlayerInventory pi = player.getInventory();
             if (args.length == 1) {
@@ -453,6 +514,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 player.sendMessage(ChatColor.RED + "/head [playerhead]");
             }
         }
+
         return false;
     }
 
