@@ -42,13 +42,13 @@ public class SpecialEditionClick {
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
-        int coins = Coins.getSqlCoins(player);
-        if (coins < 500) {
-            player.closeInventory();
-            player.sendMessage(ChatColor.RED + "You need at least " + ChatColor.GREEN + "500 Coins" + ChatColor.RED + " to get this!");
-            return;
-        }
         if (!player.hasPermission("band.change")) {
+            int coins = Coins.getSqlCoins(player);
+            if (coins < 500) {
+                player.closeInventory();
+                player.sendMessage(ChatColor.RED + "You need at least " + ChatColor.GREEN + "500 Coins" + ChatColor.RED + " to get this!");
+                return;
+            }
             Coins.minusSqlCoins(player, 500);
         }
         player.closeInventory();
