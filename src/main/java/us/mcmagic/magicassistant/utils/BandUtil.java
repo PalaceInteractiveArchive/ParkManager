@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.magicassistant.magicband.BandColor;
@@ -26,8 +27,7 @@ public class BandUtil {
     private static List<UUID> loading = new ArrayList<>();
 
     public static void initialize() {
-        FireworkEffectMeta bm = (FireworkEffectMeta) back.getItemMeta();
-        bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 102, 255)).build());
+        ItemMeta bm = back.getItemMeta();
         bm.setDisplayName(ChatColor.GREEN + "Back");
         back.setItemMeta(bm);
     }
