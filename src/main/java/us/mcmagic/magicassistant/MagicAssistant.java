@@ -18,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.listeners.*;
+import us.mcmagic.magicassistant.magicband.Attraction;
 import us.mcmagic.magicassistant.magicband.Ride;
 import us.mcmagic.magicassistant.magicband.Warp;
 import us.mcmagic.magicassistant.utils.*;
@@ -37,6 +38,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
     public static List<Warp> warps = new ArrayList<>();
     public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
+    public static HashMap<Integer, List<Attraction>> attPages = new HashMap<>();
     public static String serverName;
     public static Location spawn;
     public static Location hub;
@@ -527,7 +529,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         List<String> locations = config.getStringList("ride-names");
         List<Ride> rides = new ArrayList<>();
         for (String location : locations) {
-            getLogger().info("Test " + location);
             String name = config
                     .getString("ride." + location + ".name");
             String warp = config
@@ -551,7 +552,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
         ridePages.clear();
         if (pages > 1) {
-            getLogger().info("Bigger than 1 " + locations.size());
             int i = 1;
             int i2 = 1;
             for (Ride ride : rides) {
@@ -568,14 +568,76 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 i2++;
             }
         } else {
-            getLogger().info("1 Page " + locations.size());
             ridePages.put(1, rides);
+        }
+    }
+
+    private void setupAttractions() {
+        File file = new File("plugins/MagicAssistant/menus.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        List<String> locations = config.getStringList("attraction-names");
+        List<Attraction> attractions = new ArrayList<>();
+        for (String location : locations) {
+            getLogger().info("Test " + location);
+            String name = config
+                    .getString("attraction." + location + ".name");
+            String warp = config
+                    .getString("attraction." + location + ".warp");
+            int type = config.getInt("attraction." + location + ".type");
+            byte data;
+            if (config.contains("attraction." + location + ".data")) {
+                data = (byte) config.getInt("attraction." + location
+                        + ".data");
+            } else {
+                data = 0;
+            }
+            Attraction att = new Attraction(name, warp, type, data);
+            attractions.add(att);
+        }
+        int pages;
+        if (locations.isEmpty()) {
+            pages = 1;
+        } else {
+            pages = ((int) Math.ceil(locations.size() / 21)) + 1;
+        }
+        attPages.clear();
+        if (pages > 1) {
+            getLogger().info("Bigger than 1 " + locations.size());
+            int i = 1;
+            int i2 = 1;
+            for (Attraction att : attractions) {
+                if (i2 >= 22) {
+                    i++;
+                    i2 = 1;
+                }
+                if (i2 == 1) {
+                    attPages.put(i, new ArrayList<Attraction>());
+                    attPages.get(i).add(att);
+                } else {
+                    attPages.get(i).add(att);
+                }
+                i2++;
+            }
+        } else {
+            getLogger().info("1 Page " + locations.size());
+            attPages.put(1, attractions);
         }
     }
 
     public static Ride getRide(String name) {
         for (Map.Entry<Integer, List<Ride>> rides : ridePages.entrySet()) {
             for (Ride ride : rides.getValue()) {
+                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
+                    return ride;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Attraction getAttraction(String name) {
+        for (Map.Entry<Integer, List<Attraction>> attractions : attPages.entrySet()) {
+            for (Attraction ride : attractions.getValue()) {
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
                     return ride;
                 }

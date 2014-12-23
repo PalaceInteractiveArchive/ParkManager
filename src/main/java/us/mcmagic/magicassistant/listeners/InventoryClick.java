@@ -52,6 +52,11 @@ public class InventoryClick implements Listener {
             RideListClick.handle(event);
             return;
         }
+        if (name.startsWith("Attraction List")) {
+            event.setCancelled(true);
+            AttractionListClick.handle(event);
+            return;
+        }
         switch (name) {
             case "My Profile":
                 event.setCancelled(true);

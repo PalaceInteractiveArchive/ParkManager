@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
+import us.mcmagic.magicassistant.magicband.Attraction;
 import us.mcmagic.magicassistant.magicband.Ride;
 import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.credits.Credits;
@@ -532,6 +533,59 @@ public class InventoryUtil implements Listener {
     }
 
     @SuppressWarnings("deprecation")
+    public static void openAttractionListPage(Player player, int page) {
+        HashMap<Integer, List<Attraction>> al = MagicAssistant.attPages;
+        Inventory alist;
+        if (al.size() > 1) {
+            alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List Page " + page);
+        } else {
+            alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List");
+        }
+        if (al.get(1).isEmpty()) {
+            ItemStack empty = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemMeta itemMeta = empty.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no attraction setup", ChatColor.RED + "on this server!"));
+            empty.setItemMeta(itemMeta);
+            alist.setItem(22, empty);
+            player.openInventory(alist);
+            return;
+        }
+        List<Attraction> pageList = al.get(page);
+        List<ItemStack> items = new ArrayList<>();
+        for (Attraction attraction : pageList) {
+            ItemStack rideItem = new ItemStack(attraction.getId(), 1, attraction.getData());
+            ItemMeta itemMeta = rideItem.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', attraction.getDisplayName()));
+            rideItem.setItemMeta(itemMeta);
+            if (rideItem.getItemMeta() == null) {
+                continue;
+            }
+            items.add(rideItem);
+        }
+        int i = 10;
+        for (ItemStack item : items) {
+            if (i > 34) {
+                break;
+            }
+            alist.setItem(i, item);
+            if (i == 16 || i == 25) {
+                i += 3;
+            } else {
+                i++;
+            }
+        }
+        if (page > 1) {
+            alist.setItem(48, lastPage);
+        }
+        if (al.size() > page) {
+            alist.setItem(50, nextPage);
+        }
+        alist.setItem(49, BandUtil.getBackItem());
+        player.openInventory(alist);
+    }
+
+    @SuppressWarnings("deprecation")
     public static void openRideListPage(Player player, int page) {
         HashMap<Integer, List<Ride>> rl = MagicAssistant.ridePages;
         Inventory rlist;
@@ -540,7 +594,7 @@ public class InventoryUtil implements Listener {
         } else {
             rlist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride List");
         }
-        if (rl.isEmpty()) {
+        if (rl.get(1).isEmpty()) {
             ItemStack empty = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta itemMeta = empty.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
@@ -574,7 +628,6 @@ public class InventoryUtil implements Listener {
                 i++;
             }
         }
-        Bukkit.broadcastMessage(rl.size() + "");
         if (page > 1) {
             rlist.setItem(48, lastPage);
         }

@@ -34,6 +34,7 @@ public class RideAttractionClick {
                 InventoryUtil.openRideListPage(player, 1);
                 return;
             case "Attractions":
+                InventoryUtil.openAttractionListPage(player, 1);
         }
     }
 }
