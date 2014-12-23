@@ -58,6 +58,7 @@ public class PlayerJoinAndLeave implements Listener {
                                 player.getEnderChest().setContents(
                                         InventorySql.endInvContents(player));
                             }
+                            BandUtil.giveBandToPlayer(player);
                             player.sendMessage(ChatColor.GREEN + "Inventory Updated!");
                         }
                     }, 100L);

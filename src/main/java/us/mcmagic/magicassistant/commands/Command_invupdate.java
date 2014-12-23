@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 
 /**
@@ -35,6 +36,7 @@ public class Command_invupdate {
                     player.getEnderChest().setContents(
                             InventorySql.endInvContents(player));
                 }
+                BandUtil.giveBandToPlayer(player);
                 player.sendMessage(net.md_5.bungee.api.ChatColor.GREEN + "Inventory Updated!");
             }
         });
