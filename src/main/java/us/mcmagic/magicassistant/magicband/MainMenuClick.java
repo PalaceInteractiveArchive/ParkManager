@@ -84,7 +84,7 @@ public class MainMenuClick {
             case COMPASS:
                 InventoryUtil.featureComingSoon(player);
                 return;
-            case PAPER:
+            case FIREWORK_CHARGE:
                 Rank rank = PlayerUtil.getUser(player.getUniqueId()).getRank();
                 if (rank.equals(Rank.GUEST)) {
                     player.closeInventory();
