@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
@@ -57,6 +58,23 @@ public class PlayerData {
 
     public void setBandColor(BandColor color) {
         this.bandColor = color;
+    }
+
+    public void setBandColor(Material color) {
+        switch (color) {
+            case PAPER:
+                this.bandColor = BandColor.SPECIAL1;
+            case IRON_BARDING:
+                this.bandColor = BandColor.SPECIAL2;
+            case GOLD_BARDING:
+                this.bandColor = BandColor.SPECIAL3;
+            case DIAMOND_BARDING:
+                this.bandColor = BandColor.SPECIAL4;
+            case GHAST_TEAR:
+                this.bandColor = BandColor.SPECIAL5;
+            default:
+                this.bandColor = BandColor.BLUE;
+        }
     }
 
     public void setBandName(ChatColor color) {

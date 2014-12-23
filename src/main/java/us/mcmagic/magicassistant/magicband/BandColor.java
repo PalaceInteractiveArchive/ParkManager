@@ -14,4 +14,35 @@ public enum BandColor {
     public String getName() {
         return name;
     }
+
+    public BandColor fromString(String s) {
+        switch (s) {
+            case "red":
+                return RED;
+            case "orange":
+                return ORANGE;
+            case "yellow":
+                return YELLOW;
+            case "green":
+                return GREEN;
+            case "blue":
+                return BLUE;
+            case "purple":
+                return PURPLE;
+            case "pink":
+                return PINK;
+            case "s1":
+                return SPECIAL1;
+            case "s2":
+                return SPECIAL2;
+            case "s3":
+                return SPECIAL3;
+            case "s4":
+                return SPECIAL4;
+            case "s5":
+                return SPECIAL5;
+            default:
+                return BLUE;
+        }
+    }
 }

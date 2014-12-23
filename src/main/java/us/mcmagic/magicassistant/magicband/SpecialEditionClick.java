@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant.magicband;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +35,7 @@ public class SpecialEditionClick {
             InventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
             return;
         }
-        BandColor color = BandUtil.getBandColor(name.toLowerCase());
+        Material color = BandUtil.getBandMaterial(BandColor.valueOf(name.toLowerCase()));
         if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");

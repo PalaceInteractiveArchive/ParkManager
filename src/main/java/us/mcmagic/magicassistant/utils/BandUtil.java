@@ -168,6 +168,42 @@ public class BandUtil {
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
     }
 
+    public static void setBandColor(Player player, Material color) {
+        openConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
+            sql.setString(1, getBandName(color));
+            sql.setString(2, player.getUniqueId() + "");
+            sql.execute();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        data.setBandColor(color);
+        giveBandToPlayer(player);
+        player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
+    }
+
+    private static String getBandName(Material color) {
+        switch (color) {
+            case PAPER:
+                return "s1";
+            case IRON_BARDING:
+                return "s2";
+            case GOLD_BARDING:
+                return "s3";
+            case DIAMOND_BARDING:
+                return "s4";
+            case GHAST_TEAR:
+                return "s5";
+            default:
+                return "blue";
+        }
+    }
+
     public static void setBandName(Player player, ChatColor color) {
         openConnection();
         try {
