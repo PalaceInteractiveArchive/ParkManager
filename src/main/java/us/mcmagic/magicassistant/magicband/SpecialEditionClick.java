@@ -36,7 +36,7 @@ public class SpecialEditionClick {
             return;
         }
         Material color = BandUtil.getBandMaterial(BandColor.valueOf(name.toLowerCase()));
-        if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
+        if (color.equals(BandUtil.getBandMaterial(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
