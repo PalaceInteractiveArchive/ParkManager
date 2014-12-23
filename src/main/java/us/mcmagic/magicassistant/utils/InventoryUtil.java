@@ -43,7 +43,7 @@ public class InventoryUtil implements Listener {
     public static ItemStack mk = new ItemStack(Material.DIAMOND_HOE);
     public static ItemStack epcot = new ItemStack(Material.SNOW_BALL);
     public static ItemStack hws = new ItemStack(Material.JUKEBOX);
-    public static ItemStack ak = new ItemStack(Material.SAPLING);
+    public static ItemStack ak = new ItemStack(Material.SAPLING, 1, (byte) 5);
     public static ItemStack tl = new ItemStack(Material.WATER_BUCKET);
     public static ItemStack dcl = new ItemStack(Material.BOAT);
     //Player Info

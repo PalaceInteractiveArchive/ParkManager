@@ -30,12 +30,6 @@ public class InventoryClick implements Listener {
         if (clicked.equals(null)) {
             return;
         }
-        if (clicked.getItemMeta() != null) {
-            if (clicked.getItemMeta().getDisplayName().contains("MagicBand")) {
-                event.setCancelled(!player.hasPermission("band.change"));
-                return;
-            }
-        }
         String name = ChatColor.stripColor(inv.getName());
         if (name.equals(player.getName() + "'s MagicBand")) {
             MainMenuClick.handle(event);
@@ -93,6 +87,11 @@ public class InventoryClick implements Listener {
             case "Special Edition MagicBands":
                 event.setCancelled(true);
                 SpecialEditionClick.handle(event);
+        }
+        if (clicked.getItemMeta() != null) {
+            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
+                event.setCancelled(!player.hasPermission("band.change"));
+            }
         }
     }
 

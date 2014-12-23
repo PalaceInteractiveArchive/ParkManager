@@ -21,21 +21,8 @@ public class Command_invupdate {
         player.sendMessage(ChatColor.GREEN + "Updating Inventory...");
         Bukkit.getScheduler().runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
             public void run() {
-                if (!InventorySql.playerDataContainsPlayer(player)) {
-                    player.performCommand("spawn");
-                    InventorySql.setupData(player);
-                } else {
-                    player.getInventory().setContents(
-                            InventorySql.invContents(player));
-                    player.getInventory().setArmorContents(
-                            InventorySql.armorContents(player));
-                }
-                if (!InventorySql.endPlayerDataContainsPlayer(player)) {
-                    InventorySql.setupEndData(player);
-                } else {
-                    player.getEnderChest().setContents(
-                            InventorySql.endInvContents(player));
-                }
+                InventorySql.updateInventory(player);
+                InventorySql.updateEndInventory(player);
                 BandUtil.giveBandToPlayer(player);
                 player.sendMessage(net.md_5.bungee.api.ChatColor.GREEN + "Inventory Updated!");
             }
