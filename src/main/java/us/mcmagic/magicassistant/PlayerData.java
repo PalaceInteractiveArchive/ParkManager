@@ -13,20 +13,22 @@ import java.util.UUID;
  * Created by Marc on 12/13/14
  */
 public class PlayerData {
-    public UUID uuid;
-    public boolean dvc;
-    public ChatColor bandName;
-    public BandColor bandColor;
-    public HashMap<UUID, String> friends = new HashMap<>();
-    public HashMap<Integer, List<String>> pages = new HashMap<>();
+    private UUID uuid;
+    private boolean dvc;
+    private ChatColor bandName;
+    private BandColor bandColor;
+    private HashMap<UUID, String> friends = new HashMap<>();
+    private HashMap<Integer, List<String>> pages = new HashMap<>();
+    private boolean special;
 
-    public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, HashMap<UUID, String> friends, HashMap<Integer, List<String>> pages) {
+    public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, HashMap<UUID, String> friends, HashMap<Integer, List<String>> pages, boolean special) {
         this.uuid = uuid;
         dvc = PlayerUtil.getUser(uuid).getRank().equals(Rank.DVCMEMBER);
         this.bandName = bandName;
         this.bandColor = bandColor;
         this.friends = friends;
         this.pages = pages;
+        this.special = special;
     }
 
     public UUID getUuid() {
@@ -59,5 +61,9 @@ public class PlayerData {
 
     public void setBandName(ChatColor color) {
         this.bandName = color;
+    }
+
+    public boolean getSpecial() {
+        return special;
     }
 }

@@ -107,10 +107,11 @@ public class BandUtil {
                     plist.put(1, list);
                 }
             }
+            boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
             PlayerData data = new PlayerData(player.getUniqueId(),
                     getBandNameColor(result.getString("namecolor")),
                     getBandColor(result.getString("bandcolor")),
-                    friendlist, plist);
+                    friendlist, plist, special);
             result.close();
             sql.close();
             MagicAssistant.playerData.add(data);
@@ -206,8 +207,35 @@ public class BandUtil {
                 return BandColor.PURPLE;
             case "pink":
                 return BandColor.PINK;
+            case "s1":
+                return BandColor.SPECIAL1;
+            case "s2":
+                return BandColor.SPECIAL2;
+            case "s3":
+                return BandColor.SPECIAL3;
+            case "s4":
+                return BandColor.SPECIAL4;
+            case "s5":
+                return BandColor.SPECIAL5;
             default:
                 return BandColor.BLUE;
+        }
+    }
+
+    public static Material getBandMaterial(BandColor color) {
+        switch (color) {
+            case SPECIAL1:
+                return Material.PAPER;
+            case SPECIAL2:
+                return Material.IRON_BARDING;
+            case SPECIAL3:
+                return Material.GOLD_BARDING;
+            case SPECIAL4:
+                return Material.DIAMOND_BARDING;
+            case SPECIAL5:
+                return Material.GHAST_TEAR;
+            default:
+                return Material.FIREWORK_CHARGE;
         }
     }
 
@@ -276,13 +304,23 @@ public class BandUtil {
 
     public static void giveBandToPlayer(Player player) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        ItemStack mb = new ItemStack(Material.FIREWORK_CHARGE);
-        FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
-        mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
-        mbm.setDisplayName(data.getBandName() + "MagicBand");
-        mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
-                ChatColor.GREEN + "the MagicBand menu!"));
-        mb.setItemMeta(mbm);
+        ItemStack mb;
+        if (data.getSpecial()) {
+            mb = new ItemStack(getBandMaterial(data.getBandColor()));
+            ItemMeta mbm = mb.getItemMeta();
+            mbm.setDisplayName(data.getBandName() + "MagicBand");
+            mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
+                    ChatColor.GREEN + "the MagicBand menu!"));
+            mb.setItemMeta(mbm);
+        } else {
+            mb = new ItemStack(Material.FIREWORK_CHARGE);
+            FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
+            mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
+            mbm.setDisplayName(data.getBandName() + "MagicBand");
+            mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
+                    ChatColor.GREEN + "the MagicBand menu!"));
+            mb.setItemMeta(mbm);
+        }
         player.getInventory().setItem(8, mb);
     }
 

@@ -22,7 +22,7 @@ public class CustomBandClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -30,6 +30,10 @@ public class CustomBandClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
+        if (name.equals("Next Page")) {
+            InventoryUtil.openInventory(player, InventoryType.SPECIALCOLOR);
+            return;
+        }
         BandColor color = BandUtil.getBandColor(name.toLowerCase());
         if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
             player.closeInventory();

@@ -58,8 +58,9 @@ public class PlayerJoinAndLeave implements Listener {
                                 player.getEnderChest().setContents(
                                         InventorySql.endInvContents(player));
                             }
+                            player.sendMessage(ChatColor.GREEN + "Inventory Updated!");
                         }
-                    }, 20L);
+                    }, 200L);
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override
@@ -107,8 +108,13 @@ public class PlayerJoinAndLeave implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (MagicAssistant.crossServerInv) {
-            InventorySql.updateInventory(player);
-            InventorySql.updateEndInventory(player);
+            Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+                @Override
+                public void run() {
+                    InventorySql.updateInventory(player);
+                    InventorySql.updateEndInventory(player);
+                }
+            });
         }
         BandUtil.removePlayerData(player);
         try {

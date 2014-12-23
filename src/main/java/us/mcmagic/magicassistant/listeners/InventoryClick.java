@@ -89,6 +89,10 @@ public class InventoryClick implements Listener {
             case "Food Menu":
                 event.setCancelled(true);
                 FoodMenuClick.handle(event);
+                return;
+            case "Special Edition MagicBands":
+                event.setCancelled(true);
+                SpecialEditionClick.handle(event);
         }
     }
 

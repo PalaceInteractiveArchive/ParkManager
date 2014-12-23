@@ -5,14 +5,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
- * Created by Marc on 12/21/14
+ * Created by Marc on 12/23/14
  */
-public class CustomNameClick {
+public class SpecialEditionClick {
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -29,8 +30,17 @@ public class CustomNameClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        ChatColor color = BandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
+        if (name.equals("Last Page")) {
+            InventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
+            return;
+        }
+        BandColor color = BandUtil.getBandColor(name.toLowerCase());
+        if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
+            player.closeInventory();
+            player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
+            return;
+        }
         player.closeInventory();
-        BandUtil.setBandName(player, color);
+        BandUtil.setBandColor(player, color);
     }
 }

@@ -12,6 +12,7 @@ import us.mcmagic.magicassistant.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.PlayerData;
 import us.mcmagic.magicassistant.magicband.Attraction;
+import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.magicassistant.magicband.Ride;
 import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.credits.Credits;
@@ -66,6 +67,11 @@ public class InventoryUtil implements Listener {
     public static ItemStack blueBand = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack purpleBand = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack pinkBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack s1Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL1));
+    public static ItemStack s2Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL2));
+    public static ItemStack s3Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL3));
+    public static ItemStack s4Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL4));
+    public static ItemStack s5Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL5));
     //Customize Color
     public static ItemStack red = new ItemStack(Material.WOOL, 1, (byte) 14);
     public static ItemStack orange = new ItemStack(Material.WOOL, 1, (byte) 1);
@@ -263,6 +269,11 @@ public class InventoryUtil implements Listener {
         FireworkEffectMeta bbm = (FireworkEffectMeta) blueBand.getItemMeta();
         FireworkEffectMeta pbm = (FireworkEffectMeta) purpleBand.getItemMeta();
         FireworkEffectMeta pibm = (FireworkEffectMeta) pinkBand.getItemMeta();
+        ItemMeta s1m = s1Band.getItemMeta();
+        ItemMeta s2m = s2Band.getItemMeta();
+        ItemMeta s3m = s3Band.getItemMeta();
+        ItemMeta s4m = s4Band.getItemMeta();
+        ItemMeta s5m = s5Band.getItemMeta();
         rbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(255, 40, 40)).build());
         obm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(247, 140, 0)).build());
         ybm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(239, 247, 0)).build());
@@ -277,6 +288,11 @@ public class InventoryUtil implements Listener {
         bbm.setDisplayName(ChatColor.BLUE + "Blue (Original)");
         pbm.setDisplayName(ChatColor.DARK_PURPLE + "Purple");
         pibm.setDisplayName(ChatColor.LIGHT_PURPLE + "Pink");
+        s1m.setDisplayName(ChatColor.BLUE + "Holiday Band");
+        s2m.setDisplayName(ChatColor.RED + "Big Hero 6");
+        s3m.setDisplayName(ChatColor.GRAY + "Haunted Mansion");
+        s4m.setDisplayName(ChatColor.DARK_AQUA + "Sorcerer Mickey");
+        s5m.setDisplayName(ChatColor.LIGHT_PURPLE + "Princesses");
         redBand.setItemMeta(rbm);
         orangeBand.setItemMeta(obm);
         yellowBand.setItemMeta(ybm);
@@ -284,6 +300,11 @@ public class InventoryUtil implements Listener {
         blueBand.setItemMeta(bbm);
         purpleBand.setItemMeta(pbm);
         pinkBand.setItemMeta(pibm);
+        s1Band.setItemMeta(s1m);
+        s2Band.setItemMeta(s2m);
+        s3Band.setItemMeta(s3m);
+        s4Band.setItemMeta(s4m);
+        s5Band.setItemMeta(s5m);
         //Rides and Attractions
         ItemMeta ridem = ride.getItemMeta();
         ItemMeta attm = attraction.getItemMeta();
@@ -500,11 +521,19 @@ public class InventoryUtil implements Listener {
                 return;
             case CUSTOMIZE:
                 Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
-                ItemStack band = new ItemStack(Material.FIREWORK_CHARGE);
-                FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
-                bm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
-                bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
-                band.setItemMeta(bm);
+                ItemStack band;
+                if (data.getSpecial()) {
+                    band = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+                    ItemMeta bm = band.getItemMeta();
+                    bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
+                    band.setItemMeta(bm);
+                } else {
+                    band = new ItemStack(Material.FIREWORK_CHARGE);
+                    FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
+                    bm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
+                    bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
+                    band.setItemMeta(bm);
+                }
                 custom.setItem(11, band);
                 custom.setItem(15, nameChange);
                 custom.setItem(22, BandUtil.getBackItem());
@@ -532,7 +561,19 @@ public class InventoryUtil implements Listener {
                 ccolor.setItem(15, purpleBand);
                 ccolor.setItem(16, pinkBand);
                 ccolor.setItem(22, BandUtil.getBackItem());
+                ccolor.setItem(23, nextPage);
                 player.openInventory(ccolor);
+                return;
+            case SPECIALCOLOR:
+                Inventory special = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Special Edition MagicBands");
+                special.setItem(11, s1Band);
+                special.setItem(12, s2Band);
+                special.setItem(13, s3Band);
+                special.setItem(14, s4Band);
+                special.setItem(15, s5Band);
+                special.setItem(21, lastPage);
+                special.setItem(22, BandUtil.getBackItem());
+                player.openInventory(special);
                 return;
             case RIDESANDATTRACTIONS:
                 Inventory rna = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides and Attractions");
@@ -540,8 +581,6 @@ public class InventoryUtil implements Listener {
                 rna.setItem(24, attraction);
                 rna.setItem(49, BandUtil.getBackItem());
                 player.openInventory(rna);
-                return;
-            case ATTRACTIONS:
                 return;
             case HOTELSANDRESORTS:
                 featureComingSoon(player);

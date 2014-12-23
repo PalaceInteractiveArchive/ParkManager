@@ -330,8 +330,7 @@ public class InventorySql {
             try {
                 if (decompressor != null)
                     decompressor.close();
-            } catch (IOException ex) {
-                return null;
+            } catch (IOException ignored) {
             }
         }
     }
