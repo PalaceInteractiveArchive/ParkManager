@@ -84,4 +84,8 @@ public class PlayerData {
     public boolean getSpecial() {
         return special;
     }
+
+    public void setSpecial(boolean special) {
+        this.special = special;
+    }
 }
