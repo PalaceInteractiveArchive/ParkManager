@@ -26,9 +26,9 @@ public class FileUtil {
         }
     }
 
-    public static void setupFoodFile() {
+    public static void setupMenuFile() {
         try {
-            File file = new File("plugins/MagicAssistant/food.yml");
+            File file = new File("plugins/MagicAssistant/menu.yml");
             if (file.exists()) {
                 return;
             }
