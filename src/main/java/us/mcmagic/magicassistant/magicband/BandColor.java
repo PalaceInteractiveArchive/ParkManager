@@ -4,7 +4,7 @@ package us.mcmagic.magicassistant.magicband;
  * Created by Marc on 12/13/14
  */
 public enum BandColor {
-    RED("red"), YELLOW("yellow"), GREEN("green"), BLUE("blue");
+    RED("red"), ORANGE("orange"), YELLOW("yellow"), GREEN("green"), DARKGREEN("darkgreen"), BLUE("blue"), PURPLE("purple");
     String name;
 
     BandColor(String name) {
