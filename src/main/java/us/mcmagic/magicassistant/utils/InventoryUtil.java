@@ -124,11 +124,10 @@ public class InventoryUtil implements Listener {
         ItemMeta hm = hub.getItemMeta();
         ItemMeta pm = parks.getItemMeta();
         ItemMeta rm = report.getItemMeta();
-        FireworkEffectMeta cm = (FireworkEffectMeta) custom.getItemMeta();
+        ItemMeta cm = custom.getItemMeta();
         ItemMeta am = arcade.getItemMeta();
         ItemMeta crm = creative.getItemMeta();
         ItemMeta sem = seasonal.getItemMeta();
-        cm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 102, 255)).build());
         rnam.setDisplayName(ChatColor.GREEN + "Rides and Attractions");
         snem.setDisplayName(ChatColor.GREEN + "Shows and Events");
         hnrm.setDisplayName(ChatColor.GREEN + "Hotels and Resorts");
