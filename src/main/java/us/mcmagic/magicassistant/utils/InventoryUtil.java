@@ -541,13 +541,14 @@ public class InventoryUtil implements Listener {
         } else {
             alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List");
         }
-        if (al.get(1).isEmpty()) {
+        if (al.isEmpty() || al.get(1).isEmpty()) {
             ItemStack empty = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta itemMeta = empty.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
             itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no attraction setup", ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             alist.setItem(22, empty);
+            alist.setItem(49, BandUtil.getBackItem());
             player.openInventory(alist);
             return;
         }
@@ -594,13 +595,14 @@ public class InventoryUtil implements Listener {
         } else {
             rlist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride List");
         }
-        if (rl.get(1).isEmpty()) {
+        if (rl.isEmpty() || rl.get(1).isEmpty()) {
             ItemStack empty = new ItemStack(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta itemMeta = empty.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
             itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup", ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             rlist.setItem(22, empty);
+            rlist.setItem(49, BandUtil.getBackItem());
             player.openInventory(rlist);
             return;
         }
