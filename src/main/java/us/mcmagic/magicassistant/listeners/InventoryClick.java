@@ -30,12 +30,12 @@ public class InventoryClick implements Listener {
         if (clicked.equals(null)) {
             return;
         }
-        /*
-        if (clicked.getType().equals(BandUtil.getBandColor(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
-            return;
+        if (clicked.getItemMeta() != null) {
+            if (clicked.getItemMeta().getDisplayName().contains("MagicBand")) {
+                event.setCancelled(!player.hasPermission("band.change"));
+                return;
+            }
         }
-        */
         String name = ChatColor.stripColor(inv.getName());
         if (name.equals(player.getName() + "'s MagicBand")) {
             MainMenuClick.handle(event);

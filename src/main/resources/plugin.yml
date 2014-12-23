@@ -159,3 +159,7 @@ commands:
       permission: mcmagic.msg
       permission-message: §4Only Cast Members can use this command!
       aliases: [tell, t, w, whisper, m]
+   invupdate:
+      description: Update the player's inventory
+      permission: mcmagic.mb
+      permission-message: §4Only Cast Members can use this command!

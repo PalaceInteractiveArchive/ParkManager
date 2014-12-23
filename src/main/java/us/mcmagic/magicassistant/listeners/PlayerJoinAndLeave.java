@@ -60,7 +60,7 @@ public class PlayerJoinAndLeave implements Listener {
                             }
                             player.sendMessage(ChatColor.GREEN + "Inventory Updated!");
                         }
-                    }, 200L);
+                    }, 100L);
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override
