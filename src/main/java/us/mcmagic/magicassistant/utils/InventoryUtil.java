@@ -59,10 +59,13 @@ public class InventoryUtil implements Listener {
     //Customize Menu
     public static ItemStack nameChange = new ItemStack(Material.JUKEBOX);
     //Customize Name
-    public static ItemStack blueBand = new ItemStack(Material.PAPER);
-    public static ItemStack redBand = new ItemStack(Material.DIAMOND_BARDING);
-    public static ItemStack greenBand = new ItemStack(Material.IRON_BARDING);
-    public static ItemStack yellowBand = new ItemStack(Material.GOLD_BARDING);
+    public static ItemStack redBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack orangeBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack yellowBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack greenBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack blueBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack purpleBand = new ItemStack(Material.FIREWORK_CHARGE);
+    public static ItemStack pinkBand = new ItemStack(Material.FIREWORK_CHARGE);
     //Customize Color
     public static ItemStack red = new ItemStack(Material.WOOL, 1, (byte) 14);
     public static ItemStack orange = new ItemStack(Material.WOOL, 1, (byte) 1);
@@ -253,18 +256,34 @@ public class InventoryUtil implements Listener {
         blue.setItemMeta(bnm);
         purple.setItemMeta(pnm);
         //Customize Color
-        ItemMeta bbm = blueBand.getItemMeta();
-        ItemMeta rbm = redBand.getItemMeta();
-        ItemMeta gbm = greenBand.getItemMeta();
-        ItemMeta ybm = yellowBand.getItemMeta();
-        bbm.setDisplayName(ChatColor.BLUE + "Blue (Original)");
+        FireworkEffectMeta rbm = (FireworkEffectMeta) redBand.getItemMeta();
+        FireworkEffectMeta obm = (FireworkEffectMeta) orangeBand.getItemMeta();
+        FireworkEffectMeta ybm = (FireworkEffectMeta) yellowBand.getItemMeta();
+        FireworkEffectMeta gbm = (FireworkEffectMeta) greenBand.getItemMeta();
+        FireworkEffectMeta bbm = (FireworkEffectMeta) blueBand.getItemMeta();
+        FireworkEffectMeta pbm = (FireworkEffectMeta) purpleBand.getItemMeta();
+        FireworkEffectMeta pibm = (FireworkEffectMeta) pinkBand.getItemMeta();
+        rbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(255, 0, 0)).build());
+        obm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(255, 127, 0)).build());
+        ybm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(255, 255, 0)).build());
+        gbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 127, 0)).build());
+        bbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 102, 255)).build());
+        pbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(20, 40, 174)).build());
+        pibm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(255, 0, 247)).build());
         rbm.setDisplayName(ChatColor.RED + "Red");
-        gbm.setDisplayName(ChatColor.DARK_GREEN + "Green");
+        obm.setDisplayName(ChatColor.GOLD + "Orange");
         ybm.setDisplayName(ChatColor.YELLOW + "Yellow");
-        blueBand.setItemMeta(bbm);
+        gbm.setDisplayName(ChatColor.DARK_GREEN + "Green");
+        bbm.setDisplayName(ChatColor.BLUE + "Blue (Original)");
+        pbm.setDisplayName(ChatColor.DARK_PURPLE + "Purple");
+        pibm.setDisplayName(ChatColor.LIGHT_PURPLE + "Pink");
         redBand.setItemMeta(rbm);
-        greenBand.setItemMeta(gbm);
+        orangeBand.setItemMeta(obm);
         yellowBand.setItemMeta(ybm);
+        greenBand.setItemMeta(gbm);
+        blueBand.setItemMeta(bbm);
+        purpleBand.setItemMeta(pbm);
+        pinkBand.setItemMeta(pibm);
         //Rides and Attractions
         ItemMeta ridem = ride.getItemMeta();
         ItemMeta attm = attraction.getItemMeta();
@@ -505,10 +524,13 @@ public class InventoryUtil implements Listener {
                 return;
             case CUSTOMCOLOR:
                 Inventory ccolor = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Band Color");
-                ccolor.setItem(11, blueBand);
-                ccolor.setItem(12, redBand);
-                ccolor.setItem(14, greenBand);
-                ccolor.setItem(15, yellowBand);
+                ccolor.setItem(10, redBand);
+                ccolor.setItem(11, orangeBand);
+                ccolor.setItem(12, yellowBand);
+                ccolor.setItem(13, greenBand);
+                ccolor.setItem(14, blueBand);
+                ccolor.setItem(15, purpleBand);
+                ccolor.setItem(16, pinkBand);
                 ccolor.setItem(22, BandUtil.getBackItem());
                 player.openInventory(ccolor);
                 return;
