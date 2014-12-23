@@ -187,7 +187,7 @@ public class BandUtil {
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
     }
 
-    private static String getBandName(Material color) {
+    public static String getBandName(Material color) {
         switch (color) {
             case PAPER:
                 return "s1";

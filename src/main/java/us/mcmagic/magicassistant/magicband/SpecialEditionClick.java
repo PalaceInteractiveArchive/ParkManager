@@ -35,7 +35,7 @@ public class SpecialEditionClick {
             InventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
             return;
         }
-        Material color = BandUtil.getBandMaterial(BandColor.valueOf(name.toLowerCase()));
+        Material color = item.getType();
         if (color.equals(BandUtil.getBandMaterial(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
