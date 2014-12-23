@@ -17,8 +17,8 @@ public class Command_msg {
                 return;
             }
             String msg = "";
-            for (String arg : args) {
-                msg += arg + " ";
+            for (int i = 1; i < args.length; i++) {
+                msg += args[i] + " ";
             }
             Player player = PlayerUtil.findPlayer(args[0]);
             player.sendMessage(ChatColor.AQUA + "" + ChatColor.translateAlternateColorCodes('&', msg));
