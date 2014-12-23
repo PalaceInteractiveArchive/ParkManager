@@ -28,6 +28,11 @@ public class RideAttractionClick {
         if (meta.getDisplayName() == null) {
             return;
         }
+        if (meta.getDisplayName().equals(ChatColor.RED + "Uh oh!")) {
+            player.closeInventory();
+            player.sendMessage(ChatColor.RED + "Sorry, but there are no attraction setup on this server!");
+            return;
+        }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Rides":
