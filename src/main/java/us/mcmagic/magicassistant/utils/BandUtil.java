@@ -23,11 +23,12 @@ import java.util.Date;
  */
 public class BandUtil {
     private static Connection connection;
-    private static ItemStack back = new ItemStack(Material.PAPER);
+    private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
     private static List<UUID> loading = new ArrayList<>();
 
     public static void initialize() {
-        ItemMeta bm = back.getItemMeta();
+        FireworkEffectMeta bm = (FireworkEffectMeta) back.getItemMeta();
+        bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 102, 255)).build());
         bm.setDisplayName(ChatColor.GREEN + "Back");
         back.setItemMeta(bm);
     }
