@@ -555,7 +555,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             int i = 1;
             int i2 = 1;
             for (Ride ride : rides) {
-                if (i2 >= 8) {
+                if (i2 >= 22) {
                     i++;
                     i2 = 1;
                 }
