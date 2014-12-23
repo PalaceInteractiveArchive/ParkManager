@@ -25,7 +25,7 @@ public class CustomizeMenuClick {
             return;
         }
         ItemMeta meta = item.getItemMeta();
-        if (meta.getDisplayName() == null) {
+        if (meta == null) {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());

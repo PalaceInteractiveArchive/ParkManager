@@ -164,6 +164,7 @@ public class BandUtil {
         }
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         data.setBandColor(color);
+        data.setSpecial(false);
         giveBandToPlayer(player);
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
     }
