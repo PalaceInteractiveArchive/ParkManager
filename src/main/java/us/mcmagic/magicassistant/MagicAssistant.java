@@ -49,10 +49,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config
             .getStringList("join-messages");
+    public static List<ItemStack> firstJoinItems = new ArrayList<>();
     public static Map<Integer, Integer> items = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();
+    public static boolean hubServer;
 
     public void onEnable() {
         registerListeners();
@@ -66,6 +68,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         FileUtil.setupConfig();
         FileUtil.setupMenuFile();
         warps.clear();
+        setupFirstJoinItems();
+        setupNewJoinMessages();
         getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
         getLogger().info("Warps Initialized!");
@@ -85,6 +89,38 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         crossServerInv = getConfig().getBoolean("transfer-inventories");
         resortsServer = serverName == "Resorts";
         getLogger().info("Magic Assistant is ready to help!");
+        hubServer = serverName == "Hub";
+    }
+
+    public void setupNewJoinMessages() {
+        FileConfiguration config = getConfig();
+        List<String> msgs = config.getStringList("first-join-message");
+        for (String msg : msgs) {
+            newJoinMessage.add(ChatColor.translateAlternateColorCodes('&', msg));
+        }
+    }
+
+    public void setupFirstJoinItems() {
+        FileConfiguration config = getConfig();
+        List<String> items = config.getStringList("first-join-items");
+        for (String item : items) {
+            String[] list = item.split(":");
+            if (list.length == 1) {
+                ItemStack i = new ItemStack(Integer.parseInt(list[0]));
+                firstJoinItems.add(i);
+                continue;
+            }
+            if (list.length == 2) {
+                ItemStack i = new ItemStack(Integer.parseInt(list[0]), 1, (byte) Integer.parseInt(list[1]));
+                firstJoinItems.add(i);
+                continue;
+            }
+            if (list.length == 3) {
+                ItemStack i = new ItemStack(Integer.parseInt(list[0]), Integer.parseInt(list[2]), (byte) Integer.parseInt(list[1]));
+                firstJoinItems.add(i);
+                continue;
+            }
+        }
     }
 
     public WorldGuardPlugin getWG() {

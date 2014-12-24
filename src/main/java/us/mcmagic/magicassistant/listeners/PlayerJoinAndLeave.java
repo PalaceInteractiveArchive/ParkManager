@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Command_vanish;
 import us.mcmagic.magicassistant.utils.BandUtil;
@@ -33,11 +34,21 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        if (MagicAssistant.spawnOnJoin) {
+            player.performCommand("spawn");
+        }
         for (String msg : MagicAssistant.joinMessages) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         }
-        if (MagicAssistant.spawnOnJoin) {
-            player.performCommand("spawn");
+        if (MagicAssistant.hubServer) {
+            if (!player.hasPlayedBefore()) {
+                for (String msg : MagicAssistant.newJoinMessage) {
+                    Bukkit.broadcastMessage(msg.replaceAll("%pl%", player.getName()));
+                }
+                for (ItemStack item : MagicAssistant.firstJoinItems) {
+                    player.getInventory().addItem(item);
+                }
+            }
         }
         if (MagicAssistant.crossServerInv) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
