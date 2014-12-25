@@ -89,7 +89,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         crossServerInv = getConfig().getBoolean("transfer-inventories");
         resortsServer = serverName == "Resorts";
         getLogger().info("Magic Assistant is ready to help!");
-        hubServer = serverName == "Hub";
+        hubServer = getConfig().getBoolean("hub-server");
     }
 
     public void setupNewJoinMessages() {
