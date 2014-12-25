@@ -100,6 +100,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void setupFirstJoinItems() {
         FileConfiguration config = getConfig();
         List<String> items = config.getStringList("first-join-items");

@@ -74,14 +74,6 @@ public class FileUtil {
         saveFile(file, config);
     }
 
-    public static void setFirstJoinItems() {
-        File file = new File("plugins/MagicAssistant/config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        List<String> list = Arrays.asList("260 6", "310 1", "351 1", "264 10");
-        config.set("first-join-items", list);
-        saveFile(file, config);
-    }
-
     public static void setFirstJoinMessages() {
         File file = new File("plugins/MagicAssistant/config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
