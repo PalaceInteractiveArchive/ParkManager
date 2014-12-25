@@ -7,6 +7,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.magicband.Warp;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.List;
 
@@ -61,6 +62,19 @@ public class Command_warp {
                 return;
             } else {
                 warp = WarpUtil.findWarp(w);
+            }
+            Rank rank = us.mcmagic.mcmagiccore.player.PlayerUtil.getUser(player.getUniqueId()).getRank();
+            if (warp.getName().toLowerCase().startsWith("dvc")) {
+                if (rank.equals(Rank.GUEST)) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets() + ChatColor.RED + " rank or above to use this warp!");
+                    return;
+                }
+            }
+            if (warp.getName().toLowerCase().startsWith("char")) {
+                if (!(rank.getOp() || rank.getSqlName().startsWith("character") || rank.equals(Rank.INTERN))) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.CHARACTERGUEST.getNameWithBrackets() + ChatColor.RED + " rank or above to use this warp!");
+                    return;
+                }
             }
             String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
