@@ -43,7 +43,7 @@ public class PlayerJoinAndLeave implements Listener {
         if (MagicAssistant.hubServer) {
             if (!player.hasPlayedBefore()) {
                 for (String msg : MagicAssistant.newJoinMessage) {
-                    Bukkit.broadcastMessage(msg.replaceAll("%pl%", player.getName()));
+                    Bukkit.broadcastMessage(msg.replaceAll("%pl%", player.getName()).replaceAll("%total%",Bukkit.getOfflinePlayers().length + 100000);
                 }
                 for (ItemStack item : MagicAssistant.firstJoinItems) {
                     player.getInventory().addItem(item);
