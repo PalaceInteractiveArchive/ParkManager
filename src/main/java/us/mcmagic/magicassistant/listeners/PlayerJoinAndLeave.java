@@ -41,7 +41,6 @@ public class PlayerJoinAndLeave implements Listener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         }
         if (MagicAssistant.hubServer) {
-            Bukkit.broadcastMessage("Hub Server");
             if (!player.hasPlayedBefore()) {
                 for (String msg : MagicAssistant.newJoinMessage) {
                     String nmsg = msg.replaceAll("%pl%", player.getName());

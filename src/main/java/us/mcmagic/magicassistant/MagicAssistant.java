@@ -88,8 +88,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
         resortsServer = serverName == "Resorts";
-        getLogger().info("Magic Assistant is ready to help!");
         hubServer = getConfig().getBoolean("hub-server");
+        getLogger().info("Magic Assistant is ready to help!");
     }
 
     public void setupNewJoinMessages() {
