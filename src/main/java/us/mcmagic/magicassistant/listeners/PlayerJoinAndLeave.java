@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Command_vanish;
 import us.mcmagic.magicassistant.utils.BandUtil;
@@ -23,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 public class PlayerJoinAndLeave implements Listener {
     public static MagicAssistant pl;
@@ -46,8 +48,10 @@ public class PlayerJoinAndLeave implements Listener {
                     String nmsg = msg.replaceAll("%pl%", player.getName());
                     Bukkit.broadcastMessage(nmsg.replaceAll("%total%", "" + (Bukkit.getOfflinePlayers().length + 100000)));
                 }
-                for (ItemStack item : MagicAssistant.firstJoinItems) {
-                    player.getInventory().addItem(item);
+                PlayerInventory pi = player.getInventory();
+                for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {
+                    ItemStack i = new ItemStack(item.getKey(), item.getValue());
+                    pi.addItem(i);
                 }
             }
         }

@@ -49,8 +49,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config
             .getStringList("join-messages");
-    public static List<ItemStack> firstJoinItems = new ArrayList<>();
-    public static Map<Integer, Integer> items = new HashMap<>();
+    public static Map<Integer, Integer> firstJoinItems = new HashMap();
     public static List<String> newJoinMessage = new ArrayList<>();
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();
@@ -103,23 +102,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     @SuppressWarnings("deprecation")
     public void setupFirstJoinItems() {
         FileConfiguration config = getConfig();
-        List<String> items = config.getStringList("first-join-items");
-        for (String item : items) {
-            String[] list = item.split(":");
-            if (list.length == 1) {
-                ItemStack i = new ItemStack(Integer.parseInt(list[0]));
-                firstJoinItems.add(i);
-                continue;
-            }
-            if (list.length == 2) {
-                ItemStack i = new ItemStack(Integer.parseInt(list[0]), 1, (byte) Integer.parseInt(list[1]));
-                firstJoinItems.add(i);
-                continue;
-            }
-            if (list.length == 3) {
-                ItemStack i = new ItemStack(Integer.parseInt(list[0]), Integer.parseInt(list[2]), (byte) Integer.parseInt(list[1]));
-                firstJoinItems.add(i);
-                continue;
+        for (String s : config.getStringList("first-join-items")) {
+            String[] items = s.split(" ");
+            try {
+                firstJoinItems.put(Integer.parseInt(items[0]),
+                        Integer.parseInt(items[1]));
+            } catch (NumberFormatException ignored) {
             }
         }
     }
