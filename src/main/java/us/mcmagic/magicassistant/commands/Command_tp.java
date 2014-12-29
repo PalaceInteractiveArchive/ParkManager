@@ -105,6 +105,5 @@ public class Command_tp {
         }
         player.sendMessage(ChatColor.RED
                 + "/tp [Player] <Target> or <x> <y> <z>");
-        return;
     }
 }

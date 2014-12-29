@@ -33,6 +33,7 @@ public class PlayerJoinAndLeave implements Listener {
         pl = instance;
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -42,11 +43,15 @@ public class PlayerJoinAndLeave implements Listener {
         for (String msg : MagicAssistant.joinMessages) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         }
+        if (!player.hasPermission("band.stayvisible")) {
+            VisibleUtil.hideForHideAll(player);
+        }
         if (MagicAssistant.hubServer) {
             if (!player.hasPlayedBefore()) {
+                int total = Bukkit.getOfflinePlayers().length + 100000;
                 for (String msg : MagicAssistant.newJoinMessage) {
                     String nmsg = msg.replaceAll("%pl%", player.getName());
-                    Bukkit.broadcastMessage(nmsg.replaceAll("%total%", "" + (Bukkit.getOfflinePlayers().length + 100000)));
+                    Bukkit.broadcastMessage(nmsg.replaceAll("%total%", "" + (total)));
                 }
                 PlayerInventory pi = player.getInventory();
                 for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {

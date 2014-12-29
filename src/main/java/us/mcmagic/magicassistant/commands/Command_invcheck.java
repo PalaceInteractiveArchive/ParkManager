@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.commands;
 
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 public class Command_invcheck {
 

@@ -131,11 +131,8 @@ public class ChatListener implements Listener {
                 return false;
             }
         }
-        if (finalMsg.matches(".*" + ipFilter + ".*")
-                || finalMsg.matches(".*" + domainFilter + ".*")) {
-            return true;
-        }
-        return false;
+        return finalMsg.matches(".*" + ipFilter + ".*")
+                || finalMsg.matches(".*" + domainFilter + ".*");
     }
 
     public static int[] checkCaps(String message) {
@@ -164,21 +161,18 @@ public class ChatListener implements Listener {
 
     public static int percentageCaps(int[] caps) {
         int sum = 0;
-        for (int i = 0; i < caps.length; i++) {
-            sum += caps[i];
+        for (int cap : caps) {
+            sum += cap;
         }
         double ratioCaps = sum / caps.length;
-        int percentCaps = (int) (100.0D * ratioCaps);
-        return percentCaps;
+        return (int) (100.0D * ratioCaps);
     }
 
     public static int checkCapsInRow(int[] caps) {
         int sum = 0;
         int sumTemp = 0;
-        int[] arrayOfInt = caps;
         int j = caps.length;
-        for (int i = 0; i < j; i++) {
-            int i2 = arrayOfInt[i];
+        for (int i2 : caps) {
             if (i2 == 1) {
                 sumTemp++;
                 sum = Math.max(sum, sumTemp);

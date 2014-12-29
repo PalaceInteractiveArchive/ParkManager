@@ -64,7 +64,9 @@ public class BandUtil {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet result = sql.executeQuery();
-            result.next();
+            if (!result.next()) {
+                player.kickPlayer("Sorry, there was an issue! Please report this to a staff member.");
+            }
             HashMap<UUID, String> friendlist = new HashMap<>();
             int pages;
             if (!result.getString("friends").equals("")) {

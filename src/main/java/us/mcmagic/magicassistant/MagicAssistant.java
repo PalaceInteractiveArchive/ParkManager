@@ -49,7 +49,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config
             .getStringList("join-messages");
-    public static Map<Integer, Integer> firstJoinItems = new HashMap();
+    public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();

@@ -6,9 +6,10 @@ import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class VisibleUtil implements Listener {
-    public static ArrayList<Player> hideall = new ArrayList<>();
+    public static ArrayList<UUID> hideall = new ArrayList<>();
     public static MagicAssistant pl;
 
     public VisibleUtil(MagicAssistant instance) {
@@ -17,33 +18,31 @@ public class VisibleUtil implements Listener {
 
     @SuppressWarnings("deprecation")
     public static void addToHideAll(final Player player) {
-        hideall.add(player);
-        Bukkit.getScheduler().runTask(pl, new Runnable() {
-            public void run() {
-                for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (!tp.getName().equals(player.getName())) {
-                        if (!tp.hasPermission("band.stayvisible")) {
-                            player.hidePlayer(tp);
-                        }
-                    }
+        hideall.add(player.getUniqueId());
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (!tp.getName().equals(player.getName())) {
+                if (!tp.hasPermission("band.stayvisible")) {
+                    player.hidePlayer(tp);
                 }
             }
-        });
+        }
+    }
+
+    public static void hideForHideAll(Player player) {
+        for (UUID uuid : hideall) {
+            Bukkit.getPlayer(uuid).hidePlayer(player);
+        }
     }
 
     @SuppressWarnings("deprecation")
     public static void removeFromHideAll(final Player player) {
-        hideall.remove(player);
-        Bukkit.getScheduler().runTask(pl, new Runnable() {
-            public void run() {
-                for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (!tp.getName().equals(player.getName())) {
-                        if (!tp.hasPermission("band.stayvisible")) {
-                            player.showPlayer(tp);
-                        }
-                    }
+        hideall.remove(player.getUniqueId());
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (!tp.getName().equals(player.getName())) {
+                if (!tp.hasPermission("band.stayvisible")) {
+                    player.showPlayer(tp);
                 }
             }
-        });
+        }
     }
 }

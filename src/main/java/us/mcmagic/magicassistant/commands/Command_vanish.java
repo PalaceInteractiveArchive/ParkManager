@@ -1,16 +1,16 @@
 package us.mcmagic.magicassistant.commands;
 
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Command_vanish {
-    public static HashMap<Player, ArrayList<Block>> hidden = new HashMap<Player, ArrayList<Block>>();
+    public static HashMap<Player, ArrayList<Block>> hidden = new HashMap<>();
 
     @SuppressWarnings("deprecation")
     public static void execute(CommandSender sender, String label, String[] args) {
@@ -79,7 +79,6 @@ public class Command_vanish {
                     player.sendMessage(ChatColor.DARK_AQUA
                             + "You are not vanished.");
                 }
-                return;
             }
         }
     }

@@ -1,9 +1,9 @@
 package us.mcmagic.magicassistant.commands;
 
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 public class Command_fly {
 
@@ -64,6 +64,5 @@ public class Command_fly {
         player.setFlying(true);
         player.teleport(player.getLocation().add(0, 0.5, 0));
         player.sendMessage(ChatColor.GREEN + "You can fly!");
-        return;
     }
 }

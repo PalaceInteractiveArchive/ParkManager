@@ -9,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
 
-import java.util.Iterator;
-
 public class WorldGuardClass implements Listener {
     static MagicAssistant pl;
 
@@ -28,22 +26,13 @@ public class WorldGuardClass implements Listener {
         World world = player.getWorld();
         ApplicableRegionSet ar = pl.getWG().getRegionManager(world)
                 .getApplicableRegions(player.getLocation());
-        Iterator<ProtectedRegion> prs = ar.iterator();
-        while (prs.hasNext()) {
-            ProtectedRegion pr = prs.next();
-            if (pr.getId().equals(region)) {
-                return true;
-            } else {
-                return false;
-            }
+        for (ProtectedRegion pr : ar) {
+            return pr.getId().equals(region);
         }
         return false;
     }
 
     public static boolean isInPermGroup(Player player, String group) {
-        if (WorldGuardPlugin.inst().inGroup(player, group)) {
-            return true;
-        }
-        return false;
+        return WorldGuardPlugin.inst().inGroup(player, group);
     }
 }

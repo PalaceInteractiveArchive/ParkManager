@@ -89,8 +89,14 @@ public class InventoryClick implements Listener {
                 SpecialEditionClick.handle(event);
         }
         if (clicked.getItemMeta() != null) {
-            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
-                event.setCancelled(!player.hasPermission("band.change"));
+            if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
+                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
+                    event.setCancelled(!player.hasPermission("band.change"));
+                }
+            } else {
+                if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("MagicBand")) {
+                    event.setCancelled(!player.hasPermission("band.change"));
+                }
             }
         }
     }

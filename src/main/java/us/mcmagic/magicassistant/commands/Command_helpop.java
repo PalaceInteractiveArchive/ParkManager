@@ -11,8 +11,8 @@ public class Command_helpop {
     public static void execute(CommandSender sender, String label, String[] args) {
         if (args.length > 0) {
             String message = "";
-            for (int i = 0; i < args.length; i++) {
-                message += args[i] + " ";
+            for (String arg : args) {
+                message += arg + " ";
             }
             if (sender instanceof Player) {
                 Player player = (Player) sender;

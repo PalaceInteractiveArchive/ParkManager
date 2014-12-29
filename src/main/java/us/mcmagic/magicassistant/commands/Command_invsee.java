@@ -26,6 +26,5 @@ public class Command_invsee {
             return;
         }
         player.sendMessage(ChatColor.RED + "/invsee [Username]");
-        return;
     }
 }
