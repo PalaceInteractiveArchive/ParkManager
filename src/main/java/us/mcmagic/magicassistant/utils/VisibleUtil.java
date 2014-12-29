@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -19,7 +21,8 @@ public class VisibleUtil implements Listener {
     @SuppressWarnings("deprecation")
     public static void addToHideAll(final Player player) {
         hideall.add(player.getUniqueId());
-        for (Player tp : Bukkit.getOnlinePlayers()) {
+        for (User user : MCMagicCore.users) {
+            Player tp = Bukkit.getPlayer(user.getUuid());
             if (!tp.getName().equals(player.getName())) {
                 if (!tp.hasPermission("band.stayvisible")) {
                     player.hidePlayer(tp);
@@ -37,7 +40,8 @@ public class VisibleUtil implements Listener {
     @SuppressWarnings("deprecation")
     public static void removeFromHideAll(final Player player) {
         hideall.remove(player.getUniqueId());
-        for (Player tp : Bukkit.getOnlinePlayers()) {
+        for (User user : MCMagicCore.users) {
+            Player tp = Bukkit.getPlayer(user.getUuid());
             if (!tp.getName().equals(player.getName())) {
                 if (!tp.hasPermission("band.stayvisible")) {
                     player.showPlayer(tp);

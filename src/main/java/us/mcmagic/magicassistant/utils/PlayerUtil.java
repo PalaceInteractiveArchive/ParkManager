@@ -18,4 +18,8 @@ public class PlayerUtil {
     public static Player[] onlinePlayers() {
         return Bukkit.getOnlinePlayers();
     }
+
+    public static Player randomPlayer() {
+        return onlinePlayers()[0];
+    }
 }

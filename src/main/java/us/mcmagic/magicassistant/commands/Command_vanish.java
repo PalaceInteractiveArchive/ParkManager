@@ -1,16 +1,16 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class Command_vanish {
-    public static HashMap<Player, ArrayList<Block>> hidden = new HashMap<>();
+    public static List<UUID> hidden = new ArrayList<>();
 
     @SuppressWarnings("deprecation")
     public static void execute(CommandSender sender, String label, String[] args) {
@@ -20,7 +20,7 @@ public class Command_vanish {
         }
         Player player = (Player) sender;
         if (args.length == 0) {
-            if (hidden.containsKey(player)) {
+            if (hidden.contains(player.getUniqueId())) {
                 hidden.remove(player);
                 for (Player tp : PlayerUtil.onlinePlayers()) {
                     tp.showPlayer(player);
@@ -35,7 +35,7 @@ public class Command_vanish {
                     }
                 }
             } else {
-                hidden.put(player, null);
+                hidden.add(player.getUniqueId());
                 for (Player tp : PlayerUtil.onlinePlayers()) {
                     if (!tp.hasPermission("vanish.standard")) {
                         tp.hidePlayer(player);
@@ -57,7 +57,7 @@ public class Command_vanish {
             if (args[0].equalsIgnoreCase("list")) {
                 StringBuilder list = new StringBuilder();
                 for (Player tp : PlayerUtil.onlinePlayers()) {
-                    if (hidden.containsKey(tp)) {
+                    if (hidden.contains(tp.getUniqueId())) {
                         if (list.length() > 0) {
                             list.append(ChatColor.DARK_AQUA);
                             list.append(", ");
@@ -72,7 +72,7 @@ public class Command_vanish {
                 return;
             }
             if (args[0].equalsIgnoreCase("check")) {
-                if (hidden.containsKey(player)) {
+                if (hidden.contains(player.getUniqueId())) {
                     player.sendMessage(ChatColor.DARK_AQUA
                             + "You are vanished.");
                 } else {

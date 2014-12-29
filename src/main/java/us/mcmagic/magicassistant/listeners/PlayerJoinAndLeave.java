@@ -140,11 +140,11 @@ public class PlayerJoinAndLeave implements Listener {
         }
         BandUtil.removePlayerData(player);
         try {
-            VisibleUtil.hideall.remove(player);
+            VisibleUtil.hideall.remove(player.getUniqueId());
         } catch (Exception ignored) {
         }
         try {
-            Command_vanish.hidden.remove(player);
+            Command_vanish.hidden.remove(player.getUniqueId());
         } catch (Exception ignored) {
         }
     }

@@ -400,7 +400,7 @@ public class BandUtil {
         try {
             out.writeUTF("PartyRequest");
             out.writeUTF(MagicAssistant.serverName);
-            Bukkit.getOnlinePlayers()[0].sendPluginMessage(
+            PlayerUtil.randomPlayer().sendPluginMessage(
                     Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     "BungeeCord", b.toByteArray());
         } catch (Exception e) {
@@ -414,7 +414,7 @@ public class BandUtil {
         try {
             out.writeUTF("MagicPartySetup");
             out.writeUTF(MagicAssistant.serverName);
-            Bukkit.getOnlinePlayers()[0].sendPluginMessage(
+            PlayerUtil.randomPlayer().sendPluginMessage(
                     Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     "BungeeCord", b.toByteArray());
         } catch (Exception e) {
@@ -430,7 +430,7 @@ public class BandUtil {
         try {
             out.writeUTF("MagicPartyRemove");
             out.writeUTF(MagicAssistant.serverName);
-            Bukkit.getOnlinePlayers()[0].sendPluginMessage(
+            PlayerUtil.randomPlayer().sendPluginMessage(
                     Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     "BungeeCord", b.toByteArray());
         } catch (Exception e) {
@@ -444,7 +444,7 @@ public class BandUtil {
         try {
             out.writeUTF("PartyJoin");
             out.writeUTF(player.getUniqueId() + "");
-            Bukkit.getOnlinePlayers()[0].sendPluginMessage(
+            PlayerUtil.randomPlayer().sendPluginMessage(
                     Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     "BungeeCord", b.toByteArray());
         } catch (Exception e) {
