@@ -340,7 +340,7 @@ public class InventoryUtil implements Listener {
                 main.setItem(0, rna);
                 main.setItem(9, sne);
                 main.setItem(18, hnr);
-                if (VisibleUtil.hideall.contains(player)) {
+                if (VisibleUtil.hideall.contains(player.getUniqueId())) {
                     main.setItem(2, toggleon);
                 } else {
                     main.setItem(2, toggleoff);
