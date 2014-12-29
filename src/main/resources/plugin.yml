@@ -1,6 +1,6 @@
 name: MagicAssistant
 author: legobuilder0813
-version: 1.3-SNAPSHOT
+version: 1.4-SNAPSHOT
 description: Yay MCMagic plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 commands:
