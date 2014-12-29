@@ -33,7 +33,7 @@ public class Command_warp {
                 String currentServer = MagicAssistant.serverName;
                 if (targetServer.equals(currentServer)) {
                     if (tp.isInsideVehicle()) {
-                        tp.leaveVehicle();
+                        tp.teleport(warp.getLocation());
                     }
                     tp.teleport(warp.getLocation());
                     tp.sendMessage(ChatColor.BLUE + "You have arrived at "
@@ -110,7 +110,7 @@ public class Command_warp {
             String currentServer = MagicAssistant.serverName;
             if (targetServer.equals(currentServer)) {
                 if (tp.isInsideVehicle()) {
-                    tp.leaveVehicle();
+                    tp.teleport(warp.getLocation());
                 }
                 tp.teleport(warp.getLocation());
                 tp.sendMessage(ChatColor.BLUE + "You have arrived at "
