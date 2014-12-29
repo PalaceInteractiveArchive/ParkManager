@@ -1,6 +1,8 @@
 package us.mcmagic.magicassistant.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -20,8 +22,8 @@ public class Command_warp {
                     sender.sendMessage(ChatColor.RED + "Player not found.");
                     return;
                 }
-                Player tp = PlayerUtil.findPlayer(args[1]);
-                String w = args[0];
+                final Player tp = PlayerUtil.findPlayer(args[1]);
+                final String w = args[0];
                 Warp warp;
                 if (WarpUtil.findWarp(w) == null) {
                     sender.sendMessage(ChatColor.RED + "Warp not found!");
@@ -31,10 +33,20 @@ public class Command_warp {
                 }
                 String targetServer = warp.getServer();
                 String currentServer = MagicAssistant.serverName;
+                final Location loc = warp.getLocation();
                 if (targetServer.equals(currentServer)) {
                     if (tp.isInsideVehicle()) {
                         tp.getVehicle().eject();
-                        tp.teleport(warp.getLocation());
+                        Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
+                            @Override
+                            public void run() {
+                                tp.teleport(loc);
+                                tp.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                        + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                        + ChatColor.WHITE + "]");
+                            }
+                        }, 10L);
+                        return;
                     }
                     tp.teleport(warp.getLocation());
                     tp.sendMessage(ChatColor.BLUE + "You have arrived at "
@@ -55,7 +67,7 @@ public class Command_warp {
         }
         final Player player = (Player) sender;
         if (args.length == 1) {
-            String w = args[0];
+            final String w = args[0];
             Warp warp;
             if (WarpUtil.findWarp(w) == null) {
                 player.sendMessage(ChatColor.RED + "Warp not found!");
@@ -78,10 +90,20 @@ public class Command_warp {
             }
             String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
+            final Location loc = warp.getLocation();
             if (targetServer.equals(currentServer)) {
                 if (player.isInsideVehicle()) {
                     player.getVehicle().eject();
-                    player.teleport(warp.getLocation());
+                    Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
+                        @Override
+                        public void run() {
+                            player.teleport(loc);
+                            player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                    + ChatColor.WHITE + "]");
+                        }
+                    }, 10L);
+                    return;
                 }
                 player.teleport(warp.getLocation());
                 player.sendMessage(ChatColor.BLUE + "You have arrived at "
@@ -110,18 +132,28 @@ public class Command_warp {
             }
             final String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
+            final Location loc = warp.getLocation();
             if (targetServer.equals(currentServer)) {
+                player.sendMessage(ChatColor.BLUE + tp.getName()
+                        + " has arrived at " + ChatColor.WHITE + "["
+                        + ChatColor.GREEN + w + ChatColor.WHITE + "]");
                 if (tp.isInsideVehicle()) {
                     tp.getVehicle().eject();
-                    tp.teleport(warp.getLocation());
+                    Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
+                        @Override
+                        public void run() {
+                            tp.teleport(loc);
+                            tp.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                    + ChatColor.WHITE + "]");
+                        }
+                    }, 10L);
+                    return;
                 }
                 tp.teleport(warp.getLocation());
                 tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                         + ChatColor.WHITE + "[" + ChatColor.GREEN + w
                         + ChatColor.WHITE + "]");
-                player.sendMessage(ChatColor.BLUE + tp.getName()
-                        + " has arrived at " + ChatColor.WHITE + "["
-                        + ChatColor.GREEN + w + ChatColor.WHITE + "]");
                 return;
             } else {
                 WarpUtil.crossServerWarp(tp.getUniqueId() + "", w, targetServer);

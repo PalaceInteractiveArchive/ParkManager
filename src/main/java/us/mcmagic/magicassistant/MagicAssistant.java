@@ -495,7 +495,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                         + "Version Number: "
                         + ChatColor.GOLD
                         + Bukkit.getServer().getPluginManager()
-                        .getPlugin("magicassistant").getDescription()
+                        .getPlugin("MagicAssistant").getDescription()
                         .getVersion());
                 player.sendMessage(ChatColor.GREEN
                         + "----------------------------------------------------");
