@@ -24,7 +24,7 @@ import java.util.Date;
 public class BandUtil {
     private static Connection connection;
     private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
-    private static List<UUID> loading = new ArrayList<>();
+    public static List<UUID> loading = new ArrayList<>();
 
     public static void initialize() {
         ItemMeta bm = back.getItemMeta();
@@ -58,7 +58,6 @@ public class BandUtil {
     }
 
     public static void setupPlayerData(Player player) {
-        loading.add(player.getUniqueId());
         openConnection();
         try {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");

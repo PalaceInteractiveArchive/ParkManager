@@ -37,6 +37,7 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        BandUtil.loading.add(player.getUniqueId());
         if (MagicAssistant.spawnOnJoin) {
             player.performCommand("spawn");
         }
