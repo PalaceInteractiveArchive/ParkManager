@@ -54,6 +54,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();
     public static boolean hubServer;
+    public static boolean serverEnabling = true;
 
     public void onEnable() {
         registerListeners();
@@ -89,6 +90,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         resortsServer = serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         getLogger().info("Magic Assistant is ready to help!");
+        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+            @Override
+            public void run() {
+                serverEnabling = false;
+            }
+        }, 100L);
     }
 
     public void setupNewJoinMessages() {

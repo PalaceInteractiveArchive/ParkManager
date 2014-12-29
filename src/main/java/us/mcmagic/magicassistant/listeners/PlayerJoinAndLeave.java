@@ -97,6 +97,11 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
+        if (MagicAssistant.serverEnabling) {
+            event.setResult(Result.KICK_OTHER);
+            event.setKickMessage("This server is still starting up!");
+            return;
+        }
         if (event.getResult().equals(Result.KICK_BANNED)) {
             BanList list = Bukkit.getBanList(Type.NAME);
             BanEntry entry = list.getBanEntry(player.getName());
