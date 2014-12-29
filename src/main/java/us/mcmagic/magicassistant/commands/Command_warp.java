@@ -33,6 +33,7 @@ public class Command_warp {
                 String currentServer = MagicAssistant.serverName;
                 if (targetServer.equals(currentServer)) {
                     if (tp.isInsideVehicle()) {
+                        tp.getVehicle().eject();
                         tp.teleport(warp.getLocation());
                     }
                     tp.teleport(warp.getLocation());
@@ -79,7 +80,8 @@ public class Command_warp {
             String currentServer = MagicAssistant.serverName;
             if (targetServer.equals(currentServer)) {
                 if (player.isInsideVehicle()) {
-                    player.leaveVehicle();
+                    player.getVehicle().eject();
+                    player.teleport(warp.getLocation());
                 }
                 player.teleport(warp.getLocation());
                 player.sendMessage(ChatColor.BLUE + "You have arrived at "
@@ -110,6 +112,7 @@ public class Command_warp {
             String currentServer = MagicAssistant.serverName;
             if (targetServer.equals(currentServer)) {
                 if (tp.isInsideVehicle()) {
+                    tp.getVehicle().eject();
                     tp.teleport(warp.getLocation());
                 }
                 tp.teleport(warp.getLocation());
