@@ -21,7 +21,7 @@ public class Command_vanish {
         Player player = (Player) sender;
         if (args.length == 0) {
             if (hidden.contains(player.getUniqueId())) {
-                hidden.remove(player);
+                hidden.remove(player.getUniqueId());
                 for (Player tp : PlayerUtil.onlinePlayers()) {
                     tp.showPlayer(player);
                 }
