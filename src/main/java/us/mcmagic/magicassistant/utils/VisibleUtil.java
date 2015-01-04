@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.commands.Command_vanish;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.player.User;
 
@@ -34,6 +35,9 @@ public class VisibleUtil implements Listener {
     public static void hideForHideAll(Player player) {
         for (UUID uuid : hideall) {
             Bukkit.getPlayer(uuid).hidePlayer(player);
+        }
+        for (UUID uuid : Command_vanish.hidden) {
+            player.hidePlayer(Bukkit.getPlayer(uuid));
         }
     }
 

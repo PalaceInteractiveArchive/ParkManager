@@ -44,6 +44,9 @@ public class PlayerJoinAndLeave implements Listener {
         for (String msg : MagicAssistant.joinMessages) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         }
+        if (!player.hasPermission("band.stayvisible")) {
+            VisibleUtil.hideForHideAll(player);
+        }
         if (MagicAssistant.hubServer) {
             if (!player.hasPlayedBefore()) {
                 int total = Bukkit.getOfflinePlayers().length + 100000;
@@ -85,7 +88,6 @@ public class PlayerJoinAndLeave implements Listener {
         Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override
             public void run() {
-                VisibleUtil.hideForHideAll(player);
                 BandUtil.setupPlayerData(player);
                 BandUtil.giveBandToPlayer(player);
             }
