@@ -83,15 +83,15 @@ public class FireworkAction extends ShowAction implements Listener {
         if (Power == 0) {
             instaburst = true;
             /*
-             * fw.remove(); InstantFirework.playFirework(Location.getWorld(),
-			 * Location, Effects.get(0));
+             * fw.remove(); InstantFirework.playFirework(location.getWorld(),
+			 * location, Effects.get(0));
 			 */
         } else {
             instaburst = false;
             data.setPower(Math.min(1, Power));
         }
 
-        // Set Data
+        // Set data
         fw.setFireworkMeta(data);
 
         // Velocity

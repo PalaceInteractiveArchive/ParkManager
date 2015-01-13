@@ -13,8 +13,7 @@ public class FountainAction extends ShowAction {
     private byte data;
     private Vector force;
 
-    public FountainAction(Show show, long time, Location loc, double duration,
-                          int type, byte data, Vector force) {
+    public FountainAction(Show show, long time, Location loc, double duration, int type, byte data, Vector force) {
         super(show, time);
         this.loc = loc;
         this.duration = duration;

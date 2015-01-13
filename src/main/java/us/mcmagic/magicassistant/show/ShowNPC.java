@@ -1,7 +1,9 @@
 package us.mcmagic.magicassistant.show;
 
+import net.minecraft.server.v1_8_R1.EntityCreature;
 import net.minecraft.server.v1_8_R1.NavigationAbstract;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftCreature;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import us.mcmagic.magicassistant.utils.AlgUtil;
@@ -32,11 +34,10 @@ public class ShowNPC {
         if (MathUtil.offset(_ent.getLocation(), _target) < 0.25)
             return;
 
-        net.minecraft.server.v1_8_R1.EntityCreature ec = ((org.bukkit.craftbukkit.v1_8_R1.entity.CraftCreature) _ent).getHandle();
+        EntityCreature ec = ((CraftCreature) _ent).getHandle();
 
         //Path Finding
         NavigationAbstract nav = ec.getNavigation();
-
         if (MathUtil.offset(_ent.getLocation(), _target) > 12) {
             Location newTarget = _ent.getLocation();
 

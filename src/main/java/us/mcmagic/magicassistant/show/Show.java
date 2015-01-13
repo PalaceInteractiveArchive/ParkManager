@@ -11,6 +11,8 @@ import us.mcmagic.magicassistant.show.actions.*;
 import us.mcmagic.magicassistant.utils.MathUtil;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.title.TitleObject;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -67,7 +69,7 @@ public class Show {
                     System.out.println("Invalid Show Line [" + strLine + "]");
                 }
 
-                // Set Show Location
+                // Set Show location
                 if (tokens[1].equals("Location")) {
                     Location loc = WorldUtil.strToLoc(_world.getName() + ","
                             + tokens[2]);
@@ -84,7 +86,6 @@ public class Show {
                 // Set Text Radius
                 if (tokens[1].equals("TextRadius")) {
                     try {
-                        System.out.println("PARSING: " + tokens[2]);
                         _radius = Integer.parseInt(tokens[2]);
                     } catch (Exception e) {
                         _invalidLines.put(strLine, "Invalid Text Radius");
@@ -117,12 +118,10 @@ public class Show {
                 // Text
                 if (tokens[1].contains("Text")) {
                     String text = "";
-
                     for (int i = 2; i < tokens.length; i++)
                         text += tokens[i] + " ";
                     if (text.length() > 1)
                         text = text.substring(0, text.length() - 1);
-
                     _actions.add(new TextAction(this, time, text));
                 }
 
@@ -162,9 +161,9 @@ public class Show {
 
                     _actions.add(new LightningAction(this, time, loc));
                 }
-
                 // NPC Spawn
                 else if (tokens[1].contains("NPC")) {
+                    // 0 NPC Spawn Name x,y,z Type MaterialInHand
                     if (tokens.length < 4) {
                         _invalidLines.put(strLine, "Invalid NPC Line");
                         continue;
@@ -180,8 +179,8 @@ public class Show {
                             continue;
                         }
 
-                        // Type
-                        EntityType type = EntityType.SKELETON;
+                        // type
+                        EntityType type;
                         if (tokens.length >= 6) {
                             try {
                                 type = EntityType.valueOf(tokens[5]);
@@ -190,6 +189,8 @@ public class Show {
                                         "Invalid NPC Spawn Line: Entity Type");
                                 continue;
                             }
+                        } else {
+                            type = EntityType.SKELETON;
                         }
 
                         Material holding = null;
@@ -284,7 +285,7 @@ public class Show {
                         _actions.add(new BlockAction(this, time, loc, id, data));
                     } catch (Exception e) {
                         _invalidLines.put(strLine,
-                                "Invalid Block ID or Block Data");
+                                "Invalid Block ID or Block data");
                         continue;
                     }
                 }
@@ -297,7 +298,7 @@ public class Show {
                         continue;
                     }
 
-                    // Location
+                    // location
                     Location loc = WorldUtil.strToLoc(_world.getName() + ","
                             + tokens[2]);
                     if (loc == null) {
@@ -406,21 +407,42 @@ public class Show {
                             type = Integer.parseInt(tokens[2]);
                             data = (byte) 0;
                         }
-                        Vector force = new Vector(values[0], values[1],
-                                values[2]);
+                        Vector force = new Vector(values[0], values[1], values[2]);
                         _actions.add(new FountainAction(this, time, loc,
                                 duration, type, data, force));
                     } catch (NumberFormatException e) {
                         _invalidLines.put(strLine, "Invalid Fountain Type");
                         e.printStackTrace();
                     }
+                } else if (tokens[1].contains("Title")) {
+                    // 0 Title title fadeIn fadeOut stay title...
+                    TitleObject.TitleType type = TitleObject.TitleType.valueOf(tokens[2]);
+                    int fadeIn = Integer.parseInt(tokens[3]);
+                    int fadeOut = Integer.parseInt(tokens[4]);
+                    int stay = Integer.parseInt(tokens[5]);
+                    String text = "";
+                    for (int i = 6; i < tokens.length; i++)
+                        text += tokens[i] + " ";
+                    if (text.length() > 1)
+                        text = text.substring(0, text.length() - 1);
+                    _actions.add(new TitleAction(this, time, type, text, fadeIn, fadeOut, stay));
+                } else if (tokens[1].contains("Particle")) {
+                    // 0 Particle type x,y,z oX oY oZ speed amount
+                    ParticleEffect effect = ParticleEffect.fromString(tokens[2]);
+                    Location location = WorldUtil.strToLoc(tokens[3]);
+                    float offsetX = Float.parseFloat(tokens[4]);
+                    float offsetY = Float.parseFloat(tokens[5]);
+                    float offsetZ = Float.parseFloat(tokens[6]);
+                    float speed = Float.parseFloat(tokens[7]);
+                    int amount = Integer.parseInt(tokens[8]);
+                    _actions.add(new ParticleAction(this, time, effect, location, offsetX, offsetY, offsetZ, speed, amount));
                 }
             }
 
             in.close();
         } catch (Exception e) {
             System.out.println("Error on Line [" + strLine + "]");
-            Bukkit.broadcastMessage("Error on Line [" + strLine + "]");
+            Bukkit.broadcast("Error on Line [" + strLine + "]", "arcade.bypass");
             e.printStackTrace();
         }
 
@@ -431,8 +453,8 @@ public class Show {
         for (String cur : _invalidLines.keySet()) {
             System.out.print(ChatColor.GOLD + _invalidLines.get(cur) + " @ "
                     + ChatColor.WHITE + cur.replaceAll("\t", " "));
-            Bukkit.broadcastMessage(ChatColor.GOLD + _invalidLines.get(cur)
-                    + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "));
+            Bukkit.broadcast(ChatColor.GOLD + _invalidLines.get(cur)
+                    + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "), "arcade.bypass");
         }
     }
 
@@ -478,8 +500,15 @@ public class Show {
     public void displayText(String text) {
         for (Player player : PlayerUtil.onlinePlayers()) {
             if (MathUtil.offset(player.getLocation(), _loc) < _radius) {
-                player.sendMessage(ChatColor.AQUA
-                        + ChatColor.translateAlternateColorCodes('&', text));
+                player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', text));
+            }
+        }
+    }
+
+    public void displayTitle(TitleObject title) {
+        for (Player player : PlayerUtil.onlinePlayers()) {
+            if (MathUtil.offset(player.getLocation(), _loc) < _radius) {
+                title.send(player);
             }
         }
     }
@@ -499,7 +528,7 @@ public class Show {
         try {
             shape = Type.valueOf(tokens[0]);
         } catch (Exception e) {
-            _invalidLines.put(effect, "Invalid Type [" + tokens[0] + "]");
+            _invalidLines.put(effect, "Invalid type [" + tokens[0] + "]");
             return null;
         }
 
