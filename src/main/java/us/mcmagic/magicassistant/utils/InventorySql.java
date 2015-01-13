@@ -68,7 +68,7 @@ public class InventorySql {
         openConnection();
         try {
             PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `inv_data` WHERE UUID=?;");
+                    .prepareStatement("SELECT * FROM `inv_data` WHERE uuid=?;");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet resultset = sql.executeQuery();
             boolean containsPlayer = resultset.next();
@@ -260,6 +260,7 @@ public class InventorySql {
                     os.close();
             }
         } catch (IOException ex) {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -276,6 +277,7 @@ public class InventorySql {
                     bais.close();
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -296,6 +298,7 @@ public class InventorySql {
             }
 
         } catch (IOException ex) {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -325,6 +328,7 @@ public class InventorySql {
 
             }
         } catch (IOException ex) {
+            ex.printStackTrace();
             return null;
         } finally {
             try {
