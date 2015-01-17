@@ -1,8 +1,8 @@
 package us.mcmagic.magicassistant.listeners;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
-import net.minecraft.util.com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;

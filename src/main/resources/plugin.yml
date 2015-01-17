@@ -8,6 +8,10 @@ commands:
       description: Glow With The Show!
       permission: magicassistant.gwts
       permission-message: §4Only Cast Members can use this command!
+   magic:
+      description: New Command :O
+      permission: arcade.bypass
+      permission-message: §4Only Cast Members can use this command!
    magicassistant:
       description: Describes the plugin.
       permission: magicassistant.magicassistant

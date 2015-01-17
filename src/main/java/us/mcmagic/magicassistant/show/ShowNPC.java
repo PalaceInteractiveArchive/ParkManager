@@ -40,9 +40,7 @@ public class ShowNPC {
         NavigationAbstract nav = ec.getNavigation();
         if (MathUtil.offset(_ent.getLocation(), _target) > 12) {
             Location newTarget = _ent.getLocation();
-
             newTarget.add(AlgUtil.getTrajectory(_ent.getLocation(), _target).multiply(12));
-
             nav.a(newTarget.getX(), newTarget.getY(), newTarget.getZ(), _speed);
         } else {
             nav.a(_target.getX(), _target.getY(), _target.getZ(), _speed);

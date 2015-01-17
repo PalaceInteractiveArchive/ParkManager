@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant;
+package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

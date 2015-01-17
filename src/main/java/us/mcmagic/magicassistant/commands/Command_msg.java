@@ -21,7 +21,7 @@ public class Command_msg {
                 msg += args[i] + " ";
             }
             Player player = PlayerUtil.findPlayer(args[0]);
-            if(player == null){
+            if (player == null) {
                 return;
             }
             player.sendMessage(ChatColor.AQUA + "" + ChatColor.translateAlternateColorCodes('&', msg));

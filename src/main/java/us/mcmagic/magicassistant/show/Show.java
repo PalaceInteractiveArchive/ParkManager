@@ -416,7 +416,7 @@ public class Show {
                     }
                 } else if (tokens[1].contains("Title")) {
                     // 0 Title title fadeIn fadeOut stay title...
-                    TitleObject.TitleType type = TitleObject.TitleType.valueOf(tokens[2]);
+                    TitleObject.TitleType type = TitleObject.TitleType.valueOf(tokens[2].toUpperCase());
                     int fadeIn = Integer.parseInt(tokens[3]);
                     int fadeOut = Integer.parseInt(tokens[4]);
                     int stay = Integer.parseInt(tokens[5]);
@@ -429,7 +429,8 @@ public class Show {
                 } else if (tokens[1].contains("Particle")) {
                     // 0 Particle type x,y,z oX oY oZ speed amount
                     ParticleEffect effect = ParticleEffect.fromString(tokens[2]);
-                    Location location = WorldUtil.strToLoc(tokens[3]);
+                    Location location = WorldUtil.strToLoc(_world.getName() + ","
+                            + tokens[3]);
                     float offsetX = Float.parseFloat(tokens[4]);
                     float offsetY = Float.parseFloat(tokens[5]);
                     float offsetZ = Float.parseFloat(tokens[6]);

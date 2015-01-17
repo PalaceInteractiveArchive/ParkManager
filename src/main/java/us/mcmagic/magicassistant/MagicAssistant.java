@@ -2,7 +2,6 @@ package us.mcmagic.magicassistant;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,10 +16,13 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.commands.*;
+import us.mcmagic.magicassistant.handlers.FoodLocation;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.magicband.Attraction;
-import us.mcmagic.magicassistant.magicband.Ride;
-import us.mcmagic.magicassistant.magicband.Warp;
+import us.mcmagic.magicassistant.handlers.Ride;
+import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.utils.*;
 
 import java.io.ByteArrayOutputStream;
@@ -34,8 +36,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static List<PlayerData> playerData = new ArrayList<>();
     public int randomNumber = 0;
-    public final HashMap<Player, ArrayList<Block>> watching = new HashMap<>();
-    public final HashMap<Player, ArrayList<Block>> chattimeout = new HashMap<>();
     public static List<Warp> warps = new ArrayList<>();
     public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
     public static HashMap<Integer, List<Attraction>> attPages = new HashMap<>();
@@ -81,6 +81,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Rides Initialized!");
         getLogger().info("Initializing Attractions...");
         setupAttractions();
+        if (getConfig().getBoolean("show-server")) {
+            // Show Ticker
+            getServer().getScheduler().runTaskTimer(this, new Ticker(this), 1, 1);
+        }
         getLogger().info("Attractions Initialized!");
         hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
         spawn = new Location(Bukkit.getWorld(getConfig().getString("spawn.world")), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
@@ -93,6 +97,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskLater(this, new Runnable() {
             @Override
             public void run() {
+                getLogger().info("Players can now join");
                 serverEnabling = false;
             }
         }, 100L);
@@ -149,19 +154,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } else if (label.equalsIgnoreCase("invupdate")) {
             Command_invupdate.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("warp"))
-
-        {
+        } else if (label.equalsIgnoreCase("warp")) {
             Command_warp.execute(label, sender, args);
             return true;
-        } else if (label.equalsIgnoreCase("top"))
-
-        {
+        } else if (label.equalsIgnoreCase("top")) {
             Command_top.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("sethub"))
-
-        {
+        } else if (label.equalsIgnoreCase("sethub")) {
             Player player = (Player) sender;
             if (player.isOp()) {
                 double x = player.getLocation().getX();
@@ -184,14 +183,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                         + "You do not have permission to use this command!");
             }
             return true;
-        } else if (label.equalsIgnoreCase("serverparty"))
-
-        {
+        } else if (label.equalsIgnoreCase("serverparty")) {
             Command_serverparty.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("hub"))
-
-        {
+        } else if (label.equalsIgnoreCase("hub")) {
             if (!(sender instanceof Player)) {
                 if (args.length > 0) {
                     Player tp = PlayerUtil.findPlayer(args[0]);
@@ -207,111 +202,72 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             ((Player) sender).teleport(hub);
             sender.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
             return true;
-        } else if (label.equalsIgnoreCase("setwarp"))
-
-        {
+        } else if (label.equalsIgnoreCase("setwarp")) {
             Command_setwarp.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("uwarp"))
-
-        {
+        } else if (label.equalsIgnoreCase("uwarp")) {
             Command_uwarp.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("wrl"))
-
-        {
+        } else if (label.equalsIgnoreCase("wrl")) {
             Command_wrl.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("invsee"))
-
-        {
+        } else if (label.equalsIgnoreCase("magic")) {
+            Command_magic.execute(sender, label, args);
+            return true;
+        } else if (label.equalsIgnoreCase("invsee")) {
             Command_invsee.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("enderchest"))
-
-        {
+        } else if (label.equalsIgnoreCase("enderchest")) {
             Command_enderchest.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("give")
                 || label.equalsIgnoreCase("item")
-                || label.equalsIgnoreCase("i"))
-
-        {
+                || label.equalsIgnoreCase("i")) {
             Command_give.execute(sender, label, args);
         } else if (label.equalsIgnoreCase("delwarp")
-                || label.equalsIgnoreCase("removewarp"))
-
-        {
+                || label.equalsIgnoreCase("removewarp")) {
             Command_delwarp.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("delay"))
-
-        {
+        } else if (label.equalsIgnoreCase("delay")) {
             Command_delay.execute(sender, args);
             return true;
-        } else if (label.equalsIgnoreCase("spawn"))
-
-        {
+        } else if (label.equalsIgnoreCase("spawn")) {
             Command_spawn.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("setspawn"))
-
-        {
+        } else if (label.equalsIgnoreCase("setspawn")) {
             Command_setspawn.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("smite"))
-
-        {
+        } else if (label.equalsIgnoreCase("smite")) {
             Command_smite.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("more"))
-
-        {
+        } else if (label.equalsIgnoreCase("more")) {
             Command_more.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("heal"))
-
-        {
+        } else if (label.equalsIgnoreCase("heal")) {
             Command_heal.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("helpop")
-                || label.equalsIgnoreCase("ac"))
-
-        {
+                || label.equalsIgnoreCase("ac")) {
             Command_helpop.execute(sender, label, args);
-        } else if (label.equalsIgnoreCase("ptime"))
-
-        {
+        } else if (label.equalsIgnoreCase("ptime")) {
             Command_ptime.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("pweather"))
-
-        {
+        } else if (label.equalsIgnoreCase("pweather")) {
             Command_pweather.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("invcheck"))
-
-        {
+        } else if (label.equalsIgnoreCase("invcheck")) {
             Command_invcheck.execute(sender, label, args);
             return true;
-        } else if (label.equalsIgnoreCase("day"))
-
-        {
+        } else if (label.equalsIgnoreCase("day")) {
             Command_day.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("night"))
-
-        {
+        } else if (label.equalsIgnoreCase("night")) {
             Command_night.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("noon"))
-
-        {
+        } else if (label.equalsIgnoreCase("noon")) {
             Command_noon.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("gwts"))
-
-        {
+        } else if (label.equalsIgnoreCase("gwts")) {
             // List of types of hats:
             ItemStack clear = new ItemStack(Material.AIR);
             ItemStack red = new ItemStack(Material.LEATHER_HELMET, 1);
@@ -488,9 +444,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                     }
                 }
             }
-        } else if (label.equalsIgnoreCase("magicassistant"))
-
-        {
+        } else if (label.equalsIgnoreCase("magicassistant")) {
             if (args.length == 0) {
                 Player player = (Player) sender;
                 player.sendMessage(ChatColor.GREEN
@@ -517,22 +471,16 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                             + ChatColor.BLUE + " Configuration reloaded!");
                 }
             }
-        } else if (label.equalsIgnoreCase("save"))
-
-        {
+        } else if (label.equalsIgnoreCase("save")) {
             if (!(sender instanceof Player)) {
                 return true;
             }
             Player player = (Player) sender;
             player.performCommand("save-all");
-        } else if (label.equalsIgnoreCase("tp"))
-
-        {
+        } else if (label.equalsIgnoreCase("tp")) {
             Command_tp.execute(label, args, sender);
             return true;
-        } else if (label.equalsIgnoreCase("head"))
-
-        {
+        } else if (label.equalsIgnoreCase("head")) {
             Player player = (Player) sender;
             PlayerInventory pi = player.getInventory();
             if (args.length == 1) {
@@ -542,7 +490,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 headm.setOwner(args[0]);
                 head.setItemMeta(headm);
                 pi.addItem(head);
-                player.sendMessage(ChatColor.AQUA + "[magicassistant]"
+                player.sendMessage(ChatColor.AQUA + "[MagicAssistant]"
                         + ChatColor.BLUE + " Enjoy your new head of " + args[0]
                         + "!");
             } else {
@@ -759,5 +707,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new WarpUtil(this), this);
         pm.registerEvents(new InventoryUtil(this), this);
+        pm.registerEvents(new FountainUtil(this), this);
+        pm.registerEvents(new Command_magic(this), this);
     }
 }

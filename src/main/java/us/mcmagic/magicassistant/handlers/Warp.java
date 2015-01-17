@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.magicband;
+package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

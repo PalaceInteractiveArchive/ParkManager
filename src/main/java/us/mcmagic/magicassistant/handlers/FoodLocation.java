@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant;
+package us.mcmagic.magicassistant.handlers;
 
 public class FoodLocation {
     private String name;

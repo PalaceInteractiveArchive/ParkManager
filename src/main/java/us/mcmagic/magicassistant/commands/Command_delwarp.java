@@ -4,13 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.magicband.Warp;
+import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 
 public class Command_delwarp {
 
-    public static void execute(final CommandSender sender, String label,
-                               String[] args) {
+    public static void execute(final CommandSender sender, String label, String[] args) {
         if (args.length == 1) {
             final String w = args[0];
             final Warp warp = WarpUtil.findWarp(w);

@@ -88,7 +88,7 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 SpecialEditionClick.handle(event);
         }
-        if (clicked.getItemMeta() != null) {
+        if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
             if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
                     event.setCancelled(!player.hasPermission("band.change"));

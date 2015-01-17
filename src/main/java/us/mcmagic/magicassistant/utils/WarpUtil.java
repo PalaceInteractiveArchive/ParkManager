@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.magicband.Warp;
+import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
 import java.io.ByteArrayOutputStream;
