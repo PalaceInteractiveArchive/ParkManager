@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
@@ -11,6 +12,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
 import us.mcmagic.magicassistant.stitch.SGE;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
@@ -136,6 +138,17 @@ public class Command_magic implements Listener {
                         helpMenu("sge", sender);
                         return;
                 }
+            case "buzz":
+                switch (args.length) {
+                    case 2:
+                        if (args[0].equalsIgnoreCase("add")) {
+                            Player player = PlayerUtil.findPlayer(args[1]);
+                            if (player == null) {
+                                sender.sendMessage(ChatColor.RED + "Could not find Player!");
+                            }
+                        }
+                }
+                break;
             default:
                 helpMenu("main", sender);
         }
@@ -148,6 +161,8 @@ public class Command_magic implements Listener {
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic block " + ChatColor.AQUA + "- Manipulate Blocks");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
+                sender.sendMessage(ChatColor.GREEN + "/magic buzz " + ChatColor.AQUA + "- Features for Buzzlightyear Space Ranger Spin");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm " + ChatColor.AQUA + "- Features for TSM");
                 break;
             case "show":
                 sender.sendMessage(ChatColor.GREEN + "Show Commands:");

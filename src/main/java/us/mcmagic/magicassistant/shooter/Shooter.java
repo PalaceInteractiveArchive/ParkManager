@@ -67,53 +67,72 @@ public class Shooter implements Listener {
             Player player = (Player) projectile.getShooter();
             final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
 
+            if (loc.getBlock().getType() == Material.DIAMOND_BLOCK) {
+                if ((snowball.getShooter() instanceof Player)) {
+                    ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
+                }
 
-            if ((snowball.getShooter() instanceof Player)) {
-                ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
-            }
-            final int amount = getPoint(loc.getBlock().getType());
-            player.setLevel(player.getLevel() + amount);
-            if (amount > 0) {
-                player.sendMessage(ChatColor.BLUE + "+" + amount);
+                player.setLevel(player.getLevel() + 1);
+                player.sendMessage(ChatColor.BLUE + "+1");
                 loc.getBlock().setType(Material.REDSTONE_BLOCK);
                 Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
                     public void run() {
-                        loc.getBlock().setType(getMaterial(amount));
+                        loc.getBlock().setType(Material.DIAMOND_BLOCK);
                     }
                 }
                         , 100L);
             }
-
         }
     }
 
-    public int getPoint(Material type) {
-        switch (type) {
-            case GOLD_BLOCK:
-                return 1;
-            case DIAMOND_BLOCK:
-                return 5;
-            case EMERALD_BLOCK:
-                return 100;
-            default:
-                return 0;
+    @EventHandler
+    public void onProjectileHit1(ProjectileHitEvent event) {
+        Projectile projectile = event.getEntity();
+        if (((projectile instanceof Snowball)) && ((projectile.getShooter() instanceof Player))) {
+            Snowball snowball = (Snowball) projectile;
+            Player player = (Player) projectile.getShooter();
+            final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
 
+            if ((loc.getBlock().getType() == Material.EMERALD_BLOCK) &&
+                    ((snowball.getShooter() instanceof Player))) {
+                ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.3F);
 
+                player.setLevel(player.getLevel() + 5);
+                player.sendMessage(ChatColor.BLUE + "+5");
+                loc.getBlock().setType(Material.REDSTONE_BLOCK);
+                Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+                    public void run() {
+                        loc.getBlock().setType(Material.EMERALD_BLOCK);
+                    }
+                }
+                        , 200L);
+            }
         }
     }
 
-    public Material getMaterial(int amount) {
-        switch (amount) {
-            case 1:
-                return Material.GOLD_BLOCK;
-            case 5:
-                return Material.DIAMOND_BLOCK;
-            case 100:
-                return Material.EMERALD_BLOCK;
-            default:
-                return Material.AIR;
+    @EventHandler
+    public void onProjectileHit2(ProjectileHitEvent event) {
+        Projectile projectile = event.getEntity();
+        if (((projectile instanceof Snowball)) && ((projectile.getShooter() instanceof Player))) {
+            Snowball snowball = (Snowball) projectile;
+            Player player = (Player) projectile.getShooter();
+            final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
+
+            if ((loc.getBlock().getType() == Material.HUGE_MUSHROOM_1) &&
+                    ((snowball.getShooter() instanceof Player))) {
+                ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.6F);
+
+                player.setLevel(player.getLevel() + 100);
+                player.sendMessage(ChatColor.BLUE + "+100");
+                loc.getBlock().setType(Material.REDSTONE_BLOCK);
+                Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+                    public void run() {
+                        loc.getBlock().setType(Material.HUGE_MUSHROOM_1);
+                    }
+                }
+                        , 300L);
+            }
         }
     }
-
 }
 
