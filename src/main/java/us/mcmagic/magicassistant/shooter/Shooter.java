@@ -29,27 +29,27 @@ public class Shooter implements Listener {
     }
 
     @EventHandler
-    public void oninventoryclick(InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
         if (event.getCurrentItem().equals(this.stack))
             event.setCancelled(true);
     }
 
     @EventHandler
-    public void onDrop(PlayerDropItemEvent e) {
+    public void onPlayerDropItem(PlayerDropItemEvent e) {
         if (e.getItemDrop().getItemStack().equals(this.stack)) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+    public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         player.getInventory().removeItem(this.stack);
         player.setLevel(0);
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent e) {
+    public void onPlayerInteract(PlayerInteractEvent e) {
         if (e.getAction() == Action.PHYSICAL) {
             return;
         }
@@ -66,7 +66,6 @@ public class Shooter implements Listener {
             Snowball snowball = (Snowball) projectile;
             Player player = (Player) projectile.getShooter();
             final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
-
             if (loc.getBlock().getType() == Material.DIAMOND_BLOCK) {
                 if ((snowball.getShooter() instanceof Player)) {
                     ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
@@ -79,8 +78,7 @@ public class Shooter implements Listener {
                     public void run() {
                         loc.getBlock().setType(Material.DIAMOND_BLOCK);
                     }
-                }
-                        , 100L);
+                }, 100L);
             }
         }
     }
@@ -92,7 +90,6 @@ public class Shooter implements Listener {
             Snowball snowball = (Snowball) projectile;
             Player player = (Player) projectile.getShooter();
             final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
-
             if ((loc.getBlock().getType() == Material.EMERALD_BLOCK) &&
                     ((snowball.getShooter() instanceof Player))) {
                 ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.3F);
