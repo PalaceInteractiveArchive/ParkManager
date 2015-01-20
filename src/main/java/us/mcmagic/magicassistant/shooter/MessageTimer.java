@@ -23,11 +23,17 @@ public class MessageTimer {
                         ActionBarManager.sendMessage(player, ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: "
                                 + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
                     }
-                } else {
+                } else if (Shooter.game == "tsm") {
                     for (UUID uuid : Shooter.ingame) {
                         Player player = Bukkit.getPlayer(uuid);
                         ActionBarManager.sendMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: "
                                 + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
+                    }
+                } else {
+                    for (UUID uuid : Shooter.ingame) {
+                        Player player = Bukkit.getPlayer(uuid);
+                        ActionBarManager.sendMessage(player, ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: "
+                                + ChatColor.YELLOW + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
                     }
                 }
             }
