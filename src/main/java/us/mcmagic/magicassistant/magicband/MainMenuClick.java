@@ -54,7 +54,7 @@ public class MainMenuClick {
                     player.closeInventory();
                     VisibleUtil.addToHideAll(player);
                 } else {
-                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 5);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
                     VisibleUtil.removeFromHideAll(player);

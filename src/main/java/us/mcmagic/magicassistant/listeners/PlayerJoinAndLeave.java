@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Command_vanish;
+import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
@@ -156,6 +157,11 @@ public class PlayerJoinAndLeave implements Listener {
         try {
             Command_vanish.hidden.remove(player.getUniqueId());
         } catch (Exception ignored) {
+        }
+        if (Shooter.getItem() != null) {
+            if (player.getInventory().contains(Shooter.getItem())) {
+                player.getInventory().remove(Shooter.getItem());
+            }
         }
     }
 }

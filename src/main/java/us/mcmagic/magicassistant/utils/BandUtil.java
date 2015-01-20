@@ -65,6 +65,7 @@ public class BandUtil {
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
                 player.kickPlayer("Sorry, there was an issue! Please report this to a staff member.");
+                return;
             }
             HashMap<UUID, String> friendlist = new HashMap<>();
             int pages;

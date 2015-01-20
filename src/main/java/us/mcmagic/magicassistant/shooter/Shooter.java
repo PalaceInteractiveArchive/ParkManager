@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant.shooter;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -11,79 +12,135 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+
+import java.util.*;
 
 /**
  * Created by Jacob on 1/18/15.
  */
 @SuppressWarnings("deprecation")
 public class Shooter implements Listener {
-    private ItemStack stack;
+    private static ItemStack stack;
+    private static HashMap<UUID, ItemStack> itemMap = new HashMap<>();
+    private static HashMap<Long, Block> locations = new HashMap<>();
+    public static List<UUID> ingame = new ArrayList<>();
     public MagicAssistant pl;
+    public static String game;
 
     public Shooter(MagicAssistant instance) {
         pl = instance;
-
-    }
-
-    @EventHandler
-    public void oninventoryclick(InventoryClickEvent event) {
-        if (event.getCurrentItem().equals(this.stack))
-            event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onDrop(PlayerDropItemEvent e) {
-        if (e.getItemDrop().getItemStack().equals(this.stack)) {
-            e.setCancelled(true);
+        if (pl.getConfig().getString("shooter").equalsIgnoreCase("buzz")) {
+            stack = new ItemCreator(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun", Arrays.asList(ChatColor.GREEN +
+                    "Click to shoot!"));
+            game = pl.getConfig().getString("shooter");
+        } else if (pl.getConfig().getString("shooter").equalsIgnoreCase("tsm")) {
+            stack = new ItemCreator(Material.STONE_HOE, ChatColor.GOLD + "Blaster", Arrays.asList(ChatColor.GREEN +
+                    "Click to shoot!"));
+            game = pl.getConfig().getString("shooter");
+        } else {
+            stack = null;
         }
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        player.getInventory().removeItem(this.stack);
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getCurrentItem() == null) {
+            return;
+        }
+        if (event.getInventory().contains(stack)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        event.setCancelled(event.getItemDrop().getItemStack().getType().equals(stack.getType()));
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        player.getInventory().remove(stack.getType());
         player.setLevel(0);
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent e) {
-        if (e.getAction() == Action.PHYSICAL) {
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        event.setCancelled(event.getPlayer().getInventory().contains(stack));
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction().equals(Action.PHYSICAL)) {
             return;
         }
-        if (e.getPlayer().getItemInHand().equals(this.stack)) {
-            e.setCancelled(true);
-            e.getPlayer().launchProjectile(Snowball.class);
+        Player player = event.getPlayer();
+        if (locations.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+            Block block = locations.get(player.getUniqueId());
+            player.sendBlockChange(block.getLocation(), block.getType(), (byte) 0);
+        }
+        if (player.getItemInHand().getType().equals(stack.getType())) {
+            event.setCancelled(true);
+            player.throwSnowball();
         }
     }
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
-        if (((projectile instanceof Snowball)) && ((projectile.getShooter() instanceof Player))) {
+        if ((projectile instanceof Snowball) && (projectile.getShooter() instanceof Player)) {
             Snowball snowball = (Snowball) projectile;
-            Player player = (Player) projectile.getShooter();
-            final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
-
-
-            if ((snowball.getShooter() instanceof Player)) {
-                ((Player) snowball.getShooter()).playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
+            final Player player = (Player) projectile.getShooter();
+            if (!player.getInventory().contains(stack)) {
+                return;
             }
-            final int amount = getPoint(loc.getBlock().getType());
-            player.setLevel(player.getLevel() + amount);
+            final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
+            final Block block = loc.getBlock();
+            if (locations.containsValue(block)) {
+                return;
+            }
+            final int amount = getPoint(block.getType());
             if (amount > 0) {
-                player.sendMessage(ChatColor.BLUE + "+" + amount);
-                loc.getBlock().setType(Material.REDSTONE_BLOCK);
+                final long time = System.currentTimeMillis();
+                player.playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
+                player.setLevel(player.getLevel() + amount);
+                sendMessage(player, "+" + amount);
+                player.sendBlockChange(loc, Material.REDSTONE_BLOCK, (byte) 0);
+                locations.put(time, block);
                 Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
                     public void run() {
-                        loc.getBlock().setType(getMaterial(amount));
+                        locations.remove(time);
+                        player.sendBlockChange(loc, getMaterial(amount), (byte) 0);
                     }
-                }
-                        , 100L);
+                }, 100L);
             }
 
+        }
+    }
+
+    public static void sendGameMessage(Player player) {
+        switch (game) {
+            case "buzz":
+                player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
+                player.sendMessage(ChatColor.BLUE + "Welcome to Buzz Lightyear's Space Ranger Spin!");
+                player.sendMessage(ChatColor.BLUE + "Click with your Ray Gun to fire at targets.");
+                player.sendMessage(ChatColor.BLUE + "Points will be kept track in your XP bar.");
+                player.sendMessage(ChatColor.BLUE + "Good luck, Space Ranger!");
+                player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
+                return;
+            case "tsm":
+                player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
+                player.sendMessage(ChatColor.YELLOW + "Welcome to Toy Story Midway Mania!");
+                player.sendMessage(ChatColor.YELLOW + "Click with your Blaster to fire at targets.");
+                player.sendMessage(ChatColor.YELLOW + "Points will be kept track in your XP bar.");
+                player.sendMessage(ChatColor.YELLOW + "Good luck, Partner!");
+                player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
         }
     }
 
@@ -115,7 +172,107 @@ public class Shooter implements Listener {
         }
     }
 
+    public static void done(Player player) {
+        ingame.remove(player.getUniqueId());
+        player.getInventory().remove(stack.getType());
+        switch (game) {
+            case "buzz":
+                String rank = getRank(player.getLevel());
+                player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
+                player.sendMessage(ChatColor.BLUE + "Good job, Space Ranger! Your final score is "
+                        + player.getLevel() + "!");
+                player.sendMessage(ChatColor.BLUE + rank);
+                player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
+                break;
+            case "tsm":
+                player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
+                player.sendMessage(ChatColor.YELLOW + "Good job, Partner! Your final score is "
+                        + player.getLevel() + "!");
+                player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
+        }
+        if (itemMap.containsKey(player.getUniqueId())) {
+            player.getInventory().setItem(4, itemMap.get(player.getUniqueId()));
+        }
+    }
+
+    public static ItemStack getItem() {
+        return stack;
+    }
+
+    /*
+    else if ((player.getLevel() >= 21) && (player.getLevel() <= 40)) {
+        player.sendMessage(ChatColor.GREEN + "✹ Level 3 Planetary Pilot: 21 – 40 ✹");
+    }
+    else if ((player.getLevel() >= 41) && (player.getLevel() <= 60)) {
+        player.sendMessage(ChatColor.GREEN + "✹ Level 4 Space Scout:  41 – 60 ✹");
+    }
+    else if ((player.getLevel() >= 61) && (player.getLevel() <= 80)) {
+        player.sendMessage(ChatColor.GREEN + "✹ Level 5 Ranger 1st Class: 61 – 80 ✹");
+    }
+    else if ((player.getLevel() >= 81) && (player.getLevel() <= 100)) {
+        player.sendMessage(ChatColor.GREEN + "✹ Level 6 Cosmic Commando: 81 – 100 ✹");
+    }
+    else if ((player.getLevel() >= 100) && (player.getLevel() <= 1970)) {
+        player.sendMessage(ChatColor.GREEN + "✹ Level 7 Galactic Hero: 100+ ✹");
+    }
+    else if (player.getLevel() == 1971) {
+        player.sendMessage(ChatColor.BLUE + "✹ On Friday October 1, 1971 - after seven years of planning - about 10,000 visitors converged near Orlando, Florida, to witness the grand opening of Walt Disney World. ✹");
+    }
+    */
+
+    public static String getRank(int score) {
+        if (score < 11) {
+            return "✹ Level 1 Star Cadet: 0 - 10 ✹";
+        }
+        if (score < 21) {
+            return "✹ Level 2 Space Ace: 11 - 20 ✹";
+        }
+        if (score < 41) {
+            return "✹ Level 3 Planetary Pilot: 21 - 40 ✹";
+        }
+        if (score < 61) {
+            return "✹ Level 4 Space Scout: 41 - 60 ✹";
+        }
+        if (score < 81) {
+            return "✹ Level 5 Ranger 1st Class: 61 - 80 ✹";
+        }
+        if (score < 101) {
+            return "✹ Level 6 Cosmic Commando: 81 - 100 ✹";
+        }
+        if (score > 100 && score != 1971) {
+            return "✹ Level 7 Galactic Hero: 100+ ✹";
+        }
+        if (score == 1971) {
+            return "On Friday October 1, 1971 - after seven years of planning - about 10,000 visitors converged near " +
+                    "Orlando, Florida, to witness the grand opening of Walt Disney World.";
+        }
+        return "";
+    }
+
+    public static void addToHashMap(UUID uuid, ItemStack stack) {
+        if (itemMap.containsKey(uuid)) {
+            itemMap.remove(uuid);
+        }
+        itemMap.put(uuid, stack);
+    }
+
+    public static ItemStack removeFromHashMap(UUID uuid) {
+        try {
+            return itemMap.remove(uuid);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    public void sendMessage(Player player, String msg) {
+        switch (game) {
+            case "buzz":
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz"
+                        + ChatColor.WHITE + "] " + ChatColor.AQUA + msg);
+                return;
+            case "tsm":
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania"
+                        + ChatColor.WHITE + "] " + ChatColor.YELLOW + msg);
+        }
+    }
 }
-
-
-

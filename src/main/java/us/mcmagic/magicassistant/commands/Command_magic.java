@@ -7,8 +7,10 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
 import us.mcmagic.magicassistant.stitch.SGE;
@@ -24,7 +26,7 @@ import java.util.*;
  * Created by Marc on 1/7/15
  */
 public class Command_magic implements Listener {
-    public MagicAssistant pl;
+    public static MagicAssistant pl;
     public static List<String> containsCommandBlockOnly = Arrays.asList("stitch");
 
     public Command_magic(MagicAssistant instance) {
@@ -138,14 +140,40 @@ public class Command_magic implements Listener {
                         helpMenu("sge", sender);
                         return;
                 }
-            case "buzz":
+            case "shooter":
+                if (!pl.getConfig().getBoolean("shooter-enabled")) {
+                    sender.sendMessage(ChatColor.RED + "Shooter is Disabled!");
+                    return;
+                }
                 switch (args.length) {
-                    case 2:
-                        if (args[0].equalsIgnoreCase("add")) {
-                            Player player = PlayerUtil.findPlayer(args[1]);
+                    case 3:
+                        if (args[1].equalsIgnoreCase("add")) {
+                            Player player = PlayerUtil.findPlayer(args[2]);
                             if (player == null) {
                                 sender.sendMessage(ChatColor.RED + "Could not find Player!");
+                                return;
                             }
+                            PlayerInventory inv = player.getInventory();
+                            if (inv.getItem(4) != null && !inv.getItem(4).getType().equals(Material.AIR)) {
+                                Shooter.addToHashMap(player.getUniqueId(), player.getInventory().getItem(4));
+                            }
+                            inv.setItem(4, Shooter.getItem());
+                            inv.setHeldItemSlot(4);
+                            Shooter.sendGameMessage(player);
+                            Shooter.ingame.add(player.getUniqueId());
+                            return;
+                        }
+                        if (args[1].equalsIgnoreCase("remove")) {
+                            Player player = PlayerUtil.findPlayer(args[2]);
+                            if (player == null) {
+                                sender.sendMessage(ChatColor.RED + "Could not find Player!");
+                                return;
+                            }
+                            PlayerInventory inv = player.getInventory();
+                            if (!inv.contains(Shooter.getItem())) {
+                                return;
+                            }
+                            Shooter.done(player);
                         }
                 }
                 break;
@@ -161,8 +189,7 @@ public class Command_magic implements Listener {
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic block " + ChatColor.AQUA + "- Manipulate Blocks");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
-                sender.sendMessage(ChatColor.GREEN + "/magic buzz " + ChatColor.AQUA + "- Features for Buzzlightyear Space Ranger Spin");
-                sender.sendMessage(ChatColor.GREEN + "/magic tsm " + ChatColor.AQUA + "- Features for TSM");
+                sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
                 break;
             case "show":
                 sender.sendMessage(ChatColor.GREEN + "Show Commands:");

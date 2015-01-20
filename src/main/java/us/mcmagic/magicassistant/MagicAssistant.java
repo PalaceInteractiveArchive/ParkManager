@@ -22,6 +22,7 @@ import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.magicband.Attraction;
 import us.mcmagic.magicassistant.handlers.Ride;
 import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.utils.*;
@@ -710,6 +711,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryUtil(this), this);
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new Command_magic(this), this);
-        pm.registerEvents(new Shooter(this), this);
+        if (getConfig().getBoolean("shooter-enabled")) {
+            MessageTimer.start(this);
+            pm.registerEvents(new Shooter(this), this);
+        }
     }
 }
