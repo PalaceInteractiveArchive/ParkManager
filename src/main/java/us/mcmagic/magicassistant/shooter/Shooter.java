@@ -42,6 +42,10 @@ public class Shooter implements Listener {
             stack = new ItemCreator(Material.STONE_HOE, ChatColor.GOLD + "Blaster", Arrays.asList(ChatColor.GREEN +
                     "Click to shoot!"));
             game = pl.getConfig().getString("shooter");
+        } else if (pl.getConfig().getString("shooter").equalsIgnoreCase("mm")) {
+            stack = new ItemCreator(Material.GOLD_HOE, ChatColor.RED + "Boo Blaster", Arrays.asList(ChatColor.GREEN +
+                    "Click to shoot!"));
+            game = pl.getConfig().getString("shooter");
         } else {
             stack = null;
         }
@@ -141,6 +145,14 @@ public class Shooter implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "Points will be kept track in your XP bar.");
                 player.sendMessage(ChatColor.YELLOW + "Good luck, Partner!");
                 player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
+                return;
+            case "mm":
+                player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
+                player.sendMessage(ChatColor.RED + "Welcome to Monstropolis Mayhem");
+                player.sendMessage(ChatColor.RED + "Click with your Blaster to fire at targets.");
+                player.sendMessage(ChatColor.RED + "Points will be kept track in your XP bar.");
+                player.sendMessage(ChatColor.RED + "Good luck!");
+                player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
         }
     }
 
@@ -189,6 +201,12 @@ public class Shooter implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "Good job, Partner! Your final score is "
                         + player.getLevel() + "!");
                 player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
+                break;
+            case "mm":
+                player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
+                player.sendMessage(ChatColor.RED + "Good job! Your final score is "
+                        + player.getLevel() + "!");
+                player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
         }
         if (itemMap.containsKey(player.getUniqueId())) {
             player.getInventory().setItem(4, itemMap.get(player.getUniqueId()));
@@ -273,6 +291,11 @@ public class Shooter implements Listener {
             case "tsm":
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania"
                         + ChatColor.WHITE + "] " + ChatColor.YELLOW + msg);
+                return;
+            case "mm":
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW + "" + ChatColor.BOLD + "Monstropolis Mayhem"
+                        + ChatColor.WHITE + "] " + ChatColor.RED + msg);
+
         }
     }
 }
