@@ -13,8 +13,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
@@ -67,10 +68,11 @@ public class Shooter implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        player.getInventory().remove(stack.getType());
-        player.setLevel(0);
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        try {
+            ingame.remove(event.getPlayer().getUniqueId());
+        } catch (Exception ignored) {
+        }
     }
 
     @EventHandler
@@ -113,7 +115,7 @@ public class Shooter implements Listener {
             if (amount > 0) {
                 final long time = System.currentTimeMillis();
                 player.playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
-                player.setLevel(player.getLevel() + amount);
+                player.setMetadata("shooter", new FixedMetadataValue(pl, player.getMetadata("shooter").get(0).asInt() + amount));
                 sendMessage(player, "+" + amount);
                 player.sendBlockChange(loc, Material.REDSTONE_BLOCK, (byte) 0);
                 locations.put(time, block);
@@ -189,23 +191,23 @@ public class Shooter implements Listener {
         player.getInventory().remove(stack.getType());
         switch (game) {
             case "buzz":
-                String rank = getRank(player.getLevel());
+                String rank = getRank(player.getMetadata("shooter").get(0).asInt());
                 player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
                 player.sendMessage(ChatColor.BLUE + "Good job, Space Ranger! Your final score is "
-                        + player.getLevel() + "!");
+                        + player.getMetadata("shooter").get(0).asInt() + "!");
                 player.sendMessage(ChatColor.BLUE + rank);
                 player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
                 break;
             case "tsm":
                 player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
                 player.sendMessage(ChatColor.YELLOW + "Good job, Partner! Your final score is "
-                        + player.getLevel() + "!");
+                        + player.getMetadata("shooter").get(0).asInt() + "!");
                 player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
                 break;
             case "mm":
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
                 player.sendMessage(ChatColor.RED + "Good job! Your final score is "
-                        + player.getLevel() + "!");
+                        + player.getMetadata("shooter").get(0).asInt() + "!");
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
         }
         if (itemMap.containsKey(player.getUniqueId())) {

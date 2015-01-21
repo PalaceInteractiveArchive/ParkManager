@@ -83,8 +83,11 @@ public class PlayerJoinAndLeave implements Listener {
                             }
                             BandUtil.giveBandToPlayer(player);
                             player.sendMessage(ChatColor.GREEN + "Inventory Updated!");
+                            player.getInventory().remove(Shooter.getItem().getType());
                         }
                     }, 100L);
+        } else {
+            player.getInventory().remove(Shooter.getItem().getType());
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override

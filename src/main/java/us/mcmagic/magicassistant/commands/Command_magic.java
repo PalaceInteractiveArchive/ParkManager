@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.shooter.Shooter;
@@ -157,6 +158,7 @@ public class Command_magic implements Listener {
                             if (inv.getItem(4) != null && !inv.getItem(4).getType().equals(Material.AIR)) {
                                 Shooter.addToHashMap(player.getUniqueId(), player.getInventory().getItem(4));
                             }
+                            player.setMetadata("shooter", new FixedMetadataValue(pl, 0));
                             inv.setItem(4, Shooter.getItem());
                             inv.setHeldItemSlot(4);
                             Shooter.sendGameMessage(player);
