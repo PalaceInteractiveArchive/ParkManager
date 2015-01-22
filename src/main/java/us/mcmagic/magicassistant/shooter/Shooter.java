@@ -136,7 +136,6 @@ public class Shooter implements Listener {
                 player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
                 player.sendMessage(ChatColor.BLUE + "Welcome to Buzz Lightyear's Space Ranger Spin!");
                 player.sendMessage(ChatColor.BLUE + "Click with your Ray Gun to fire at targets.");
-                player.sendMessage(ChatColor.BLUE + "Points will be kept track in your XP bar.");
                 player.sendMessage(ChatColor.BLUE + "Good luck, Space Ranger!");
                 player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
                 return;
@@ -144,7 +143,6 @@ public class Shooter implements Listener {
                 player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
                 player.sendMessage(ChatColor.YELLOW + "Welcome to Toy Story Midway Mania!");
                 player.sendMessage(ChatColor.YELLOW + "Click with your Blaster to fire at targets.");
-                player.sendMessage(ChatColor.YELLOW + "Points will be kept track in your XP bar.");
                 player.sendMessage(ChatColor.YELLOW + "Good luck, Partner!");
                 player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
                 return;
@@ -152,7 +150,6 @@ public class Shooter implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
                 player.sendMessage(ChatColor.RED + "Welcome to Monstropolis Mayhem");
                 player.sendMessage(ChatColor.RED + "Click with your Blaster to fire at targets.");
-                player.sendMessage(ChatColor.RED + "Points will be kept track in your XP bar.");
                 player.sendMessage(ChatColor.RED + "Good luck!");
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
         }
