@@ -73,7 +73,7 @@
         <dependency>
             <groupId>us.mcmagic</groupId>
             <artifactId>mcmagiccore</artifactId>
-            <version>1.7-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
