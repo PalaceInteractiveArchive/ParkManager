@@ -58,6 +58,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean hubServer;
     public static boolean serverEnabling = true;
 
+
     public void onEnable() {
         registerListeners();
         BandUtil.askForParty();
@@ -244,6 +245,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             return true;
         } else if (label.equalsIgnoreCase("more")) {
             Command_more.execute(sender, label, args);
+            return true;
+        } else if (label.equalsIgnoreCase("autograph")) {
+            Command_autograph.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("heal")) {
             Command_heal.execute(sender, label, args);
@@ -446,6 +450,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                     }
                 }
             }
+
         } else if (label.equalsIgnoreCase("magicassistant")) {
             if (args.length == 0) {
                 Player player = (Player) sender;
