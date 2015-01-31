@@ -88,6 +88,13 @@ public class Command_warp {
                     return;
                 }
             }
+            if (warp.getName().toLowerCase().startsWith("staff")) {
+                if (!(rank.getOp())) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.CASTMEMBER.getNameWithBrackets() + ChatColor.RED + " rank or above to use this warp!");
+                    return;
+                }
+
+            }
             String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
             final Location loc = warp.getLocation();
