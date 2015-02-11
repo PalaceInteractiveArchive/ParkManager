@@ -29,14 +29,14 @@ public class Command_autograph {
         Player player = (Player) sender;
         ListIterator li = player.getInventory().iterator();
 
-        switch (args[0]) {
+        switch (args[0].toLowerCase()) {
             case "book":
                 helpMenu("book", sender);
                 return;
             case "session":
                 helpMenu("session", sender);
                 if (args.length == 2) {
-                    switch (args[1]) {
+                    switch (args[1].toLowerCase()) {
                     /*    case "start":
                             if (sender.hasPermission("magicassistant.session"))
                                 return;
@@ -65,7 +65,7 @@ public class Command_autograph {
                                         + ChatColor.AQUA + " Autograph Book");
                             }
                             return;
-                        case "sign:":
+                        case "sign":
                             if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
                                 bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
                                 if ((bookmeta.hasTitle()) &&
@@ -79,7 +79,7 @@ public class Command_autograph {
                                 player.getItemInHand().setItemMeta(bookmeta);
                             }
                             return;
-                        case "rmpage:":
+                        case "rmpage":
                             if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
                                 bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
                                 if ((bookmeta.hasTitle()) &&
@@ -108,7 +108,7 @@ public class Command_autograph {
                                     return;
                                 }
                             }
-                        case "return:":
+                        case "return":
                             if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
                                 int books = 0;
                                 while (li.hasNext()) {
@@ -129,7 +129,7 @@ public class Command_autograph {
                             player.sendMessage(ChatColor.WHITE + "[Autograph] "
                                     + ChatColor.GREEN + "You do not have anyone else's autograph book.");
                             return;
-                        case "regain:":
+                        case "regain":
                             if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
                                 while (li.hasNext()) {
                                     ItemStack item = (ItemStack) li.next();
