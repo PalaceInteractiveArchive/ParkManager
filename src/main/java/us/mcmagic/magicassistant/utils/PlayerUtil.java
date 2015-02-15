@@ -1,7 +1,10 @@
 package us.mcmagic.magicassistant.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class PlayerUtil {
 
@@ -21,5 +24,32 @@ public class PlayerUtil {
 
     public static Player randomPlayer() {
         return onlinePlayers()[0];
+    }
+
+    public static String getNameFromUUID(String uuid) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getUniqueId().toString().equalsIgnoreCase(uuid)) {
+                return p.getName();
+            }
+        }
+        try {
+            return Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static String getUUIDFromName(String name) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                return p.getUniqueId().toString();
+            }
+        }
+        for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                return p.getUniqueId().toString();
+            }
+        }
+        return null;
     }
 }

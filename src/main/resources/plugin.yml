@@ -167,3 +167,11 @@ commands:
       description: Update the player's inventory
       permission: mcmagic.mb
       permission-message: §4Only Cast Members can use this command!
+   hrl:
+      description: Reload hotel rooms
+      permission: mcmagic.hotel.reload
+      permission-message: Â§4Only Staff Members can use this command!
+   hotel:
+      description: Perform various hotel-related actions
+      permission: mcmagic.hotel
+      permission-message: Â§4Only Staff Members can use this command!

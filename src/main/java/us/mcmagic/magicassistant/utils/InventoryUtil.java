@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.handlers.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.magicband.Attraction;
 import us.mcmagic.magicassistant.magicband.BandColor;
@@ -91,6 +92,11 @@ public class InventoryUtil implements Listener {
     //Rides and Attractions
     public static ItemStack ride = new ItemStack(Material.MINECART);
     public static ItemStack attraction = new ItemStack(Material.GLOWSTONE_DUST);
+    //Hotels and Resorts
+    public static ItemStack joinHotelsAndResorts = new ItemStack(Material.GLOWSTONE_DUST, 1);
+    public static ItemStack viewMyRooms = new ItemStack(Material.BOOK, 1);
+    public static ItemStack viewHotels = new ItemStack(Material.BED, 1);
+
 
     public InventoryUtil(MagicAssistant instance) {
         pl = instance;
@@ -318,6 +324,22 @@ public class InventoryUtil implements Listener {
         attm.setDisplayName(ChatColor.GREEN + "Attractions");
         ride.setItemMeta(ridem);
         attraction.setItemMeta(attm);
+        //Hotels and Resorts
+        ItemMeta jharm = joinHotelsAndResorts.getItemMeta();
+        ItemMeta vmrm = viewMyRooms.getItemMeta();
+        ItemMeta vhm = viewHotels.getItemMeta();
+        jharm.setDisplayName(ChatColor.GREEN + "Visit Hotels and Resorts");
+        vmrm.setDisplayName(ChatColor.GREEN + "View Your Hotel Rooms");
+        vhm.setDisplayName(ChatColor.GREEN + "Rent a New Hotel Room");
+        List<String> jharml = Arrays.asList(ChatColor.GREEN + "Teleport yourself to the hotels", ChatColor.GREEN + "and resorts world!");
+        List<String> vmrml = Arrays.asList(ChatColor.GREEN + "View the rooms that you've", ChatColor.GREEN + "currently booked!");
+        List<String> vhml = Arrays.asList(ChatColor.GREEN + "Book a hotel room!");
+        jharm.setLore(jharml);
+        vmrm.setLore(vmrml);
+        vhm.setLore(vhml);
+        joinHotelsAndResorts.setItemMeta(jharm);
+        viewMyRooms.setItemMeta(vmrm);
+        viewHotels.setItemMeta(vhm);
     }
 
     @SuppressWarnings("deprecation")
@@ -589,8 +611,136 @@ public class InventoryUtil implements Listener {
                 player.openInventory(rna);
                 return;
             case HOTELSANDRESORTS:
-                featureComingSoon(player);
+                Inventory hotelsAndResorts = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels and Resorts");
+                hotelsAndResorts.setItem(11, joinHotelsAndResorts);
+                hotelsAndResorts.setItem(13, viewMyRooms);
+                hotelsAndResorts.setItem(15, viewHotels);
+                hotelsAndResorts.setItem(22, BandUtil.getBackItem());
+                player.openInventory(hotelsAndResorts);
+                return;
+            case MYHOTELROOMS:
+                Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
+                List<HotelRoom> rooms = new ArrayList<>();
+                for (HotelRoom room : pl.hotelRooms) {
+                    if (room.isOccupied() && room.getCurrentOccupant().equalsIgnoreCase(player.getUniqueId().toString())) {
+                        rooms.add(room);
+                    }
+                }
+                int roomItemPlacement = 13 - ((rooms.size() - 1) / 2);
+                for (HotelRoom room : rooms) {
+                    ItemStack roomItem = new ItemStack(Material.BED, 1);
+                    ItemMeta rim = roomItem.getItemMeta();
+                    rim.setDisplayName(ChatColor.GREEN + room.getName());
+                    List<String> riml = Arrays.asList(ChatColor.GREEN + "Click to teleport to this room.", ChatColor.DARK_GREEN + "You have " + (
+                            room.getOccupationCooldown() != 0 ?
+                                    Integer.toString(room.getOccupationCooldown()) + " hours left for this reservation." :
+                                    "less than 1 hour left for this reservation." ));
+                    rim.setLore(riml);
+                    roomItem.setItemMeta(rim);
+                    viewMyHotelRooms.setItem(roomItemPlacement, roomItem);
+                    if (roomItemPlacement == 17) {
+                        break;
+                    } else {
+                        roomItemPlacement++;
+                    }
+                }
+                viewMyHotelRooms.setItem(22, BandUtil.getBackItem());
+                player.openInventory(viewMyHotelRooms);
+                return;
+            case HOTELS:
+                Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
+                List<String> availableHotels = new ArrayList<>();
+                for (HotelRoom room : pl.hotelRooms) {
+                    if (!availableHotels.contains(room.getHotelName())) {
+                        availableHotels.add(room.getHotelName());
+                    }
+                }
+                int hotelItemPlacement = 10;
+                for (String hotel : availableHotels) {
+                    ItemStack hotelItem = new ItemStack(Material.BED, 1);
+                    ItemMeta him = hotelItem.getItemMeta();
+                    him.setDisplayName(ChatColor.GREEN + hotel);
+                    List<String> himl = Arrays.asList(ChatColor.GREEN + "Click to view rooms in this hotel.");
+                    him.setLore(himl);
+                    hotelItem.setItemMeta(him);
+                    viewAvailableHotels.setItem(hotelItemPlacement, hotelItem);
+                    if (hotelItemPlacement == 17) {
+                        break;
+                    } else {
+                        hotelItemPlacement++;
+                    }
+                }
+                viewAvailableHotels.setItem(22, BandUtil.getBackItem());
+                player.openInventory(viewAvailableHotels);
+                return;
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void openHotelRoomListPage(final Player player, String hotelName) {
+        Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rooms in " + hotelName);
+        List<HotelRoom> availableHotelRooms = new ArrayList<>();
+        for (HotelRoom room : pl.hotelRooms) {
+            if (room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()) {
+                availableHotelRooms.add(room);
+            }
+        }
+        List<HotelRoom> sortedHotelRooms = new ArrayList<>();
+        while (availableHotelRooms.size() > 0) {
+            HotelRoom smallest = availableHotelRooms.get(0);
+            for (HotelRoom room : availableHotelRooms) {
+                if (room.getRoomNumber() < smallest.getRoomNumber()) {
+                    smallest = room;
+                }
+            }
+            sortedHotelRooms.add(smallest);
+        }
+        int placement = 0;
+        for (HotelRoom room : sortedHotelRooms) {
+            ItemStack item = new ItemStack(Material.BED, 1);
+            ItemMeta him = item.getItemMeta();
+            him.setDisplayName(ChatColor.GREEN + room.getName());
+            List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: " + Integer.toString(room.getCost()) + " Coins", ChatColor.GREEN + "Click to rent this room for 72 hours (4 days).");
+            him.setLore(himl);
+            item.setItemMeta(him);
+            viewAvailableHotelRooms.setItem(placement, item);
+            if (placement == 17) {
+                break;
+            } else {
+                placement++;
+            }
+        }
+        viewAvailableHotelRooms.setItem(22, BandUtil.getBackItem());
+        player.openInventory(viewAvailableHotelRooms);
+    }
+
+    public static void openSpecificHotelRoomPage(final Player player, HotelRoom room) {
+        Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Book Room?");
+        ItemStack item = new ItemStack(Material.BED, 1);
+        ItemMeta him = item.getItemMeta();
+        him.setDisplayName(ChatColor.GREEN + room.getName());
+        List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: " + Integer.toString(room.getCost()) + " Coins", ChatColor.GREEN + "Click to rent this room for 72 hours (4 days).");
+        him.setLore(himl);
+        item.setItemMeta(him);
+        viewAvailableHotelRooms.setItem(13, item);
+        viewAvailableHotelRooms.setItem(22, BandUtil.getBackItem());
+        player.openInventory(viewAvailableHotelRooms);
+    }
+
+    public static void openSpecificHotelRoomCheckoutPage(final Player player, HotelRoom room) {
+        Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Check Out?");
+        ItemStack item = new ItemStack(Material.BOOK, 1);
+        ItemMeta him = item.getItemMeta();
+        him.setDisplayName(ChatColor.RED + "Check out of " + room.getName());
+        List<String> himl = Arrays.asList(ChatColor.RED + "Click to check out before the 72-hour period is over.", ChatColor.DARK_GREEN + "You have " + (
+                room.getOccupationCooldown() != 0 ?
+                        Integer.toString(room.getOccupationCooldown()) + " hours left for this reservation." :
+                        "less than 1 hour left for this reservation." ));
+        him.setLore(himl);
+        item.setItemMeta(him);
+        viewAvailableHotelRooms.setItem(13, item);
+        viewAvailableHotelRooms.setItem(22, BandUtil.getBackItem());
+        player.openInventory(viewAvailableHotelRooms);
     }
 
     @SuppressWarnings("deprecation")

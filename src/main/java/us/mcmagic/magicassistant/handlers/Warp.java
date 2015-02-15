@@ -96,4 +96,20 @@ public class Warp {
     public Location getLocation() {
         return new Location(getWorld(), x, y, z, yaw, pitch);
     }
+
+    public static Warp fromDatabaseString(String warpString) {
+        if (warpString == null || warpString.equals(""))
+            return null;
+        String[] tokens = warpString.split(":");
+        return new Warp(tokens[0], tokens[1], Double.parseDouble(tokens[2]),
+                Double.parseDouble(tokens[3]), Double.parseDouble(tokens[4]),
+                Float.parseFloat(tokens[5]), Float.parseFloat(tokens[6]), tokens[7]);
+    }
+
+    public String toDatabaseString() {
+        return name + ":" + server + ":" + Double.toString(x) + ":" + Double.toString(y) + ":" +
+                Double.toString(z) + ":" + Float.toString(yaw) + ":" + Float.toString(pitch) + ":" +
+                world;
+    }
+
 }

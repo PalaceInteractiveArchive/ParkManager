@@ -16,8 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Command_vanish;
+import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 
@@ -26,6 +28,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 public class PlayerJoinAndLeave implements Listener {
     public static MagicAssistant pl;
@@ -96,6 +99,28 @@ public class PlayerJoinAndLeave implements Listener {
                 BandUtil.giveBandToPlayer(player);
             }
         }, 20L);
+        Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+            @Override
+            public void run() {
+                boolean updateNecessary = false;
+                for (HotelRoom room : pl.hotelRooms) {
+                    if (room.getCheckoutNotificationRecipient() != null && room.getCheckoutNotificationRecipient().equalsIgnoreCase(player.getUniqueId().toString())) {
+                        UUID uuid = UUID.fromString(room.getCheckoutNotificationRecipient());
+                        if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
+                            Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() + " room has lapsed and you have been checked out.  Please come stay with us again soon!");
+                            room.setCheckoutNotificationRecipient(null);
+                            HotelUtil.updateRoom(room);
+                            updateNecessary = true;
+                        }
+                        break;
+                    }
+                }
+                if (updateNecessary) {
+                    HotelUtil.updateRooms();
+                }
+            }
+        }, 60L);
+
     }
 
     @EventHandler

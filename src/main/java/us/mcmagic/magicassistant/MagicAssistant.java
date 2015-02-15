@@ -16,12 +16,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.commands.*;
-import us.mcmagic.magicassistant.handlers.FoodLocation;
-import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.magicband.Attraction;
-import us.mcmagic.magicassistant.handlers.Ride;
-import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
@@ -39,6 +36,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<PlayerData> playerData = new ArrayList<>();
     public int randomNumber = 0;
     public static List<Warp> warps = new ArrayList<>();
+    public static List<HotelRoom> hotelRooms = new ArrayList<>();
     public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
     public static HashMap<Integer, List<Attraction>> attPages = new HashMap<>();
     public static String serverName;
@@ -76,6 +74,57 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
         getLogger().info("Warps Initialized!");
+        getLogger().info("Initializing Hotel Rooms...");
+        HotelUtil.refreshRooms();
+        this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                if (serverName.equalsIgnoreCase("Knowwhere")) { //Originally 'resorts'
+                    boolean updateNecessary = false;
+                    for (HotelRoom room : hotelRooms) {
+                        if (room.getOccupationCooldown() > 0) {
+                            room.decrementOccupationCooldown();
+                            HotelUtil.updateRoom(room);
+                            updateNecessary = true;
+                        } else if (room.isOccupied()) {
+                            UUID uuid = UUID.fromString(room.getCurrentOccupant());
+                            if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
+                                Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() + " room has lapsed and you have been checked out.  Please come stay with us again soon!");
+                            } else {
+                                room.setCheckoutNotificationRecipient(uuid.toString());
+                            }
+                            room.setCurrentOccupant(null);
+                            HotelUtil.updateRoom(room);
+                            updateNecessary = true;
+                        }
+                    }
+                    if (updateNecessary) {
+                        HotelUtil.updateRooms();
+                    }
+                }
+            }
+        }, 0L, 72000L);
+        this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                boolean updateNecessary = false;
+                for (HotelRoom room : hotelRooms) {
+                    if (room.getCheckoutNotificationRecipient() != null) {
+                        UUID uuid = UUID.fromString(room.getCheckoutNotificationRecipient());
+                        if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
+                            Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() + " room has lapsed and you have been checked out.  Please come stay with us again soon!");
+                            room.setCheckoutNotificationRecipient(null);
+                            HotelUtil.updateRoom(room);
+                            updateNecessary = true;
+                        }
+                    }
+                }
+                if (updateNecessary) {
+                    HotelUtil.updateRooms();
+                }
+            }
+        }, 0L, 6000L);
+        getLogger().info("Hotel Rooms Initialized!");
         getLogger().info("Initializing Food Locations...");
         setupFoodLocations();
         getLogger().info("Food Locations Initialized!");
@@ -159,6 +208,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             return true;
         } else if (label.equalsIgnoreCase("warp")) {
             Command_warp.execute(label, sender, args);
+            return true;
+        }  else if (label.equalsIgnoreCase("hotel")) {
+            Command_hotel.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("top")) {
             Command_top.execute(sender, label, args);
@@ -713,6 +765,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerInteract(this), this);
         pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new WarpUtil(this), this);
+        pm.registerEvents(new HotelUtil(this), this);
         pm.registerEvents(new InventoryUtil(this), this);
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new Command_magic(this), this);

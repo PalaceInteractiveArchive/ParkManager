@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,18 +16,17 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
-import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
-import us.mcmagic.magicassistant.utils.WarpUtil;
+import us.mcmagic.magicassistant.utils.*;
 
 import java.util.Arrays;
 
 public class PlayerInteract implements Listener {
     public static String disposal = ChatColor.BLUE + "[Disposal]";
     public static String warp = ChatColor.BLUE + "[Warp]";
+    public static String hotel = ChatColor.BLUE + "[Hotel]";
     static MagicAssistant pl;
 
     public PlayerInteract(MagicAssistant instance) {
@@ -60,6 +60,53 @@ public class PlayerInteract implements Listener {
                             + ChatColor.WHITE + "]");
                     return;
                 }
+                if (s.getLine(0).equals(hotel)) {
+                    String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
+                            + ChatColor.stripColor(s.getLine(1));
+                    HotelRoom room = HotelUtil.getRoom(roomName);
+                    if (room == null) {
+                        player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
+                        return;
+                    }
+                    if (room.isOccupied() && room.getCurrentOccupant().equalsIgnoreCase(player.getUniqueId().toString())) {
+                        InventoryUtil.openSpecificHotelRoomCheckoutPage(player, HotelUtil.getRoom(roomName));
+                    } else if (room.isOccupied() && !(room.getCurrentOccupant().equalsIgnoreCase(player.getUniqueId().toString()))) {
+                        player.sendMessage(ChatColor.RED + "This room is already occupied!");
+                    } else {
+                        boolean playerOwnsRooms = false;
+                        for (HotelRoom r : HotelUtil.getRooms()) {
+                            if (r.isOccupied() && r.getCurrentOccupant().equalsIgnoreCase(player.getUniqueId().toString())) {
+                                playerOwnsRooms = true;
+                                break;
+                            }
+                        }
+                        if (playerOwnsRooms) {
+                            player.sendMessage(ChatColor.RED + "You cannot book more than one room at a time!  You need to wait for your current reservation to lapse or check out by right-clicking the booked room's sign.");
+                            return;
+                        }
+
+                        InventoryUtil.openSpecificHotelRoomPage(player, HotelUtil.getRoom(roomName));
+                    }
+                    return;
+                }
+            } else if (type == Material.WOODEN_DOOR || type == Material.BIRCH_DOOR ||
+                    type == Material.SPRUCE_DOOR || type == Material.JUNGLE_DOOR ||
+                    type == Material.DARK_OAK_DOOR || type == Material.ACACIA_DOOR) {
+                HotelRoom room = getRoomFromDoor(event.getClickedBlock(), player);
+                if (room != null) {
+                    if (room.isOccupied()) {
+                        if (room.getCurrentOccupant().equalsIgnoreCase(player.getUniqueId().toString())) {
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "That room is currently occupied.");
+                            event.setCancelled(true);
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.GREEN + "That room is currently unoccupied.  Book your stay by right-clicking the sign or viewing the room in your MagicBand.");
+                        event.setCancelled(true);
+                    }
+                }
+                return;
             }
         }
         PlayerInventory pi = player.getInventory();
@@ -92,4 +139,31 @@ public class PlayerInteract implements Listener {
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }
+
+    public HotelRoom getRoomFromDoor(Block b, Player p) {
+        for (int ix = b.getLocation().getBlockX() - 1; ix < b.getLocation().getBlockX() + 2; ix++) {
+            for (int iz = b.getLocation().getBlockZ() - 1; iz < b.getLocation().getBlockZ() + 2; iz++) {
+                for (int iy = b.getLocation().getBlockY() - 1; iy < b.getLocation().getBlockY() + 2; iy++) {
+                    Block targetBlock = b.getWorld().getBlockAt(ix, iy, iz);
+                    Material type = targetBlock.getType();
+                    if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+                        Sign s = (Sign)targetBlock.getState();
+                        HotelRoom room = getRoomFromSign(s);
+                        if (room != null) {
+                            return room;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public HotelRoom getRoomFromSign(Sign s) {
+        if (!ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase("[hotel]") || s.getLine(1).equals("") || s.getLine(2).equals("")) {
+            return null;
+        }
+        return HotelUtil.getRoom(ChatColor.stripColor(s.getLine(2)) + " #" + ChatColor.stripColor(s.getLine(1)));
+    }
+
 }

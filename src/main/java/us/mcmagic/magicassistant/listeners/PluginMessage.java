@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 
 public class PluginMessage implements PluginMessageListener {
@@ -26,6 +27,10 @@ public class PluginMessage implements PluginMessageListener {
         String subchannel = in.readUTF();
         if (subchannel.equals("UpdateWarps")) {
             WarpUtil.refreshWarps();
+            return;
+        }
+        if (subchannel.equals("UpdateHotelRooms")) {
+            HotelUtil.refreshRooms();
             return;
         }
         if (subchannel.equals("MagicParty")) {

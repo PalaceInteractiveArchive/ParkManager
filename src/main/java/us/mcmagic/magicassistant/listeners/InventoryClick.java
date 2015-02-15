@@ -51,6 +51,12 @@ public class InventoryClick implements Listener {
             AttractionListClick.handle(event);
             return;
         }
+        if (name.startsWith("Rooms in")) {
+            event.setCancelled(true);
+            HotelRoomMenuClick.handle(event);
+            return;
+        }
+
         switch (name) {
             case "My Profile":
                 event.setCancelled(true);
@@ -87,6 +93,27 @@ public class InventoryClick implements Listener {
             case "Special Edition MagicBands":
                 event.setCancelled(true);
                 SpecialEditionClick.handle(event);
+            case "Hotels and Resorts":
+                event.setCancelled(true);
+                HotelAndResortMenuClick.handle(event);
+                return;
+            case "Hotels":
+                event.setCancelled(true);
+                HotelMenuClick.handle(event);
+                return;
+            case "My Hotel Rooms":
+                event.setCancelled(true);
+                MyHotelRoomsMenuClick.handle(event);
+                return;
+            case "Book Room?":
+                event.setCancelled(true);
+                HotelRoomMenuClick.handle(event);
+                return;
+            case "Check Out?":
+                event.setCancelled(true);
+                HotelCheckoutMenuClick.handle(event);
+                return;
+
         }
         if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
             if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
