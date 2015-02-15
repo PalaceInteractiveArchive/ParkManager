@@ -1,5 +1,5 @@
 name: MagicAssistant
-author: legobuilder0813
+author: MCMagicDev
 version: 1.5-SNAPSHOT
 description: Yay MCMagic plugin
 main: us.mcmagic.magicassistant.MagicAssistant
@@ -139,7 +139,7 @@ commands:
       permission-message: §4Only Staff Members can use this command!
    helpop:
       description: Change a player's time!
-      permission: mcmagic.joinarcade
+      permission: mcmagic.bc
       permission-message: §4Only Staff Members can use this command!
       aliases: ac
    invcheck:

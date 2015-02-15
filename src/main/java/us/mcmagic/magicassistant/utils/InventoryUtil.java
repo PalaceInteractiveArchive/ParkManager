@@ -328,8 +328,9 @@ public class InventoryUtil implements Listener {
                 final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
                         + player.getName() + "'s MagicBand");
                 final ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
-                ItemMeta sm = playerInfo.getItemMeta();
+                SkullMeta sm = (SkullMeta) playerInfo.getItemMeta();
                 sm.setDisplayName(ChatColor.GREEN + "Player Info");
+                sm.setOwner(player.getName());
                 sm.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
                 playerInfo.setItemMeta(sm);
                 ItemStack time = new ItemStack(Material.WATCH);
@@ -477,7 +478,6 @@ public class InventoryUtil implements Listener {
                 for (Map.Entry<UUID, String> entry : fl.entrySet()) {
                     friendNames.add(entry.getValue());
                 }
-                List<String> test = data.getPages().get(0);
                 List<ItemStack> items = new ArrayList<>();
                 Collections.sort(friendNames);
                 for (String name : friendNames) {

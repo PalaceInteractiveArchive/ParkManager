@@ -92,6 +92,19 @@ public class Command_warp {
                     return;
                 }
             }
+            if (warp.getName().toLowerCase().startsWith("staff")) {
+                if (!(rank.getOp())) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.CASTMEMBER.getNameWithBrackets() + ChatColor.RED + " rank or above to use this warp!");
+                    return;
+                }
+            }
+            if (warp.getName().toLowerCase().startsWith("intern")) {
+                if (!(rank.getOp() || rank.equals(Rank.INTERN))) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.INTERN.getNameWithBrackets() + ChatColor.RED + " rank or above to use this warp!");
+                    return;
+                }
+
+            }
             String targetServer = warp.getServer();
             String currentServer = MagicAssistant.serverName;
             final Location loc = warp.getLocation();
@@ -168,6 +181,7 @@ public class Command_warp {
         }
         listWarps(player);
     }
+
 
     public static void listWarps(Player player) {
         List<Warp> warps = MagicAssistant.warps;
