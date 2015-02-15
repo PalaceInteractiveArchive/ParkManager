@@ -18,6 +18,10 @@ public class Command_warp {
     public static void execute(String label, CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length == 2) {
+                if (!sender.hasPermission("mcmagic.warp.others")) {
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to warp others!");
+                    return;
+                }
                 if (PlayerUtil.findPlayer(args[1]) == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found.");
                     return;
