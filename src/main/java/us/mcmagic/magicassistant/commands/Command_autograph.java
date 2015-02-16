@@ -51,7 +51,7 @@ public class Command_autograph {
                             BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
                             bookmeta.setAuthor(player.getName());
                             List<String> pages = new ArrayList<>();
-                            pages.add("This is the autograph book of " + player.getDisplayName());
+                            pages.add("This is the autograph book of " + player.getUniqueId());
                             bookmeta.setPages(pages);
                             stack.setItemMeta(bookmeta);
                             if (!player.getInventory().contains(stack)) {
@@ -75,7 +75,7 @@ public class Command_autograph {
                                     bookmeta.getPages();
                                     msg = "";
                                 }
-                                bookmeta.addPage(new String[]{msg + "\n§0" + "-" + player.getDisplayName()});
+                                bookmeta.addPage(new String[]{msg + "\n§0" + "-" + player.getUniqueId()});
                                 player.getItemInHand().setItemMeta(bookmeta);
                             }
                             return;
