@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="MagicAssistant:jar">
-    <output-path>$PROJECT_DIR$/classes/artifacts/MagicAssistant_jar</output-path>
-    <root id="archive" name="MagicAssistant.jar">
-      <element id="module-output" name="MagicAssistant" />
-    </root>
-  </artifact>
-</component>

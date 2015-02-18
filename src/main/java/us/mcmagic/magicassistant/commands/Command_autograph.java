@@ -51,7 +51,7 @@ public class Command_autograph {
                             BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
                             bookmeta.setAuthor(player.getName());
                             List<String> pages = new ArrayList<>();
-                            pages.add("This is the autograph book of " + player.getDisplayName());
+                            pages.add("This is the autograph book of " + player.getUniqueId());
                             bookmeta.setPages(pages);
                             stack.setItemMeta(bookmeta);
                             if (!player.getInventory().contains(stack)) {
@@ -65,7 +65,7 @@ public class Command_autograph {
                                         + ChatColor.AQUA + " Autograph Book");
                             }
                             return;
-                        case "sign:":
+                        case "sign":
                             if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
                                 bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
                                 if ((bookmeta.hasTitle()) &&
@@ -75,11 +75,11 @@ public class Command_autograph {
                                     bookmeta.getPages();
                                     msg = "";
                                 }
-                                bookmeta.addPage(new String[]{msg + "\n§0" + "-" + player.getDisplayName()});
+                                bookmeta.addPage(new String[]{msg + "\n§0" + "-" + player.getUniqueId()});
                                 player.getItemInHand().setItemMeta(bookmeta);
                             }
                             return;
-                        case "rmpage:":
+                        case "rmpage":
                             if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
                                 bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
                                 if ((bookmeta.hasTitle()) &&
@@ -108,7 +108,7 @@ public class Command_autograph {
                                     return;
                                 }
                             }
-                        case "return:":
+                        case "return":
                             if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
                                 int books = 0;
                                 while (li.hasNext()) {
@@ -129,7 +129,7 @@ public class Command_autograph {
                             player.sendMessage(ChatColor.WHITE + "[Autograph] "
                                     + ChatColor.GREEN + "You do not have anyone else's autograph book.");
                             return;
-                        case "regain:":
+                        case "regain":
                             if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
                                 while (li.hasNext()) {
                                     ItemStack item = (ItemStack) li.next();
