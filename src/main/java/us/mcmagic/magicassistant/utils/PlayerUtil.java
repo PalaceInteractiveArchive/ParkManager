@@ -3,11 +3,12 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 public class PlayerUtil {
 
-    @SuppressWarnings("deprecation")
     public static Player findPlayer(String name) {
-        for (Player tp : onlinePlayers()) {
+        for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getName().toLowerCase().contains(name.toLowerCase())) {
                 return tp;
             }
@@ -15,11 +16,11 @@ public class PlayerUtil {
         return null;
     }
 
-    public static Player[] onlinePlayers() {
+    public static Collection onlinePlayers() {
         return Bukkit.getOnlinePlayers();
     }
 
     public static Player randomPlayer() {
-        return onlinePlayers()[0];
+        return Bukkit.getOnlinePlayers().iterator().next();
     }
 }
