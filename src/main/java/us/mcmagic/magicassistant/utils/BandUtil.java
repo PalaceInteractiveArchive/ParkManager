@@ -75,8 +75,15 @@ public class BandUtil {
                 Collections.addAll(flist, friends);
                 Collections.sort(flist);
                 for (String friend : flist) {
-                    String name = UUIDConverter.convert(friend);
                     UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
+                    String name;
+                    if (MagicAssistant.userCache.containsKey(uuid)) {
+                        name = MagicAssistant.userCache.get(uuid);
+                    } else {
+
+                        name = UUIDConverter.convert(friend);
+                        MagicAssistant.userCache.put(uuid, name);
+                    }
                     friendlist.put(uuid, name);
                 }
                 pages = (int) Math.ceil(flist.size() / 7);
