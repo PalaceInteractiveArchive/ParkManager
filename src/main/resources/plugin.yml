@@ -139,7 +139,7 @@ commands:
       permission-message: §4Only Staff Members can use this command!
    helpop:
       description: Change a player's time!
-      permission: mcmagic.bc
+      permission: mcmagic.joinarcade
       permission-message: §4Only Staff Members can use this command!
       aliases: ac
    invcheck:
@@ -167,3 +167,6 @@ commands:
       description: Update the player's inventory
       permission: mcmagic.mb
       permission-message: §4Only Cast Members can use this command!
+   autograph:
+      description: Autograph Command
+

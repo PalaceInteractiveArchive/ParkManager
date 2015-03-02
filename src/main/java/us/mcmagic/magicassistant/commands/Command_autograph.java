@@ -37,14 +37,17 @@ public class Command_autograph {
                 helpMenu("session", sender);
                 if (args.length == 2) {
                     switch (args[1]) {
-                    /*    case "start":
-                            if (sender.hasPermission("magicassistant.session"))
+                    /*   case "start":
+                             if (user.getRank().getRankId() < Rank.CHARACTERGUEST.getRankId()) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.CHARACTERGUEST.getNameWithBrackets() + ChatColor.RED + " rank or above to use this command!");
                                 return;
                         case "stop":
-                            if (sender.hasPermission("magicassistant.session"))
+                              if (user.getRank().getRankId() < Rank.CHARACTERGUEST.getRankId()) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.CHARACTERGUEST.getNameWithBrackets() + ChatColor.RED + " rank or above to use this command!");
                                 return;
                         case "info":
-                            if (sender.hasPermission("magicassistant.session"))
+                              if (user.getRank().getRankId() < Rank.CHARACTERGUEST.getRankId()) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.CHARACTERGUEST.getNameWithBrackets() + ChatColor.RED + " rank or above to use this command!");
                                 return; */
                         case "newbook":
 
@@ -104,7 +107,7 @@ public class Command_autograph {
                                     }
                                     player.sendMessage(ChatColor.WHITE + "[Autograph] "
                                             + ChatColor.GREEN + "You are not allowed to remove signatures from other's books");
-                                    String BookAuthor = bookmeta.getAuthor();
+
                                     return;
                                 }
                             }
