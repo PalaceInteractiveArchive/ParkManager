@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ public class Command_helpop {
             }
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (tp.hasPermission("arcade.cmchat")) {
                         tp.sendMessage(ChatColor.DARK_RED
                                 + "[CM CHAT] "
@@ -30,7 +31,7 @@ public class Command_helpop {
                 }
                 return;
             }
-            for (Player tp : PlayerUtil.onlinePlayers()) {
+            for (Player tp : Bukkit.getOnlinePlayers()) {
                 if (tp.hasPermission("arcade.cmchat")) {
                     tp.sendMessage(ChatColor.DARK_RED
                             + "[CM CHAT] "

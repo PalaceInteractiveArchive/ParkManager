@@ -3,7 +3,6 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
 
 public class PlayerUtil {
 
@@ -16,9 +15,6 @@ public class PlayerUtil {
         return null;
     }
 
-    public static Collection onlinePlayers() {
-        return Bukkit.getOnlinePlayers();
-    }
 
     public static Player randomPlayer() {
         return Bukkit.getOnlinePlayers().iterator().next();

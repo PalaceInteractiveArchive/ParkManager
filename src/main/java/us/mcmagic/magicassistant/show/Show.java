@@ -499,7 +499,7 @@ public class Show {
 
     @SuppressWarnings("deprecation")
     public void displayText(String text) {
-        for (Player player : PlayerUtil.onlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (MathUtil.offset(player.getLocation(), _loc) < _radius) {
                 player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', text));
             }
@@ -507,7 +507,7 @@ public class Show {
     }
 
     public void displayTitle(TitleObject title) {
-        for (Player player : PlayerUtil.onlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (MathUtil.offset(player.getLocation(), _loc) < _radius) {
                 title.send(player);
             }
@@ -516,7 +516,7 @@ public class Show {
 
     @SuppressWarnings("deprecation")
     public void playMusic(int record) {
-        for (Player player : PlayerUtil.onlinePlayers()) {
+        for (Player player :Bukkit.getOnlinePlayers()) {
             player.playEffect(_loc, Effect.RECORD_PLAY, record);
         }
     }

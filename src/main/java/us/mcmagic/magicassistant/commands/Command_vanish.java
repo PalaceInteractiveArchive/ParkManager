@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,12 +23,12 @@ public class Command_vanish {
         if (args.length == 0) {
             if (hidden.contains(player.getUniqueId())) {
                 hidden.remove(player.getUniqueId());
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     tp.showPlayer(player);
                 }
                 player.sendMessage(ChatColor.DARK_AQUA
                         + "You have become visible.");
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (tp.hasPermission("vanish.standard")
                             && !tp.equals(player)) {
                         tp.sendMessage(ChatColor.YELLOW + player.getName()
@@ -36,14 +37,14 @@ public class Command_vanish {
                 }
             } else {
                 hidden.add(player.getUniqueId());
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (!tp.hasPermission("vanish.standard")) {
                         tp.hidePlayer(player);
                     }
                 }
                 player.sendMessage(ChatColor.DARK_AQUA
                         + "You have vanished. Poof.");
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (tp.hasPermission("vanish.standard")
                             && !tp.equals(player)) {
                         tp.sendMessage(ChatColor.YELLOW + player.getName()
@@ -56,7 +57,7 @@ public class Command_vanish {
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
                 StringBuilder list = new StringBuilder();
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (hidden.contains(tp.getUniqueId())) {
                         if (list.length() > 0) {
                             list.append(ChatColor.DARK_AQUA);
