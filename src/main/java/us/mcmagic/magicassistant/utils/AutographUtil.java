@@ -77,7 +77,14 @@ public class AutographUtil {
                             rewriteBookOut(stack.getTag());
                         }
                     }
-                } else if (event.getPacketType().equals(PacketType.Play.Client.BLOCK_PLACE)) {
+                } else {
+                    MagicAssistant.plugin.getLogger().log(Level.WARNING, "Tried to handle unknown packet type: " + event.getPacketType());
+                }
+            }
+
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                if (event.getPacketType().equals(PacketType.Play.Client.BLOCK_PLACE)) {
                     ItemStack current = (ItemStack) getField(event.getPacket().getHandle(), "e");
                     if (current != null && current.getItem() != null && (current.getItem() == Items.WRITTEN_BOOK || current.getItem() == Items.WRITABLE_BOOK) && current.getTag() != null) {
                         rewriteBookIn(current.getTag());
