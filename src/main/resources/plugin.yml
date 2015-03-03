@@ -3,6 +3,7 @@ author: MCMagicDev
 version: 1.5-SNAPSHOT
 description: Yay MCMagic plugin
 main: us.mcmagic.magicassistant.MagicAssistant
+depend: [MCMagicCore, ProtocolLib]
 commands:
    gwts:
       description: Glow With The Show!
