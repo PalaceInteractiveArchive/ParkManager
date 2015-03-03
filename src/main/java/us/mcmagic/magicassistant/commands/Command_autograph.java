@@ -38,19 +38,20 @@ public class Command_autograph {
                 return;
             case "newbook":
                 BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
-                bookmeta.setAuthor(player.getName());
+                bookmeta.setAuthor("<uuid>" + player.getUniqueId() + "</uuid>");
                 List<String> pages = new ArrayList<>();
-                pages.add("This is the autograph book of " + player.getUniqueId());
+                pages.add("This is the autograph book of <uuid>" + player.getUniqueId() + "</uuid>");
                 bookmeta.setPages(pages);
                 stack.setItemMeta(bookmeta);
                 if (!player.getInventory().contains(stack)) {
                     player.getInventory().addItem(stack);
                     player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                            + ChatColor.GREEN + "You now have a new "
+                            + ChatColor.GREEN + "You now have a new"
                             + ChatColor.AQUA + " Autograph Book");
-                } else {
+                }
+                if (player.getInventory().contains(stack)) {
                     player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                            + ChatColor.GREEN + "You now have a new "
+                            + ChatColor.GREEN + "You now have an"
                             + ChatColor.AQUA + " Autograph Book");
                 }
                 return;
@@ -64,7 +65,7 @@ public class Command_autograph {
                         bookmeta.getPages();
                         msg = "";
                     }
-                    bookmeta.addPage(new String[]{msg + "\n§0" + "-" + player.getUniqueId()});
+                    bookmeta.addPage(new String[]{msg + "\n§0" + "- <uuid>" + player.getUniqueId() + "</uuid>"});
                     player.getItemInHand().setItemMeta(bookmeta);
                 }
                 return;
@@ -73,7 +74,7 @@ public class Command_autograph {
                     bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
                     if ((bookmeta.hasTitle()) &&
                             (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
-                        if (bookmeta.getAuthor().equals(player.getName())) {
+                        if (bookmeta.getAuthor().equals("<uuid>" + player.getUniqueId() + "</uuid>")) {
                             if ((bookmeta.getPageCount() == 1) || (args[0].equalsIgnoreCase("1"))) {
                                 player.sendMessage(ChatColor.WHITE + "[Autograph] "
                                         + ChatColor.GREEN + "You may not delete the cover page.");
@@ -102,8 +103,9 @@ public class Command_autograph {
                     int books = 0;
                     while (li.hasNext()) {
                         ItemStack item = (ItemStack) li.next();
+                        if (item == null || item.getType() != Material.WRITTEN_BOOK) continue;
                         BookMeta bm = (BookMeta) item.getItemMeta();
-                        if (!bm.getAuthor().equalsIgnoreCase(player.getName())) {
+                        if (!bm.getAuthor().equals("<uuid>" + player.getUniqueId() + "</uuid>")) {
                             Player owner = Bukkit.getPlayer(bm.getAuthor());
                             player.getInventory().remove(item);
                             owner.getInventory().addItem(new ItemStack[]{item});
@@ -122,8 +124,9 @@ public class Command_autograph {
                 if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
                     while (li.hasNext()) {
                         ItemStack item = (ItemStack) li.next();
+                        if (item == null || item.getType() != Material.WRITTEN_BOOK) continue;
                         BookMeta bm = (BookMeta) item.getItemMeta();
-                        if (bm.getAuthor().equalsIgnoreCase(player.getName())) {
+                        if (bm.getAuthor().equals("<uuid>" + player.getUniqueId() + "</uuid>")) {
                             player.getInventory().remove(item);
                             player.getInventory().addItem(new ItemStack[]{item});
                             player.sendMessage(ChatColor.WHITE + "[Autograph] "
