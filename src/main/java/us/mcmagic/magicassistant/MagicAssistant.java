@@ -714,6 +714,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryUtil(this), this);
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new Command_magic(this), this);
+        pm.registerEvents(new AutographUtil(), this);
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);
