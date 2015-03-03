@@ -61,6 +61,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
 
     public void onEnable() {
+        plugin = this;
         registerListeners();
         BandUtil.askForParty();
         InventoryUtil.initialize();
