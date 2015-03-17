@@ -1,11 +1,9 @@
 package us.mcmagic.magicassistant.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +18,8 @@ import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.*;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.Arrays;
 
@@ -92,6 +92,17 @@ public class PlayerInteract implements Listener {
             } else if (type == Material.WOODEN_DOOR || type == Material.BIRCH_DOOR ||
                     type == Material.SPRUCE_DOOR || type == Material.JUNGLE_DOOR ||
                     type == Material.DARK_OAK_DOOR || type == Material.ACACIA_DOOR) {
+                boolean isCM = false;
+                //This try-catch can be removed at an undetermined point in the future.
+                try {
+                    isCM = us.mcmagic.mcmagiccore.player.PlayerUtil.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId();
+                } catch (Exception nsme) {
+                    if (player.isOp()) {
+                        isCM = true;
+                        player.sendMessage(ChatColor.RED + "The MCMagicCore plugin needs to be updated on this server!");
+                        player.sendMessage(ChatColor.RED + "If you are not a technician, please notify one that you recieved this message.");
+                    }
+                }
                 HotelRoom room = getRoomFromDoor(event.getClickedBlock(), player);
                 if (room != null) {
                     if (room.isOccupied()) {
@@ -99,11 +110,20 @@ public class PlayerInteract implements Listener {
                             return;
                         } else {
                             player.sendMessage(ChatColor.RED + "That room is currently occupied.");
-                            event.setCancelled(true);
+                            event.setCancelled(!isCM);
                         }
                     } else {
                         player.sendMessage(ChatColor.GREEN + "That room is currently unoccupied.  Book your stay by right-clicking the sign or viewing the room in your MagicBand.");
-                        event.setCancelled(true);
+                        event.setCancelled(!isCM);
+                    }
+                }
+                return;
+            } else if (type == Material.SKULL) {
+                Skull skull = (Skull) event.getClickedBlock().getState();
+                if (skull.getSkullType() == SkullType.PLAYER) {
+                    if (skull.getOwner().equalsIgnoreCase("Telephone") || skull.getOwner().equalsIgnoreCase("a15f8f85-3f97-4c4e-a61d-43b5ad6aafec")) {
+                        player.sendMessage(ChatColor.RED + "You cannot use hotel room telephones yet!");
+                        return;
                     }
                 }
                 return;

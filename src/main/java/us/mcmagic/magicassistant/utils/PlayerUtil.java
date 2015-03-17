@@ -4,6 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.io.InvalidClassException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class PlayerUtil {
@@ -19,7 +23,28 @@ public class PlayerUtil {
     }
 
     public static Player[] onlinePlayers() {
-        return Bukkit.getOnlinePlayers();
+        try {
+            Object rawPlayerList = (Bukkit.class.getMethod("getOnlinePlayers", null).invoke(null, null));
+            if (rawPlayerList instanceof Player[]) {
+                return (Player[]) rawPlayerList;
+            } else if (rawPlayerList instanceof Collection) {
+                Collection<? extends Player> playerList = (Collection<? extends Player>) rawPlayerList;
+                Player[] players = new Player[playerList.size()];
+                int i = 0;
+                for (Object p : playerList) {
+                    players[i] = (Player) p;
+                    i++;
+                }
+                return players;
+            } else {
+                throw new InvalidClassException("The return object type was neither Player[] nor Collection");
+            }
+        } catch (Exception ex) {
+            Bukkit.getLogger().severe("Exception occured in MagicAssistant:PlayerUtil.onlinePlayers()");
+            Bukkit.getLogger().severe(ex.getClass().getSimpleName() + ": " + ex.getMessage());
+            ex.printStackTrace();
+            return new Player[0];
+        }
     }
 
     public static Player randomPlayer() {
@@ -27,7 +52,7 @@ public class PlayerUtil {
     }
 
     public static String getNameFromUUID(String uuid) {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : onlinePlayers()) {
             if (p.getUniqueId().toString().equalsIgnoreCase(uuid)) {
                 return p.getName();
             }
@@ -40,7 +65,7 @@ public class PlayerUtil {
     }
 
     public static String getUUIDFromName(String name) {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : onlinePlayers()) {
             if (p.getName().equalsIgnoreCase(name)) {
                 return p.getUniqueId().toString();
             }

@@ -694,6 +694,7 @@ public class InventoryUtil implements Listener {
                 }
             }
             sortedHotelRooms.add(smallest);
+            availableHotelRooms.remove(smallest);
         }
         int placement = 0;
         for (HotelRoom room : sortedHotelRooms) {
