@@ -3,6 +3,7 @@ author: MCMagicDev
 version: 1.5-SNAPSHOT
 description: Yay MCMagic plugin
 main: us.mcmagic.magicassistant.MagicAssistant
+depend: [MCMagicCore, ProtocolLib]
 commands:
    gwts:
       description: Glow With The Show!
@@ -139,7 +140,7 @@ commands:
       permission-message: §4Only Staff Members can use this command!
    helpop:
       description: Change a player's time!
-      permission: mcmagic.bc
+      permission: mcmagic.joinarcade
       permission-message: §4Only Staff Members can use this command!
       aliases: ac
    invcheck:
@@ -175,3 +176,5 @@ commands:
       description: Perform various hotel-related actions
       permission: mcmagic.hotel
       permission-message: Â§4Only Staff Members can use this command!
+   autograph:
+      description: Autograph Command

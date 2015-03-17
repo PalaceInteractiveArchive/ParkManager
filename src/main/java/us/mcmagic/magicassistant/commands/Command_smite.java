@@ -5,6 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
+import java.util.HashSet;
+
 public class Command_smite {
 
     @SuppressWarnings("deprecation")
@@ -33,7 +35,6 @@ public class Command_smite {
             tp.sendMessage(ChatColor.GRAY + "Thou hast been smitted!");
             return;
         }
-        player.getWorld().strikeLightning(
-                player.getTargetBlock(null, 600).getLocation());
+        player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<Byte>(), 600).getLocation());
     }
 }

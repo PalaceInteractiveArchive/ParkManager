@@ -12,9 +12,8 @@ import java.util.UUID;
 
 public class PlayerUtil {
 
-    @SuppressWarnings("deprecation")
     public static Player findPlayer(String name) {
-        for (Player tp : onlinePlayers()) {
+        for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getName().toLowerCase().contains(name.toLowerCase())) {
                 return tp;
             }
@@ -48,7 +47,7 @@ public class PlayerUtil {
     }
 
     public static Player randomPlayer() {
-        return onlinePlayers()[0];
+        return Bukkit.getOnlinePlayers().iterator().next();
     }
 
     public static String getNameFromUUID(String uuid) {

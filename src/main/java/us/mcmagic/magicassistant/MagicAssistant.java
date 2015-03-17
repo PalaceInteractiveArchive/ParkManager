@@ -50,6 +50,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<String> joinMessages = config
             .getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
+    public static Map<UUID, String> userCache = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();
@@ -58,6 +59,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
 
     public void onEnable() {
+        plugin = this;
         registerListeners();
         BandUtil.askForParty();
         InventoryUtil.initialize();
@@ -202,9 +204,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } else if (label.equalsIgnoreCase("msg") || label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("t")
                 || label.equalsIgnoreCase("w") || label.equalsIgnoreCase("whisper") || label.equalsIgnoreCase("m")) {
             Command_msg.execute(sender, label, args);
-            return true;
-        } else if (label.equalsIgnoreCase("invupdate")) {
-            Command_invupdate.execute(sender, label, args);
             return true;
         } else if (label.equalsIgnoreCase("warp")) {
             Command_warp.execute(label, sender, args);
@@ -769,6 +768,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryUtil(this), this);
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new Command_magic(this), this);
+        new AutographUtil();
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);

@@ -1,8 +1,8 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+        import org.bukkit.ChatColor;
+        import org.bukkit.command.CommandSender;
 
 public class Command_night {
 

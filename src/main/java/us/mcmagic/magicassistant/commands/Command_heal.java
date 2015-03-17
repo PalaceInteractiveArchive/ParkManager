@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ public class Command_heal {
         if (!(sender instanceof Player)) {
             if (args.length == 1) {
                 if (args[0].equals("**")) {
-                    for (Player tp : PlayerUtil.onlinePlayers()) {
+                    for (Player tp : Bukkit.getOnlinePlayers()) {
                         healPlayer(tp);
                         tp.sendMessage(ChatColor.GRAY + "You have been healed.");
                         return;
@@ -33,7 +34,7 @@ public class Command_heal {
         Player player = (Player) sender;
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("**")) {
-                for (Player tp : PlayerUtil.onlinePlayers()) {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
                     healPlayer(tp);
                     tp.sendMessage(ChatColor.GRAY + "You have been healed.");
                     return;

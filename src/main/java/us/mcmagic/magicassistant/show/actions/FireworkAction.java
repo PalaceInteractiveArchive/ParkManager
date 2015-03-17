@@ -101,7 +101,7 @@ public class FireworkAction extends ShowAction implements Listener {
         }
         if (instaburst) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(
-                    Bukkit.getPluginManager().getPlugin("MagicMC"),
+                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
                     new Runnable() {
                         public void run() {
                             fw.detonate();

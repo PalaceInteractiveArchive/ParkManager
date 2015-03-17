@@ -19,7 +19,8 @@ import java.util.ListIterator;
 
 public class Command_autograph {
     private static ItemStack stack = new ItemCreator(Material.WRITTEN_BOOK, ChatColor.DARK_AQUA + "Autograph Book", new ArrayList<String>());
-    private static String msg;
+    private static String buffer;
+
 
     public static void execute(CommandSender sender, String label, String[] args) {
         if (args.length == 0) {
@@ -29,128 +30,188 @@ public class Command_autograph {
         Player player = (Player) sender;
         ListIterator li = player.getInventory().iterator();
 
-        switch (args[0].toLowerCase()) {
+
+        switch (args[0]) {
             case "book":
                 helpMenu("book", sender);
                 return;
-            case "session":
-                helpMenu("session", sender);
-                if (args.length == 2) {
-                    switch (args[1].toLowerCase()) {
-                    /*    case "start":
-                            if (sender.hasPermission("magicassistant.session"))
-                                return;
-                        case "stop":
-                            if (sender.hasPermission("magicassistant.session"))
-                                return;
-                        case "info":
-                            if (sender.hasPermission("magicassistant.session"))
-                                return; */
-                        case "newbook":
+            case "newbook":
+                BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
+                bookmeta.setAuthor("<uuid>" + player.getUniqueId() + "</uuid>");
+                List<String> pages = new ArrayList<>();
+                pages.add("This is the autograph book of <uuid>" + player.getUniqueId() + "</uuid>");
+                bookmeta.setPages(pages);
+                stack.setItemMeta(bookmeta);
+                if (!player.getInventory().contains(stack)) {
+                    player.getInventory().addItem(stack);
+                    player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                            + ChatColor.GREEN + "You now have a new"
+                            + ChatColor.AQUA + " Autograph Book");
+                }
+                if (player.getInventory().contains(stack)) {
+                    player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                            + ChatColor.GREEN + "You now have an"
+                            + ChatColor.AQUA + " Autograph Book");
+                }
 
-                            BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
-                            bookmeta.setAuthor(player.getName());
-                            List<String> pages = new ArrayList<>();
-                            pages.add("This is the autograph book of " + player.getDisplayName());
-                            bookmeta.setPages(pages);
-                            stack.setItemMeta(bookmeta);
-                            if (!player.getInventory().contains(stack)) {
-                                player.getInventory().addItem(stack);
-                                player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                        + ChatColor.GREEN + "You now have a new "
-                                        + ChatColor.AQUA + " Autograph Book");
-                            } else {
-                                player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                        + ChatColor.GREEN + "You now have a new "
-                                        + ChatColor.AQUA + " Autograph Book");
-                            }
-                            return;
-                        case "sign":
-                            if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
-                                bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
-                                if ((bookmeta.hasTitle()) &&
-                                        (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
-                                    player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                            + ChatColor.GREEN + "You have signed the book Sucessfully!");
-                                    bookmeta.getPages();
-                                    msg = "";
-                                }
-                                bookmeta.addPage(new String[]{msg + "\n§0" + "-" + player.getDisplayName()});
-                                player.getItemInHand().setItemMeta(bookmeta);
-                            }
-                            return;
-                        case "rmpage":
-                            if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
-                                bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
-                                if ((bookmeta.hasTitle()) &&
-                                        (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
-                                    if (bookmeta.getAuthor().equals(player.getName())) {
-                                        if ((bookmeta.getPageCount() == 1) || (args[0].equalsIgnoreCase("1"))) {
-                                            player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                                    + ChatColor.GREEN + "You may not delete the cover page.");
-                                            return;
-                                        }
-                                        player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                                + ChatColor.GREEN + "Modified your book.");
-                                        ArrayList newpages = new ArrayList();
-                                        for (int i = 1; i < bookmeta.getPageCount(); i++) {
-                                            if (new Integer(i) != new Integer(args[0])) {
-                                                newpages.add(bookmeta.getPage(i));
-                                            }
-                                        }
-                                        bookmeta.setPages(newpages);
-                                        player.getItemInHand().setItemMeta(bookmeta);
-                                        return;
-                                    }
-                                    player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                            + ChatColor.GREEN + "You are not allowed to remove signatures from other's books");
-                                    String BookAuthor = bookmeta.getAuthor();
-                                    return;
-                                }
-                            }
-                        case "return":
-                            if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
-                                int books = 0;
-                                while (li.hasNext()) {
-                                    ItemStack item = (ItemStack) li.next();
-                                    BookMeta bm = (BookMeta) item.getItemMeta();
-                                    if (!bm.getAuthor().equalsIgnoreCase(player.getName())) {
-                                        Player owner = Bukkit.getPlayer(bm.getAuthor());
-                                        player.getInventory().remove(item);
-                                        owner.getInventory().addItem(new ItemStack[]{item});
-                                        books++;
-                                    }
-                                }
+                return;
+            case "sign":
 
+            {
+                if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.GREEN + "You forgot to add message! Please type /signing for help");
+                        return;
+                    }
+                    bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
+                    if ((bookmeta.hasTitle()) &&
+                            (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                        player.sendMessage(ChatColor.GREEN + "You have signed the book Sucessfully! Please type /return to return the book!");
+                        bookmeta.getPages();
+                        buffer = "";
+                    }
+                    bookmeta.addPage(new String[]{buffer + "-" + player.getDisplayName()});
+                    player.getItemInHand().setItemMeta(bookmeta);
+                    return;
+                }
+            }
+
+               /* if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
+                    bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
+                    if ((bookmeta.hasTitle()) &&
+                            (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                        player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                                + ChatColor.GREEN + "You have signed the book Sucessfully!");
+                        bookmeta.getPages();
+                        msg = "";
+                    }
+                    bookmeta.addPage(new String[]{msg + "\n§0" + "- <uuid>" + player.getUniqueId() + "</uuid>"});
+                    player.getItemInHand().setItemMeta(bookmeta);
+                }
+              */
+            case "csign": {
+                if (!player.hasPermission("mcmagic.csign")) {
+                    player.sendMessage(ChatColor.RED + "Only Characters may use this command!");
+                    return;
+                }
+                if (args.length < 3) {
+                    player.sendMessage(ChatColor.RED + "You forgot to add message! Please type /signing for help");
+                    return;
+                }
+                if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
+                    bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
+                    if ((bookmeta.hasTitle()) &&
+                            (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                        bookmeta.getPages();
+                        buffer = "";
+                        String character = args[2];
+                        args[2] = "";
+                        player.sendMessage(ChatColor.AQUA + "You are signing this book as: " + character);
+
+
+                        buffer = (buffer + " ");
+                    }
+                    player.getItemInHand().setItemMeta(bookmeta);
+                    return;
+                }
+                return;
+            }
+
+            case "rmpage":
+                if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
+                    bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
+                    if ((bookmeta.hasTitle()) &&
+                            (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                        if (bookmeta.getAuthor().equals("<uuid>" + player.getUniqueId() + "</uuid>")) {
+                            if ((bookmeta.getPageCount() == 1) || (args[0].equalsIgnoreCase("1"))) {
                                 player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                        + ChatColor.GREEN + "You have returned all the books you have to their rightful owners.");
+                                        + ChatColor.GREEN + "You may not delete the cover page.");
                                 return;
                             }
                             player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                    + ChatColor.GREEN + "You do not have anyone else's autograph book.");
-                            return;
-                        case "regain":
-                            if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
-                                while (li.hasNext()) {
-                                    ItemStack item = (ItemStack) li.next();
-                                    BookMeta bm = (BookMeta) item.getItemMeta();
-                                    if (bm.getAuthor().equalsIgnoreCase(player.getName())) {
-                                        player.getInventory().remove(item);
-                                        player.getInventory().addItem(new ItemStack[]{item});
-                                        player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                                + ChatColor.GREEN + player.getName() + " has taken back their Autograph Book.");
-                                        player.sendMessage(ChatColor.WHITE + "[Autograph] "
-                                                + ChatColor.GREEN + "Autograph book retrieved from " + player.getName());
-                                    }
-
-
+                                    + ChatColor.GREEN + "Modified your book.");
+                            ArrayList newpages = new ArrayList();
+                            for (int i = 1; i < bookmeta.getPageCount(); i++) {
+                                if (new Integer(i) != new Integer(args[0])) {
+                                    newpages.add(bookmeta.getPage(i));
                                 }
-
                             }
+                            bookmeta.setPages(newpages);
+                            player.getItemInHand().setItemMeta(bookmeta);
+                            return;
+                        }
+                        player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                                + ChatColor.GREEN + "You are not allowed to remove signatures from other's books");
+
+                        return;
+                    }
+                }
+            case "return": {
+                if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
+                    while (li.hasNext()) {
+                        ItemStack item = (ItemStack) li.next();
+                        try {
+                            BookMeta bm = (BookMeta) item.getItemMeta();
+                            if ((!bm.getAuthor().equalsIgnoreCase("<uuid>" + player.getUniqueId() + "</uuid>")) && (bm.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                                Player owner = Bukkit.getPlayer(bm.getAuthor());
+                                player.getInventory().remove(item);
+                                owner.getInventory().addItem(new ItemStack[]{item});
+                            }
+                        } catch (ClassCastException localClassCastException6) {
+                        } catch (NullPointerException localNullPointerException7) {
+                        }
+
+                    }
+                    player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                            + ChatColor.GREEN + "You have returned all the books you have to their rightful owners.");
+                    return;
+                }
+                player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                        + ChatColor.GREEN + "You do not have anyone else's autograph book.");
+                return;
+            }
+               /* if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
+                    int books = 0;
+                    while (li.hasNext()) {
+                        ItemStack item = (ItemStack) li.next();
+                        if (item == null || item.getType() != Material.WRITTEN_BOOK) continue;
+                        BookMeta bm = (BookMeta) item.getItemMeta();
+                        if (!bm.getAuthor().equals("<uuid>" + player.getUniqueId() + "</uuid>")) {
+                            Player owner = Bukkit.getPlayer(bm.getAuthor());
+                            player.getInventory().remove(item);
+                            owner.getInventory().addItem(new ItemStack[]{item});
+                            books++;
+                        }
+                    }
+
+                    player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                            + ChatColor.GREEN + "You have returned all the books you have to their rightful owners.");
+                    return;
+                }
+                player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                        + ChatColor.GREEN + "You do not have anyone else's autograph book.");
+                return; */
+
+            case "regain":
+                if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
+                    while (li.hasNext()) {
+                        ItemStack item = (ItemStack) li.next();
+                        if (item == null || item.getType() != Material.WRITTEN_BOOK) continue;
+                        BookMeta bm = (BookMeta) item.getItemMeta();
+                        if (bm.getAuthor().equals("<uuid>" + player.getUniqueId() + "</uuid>")) {
+                            player.getInventory().remove(item);
+                            player.getInventory().addItem(new ItemStack[]{item});
+                            player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                                    + ChatColor.GREEN + player.getName() + " has taken back their Autograph Book.");
+                            player.sendMessage(ChatColor.WHITE + "[Autograph] "
+                                    + ChatColor.GREEN + "Autograph book retrieved from " + player.getName());
+                        }
+
 
                     }
 
                 }
+
         }
     }
 
@@ -160,7 +221,6 @@ public class Command_autograph {
             case "main":
                 sender.sendMessage(ChatColor.GREEN + "Autograph Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/autograph book " + ChatColor.AQUA + "- Autograph Book Features");
-                sender.sendMessage(ChatColor.GREEN + "/autograph session " + ChatColor.AQUA + "- Autograph Session Features");
                 break;
             case "book":
                 sender.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
@@ -169,12 +229,6 @@ public class Command_autograph {
                 sender.sendMessage(ChatColor.GREEN + "/autograph rmpage " + ChatColor.AQUA + "- Remove a specific page");
                 sender.sendMessage(ChatColor.GREEN + "/autograph return " + ChatColor.AQUA + "- Return all Autograph Books");
                 sender.sendMessage(ChatColor.GREEN + "/autograph regain " + ChatColor.AQUA + "- Retrieve your Autograph Book");
-                break;
-            case "session":
-                sender.sendMessage(ChatColor.GREEN + "Autograph Session Commands:");
-                sender.sendMessage(ChatColor.GREEN + "/autograph session start " + ChatColor.AQUA + "- Create a new signing session");
-                sender.sendMessage(ChatColor.GREEN + "/autograph session stop " + ChatColor.AQUA + "- Stops signing session");
-                sender.sendMessage(ChatColor.GREEN + "/autograph session info " + ChatColor.AQUA + "- Infomation about signing sesssion");
                 break;
         }
 

@@ -17,7 +17,7 @@ public class ParticleAction extends ShowAction {
     public float speed;
     public int amount;
 
-    public ParticleAction(Show show, long time, ParticleEffect effect, Location location, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
+    public ParticleAction(Show show, long time, ParticleEffect effect, Location location, float offsetX, float offsetY, float offsetZ, float speed, int amoun) {
         super(show, time);
         this.effect = effect;
         this.location = location;
