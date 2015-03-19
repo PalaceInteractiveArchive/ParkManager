@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.utils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
@@ -24,28 +22,9 @@ public class InventorySql {
     private static HashMap<String, Integer> list = new HashMap<>();
     public static List<UUID> players = new ArrayList<>();
 
-    public static void start() {
-        list.put("main", Bukkit.getScheduler().runTaskTimer(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
-            @Override
-            public void run() {
-                for (UUID uuid : players) {
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player == null) {
-                        continue;
-                    }
-                    player.getInventory().setContents(invContents(player));
-                    player.getInventory().setArmorContents(armorContents(player));
-                    player.getEnderChest().setContents(endInvContents(player));
-                    players.remove(uuid);
-                }
-            }
-        }, 0L, 20L).getTaskId());
-    }
-
     public static synchronized boolean playerDataContainsPlayer(Player player) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `inv_data` WHERE uuid=?;");
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `inv_data` WHERE uuid=?;");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet resultset = sql.executeQuery();
             boolean containsPlayer = resultset.next();
@@ -65,13 +44,9 @@ public class InventorySql {
             PreparedStatement sql = connection
                     .prepareStatement("UPDATE `inv_data` SET content=? WHERE uuid=?");
             sql.setBytes(1, invdata);
-            sql.setString(2, player.getUniqueId() + "");
+            sql.setBytes(2, armordata);
+            sql.setString(3, player.getUniqueId() + "");
             sql.execute();
-            PreparedStatement armor = connection
-                    .prepareStatement("UPDATE `inv_data` SET armor=? WHERE uuid=?");
-            armor.setBytes(1, armordata);
-            armor.setString(2, player.getUniqueId() + "");
-            armor.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,8 +56,7 @@ public class InventorySql {
         Inventory endinv = player.getEnderChest();
         byte[] invdata = serial(endinv.getContents());
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("UPDATE `endinv_data` SET content=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE `endinv_data` SET content=? WHERE uuid=?");
             sql.setBytes(1, invdata);
             sql.setString(2, player.getUniqueId() + "");
             sql.execute();
@@ -94,8 +68,7 @@ public class InventorySql {
 
     public static synchronized boolean endPlayerDataContainsPlayer(Player player) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `endinv_data` WHERE UUID=?;");
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `endinv_data` WHERE UUID=?;");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet resultset = sql.executeQuery();
             boolean containsPlayer = resultset.next();
@@ -139,45 +112,35 @@ public class InventorySql {
         }
     }
 
-    public synchronized static ItemStack[] invContents(Player player) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("SELECT content FROM `inv_data` WHERE uuid=?");
-            sql.setString(1, player.getUniqueId() + "");
+    public synchronized static List<ItemStack[]> invContents(UUID uuid) {
+        Connection connection = SqlUtil.getConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `inv_data` WHERE uuid=?");
+            sql.setString(1, uuid.toString());
             ResultSet results = sql.executeQuery();
-            results.next();
-            byte[] data = results.getBytes("content");
+            if (!results.next()) {
+                results.close();
+                sql.close();
+                return null;
+            }
+            byte[] inv = results.getBytes("content");
+            byte[] armor = results.getBytes("armor");
             results.close();
             sql.close();
-            return deserial(data);
+            ItemStack[] invStuff = deserial(inv);
+            ItemStack[] armStuff = deserial(armor);
+            return Arrays.asList(invStuff, armStuff);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public synchronized static ItemStack[] armorContents(Player player) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("SELECT armor FROM `inv_data` WHERE uuid=?");
-            sql.setString(1, player.getUniqueId() + "");
-            ResultSet results = sql.executeQuery();
-            results.next();
-            byte[] data = results.getBytes("armor");
-            results.close();
-            sql.close();
-            return deserial(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public synchronized static ItemStack[] endInvContents(Player player) {
+    public synchronized static ItemStack[] endInvContents(UUID uuid) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT content FROM `endinv_data` WHERE uuid=?");
-            sql.setString(1, player.getUniqueId() + "");
+            sql.setString(1, uuid.toString());
             ResultSet results = sql.executeQuery();
             results.next();
             byte[] data = results.getBytes("content");
@@ -186,8 +149,8 @@ public class InventorySql {
             return deserial(data);
         } catch (Exception e) {
             e.printStackTrace();
+            return new ItemStack[]{};
         }
-        return null;
     }
 
     public static ItemStack[] deserial(byte[] b) {

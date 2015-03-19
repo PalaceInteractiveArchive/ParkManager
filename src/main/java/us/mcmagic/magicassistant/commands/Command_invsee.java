@@ -1,30 +1,34 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
-public class Command_invsee {
+public class Command_invsee implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED
                     + "Only players can use this command!");
-            return;
+            return true;
         }
         Player player = (Player) sender;
         if (args.length == 1) {
             Player tp = PlayerUtil.findPlayer(args[0]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
+                return true;
             }
             player.sendMessage(ChatColor.GREEN + "Now looking in "
                     + tp.getName() + "'s Inventory!");
             player.openInventory(tp.getInventory());
-            return;
+            return true;
         }
         player.sendMessage(ChatColor.RED + "/invsee [Username]");
+        return true;
     }
 }

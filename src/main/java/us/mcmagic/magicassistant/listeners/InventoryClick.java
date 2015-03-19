@@ -3,6 +3,7 @@ package us.mcmagic.magicassistant.listeners;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -116,6 +117,11 @@ public class InventoryClick implements Listener {
 
         }
         if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
+            if (clicked.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
+                event.setCancelled(true);
+                event.setResult(Event.Result.DENY);
+                return;
+            }
             if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
                     event.setCancelled(!player.hasPermission("band.change"));
@@ -127,7 +133,6 @@ public class InventoryClick implements Listener {
             }
         }
     }
-
 
 
     /*
@@ -339,8 +344,14 @@ public class InventoryClick implements Listener {
     @EventHandler
     public void onInventoryCreative(InventoryCreativeEvent event) {
         Player player = (Player) event.getWhoClicked();
+        ItemStack clicked = event.getCurrentItem();
+        if (clicked != null && clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null &&
+                clicked.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
+            event.setCancelled(true);
+            event.setResult(Event.Result.DENY);
+            return;
+        }
         if (!player.hasPermission("band.stayvisible")) {
-            ItemStack clicked = event.getCurrentItem();
             ItemStack mb = new ItemStack(Material.PAPER);
             ItemMeta mbm = mb.getItemMeta();
             mbm.setDisplayName(ChatColor.GOLD + "MagicBand");

@@ -5,16 +5,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.MagicAssistant;
 
-public class Command_delay {
+public class Command_delay implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             sender.sendMessage(ChatColor.RED
                     + "Only command blocks can use this command!");
-            return;
+            return true;
         }
         if (args.length != 4) {
             sender.sendMessage(ChatColor.RED + "Incorrect amount of arguments!");
@@ -32,18 +36,17 @@ public class Command_delay {
                     new Runnable() {
                         public void run() {
                             b.setType(Material.REDSTONE_BLOCK);
-                            Bukkit.getScheduler().runTaskLater(
-                                    Bukkit.getPluginManager().getPlugin(
-                                            "MagicAssistant"), new Runnable() {
-                                        public void run() {
-                                            b.setType(Material.AIR);
-                                        }
-                                    }, 20L);
+                            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                                public void run() {
+                                    b.setType(Material.AIR);
+                                }
+                            }, 20L);
                         }
                     }, (20 * (Integer.parseInt(args[0]))));
-            return;
+            return true;
         }
         sender.sendMessage(ChatColor.RED + "/delay [delay] x y z");
+        return true;
     }
 
     private static boolean isInt(String s) {

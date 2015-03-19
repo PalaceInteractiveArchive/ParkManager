@@ -11,7 +11,10 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,9 +82,7 @@ public class WarpUtil implements Listener {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
-    public static void crossServerWarp(final String uuid, final String warp,
-                                       final String server) {
+    public static void crossServerWarp(final String uuid, final String warp, final String server) {
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
@@ -89,13 +90,11 @@ public class WarpUtil implements Listener {
             out.writeUTF(uuid);
             out.writeUTF(server);
             out.writeUTF(warp);
-            Bukkit.getPlayer(UUID.fromString(uuid)).sendPluginMessage(pl, "BungeeCord",
+            Bukkit.getPlayer(UUID.fromString(uuid)).sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord",
                     b.toByteArray());
         } catch (IOException e) {
-            Bukkit.getPlayer(UUID.fromString(uuid))
-                    .sendMessage(
-                            ChatColor.RED
-                                    + "There was a problem joining that server, please type /join instead!");
+            Bukkit.getPlayer(UUID.fromString(uuid)).sendMessage(ChatColor.RED +
+                    "There was a problem joining that server, please type /join instead!");
         }
     }
 
@@ -165,7 +164,7 @@ public class WarpUtil implements Listener {
     }
 
     public static Warp findWarp(String name) {
-        List<Warp> warps = MagicAssistant.warps;
+        List<Warp> warps = MagicAssistant.getWarps();
         for (Warp warp : warps) {
             if (warp.getName().toLowerCase().equals(name.toLowerCase())) {
                 return warp;
@@ -180,19 +179,16 @@ public class WarpUtil implements Listener {
             DataOutputStream out = new DataOutputStream(b);
             out.writeUTF("UpdateWarps");
             out.writeUTF(MagicAssistant.serverName);
-            Bukkit.getServer().sendPluginMessage(pl, "BungeeCord",
-                    b.toByteArray());
+            Bukkit.getServer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (IOException e) {
-            Bukkit.getServer()
-                    .getLogger()
-                    .severe("There was an error contacting the Bungee server to update Warps!");
+            Bukkit.getServer().getLogger().severe("There was an error contacting the Bungee server to update Warps!");
         }
     }
 
     public synchronized static void refreshWarps() {
-        MagicAssistant.warps.clear();
+        MagicAssistant.clearWarps();
         for (Warp warp : WarpUtil.getWarps()) {
-            MagicAssistant.warps.add(warp);
+            MagicAssistant.addWarp(warp);
         }
     }
 }

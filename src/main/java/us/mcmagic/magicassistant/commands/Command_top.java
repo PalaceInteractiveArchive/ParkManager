@@ -4,22 +4,26 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
  * Created by Marc on 12/12/14
  */
-public class Command_top {
+public class Command_top implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Only players can use this!");
-            return;
+            return true;
         }
         Player player = (Player) sender;
         player.sendMessage(ChatColor.GRAY + "Teleporting to top.");
         player.teleport(getSafeLocation(player.getLocation()));
+        return true;
     }
 
     public static Location getSafeLocation(Location loc) {
@@ -31,8 +35,11 @@ public class Command_top {
         int y = (int) Math.round(loc.getY());
         int z = loc.getBlockZ();
         int origY = y;
+        if (origY < 0) {
+            return loc;
+        }
         while (isBlockAboveAir(world, x, y, z)) {
-            y--;
+            y++;
             if (y < 0) {
                 y = origY;
             }
@@ -41,6 +48,6 @@ public class Command_top {
     }
 
     static boolean isBlockAboveAir(World world, int x, int y, int z) {
-        return y > world.getMaxHeight() || world.getBlockAt(x, y - 1, z).getType().equals(Material.AIR);
+        return y > world.getMaxHeight() || world.getBlockAt(x, y + 1, z).getType().equals(Material.AIR);
     }
 }

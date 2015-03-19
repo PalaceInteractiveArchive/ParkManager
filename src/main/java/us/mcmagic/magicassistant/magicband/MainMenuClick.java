@@ -15,7 +15,6 @@ import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.util.Arrays;
 

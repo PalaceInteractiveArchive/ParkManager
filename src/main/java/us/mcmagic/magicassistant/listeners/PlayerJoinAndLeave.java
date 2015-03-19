@@ -1,13 +1,11 @@
 package us.mcmagic.magicassistant.listeners;
 
-import org.bukkit.BanEntry;
-import org.bukkit.BanList;
+import org.bukkit.*;
 import org.bukkit.BanList.Type;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
@@ -22,19 +20,49 @@ import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     public static MagicAssistant pl;
+    private static HashMap<UUID, ItemStack[]> invData = new HashMap<>();
+    private static HashMap<UUID, ItemStack[]> armorData = new HashMap<>();
+    private static HashMap<UUID, ItemStack[]> endData = new HashMap<>();
 
     public PlayerJoinAndLeave(MagicAssistant instance) {
         pl = instance;
+    }
+
+    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        if (MagicAssistant.crossServerInv) {
+            UUID uuid = event.getUniqueId();
+            List<ItemStack[]> stuff = InventorySql.invContents(uuid);
+            ItemStack[] inv = stuff.get(0);
+            ItemStack[] armor = stuff.get(1);
+            ItemStack[] end = InventorySql.endInvContents(uuid);
+            if (invData.containsKey(uuid)) {
+                invData.remove(uuid);
+            }
+            if (armorData.containsKey(uuid)) {
+                armorData.remove(uuid);
+            }
+            if (endData.containsKey(uuid)) {
+                endData.remove(uuid);
+            }
+            if (inv != null) {
+                invData.put(uuid, inv);
+            }
+            if (armor != null) {
+                armorData.put(uuid, inv);
+            }
+            if (end != null) {
+                endData.put(uuid, inv);
+            }
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -74,6 +102,29 @@ public class PlayerJoinAndLeave implements Listener {
             }
         }
         if (MagicAssistant.crossServerInv) {
+            PlayerInventory pi = player.getInventory();
+            if (invData.containsKey(player.getUniqueId())) {
+                pi.setContents(invData.remove(player.getUniqueId()));
+            }
+            if (armorData.containsKey(player.getUniqueId())) {
+                pi.setArmorContents(armorData.remove(player.getUniqueId()));
+            }
+            if (endData.containsKey(player.getUniqueId())) {
+                player.getEnderChest().setContents(endData.remove(player.getUniqueId()));
+            }
+            BandUtil.giveBandToPlayer(player);
+            if (Shooter.game != null) {
+                pi.remove(Shooter.getItem().getType());
+            }
+            pi.remove(Shooter.getItem().getType());
+            ItemStack helm = player.getInventory().getHelmet();
+            if (helm != null && helm.getItemMeta() != null) {
+                if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
+                    player.getInventory().setHelmet(new ItemCreator(Material.AIR));
+                }
+            }
+            player.sendMessage(ChatColor.GREEN + "Inventory updated!");
+            /*
             Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
                     new Runnable() {
                         public void run() {
@@ -81,10 +132,9 @@ public class PlayerJoinAndLeave implements Listener {
                                 player.performCommand("spawn");
                                 InventorySql.setupData(player);
                             } else {
-                                player.getInventory().setContents(
-                                        InventorySql.invContents(player));
-                                player.getInventory().setArmorContents(
-                                        InventorySql.armorContents(player));
+                                List<ItemStack[]> stuff = InventorySql.invContents(player);
+                                player.getInventory().setContents(stuff.get(0));
+                                player.getInventory().setArmorContents(stuff.get(1));
                             }
                             if (!InventorySql.endPlayerDataContainsPlayer(player)) {
                                 InventorySql.setupEndData(player);
@@ -97,8 +147,17 @@ public class PlayerJoinAndLeave implements Listener {
                             player.getInventory().remove(Shooter.getItem().getType());
                         }
                     }, 100L);
+                    */
         } else {
-            player.getInventory().remove(Shooter.getItem().getType());
+            ItemStack helm = player.getInventory().getHelmet();
+            if (helm != null && helm.getItemMeta() != null) {
+                if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
+                    player.getInventory().setHelmet(new ItemStack(Material.AIR));
+                }
+            }
+            if (Shooter.game != null) {
+                player.getInventory().remove(Shooter.getItem().getType());
+            }
         }
         Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
             @Override
@@ -111,7 +170,7 @@ public class PlayerJoinAndLeave implements Listener {
             @Override
             public void run() {
                 boolean updateNecessary = false;
-                for (HotelRoom room : pl.hotelRooms) {
+                for (HotelRoom room : MagicAssistant.hotelRooms) {
                     if (room.getCheckoutNotificationRecipient() != null && room.getCheckoutNotificationRecipient().equalsIgnoreCase(player.getUniqueId().toString())) {
                         UUID uuid = UUID.fromString(room.getCheckoutNotificationRecipient());
                         if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
@@ -151,9 +210,7 @@ public class PlayerJoinAndLeave implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public void banPlayer(Player player, String reason, Date expiration,
-                          boolean permanent) {
+    public void banPlayer(Player player, String reason, Date expiration, boolean permanent) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
@@ -162,8 +219,7 @@ public class PlayerJoinAndLeave implements Listener {
             out.writeUTF(reason);
             out.writeBoolean(permanent);
             out.writeLong(expiration.getTime());
-            player.sendPluginMessage(pl, "BungeeCord",
-                    b.toByteArray());
+            player.sendPluginMessage(pl, "BungeeCord", b.toByteArray());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -194,6 +250,7 @@ public class PlayerJoinAndLeave implements Listener {
             Command_vanish.hidden.remove(player.getUniqueId());
         } catch (Exception ignored) {
         }
+        MagicAssistant.getInstance().blockChanger.logout(player);
         if (Shooter.getItem() != null) {
             if (player.getInventory().contains(Shooter.getItem())) {
                 player.getInventory().remove(Shooter.getItem());

@@ -5,9 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.io.InvalidClassException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 public class PlayerUtil {
@@ -58,6 +56,19 @@ public class PlayerUtil {
         }
         try {
             return Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static String getNameFromUUID(UUID uuid) {
+        for (Player p : onlinePlayers()) {
+            if (p.getUniqueId().equals(uuid)) {
+                return p.getName();
+            }
+        }
+        try {
+            return Bukkit.getOfflinePlayer(uuid).getName();
         } catch (Exception ex) {
             return null;
         }

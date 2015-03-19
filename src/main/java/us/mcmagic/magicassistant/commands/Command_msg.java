@@ -1,6 +1,8 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
@@ -8,13 +10,14 @@ import us.mcmagic.magicassistant.utils.PlayerUtil;
 /**
  * Created by Marc on 12/16/14
  */
-public class Command_msg {
+public class Command_msg implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length < 2) {
                 sender.sendMessage(ChatColor.RED + "/" + label + " [Player] [Message]");
-                return;
+                return true;
             }
             String msg = "";
             for (int i = 1; i < args.length; i++) {
@@ -22,11 +25,12 @@ public class Command_msg {
             }
             Player player = PlayerUtil.findPlayer(args[0]);
             if (player == null) {
-                return;
+                return true;
             }
-            player.sendMessage(ChatColor.AQUA + "" + ChatColor.translateAlternateColorCodes('&', msg));
-            return;
+            player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', msg));
+            return true;
         }
         sender.sendMessage(ChatColor.RED + "Whoa, what'd you do? Stahp it!");
+        return true;
     }
 }

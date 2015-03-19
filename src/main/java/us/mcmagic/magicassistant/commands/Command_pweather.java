@@ -2,19 +2,22 @@ package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.WeatherType;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
-public class Command_pweather {
+public class Command_pweather implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length == 2) {
                 Player tp = PlayerUtil.findPlayer(args[1]);
                 if (tp == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
-                    return;
+                    return true;
                 }
                 args[0] = args[0].toLowerCase();
                 switch (args[0]) {
@@ -42,10 +45,10 @@ public class Command_pweather {
                                 + "/pweather [rain/sun/reset] [Username]");
                         break;
                 }
+                return true;
             }
-            sender.sendMessage(ChatColor.RED
-                    + "/pweather [rain/sun/reset] [Username]");
-            return;
+            sender.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
+            return true;
         }
         Player player = (Player) sender;
         if (args.length == 1) {
@@ -65,20 +68,20 @@ public class Command_pweather {
                     break;
                 case "reset":
                     player.resetPlayerWeather();
-                    player.sendMessage(ChatColor.GREEN
-                            + "Your weather now matches the server");
+                    player.sendMessage(ChatColor.GREEN + "Your weather now matches the server");
+                    break;
                 default:
                     player.sendMessage(ChatColor.RED
                             + "/pweather [rain/sun/reset] [Username]");
                     break;
             }
-            return;
+            return true;
         }
         if (args.length == 2) {
             Player tp = PlayerUtil.findPlayer(args[1]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
+                return true;
             }
             args[0] = args[0].toLowerCase();
             switch (args[0]) {
@@ -98,13 +101,15 @@ public class Command_pweather {
                     tp.resetPlayerWeather();
                     player.sendMessage(ChatColor.DARK_AQUA + tp.getName() + "'s "
                             + ChatColor.GREEN + "weather now matches the server.");
+                    break;
                 default:
                     player.sendMessage(ChatColor.RED
                             + "/pweather [rain/sun/reset] [Username]");
                     break;
             }
+            return true;
         }
-        player.sendMessage(ChatColor.RED
-                + "/pweather [rain/sun/reset] [Username]");
+        player.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
+        return true;
     }
 }

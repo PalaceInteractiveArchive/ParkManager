@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,58 +30,45 @@ public class Command_hotel {
             return;
         }
 
-        switch(args[0]) {
+        switch (args[0]) {
             case "confirm":
                 execute_confirm(sender, args);
                 return;
-
             case "reload":
                 execute_reload(sender, args);
                 return;
-
             case "list":
                 execute_list(sender, args);
                 return;
-
             case "clear":
                 execute_clear(sender, args, false);
                 return;
-
             case "add":
                 execute_add(sender, args);
                 return;
-
             case "remove":
                 execute_remove(sender, args);
                 return;
-
             case "vacate":
                 execute_vacate(sender, args);
                 return;
-
             case "occupy":
                 execute_occupy(sender, args);
                 return;
-
             case "gift":
                 execute_gift(sender, args);
                 return;
-
             case "setwarp":
                 execute_setwarp(sender, args);
                 return;
-
             case "info":
                 execute_info(sender, args);
                 return;
-
             case "extendtime":
                 execute_extendtime(sender, args);
                 return;
-
             case "settime":
                 execute_settime(sender, args);
-                return;
         }
     }
 
@@ -403,7 +389,7 @@ public class Command_hotel {
         for (String arg : args) {
             if (literal) {
                 if (arg.endsWith("\"") || arg.endsWith("'")) {
-                    currentArg += arg.substring(0, arg.length()-1);
+                    currentArg += arg.substring(0, arg.length() - 1);
                     tweakedArgs.add(currentArg);
                     currentArg = "";
                     literal = false;

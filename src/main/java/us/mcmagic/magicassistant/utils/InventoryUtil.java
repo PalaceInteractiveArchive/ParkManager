@@ -8,18 +8,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import us.mcmagic.magicassistant.handlers.FoodLocation;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.FoodLocation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.handlers.Ride;
 import us.mcmagic.magicassistant.magicband.Attraction;
 import us.mcmagic.magicassistant.magicband.BandColor;
-import us.mcmagic.magicassistant.handlers.Ride;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.credits.Credits;
 import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.PlayerUtil;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.*;
@@ -622,7 +621,7 @@ public class InventoryUtil implements Listener {
             case MYHOTELROOMS:
                 Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
                 List<HotelRoom> rooms = new ArrayList<>();
-                for (HotelRoom room : pl.hotelRooms) {
+                for (HotelRoom room : MagicAssistant.hotelRooms) {
                     if (room.isOccupied() && room.getCurrentOccupant().equalsIgnoreCase(player.getUniqueId().toString())) {
                         rooms.add(room);
                     }
@@ -635,7 +634,7 @@ public class InventoryUtil implements Listener {
                     List<String> riml = Arrays.asList(ChatColor.GREEN + "Click to teleport to this room.", ChatColor.DARK_GREEN + "You have " + (
                             room.getOccupationCooldown() != 0 ?
                                     Integer.toString(room.getOccupationCooldown()) + " hours left for this reservation." :
-                                    "less than 1 hour left for this reservation." ));
+                                    "less than 1 hour left for this reservation."));
                     rim.setLore(riml);
                     roomItem.setItemMeta(rim);
                     viewMyHotelRooms.setItem(roomItemPlacement, roomItem);
@@ -651,7 +650,7 @@ public class InventoryUtil implements Listener {
             case HOTELS:
                 Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
                 List<String> availableHotels = new ArrayList<>();
-                for (HotelRoom room : pl.hotelRooms) {
+                for (HotelRoom room : MagicAssistant.hotelRooms) {
                     if (!availableHotels.contains(room.getHotelName())) {
                         availableHotels.add(room.getHotelName());
                     }
@@ -673,15 +672,13 @@ public class InventoryUtil implements Listener {
                 }
                 viewAvailableHotels.setItem(22, BandUtil.getBackItem());
                 player.openInventory(viewAvailableHotels);
-                return;
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static void openHotelRoomListPage(final Player player, String hotelName) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rooms in " + hotelName);
         List<HotelRoom> availableHotelRooms = new ArrayList<>();
-        for (HotelRoom room : pl.hotelRooms) {
+        for (HotelRoom room : MagicAssistant.hotelRooms) {
             if (room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()) {
                 availableHotelRooms.add(room);
             }
@@ -737,7 +734,7 @@ public class InventoryUtil implements Listener {
         List<String> himl = Arrays.asList(ChatColor.RED + "Click to check out before the 72-hour period is over.", ChatColor.DARK_GREEN + "You have " + (
                 room.getOccupationCooldown() != 0 ?
                         Integer.toString(room.getOccupationCooldown()) + " hours left for this reservation." :
-                        "less than 1 hour left for this reservation." ));
+                        "less than 1 hour left for this reservation."));
         him.setLore(himl);
         item.setItemMeta(him);
         viewAvailableHotelRooms.setItem(13, item);

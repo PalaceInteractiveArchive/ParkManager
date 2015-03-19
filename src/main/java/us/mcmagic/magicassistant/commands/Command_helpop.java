@@ -2,14 +2,17 @@ package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
-public class Command_helpop {
+public class Command_helpop implements CommandExecutor {
 
-    @SuppressWarnings("deprecation")
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0) {
             String message = "";
             for (String arg : args) {
@@ -18,33 +21,22 @@ public class Command_helpop {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.hasPermission("arcade.cmchat")) {
-                        tp.sendMessage(ChatColor.DARK_RED
-                                + "[CM CHAT] "
-                                + ChatColor.GRAY
-                                + player.getName()
-                                + ": "
-                                + ChatColor.WHITE
-                                + ChatColor.translateAlternateColorCodes('&',
-                                message));
+                    if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                        tp.sendMessage(ChatColor.DARK_RED + "[CM CHAT] " + ChatColor.GRAY + player.getName() + ": " +
+                                ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', message));
                     }
                 }
-                return;
+                return true;
             }
             for (Player tp : Bukkit.getOnlinePlayers()) {
-                if (tp.hasPermission("arcade.cmchat")) {
-                    tp.sendMessage(ChatColor.DARK_RED
-                            + "[CM CHAT] "
-                            + ChatColor.GRAY
-                            + "Console"
-                            + ": "
-                            + ChatColor.WHITE
-                            + ChatColor.translateAlternateColorCodes('&',
-                            message));
+                if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                    tp.sendMessage(ChatColor.DARK_RED + "[CM CHAT] " + ChatColor.GRAY + "Console" + ": " +
+                            ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', message));
                 }
             }
-            return;
+            return true;
         }
         sender.sendMessage(ChatColor.RED + "/" + label + " [message]");
+        return true;
     }
 }

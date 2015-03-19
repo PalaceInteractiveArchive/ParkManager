@@ -62,23 +62,28 @@ public class AutographUtil {
     }
 
     public AutographUtil() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Client.BLOCK_PLACE, PacketType.Play.Client.WINDOW_CLICK, PacketType.Play.Client.SET_CREATIVE_SLOT) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
+                PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Client.BLOCK_PLACE,
+                PacketType.Play.Client.WINDOW_CLICK, PacketType.Play.Client.SET_CREATIVE_SLOT) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 if (event.getPacketType().equals(PacketType.Play.Server.SET_SLOT)) {
                     ItemStack current = (ItemStack) getField(event.getPacket().getHandle(), "c");// Get the current ItemStack
-                    if (current != null && current.getItem() != null && (current.getItem() == Items.WRITTEN_BOOK || current.getItem() == Items.WRITABLE_BOOK) && current.getTag() != null) {
+                    if (current != null && current.getItem() != null && (current.getItem() == Items.WRITTEN_BOOK ||
+                            current.getItem() == Items.WRITABLE_BOOK) && current.getTag() != null) {
                         rewriteBookOut(current.getTag());
                     }
                 } else if (event.getPacketType().equals(PacketType.Play.Server.WINDOW_ITEMS)) {
                     ItemStack[] stacks = (ItemStack[]) getField(event.getPacket().getHandle(), "b");
                     for (ItemStack stack : stacks) {
-                        if (stack != null && stack.getItem() != null && (stack.getItem() == Items.WRITTEN_BOOK || stack.getItem() == Items.WRITABLE_BOOK) && stack.getTag() != null) {
+                        if (stack != null && stack.getItem() != null && (stack.getItem() == Items.WRITTEN_BOOK ||
+                                stack.getItem() == Items.WRITABLE_BOOK) && stack.getTag() != null) {
                             rewriteBookOut(stack.getTag());
                         }
                     }
                 } else {
-                    MagicAssistant.plugin.getLogger().log(Level.WARNING, "Tried to handle unknown packet type: " + event.getPacketType());
+                    MagicAssistant.getInstance().getLogger().log(Level.WARNING, "Tried to handle unknown packet type: "
+                            + event.getPacketType());
                 }
             }
 
@@ -100,7 +105,8 @@ public class AutographUtil {
                         rewriteBookIn(current.getTag());
                     }
                 } else {
-                    MagicAssistant.plugin.getLogger().log(Level.WARNING, "Tried to handle unknown packet type: " + event.getPacketType());
+                    MagicAssistant.getInstance().getLogger().log(Level.WARNING, "Tried to handle unknown packet type: "
+                            + event.getPacketType());
                 }
             }
         });
@@ -120,11 +126,12 @@ public class AutographUtil {
     private void rewriteBookOut(NBTTagCompound tag) {
         if (tag.hasKeyOfType("tag", 10)) {// Check if it has the usual book tag
             NBTTagCompound bookData = tag.getCompound("tag");
-            MagicAssistant.plugin.getLogger().log(Level.INFO, "Found book sending with bookData: " + bookData.toString());
+            MagicAssistant.getInstance().getLogger().log(Level.INFO, "Found book sending with bookData: " +
+                    bookData.toString());
             if (bookData.hasKeyOfType("pages", 9)) {
                 NBTTagCompound bookDataOriginal = (NBTTagCompound) bookData.clone();
                 NBTTagList pages = bookData.getList("pages", 8);
-                MagicAssistant.plugin.getLogger().log(Level.INFO, "Found pages: " + pages.toString());
+                MagicAssistant.getInstance().getLogger().log(Level.INFO, "Found pages: " + pages.toString());
                 for (int i = 0; i < pages.size(); i++) {
                     String s = pages.getString(i);
                     s = stripUuids(s);

@@ -1,20 +1,22 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.magicassistant.utils.NumberUtil;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
-public class Command_ptime {
+public class Command_ptime implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length == 2) {
                 Player tp = PlayerUtil.findPlayer(args[1]);
                 if (tp == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
-                    return;
+                    return true;
                 }
                 args[0] = args[0].toLowerCase().replaceAll("ticks", "");
                 switch (args[0]) {
@@ -78,10 +80,10 @@ public class Command_ptime {
                         }
                         break;
                 }
+                return true;
             }
-            sender.sendMessage(ChatColor.RED
-                    + "/ptime [day/noon/night/1000/reset] [Username]");
-            return;
+            sender.sendMessage(ChatColor.RED + "/ptime [day/noon/night/1000/reset] [Username]");
+            return true;
         }
         Player player = (Player) sender;
         if (args.length == 1) {
@@ -123,13 +125,13 @@ public class Command_ptime {
                     }
                     break;
             }
-            return;
+            return true;
         }
         if (args.length == 2) {
             Player tp = PlayerUtil.findPlayer(args[1]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
+                return true;
             }
             args[0] = args[0].toLowerCase().replaceAll("ticks", "");
             switch (args[0]) {
@@ -166,6 +168,7 @@ public class Command_ptime {
                             + "Your time now matches the server.");
                     player.sendMessage(ChatColor.DARK_AQUA + tp.getName() + "'s "
                             + ChatColor.GREEN + "time now matches the server.");
+                    break;
                 default:
                     if (isInt(args[0])) {
                         tp.setPlayerTime(Integer.parseInt(args[0]), false);
@@ -178,14 +181,14 @@ public class Command_ptime {
                                 + ChatColor.DARK_AQUA + Integer.parseInt(args[0])
                                 + ChatColor.GREEN + "!");
                     } else {
-                        player.sendMessage(ChatColor.RED
-                                + "/ptime [day/noon/night/1000/reset] [Username]");
+                        player.sendMessage(ChatColor.RED + "/ptime [day/noon/night/1000/reset] [Username]");
                     }
                     break;
             }
+            return true;
         }
-        player.sendMessage(ChatColor.RED
-                + "/ptime [day/noon/night/1000/reset] [Username]");
+        player.sendMessage(ChatColor.RED + "/ptime [day/noon/night/1000/reset] [Username]");
+        return true;
     }
 
     private static boolean isInt(String s) {

@@ -17,11 +17,6 @@ import us.mcmagic.magicassistant.utils.BandUtil;
 import java.util.Arrays;
 
 public class PlayerDropItem implements Listener {
-    public static MagicAssistant pl;
-
-    public PlayerDropItem(MagicAssistant instance) {
-        pl = instance;
-    }
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {

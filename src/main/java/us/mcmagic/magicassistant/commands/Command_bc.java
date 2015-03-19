@@ -2,14 +2,17 @@ package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class Command_bc {
+public class Command_bc implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(ChatColor.RED + "/" + label + " [Message]");
-            return;
+            return true;
         }
         String message = "";
         for (String s : args) {
@@ -18,5 +21,6 @@ public class Command_bc {
         Bukkit.broadcastMessage(ChatColor.WHITE + "[" + ChatColor.AQUA
                 + "Information" + ChatColor.WHITE + "] " + ChatColor.GREEN
                 + ChatColor.translateAlternateColorCodes('&', message));
+        return true;
     }
 }

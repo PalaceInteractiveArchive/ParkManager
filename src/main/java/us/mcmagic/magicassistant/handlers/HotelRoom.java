@@ -23,39 +23,71 @@ public class HotelRoom {
         this.checkoutNotificationRecipient = checkoutNotificationRecipient;
     }
 
-    public String getName() { return hotelName + " #" + Integer.toString(roomNumber); }
+    public String getName() {
+        return hotelName + " #" + Integer.toString(roomNumber);
+    }
 
-    public String getHotelName() { return hotelName; }
+    public String getHotelName() {
+        return hotelName;
+    }
 
-    public int getRoomNumber() { return roomNumber; }
+    public int getRoomNumber() {
+        return roomNumber;
+    }
 
-    public String getCurrentOccupant() { return currentOccupant; }
+    public String getCurrentOccupant() {
+        return currentOccupant;
+    }
 
-    public int getOccupationCooldown() { return occupationCooldown; }
+    public int getOccupationCooldown() {
+        return occupationCooldown;
+    }
 
-    public Warp getWarp() { return roomWarp; }
+    public Warp getWarp() {
+        return roomWarp;
+    }
 
-    public int getCost() { return cost; }
+    public int getCost() {
+        return cost;
+    }
 
-    public String getCheckoutNotificationRecipient() { return checkoutNotificationRecipient; }
+    public String getCheckoutNotificationRecipient() {
+        return checkoutNotificationRecipient;
+    }
 
-    public void setHotelName(String hotelName) { this.hotelName = hotelName; }
+    public void setHotelName(String hotelName) {
+        this.hotelName = hotelName;
+    }
 
-    public void setRoomNumber(int roomNumber) { this.roomNumber = roomNumber; }
+    public void setRoomNumber(int roomNumber) {
+        this.roomNumber = roomNumber;
+    }
 
-    public void setCurrentOccupant(String currentOccupant) { this.currentOccupant = currentOccupant; }
+    public void setCurrentOccupant(String currentOccupant) {
+        this.currentOccupant = currentOccupant;
+    }
 
     public void setOccupationCooldown(int currentOccupationCooldown) {
         this.occupationCooldown = currentOccupationCooldown;
     }
 
-    public void setWarp(Warp roomWarp) { this.roomWarp = roomWarp; }
+    public void setWarp(Warp roomWarp) {
+        this.roomWarp = roomWarp;
+    }
 
-    public void setCost(int cost) { this.cost = cost; }
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
 
-    public void setCheckoutNotificationRecipient(String cnr) { this.checkoutNotificationRecipient = cnr; }
+    public void setCheckoutNotificationRecipient(String cnr) {
+        this.checkoutNotificationRecipient = cnr;
+    }
 
-    public boolean isOccupied() { return currentOccupant != null; }
+    public boolean isOccupied() {
+        return currentOccupant != null;
+    }
 
-    public void decrementOccupationCooldown() { this.occupationCooldown--; }
+    public void decrementOccupationCooldown() {
+        this.occupationCooldown--;
+    }
 }

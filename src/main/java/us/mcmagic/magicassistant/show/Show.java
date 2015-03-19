@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.show.actions.*;
 import us.mcmagic.magicassistant.utils.MathUtil;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.title.TitleObject;
@@ -516,7 +515,7 @@ public class Show {
 
     @SuppressWarnings("deprecation")
     public void playMusic(int record) {
-        for (Player player :Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.playEffect(_loc, Effect.RECORD_PLAY, record);
         }
     }

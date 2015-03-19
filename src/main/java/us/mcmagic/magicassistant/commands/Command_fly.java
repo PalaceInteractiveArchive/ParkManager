@@ -1,68 +1,88 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
-public class Command_fly {
+public class Command_fly implements CommandExecutor {
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length == 1) {
                 Player player = PlayerUtil.findPlayer(args[0]);
                 if (player == null) {
                     sender.sendMessage(ChatColor.RED
                             + "I can'commands find that player!");
-                    return;
+                    return true;
                 }
                 if (player.isFlying()) {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.sendMessage(ChatColor.RED + "You can't fly anymore!");
                     sender.sendMessage(player.getName() + " can't fly anymore!");
-                    return;
+                    return true;
                 }
                 player.setAllowFlight(true);
                 player.setFlying(true);
                 player.teleport(player.getLocation().add(0, 0.5, 0));
                 player.sendMessage(ChatColor.GREEN + "You can fly!");
                 sender.sendMessage(player.getName() + " can now fly!");
-                return;
+                return true;
             }
             sender.sendMessage(ChatColor.RED + "/fly [Username]");
-            return;
+            return true;
         }
         Player player = (Player) sender;
         if (args.length == 1) {
+            Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
+            if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
+                if (player.isFlying()) {
+                    player.setAllowFlight(false);
+                    player.setFlying(false);
+                    player.sendMessage(ChatColor.RED + "You can't fly anymore!");
+                    return true;
+                }
+                player.setAllowFlight(true);
+                player.setFlying(true);
+                player.teleport(player.getLocation().add(0, 0.5, 0));
+                player.sendMessage(ChatColor.GREEN + "You can fly!");
+                return true;
+            }
             Player tp = PlayerUtil.findPlayer(args[0]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "I can't find that player!");
-                return;
+                return true;
             }
             if (tp.isFlying()) {
                 tp.setAllowFlight(false);
                 tp.setFlying(false);
                 tp.sendMessage(ChatColor.RED + "You can't fly anymore!");
-                player.sendMessage(tp.getName() + " can't fly anymore!");
-                return;
+                player.sendMessage(ChatColor.RED + tp.getName() + " can't fly anymore!");
+                return true;
             }
             tp.setAllowFlight(true);
             tp.setFlying(true);
             tp.teleport(tp.getLocation().add(0, 0.5, 0));
             tp.sendMessage(ChatColor.GREEN + "You can fly!");
-            player.sendMessage(tp.getName() + " can now fly!");
-            return;
+            player.sendMessage(ChatColor.GREEN + tp.getName() + " can now fly!");
+            return true;
         }
         if (player.isFlying()) {
             player.setAllowFlight(false);
             player.setFlying(false);
             player.sendMessage(ChatColor.RED + "You can't fly anymore!");
-            return;
+            return true;
         }
         player.setAllowFlight(true);
         player.setFlying(true);
         player.teleport(player.getLocation().add(0, 0.5, 0));
         player.sendMessage(ChatColor.GREEN + "You can fly!");
+        return true;
     }
 }

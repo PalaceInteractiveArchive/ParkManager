@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.util.HashMap;
 import java.util.List;

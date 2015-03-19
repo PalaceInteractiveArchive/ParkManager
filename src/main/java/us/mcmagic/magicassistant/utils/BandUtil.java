@@ -36,7 +36,7 @@ public class BandUtil {
     }
 
     public static void setupPlayerData(Player player) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()){
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet result = sql.executeQuery();

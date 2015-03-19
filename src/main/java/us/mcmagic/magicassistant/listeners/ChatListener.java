@@ -11,7 +11,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

@@ -2,34 +2,36 @@ package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 
-public class Command_heal {
+public class Command_heal implements CommandExecutor {
 
-    @SuppressWarnings("deprecation")
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             if (args.length == 1) {
                 if (args[0].equals("**")) {
                     for (Player tp : Bukkit.getOnlinePlayers()) {
                         healPlayer(tp);
                         tp.sendMessage(ChatColor.GRAY + "You have been healed.");
-                        return;
+                        return true;
                     }
-                    return;
+                    return true;
                 }
                 Player tp = PlayerUtil.findPlayer(args[0]);
                 if (tp == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
-                    return;
+                    return true;
                 }
                 healPlayer(tp);
                 tp.sendMessage(ChatColor.GRAY + "You have been healed.");
             }
-            return;
+            return true;
         }
         Player player = (Player) sender;
         if (args.length == 1) {
@@ -37,22 +39,23 @@ public class Command_heal {
                 for (Player tp : Bukkit.getOnlinePlayers()) {
                     healPlayer(tp);
                     tp.sendMessage(ChatColor.GRAY + "You have been healed.");
-                    return;
+                    return true;
                 }
-                return;
+                return true;
             }
             Player tp = PlayerUtil.findPlayer(args[0]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
+                return true;
             }
             healPlayer(tp);
             player.sendMessage(ChatColor.GRAY + "You healed " + tp.getName());
             tp.sendMessage(ChatColor.GRAY + "You have been healed.");
-            return;
+            return true;
         }
         healPlayer(player);
         player.sendMessage(ChatColor.GRAY + "You have been healed.");
+        return true;
     }
 
     public static void healPlayer(Player player) {

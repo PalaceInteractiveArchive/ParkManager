@@ -2,22 +2,23 @@ package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Command_vanish {
+public class Command_vanish implements CommandExecutor {
     public static List<UUID> hidden = new ArrayList<>();
 
-    @SuppressWarnings("deprecation")
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Only players can use this!");
-            return;
+            return true;
         }
         Player player = (Player) sender;
         if (args.length == 0) {
@@ -52,7 +53,7 @@ public class Command_vanish {
                     }
                 }
             }
-            return;
+            return true;
         }
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
@@ -70,7 +71,7 @@ public class Command_vanish {
                 list.insert(0, "Vanished: ");
                 list.insert(0, ChatColor.DARK_AQUA);
                 player.sendMessage(list.toString());
-                return;
+                return true;
             }
             if (args[0].equalsIgnoreCase("check")) {
                 if (hidden.contains(player.getUniqueId())) {
@@ -82,5 +83,6 @@ public class Command_vanish {
                 }
             }
         }
+        return true;
     }
 }

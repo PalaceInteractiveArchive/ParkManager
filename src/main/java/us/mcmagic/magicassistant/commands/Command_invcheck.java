@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 
 public class Command_invcheck {
 
@@ -28,9 +27,8 @@ public class Command_invcheck {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static void checkInventories() {
-        for (Player player :Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerInventory pi = player.getInventory();
             Inventory pec = player.getEnderChest();
             if (!(player.hasPermission("magicassistant.invcheck.bypass"))) {

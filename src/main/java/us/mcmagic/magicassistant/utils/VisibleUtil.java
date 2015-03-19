@@ -19,7 +19,6 @@ public class VisibleUtil implements Listener {
         pl = instance;
     }
 
-    @SuppressWarnings("deprecation")
     public static void addToHideAll(final Player player) {
         hideall.add(player.getUniqueId());
         for (User user : MCMagicCore.getUsers()) {
@@ -41,7 +40,6 @@ public class VisibleUtil implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static void removeFromHideAll(final Player player) {
         hideall.remove(player.getUniqueId());
         for (User user : MCMagicCore.getUsers()) {

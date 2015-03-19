@@ -37,10 +37,23 @@ public class PlayerInteract implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        if (event.getAction().equals(Action.PHYSICAL)) {
+        Action action = event.getAction();
+        if (action.equals(Action.PHYSICAL)) {
             return;
         }
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (action.name().toLowerCase().contains("block")) {
+            if (player.getItemInHand().getType().equals(Material.DIAMOND_AXE)) {
+                if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
+                    event.setCancelled(true);
+                    MagicAssistant.getInstance().blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
+                } else {
+                    event.setCancelled(true);
+                    MagicAssistant.getInstance().blockChanger.setSelection(1, player, event.getClickedBlock().getLocation());
+                }
+                return;
+            }
+        }
+        if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
             Material type = event.getClickedBlock().getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
