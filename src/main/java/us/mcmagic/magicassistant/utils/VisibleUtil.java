@@ -22,8 +22,8 @@ public class VisibleUtil implements Listener {
     @SuppressWarnings("deprecation")
     public static void addToHideAll(final Player player) {
         hideall.add(player.getUniqueId());
-        for (User user : MCMagicCore.users) {
-            Player tp = Bukkit.getPlayer(user.getUuid());
+        for (User user : MCMagicCore.getUsers()) {
+            Player tp = Bukkit.getPlayer(user.getUniqueId());
             if (!tp.getName().equals(player.getName())) {
                 if (!tp.hasPermission("band.stayvisible")) {
                     player.hidePlayer(tp);
@@ -44,8 +44,8 @@ public class VisibleUtil implements Listener {
     @SuppressWarnings("deprecation")
     public static void removeFromHideAll(final Player player) {
         hideall.remove(player.getUniqueId());
-        for (User user : MCMagicCore.users) {
-            Player tp = Bukkit.getPlayer(user.getUuid());
+        for (User user : MCMagicCore.getUsers()) {
+            Player tp = Bukkit.getPlayer(user.getUniqueId());
             if (!tp.getName().equals(player.getName())) {
                 if (!tp.hasPermission("band.stayvisible")) {
                     player.showPlayer(tp);

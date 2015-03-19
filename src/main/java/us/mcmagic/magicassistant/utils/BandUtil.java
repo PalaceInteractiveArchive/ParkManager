@@ -22,7 +22,6 @@ import java.util.Date;
  * Created by Marc on 12/13/14
  */
 public class BandUtil {
-    private static Connection connection;
     private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
     public static List<UUID> loading = new ArrayList<>();
 
@@ -32,34 +31,12 @@ public class BandUtil {
         back.setItemMeta(bm);
     }
 
-    public synchronized static void closeConnection() {
-        try {
-            connection.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public synchronized static void openConnection() {
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://"
-                            + MCMagicCore.config.getString("sql.ip") + ":"
-                            + MCMagicCore.config.getString("sql.port") + "/"
-                            + MCMagicCore.config.getString("sql.database"),
-                    MCMagicCore.config.getString("sql.username"),
-                    MCMagicCore.config.getString("sql.password"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static boolean isLoading(Player player) {
         return loading.contains(player.getUniqueId());
     }
 
     public static void setupPlayerData(Player player) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()){
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet result = sql.executeQuery();
@@ -127,8 +104,6 @@ public class BandUtil {
             loading.remove(player.getUniqueId());
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
     }
 
@@ -140,8 +115,7 @@ public class BandUtil {
     }
 
     public static long getOnlineTime(String uuid) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM `player_data` WHERE uuid=?");
             sql.setString(1, uuid);
             ResultSet result = sql.executeQuery();
@@ -153,14 +127,11 @@ public class BandUtil {
         } catch (SQLException e) {
             e.printStackTrace();
             return System.currentTimeMillis();
-        } finally {
-            closeConnection();
         }
     }
 
     public static void setBandColor(Player player, BandColor color) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
             sql.setString(1, color.getName());
             sql.setString(2, player.getUniqueId() + "");
@@ -168,8 +139,6 @@ public class BandUtil {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         data.setBandColor(color);
@@ -179,8 +148,7 @@ public class BandUtil {
     }
 
     public static void setBandColor(Player player, Material color) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
             sql.setString(1, getBandName(color));
             sql.setString(2, player.getUniqueId() + "");
@@ -188,8 +156,6 @@ public class BandUtil {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         data.setBandColor(getBandColor(getBandName(color)));
@@ -238,8 +204,7 @@ public class BandUtil {
     }
 
     public static void setBandName(Player player, ChatColor color) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET namecolor=? WHERE uuid=?");
             sql.setString(1, getBandNameColor(color));
             sql.setString(2, player.getUniqueId() + "");
@@ -247,8 +212,6 @@ public class BandUtil {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         data.setBandName(color);

@@ -1,9 +1,9 @@
 package us.mcmagic.magicassistant.show;
 
-import net.minecraft.server.v1_8_R1.EntityCreature;
-import net.minecraft.server.v1_8_R1.NavigationAbstract;
+import net.minecraft.server.v1_8_R2.EntityCreature;
+import net.minecraft.server.v1_8_R2.NavigationAbstract;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftCreature;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftCreature;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import us.mcmagic.magicassistant.utils.AlgUtil;

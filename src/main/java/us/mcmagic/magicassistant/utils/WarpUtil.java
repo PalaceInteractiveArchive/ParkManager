@@ -19,36 +19,13 @@ import java.util.UUID;
 
 public class WarpUtil implements Listener {
     public static MagicAssistant pl;
-    private static Connection connection;
 
     public WarpUtil(MagicAssistant instance) {
         pl = instance;
     }
 
-    public synchronized static void openConnection() {
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://"
-                            + MCMagicCore.config.getString("sql.ip") + ":"
-                            + MCMagicCore.config.getString("sql.port") + "/"
-                            + MCMagicCore.config.getString("sql.invdatabase"),
-                    MCMagicCore.config.getString("sql.username"),
-                    MCMagicCore.config.getString("sql.password"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public synchronized static void closeConnection() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static boolean warpExists(String warp) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps` WHERE name = ?");
             sql.setString(1, warp);
@@ -60,14 +37,11 @@ public class WarpUtil implements Listener {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        } finally {
-            closeConnection();
         }
     }
 
     public static String getServer(String warp) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps` WHERE name = ?");
             sql.setString(1, warp);
@@ -79,15 +53,12 @@ public class WarpUtil implements Listener {
             return server;
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
         return "";
     }
 
     public static Location getLocation(String warp) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps` WHERE name=?");
             sql.setString(1, warp);
@@ -104,8 +75,6 @@ public class WarpUtil implements Listener {
             return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
         return null;
     }
@@ -133,8 +102,7 @@ public class WarpUtil implements Listener {
     public synchronized static List<Warp> getWarps() {
         List<String> names = new ArrayList<>();
         List<Warp> warps = new ArrayList<>();
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps`");
             ResultSet result = sql.executeQuery();
@@ -162,14 +130,11 @@ public class WarpUtil implements Listener {
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
-        } finally {
-            closeConnection();
         }
     }
 
     public synchronized static void addWarp(Warp warp) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("INSERT INTO `warps` values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, warp.getName());
@@ -184,14 +149,11 @@ public class WarpUtil implements Listener {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
     }
 
     public synchronized static void removeWarp(Warp warp) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("DELETE FROM `warps` WHERE name=?");
             sql.setString(1, warp.getName());
@@ -199,8 +161,6 @@ public class WarpUtil implements Listener {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
     }
 

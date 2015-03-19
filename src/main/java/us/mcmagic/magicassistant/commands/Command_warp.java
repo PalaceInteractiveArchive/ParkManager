@@ -9,6 +9,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.List;
@@ -79,7 +80,7 @@ public class Command_warp {
             } else {
                 warp = WarpUtil.findWarp(w);
             }
-            Rank rank = us.mcmagic.mcmagiccore.player.PlayerUtil.getUser(player.getUniqueId()).getRank();
+            Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             if (warp.getName().toLowerCase().startsWith("dvc")) {
                 if (rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
                     player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets()

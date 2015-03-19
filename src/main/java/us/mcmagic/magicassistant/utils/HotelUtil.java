@@ -20,37 +20,14 @@ import java.util.List;
 public class HotelUtil implements Listener {
 
     public static MagicAssistant pl;
-    private static Connection connection;
 
     public HotelUtil(MagicAssistant instance) {
         pl = instance;
     }
 
-    public synchronized static void openConnection() {
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://"
-                            + MCMagicCore.config.getString("sql.ip") + ":"
-                            + MCMagicCore.config.getString("sql.port") + "/"
-                            + MCMagicCore.config.getString("sql.invdatabase"),
-                    MCMagicCore.config.getString("sql.username"),
-                    MCMagicCore.config.getString("sql.password"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public synchronized static void closeConnection() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public synchronized static List<HotelRoom> getRooms() {
         List<HotelRoom> rooms = new ArrayList<>();
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `hotelrooms`");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
@@ -68,8 +45,6 @@ public class HotelUtil implements Listener {
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();
-        } finally {
-            closeConnection();
         }
     }
 
@@ -88,8 +63,7 @@ public class HotelUtil implements Listener {
             return;
         }
 
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
@@ -104,14 +78,11 @@ public class HotelUtil implements Listener {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
     }
 
     public synchronized static void addRoomWithoutCheckingExistance(HotelRoom room) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
@@ -126,14 +97,11 @@ public class HotelUtil implements Listener {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
     }
 
     public synchronized static void removeRoom(HotelRoom room) {
-        openConnection();
-        try {
+        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("DELETE FROM `hotelrooms` WHERE name=?");
             sql.setString(1, room.getName());
@@ -141,8 +109,6 @@ public class HotelUtil implements Listener {
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
         }
     }
 

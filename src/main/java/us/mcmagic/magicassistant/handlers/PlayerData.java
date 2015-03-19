@@ -3,6 +3,7 @@ package us.mcmagic.magicassistant.handlers;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import us.mcmagic.magicassistant.magicband.BandColor;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
@@ -24,7 +25,7 @@ public class PlayerData {
 
     public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, HashMap<UUID, String> friends, HashMap<Integer, List<String>> pages, boolean special) {
         this.uuid = uuid;
-        dvc = PlayerUtil.getUser(uuid).getRank().equals(Rank.DVCMEMBER);
+        dvc = MCMagicCore.getUser(uuid).getRank().equals(Rank.DVCMEMBER);
         this.bandName = bandName;
         this.bandColor = bandColor;
         this.friends = friends;

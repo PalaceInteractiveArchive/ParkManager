@@ -95,7 +95,7 @@ public class PlayerInteract implements Listener {
                 boolean isCM = false;
                 //This try-catch can be removed at an undetermined point in the future.
                 try {
-                    isCM = us.mcmagic.mcmagiccore.player.PlayerUtil.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId();
+                    isCM = MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId();
                 } catch (Exception nsme) {
                     if (player.isOp()) {
                         isCM = true;

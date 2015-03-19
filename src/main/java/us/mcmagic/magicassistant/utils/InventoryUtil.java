@@ -15,6 +15,7 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.magicband.Attraction;
 import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.magicassistant.handlers.Ride;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.credits.Credits;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -383,7 +384,7 @@ public class InventoryUtil implements Listener {
                 Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
                     @Override
                     public void run() {
-                        User user = PlayerUtil.getUser(player.getUniqueId());
+                        User user = MCMagicCore.getUser(player.getUniqueId());
                         Rank rank = user.getRank();
                         ItemStack pinfo2 = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
                         SkullMeta pm = (SkullMeta) playerInfo.getItemMeta();
@@ -469,7 +470,7 @@ public class InventoryUtil implements Listener {
                 return;
             case PLAYERINFO:
                 Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
-                Rank rank = PlayerUtil.getUser(player.getUniqueId()).getRank();
+                Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
                 pmenu.setItem(10, web);
                 pmenu.setItem(11, flist);
                 pmenu.setItem(12, locker);

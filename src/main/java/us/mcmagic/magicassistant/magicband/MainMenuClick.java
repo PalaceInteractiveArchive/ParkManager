@@ -13,6 +13,7 @@ import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
@@ -86,7 +87,7 @@ public class MainMenuClick {
                 InventoryUtil.featureComingSoon(player);
                 return;
             case FIREWORK_CHARGE:
-                Rank rank = PlayerUtil.getUser(player.getUniqueId()).getRank();
+                Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
                 if (rank.equals(Rank.GUEST)) {
                     player.closeInventory();
                     player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets() + ChatColor.RED + " Rank to use this!");

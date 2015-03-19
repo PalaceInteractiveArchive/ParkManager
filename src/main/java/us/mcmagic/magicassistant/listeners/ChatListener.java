@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
@@ -60,7 +61,7 @@ public class ChatListener implements Listener {
                 return;
             }
         }
-        Rank rank = PlayerUtil.getUser(player.getUniqueId()).getRank();
+        Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
         String emsg;
         if (player.hasPermission("chat.color")) {
             emsg = ChatColor.translateAlternateColorCodes('&', msg);
