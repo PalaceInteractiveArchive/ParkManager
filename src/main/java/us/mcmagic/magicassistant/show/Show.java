@@ -106,7 +106,7 @@ public class Show {
                     continue;
                 }
 
-                // Get Time
+                // Get time
                 String[] timeToks = tokens[0].split("_");
 
                 long time = 0;
@@ -468,35 +468,28 @@ public class Show {
     }
 
     public boolean update() {
-        if (!_invalidLines.isEmpty())
+        if (!_invalidLines.isEmpty()) {
             return true;
-
-        // NPC Move
+        }
         _npcTick = (_npcTick + 1) % 5;
         if (_npcTick == 0) {
             for (ShowNPC npc : _npc.values()) {
                 npc.Move();
             }
         }
-
         // Show Action
         Iterator<ShowAction> actionIterator = _actions.iterator();
-
         while (actionIterator.hasNext()) {
             ShowAction action = actionIterator.next();
-
-            if (System.currentTimeMillis() - _startTime < action.Time)
+            if (System.currentTimeMillis() - _startTime < action.time) {
                 continue;
-
+            }
+            action.play();
             actionIterator.remove();
-
-            action.Play();
         }
-
         return _actions.isEmpty();
     }
 
-    @SuppressWarnings("deprecation")
     public void displayText(String text) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (MathUtil.offset(player.getLocation(), _loc) < _radius) {

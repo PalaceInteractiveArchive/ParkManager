@@ -14,7 +14,7 @@ public class LightningAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         Location.getWorld().strikeLightningEffect(Location);
     }
 }

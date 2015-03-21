@@ -13,13 +13,9 @@ import us.mcmagic.magicassistant.handlers.FoodLocation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Ride;
-import us.mcmagic.magicassistant.magicband.Attraction;
-import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.coins.Coins;
-import us.mcmagic.mcmagiccore.credits.Credits;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.*;
 
@@ -68,11 +64,11 @@ public class InventoryUtil implements Listener {
     public static ItemStack blueBand = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack purpleBand = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack pinkBand = new ItemStack(Material.FIREWORK_CHARGE);
-    public static ItemStack s1Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL1));
-    public static ItemStack s2Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL2));
-    public static ItemStack s3Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL3));
-    public static ItemStack s4Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL4));
-    public static ItemStack s5Band = new ItemStack(BandUtil.getBandMaterial(BandColor.SPECIAL5));
+    public static ItemStack s1Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL1));
+    public static ItemStack s2Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL2));
+    public static ItemStack s3Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL3));
+    public static ItemStack s4Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL4));
+    public static ItemStack s5Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL5));
     //Customize Color
     public static ItemStack red = new ItemStack(Material.WOOL, 1, (byte) 14);
     public static ItemStack orange = new ItemStack(Material.WOOL, 1, (byte) 1);
@@ -342,23 +338,18 @@ public class InventoryUtil implements Listener {
         viewHotels.setItemMeta(vhm);
     }
 
-    @SuppressWarnings("deprecation")
     public static void openInventory(final Player player, InventoryType inv) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         switch (inv) {
             case MAINMENU:
                 final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
                         + player.getName() + "'s MagicBand");
-                final ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
-                SkullMeta sm = (SkullMeta) playerInfo.getItemMeta();
-                sm.setDisplayName(ChatColor.GREEN + "Player Info");
-                sm.setOwner(player.getName());
-                sm.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
-                playerInfo.setItemMeta(sm);
+                ItemStack playerInfo = new ItemCreator(player.getName(), ChatColor.GREEN + "Player Info",
+                        Arrays.asList(ChatColor.GRAY + "Loading..."));
                 ItemStack time = new ItemStack(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Arrays.asList(ChatColor.YELLOW + BandUtil.currentTime()));
+                tm.setLore(Arrays.asList(ChatColor.YELLOW + MagicAssistant.getInstance().bandUtil.currentTime()));
                 time.setItemMeta(tm);
                 main.setItem(0, rna);
                 main.setItem(9, sne);
@@ -380,6 +371,8 @@ public class InventoryUtil implements Listener {
                 main.setItem(17, creative);
                 main.setItem(26, seasonal);
                 player.openInventory(main);
+                MagicAssistant.getInstance().bandUtil.loadPlayerData(player, main);
+                /*
                 Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
                     @Override
                     public void run() {
@@ -391,14 +384,15 @@ public class InventoryUtil implements Listener {
                         pm.setOwner(player.getName());
                         List<String> lore = Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + player.getName(),
                                 ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
-                                ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + Coins.getSqlCoins(player),
-                                ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(player),
-                                ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + DateUtil.formatDateDiff(BandUtil.getOnlineTime(player.getUniqueId() + "")));
+                                ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + Coins.getSqlCoins(player.getUniqueId()),
+                                ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(player.getUniqueId()),
+                                ChatColor.GREEN + "Online time: " + ChatColor.YELLOW + DateUtil.formatDateDiff(MagicAssistant.getInstance().bandUtil.getOnlineTime(player.getUniqueId() + "")));
                         pm.setLore(lore);
                         pinfo2.setItemMeta(pm);
                         main.setItem(15, pinfo2);
                     }
                 }, 20L);
+                */
                 return;
             case PARK:
                 Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
@@ -412,8 +406,7 @@ public class InventoryUtil implements Listener {
                 player.openInventory(park);
                 return;
             case FOOD:
-                Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE
-                        + "Food Menu");
+                Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
                 player.closeInventory();
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                 // If odd amount of items
@@ -424,14 +417,11 @@ public class InventoryUtil implements Listener {
                         if (place > 16) {
                             break;
                         }
-                        ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
-                        ItemMeta fm = food.getItemMeta();
-                        fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
-                                loc.getName()));
-                        fm.setLore(Arrays.asList(ChatColor.GREEN + "/warp "
-                                + loc.getWarp()));
-                        food.setItemMeta(fm);
-                        foodMenu.setItem(place, food);
+                        @SuppressWarnings("deprecation")
+                        ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
+                                ChatColor.translateAlternateColorCodes('&', loc.getName()), Arrays.asList(ChatColor.GREEN
+                                + "/warp " + loc.getWarp()));
+                        foodMenu.setItem(place, f);
                         if (amount % 2 == 1) {
                             place -= amount;
                         } else {
@@ -449,19 +439,17 @@ public class InventoryUtil implements Listener {
                         if (place > 16) {
                             break;
                         }
-                        ItemStack food = new ItemStack(loc.getType(), 1, loc.getData());
-                        ItemMeta fm = food.getItemMeta();
-                        fm.setDisplayName(ChatColor.translateAlternateColorCodes('&',
-                                loc.getName()));
-                        fm.setLore(Arrays.asList(ChatColor.GREEN + "/warp "
-                                + loc.getWarp()));
-                        food.setItemMeta(fm);
-                        foodMenu.setItem(place, food);
+                        @SuppressWarnings("deprecation")
+                        ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
+                                ChatColor.translateAlternateColorCodes('&', loc.getName()), Arrays.asList(ChatColor.GREEN
+                                + "/warp " + loc.getWarp()));
+                        foodMenu.setItem(place, f);
                         if (amount % 2 == 0) {
                             place -= amount;
                         } else {
                             place += amount;
                         }
+                        amount++;
                     }
                     foodMenu.setItem(22, BandUtil.getBackItem());
                     player.openInventory(foodMenu);
@@ -551,14 +539,14 @@ public class InventoryUtil implements Listener {
                 Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
                 ItemStack band;
                 if (data.getSpecial()) {
-                    band = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+                    band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(data.getBandColor()));
                     ItemMeta bm = band.getItemMeta();
                     bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                     band.setItemMeta(bm);
                 } else {
                     band = new ItemStack(Material.FIREWORK_CHARGE);
                     FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
-                    bm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
+                    bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.getInstance().bandUtil.getBandColor(data.getBandColor())).build());
                     bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                     band.setItemMeta(bm);
                 }
@@ -744,7 +732,7 @@ public class InventoryUtil implements Listener {
 
     @SuppressWarnings("deprecation")
     public static void openAttractionListPage(Player player, int page) {
-        HashMap<Integer, List<Attraction>> al = MagicAssistant.attPages;
+        HashMap<Integer, List<PlayerData.Attraction>> al = MagicAssistant.attPages;
         Inventory alist;
         if (al.size() > 1) {
             alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List Page " + page);
@@ -762,9 +750,9 @@ public class InventoryUtil implements Listener {
             player.openInventory(alist);
             return;
         }
-        List<Attraction> pageList = al.get(page);
+        List<PlayerData.Attraction> pageList = al.get(page);
         List<ItemStack> items = new ArrayList<>();
-        for (Attraction attraction : pageList) {
+        for (PlayerData.Attraction attraction : pageList) {
             ItemStack rideItem = new ItemStack(attraction.getId(), 1, attraction.getData());
             ItemMeta itemMeta = rideItem.getItemMeta();
             itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', attraction.getDisplayName()));

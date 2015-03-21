@@ -12,7 +12,7 @@ public class MusicAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         Show.playMusic(Record);
     }
 }

@@ -1,7 +1,8 @@
 package us.mcmagic.magicassistant.listeners;
 
-import org.bukkit.*;
-import org.bukkit.BanList.Type;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,30 +17,24 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Command_vanish;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.shooter.Shooter;
-import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class PlayerJoinAndLeave implements Listener {
-    public static MagicAssistant pl;
     private static HashMap<UUID, ItemStack[]> invData = new HashMap<>();
     private static HashMap<UUID, ItemStack[]> armorData = new HashMap<>();
     private static HashMap<UUID, ItemStack[]> endData = new HashMap<>();
 
-    public PlayerJoinAndLeave(MagicAssistant instance) {
-        pl = instance;
-    }
-
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        UUID uuid = event.getUniqueId();
         if (MagicAssistant.crossServerInv) {
-            UUID uuid = event.getUniqueId();
             List<ItemStack[]> stuff = InventorySql.invContents(uuid);
             ItemStack[] inv = stuff.get(0);
             ItemStack[] armor = stuff.get(1);
@@ -63,13 +58,15 @@ public class PlayerJoinAndLeave implements Listener {
                 endData.put(uuid, inv);
             }
         }
+        MagicAssistant.getInstance().bandUtil.setupPlayerData(uuid);
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        BandUtil.loading.add(player.getUniqueId());
+        MagicAssistant.getInstance().packManager.login(player);
+        MagicAssistant.getInstance().bandUtil.loading.add(player.getUniqueId());
         if (!MagicAssistant.userCache.containsKey(player.getUniqueId())) {
             MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
         } else {
@@ -104,15 +101,33 @@ public class PlayerJoinAndLeave implements Listener {
         if (MagicAssistant.crossServerInv) {
             PlayerInventory pi = player.getInventory();
             if (invData.containsKey(player.getUniqueId())) {
-                pi.setContents(invData.remove(player.getUniqueId()));
+                ItemStack[] inv = invData.remove(player.getUniqueId());
+                if (inv == null) {
+                    player.sendMessage(ChatColor.RED +
+                            "An error has occured! Please report this to a Staff Member (Error Code 102)");
+                } else {
+                    pi.setContents(inv);
+                }
             }
             if (armorData.containsKey(player.getUniqueId())) {
-                pi.setArmorContents(armorData.remove(player.getUniqueId()));
+                ItemStack[] armor = armorData.remove(player.getUniqueId());
+                if (armor == null) {
+                    player.sendMessage(ChatColor.RED +
+                            "An error has occured! Please report this to a Staff Member (Error Code 103)");
+                } else {
+                    pi.setArmorContents(armor);
+                }
             }
             if (endData.containsKey(player.getUniqueId())) {
-                player.getEnderChest().setContents(endData.remove(player.getUniqueId()));
+                ItemStack[] end = endData.remove(player.getUniqueId());
+                if (end == null) {
+                    player.sendMessage(ChatColor.RED +
+                            "An error has occured! Please report this to a Staff Member (Error Code 104)");
+                } else {
+                    player.getEnderChest().setContents(end);
+                }
             }
-            BandUtil.giveBandToPlayer(player);
+            MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
             if (Shooter.game != null) {
                 pi.remove(Shooter.getItem().getType());
             }
@@ -142,7 +157,7 @@ public class PlayerJoinAndLeave implements Listener {
                                 player.getEnderChest().setContents(
                                         InventorySql.endInvContents(player));
                             }
-                            BandUtil.giveBandToPlayer(player);
+                            MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
                             player.sendMessage(ChatColor.GREEN + "Inventory Updated!");
                             player.getInventory().remove(Shooter.getItem().getType());
                         }
@@ -159,14 +174,8 @@ public class PlayerJoinAndLeave implements Listener {
                 player.getInventory().remove(Shooter.getItem().getType());
             }
         }
-        Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
-            @Override
-            public void run() {
-                BandUtil.setupPlayerData(player);
-                BandUtil.giveBandToPlayer(player);
-            }
-        }, 20L);
-        Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+        MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
+        Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
                 boolean updateNecessary = false;
@@ -196,32 +205,6 @@ public class PlayerJoinAndLeave implements Listener {
         if (MagicAssistant.serverEnabling) {
             event.setResult(Result.KICK_OTHER);
             event.setKickMessage("This server is still starting up!");
-            return;
-        }
-        if (event.getResult().equals(Result.KICK_BANNED)) {
-            BanList list = Bukkit.getBanList(Type.NAME);
-            BanEntry entry = list.getBanEntry(player.getName());
-            String reason = entry.getReason();
-            banPlayer(player, reason, new Date(System.currentTimeMillis()),
-                    true);
-            // BanUtil.banPlayer(player.getUniqueId() + "", reason,
-            // permanent,
-            // entry.getExpiration(), "Console");
-        }
-    }
-
-    public void banPlayer(Player player, String reason, Date expiration, boolean permanent) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("MagicBan");
-            out.writeUTF(player.getName());
-            out.writeUTF(reason);
-            out.writeBoolean(permanent);
-            out.writeLong(expiration.getTime());
-            player.sendPluginMessage(pl, "BungeeCord", b.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -229,7 +212,7 @@ public class PlayerJoinAndLeave implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (MagicAssistant.crossServerInv) {
-            Bukkit.getScheduler().runTaskAsynchronously(pl, new Runnable() {
+            Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
                     InventorySql.updateInventory(player);
@@ -238,10 +221,10 @@ public class PlayerJoinAndLeave implements Listener {
             });
         }
         try {
-            BandUtil.loading.remove(player.getUniqueId());
+            MagicAssistant.getInstance().bandUtil.loading.remove(player.getUniqueId());
         } catch (Exception ignored) {
         }
-        BandUtil.removePlayerData(player);
+        MagicAssistant.getInstance().bandUtil.removePlayerData(player);
         try {
             VisibleUtil.hideall.remove(player.getUniqueId());
         } catch (Exception ignored) {

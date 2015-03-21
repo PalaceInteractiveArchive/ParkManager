@@ -6,6 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -44,7 +45,7 @@ public class AttractionListClick {
                 InventoryUtil.openAttractionListPage(player, Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) - 1);
                 return;
         }
-        Attraction attraction = MagicAssistant.getAttraction(name);
+        PlayerData.Attraction attraction = MagicAssistant.getAttraction(name);
         if (attraction == null) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "There was an error, please tell a Staff Member!");

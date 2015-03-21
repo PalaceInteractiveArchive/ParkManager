@@ -32,7 +32,7 @@ public class FireworkAction extends ShowAction implements Listener {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         try {
             playFirework();
         } catch (Exception e) {

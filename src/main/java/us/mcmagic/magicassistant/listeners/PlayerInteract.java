@@ -17,7 +17,10 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
-import us.mcmagic.magicassistant.utils.*;
+import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.utils.InventoryUtil;
+import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 
@@ -146,13 +149,13 @@ public class PlayerInteract implements Listener {
         if (pi.getHeldItemSlot() != 8) {
             return;
         }
-        if (BandUtil.isLoading(player)) {
+        if (MagicAssistant.getInstance().bandUtil.isLoading(player)) {
             player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
             return;
         }
         ItemStack mb;
         if (data.getSpecial()) {
-            mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+            mb = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
@@ -161,7 +164,8 @@ public class PlayerInteract implements Listener {
         } else {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
-            mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
+            mbm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.getInstance().bandUtil.getBandColor(
+                    data.getBandColor())).build());
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));
@@ -180,7 +184,7 @@ public class PlayerInteract implements Listener {
                     Block targetBlock = b.getWorld().getBlockAt(ix, iy, iz);
                     Material type = targetBlock.getType();
                     if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
-                        Sign s = (Sign)targetBlock.getState();
+                        Sign s = (Sign) targetBlock.getState();
                         HotelRoom room = getRoomFromSign(s);
                         if (room != null) {
                             return room;

@@ -23,7 +23,7 @@ public class FountainAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         FountainUtil.fountains.add(new Fountain(loc, duration, type, data, force));
     }
 }

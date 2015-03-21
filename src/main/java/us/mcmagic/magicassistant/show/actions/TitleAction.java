@@ -24,7 +24,7 @@ public class TitleAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         Show.displayTitle(new TitleObject(title, type).setFadeIn(fadeIn).setFadeOut(fadeOut).setStay(stay));
     }
 }

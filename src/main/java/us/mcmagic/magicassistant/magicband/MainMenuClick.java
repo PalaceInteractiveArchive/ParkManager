@@ -9,7 +9,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
@@ -65,7 +64,7 @@ public class MainMenuClick {
                 ItemStack time = new ItemStack(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Arrays.asList(ChatColor.YELLOW + BandUtil.currentTime()));
+                tm.setLore(Arrays.asList(ChatColor.YELLOW + MagicAssistant.getInstance().bandUtil.currentTime()));
                 time.setItemMeta(tm);
                 inv.setItem(4, time);
                 return;
@@ -77,7 +76,7 @@ public class MainMenuClick {
                 return;
             case ENDER_PEARL:
                 player.closeInventory();
-                MagicAssistant.sendToServer(player, "Hub");
+                MagicAssistant.getInstance().sendToServer(player, "Hub");
                 return;
             case NETHER_STAR:
                 InventoryUtil.openInventory(player, InventoryType.PARK);
@@ -89,22 +88,23 @@ public class MainMenuClick {
                 Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
                 if (rank.equals(Rank.GUEST)) {
                     player.closeInventory();
-                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets() + ChatColor.RED + " Rank to use this!");
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets() +
+                            ChatColor.RED + " Rank to use this!");
                     return;
                 }
                 InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
                 return;
             case GLOWSTONE_DUST:
                 player.closeInventory();
-                MagicAssistant.sendToServer(player, "Arcade");
+                MagicAssistant.getInstance().sendToServer(player, "Arcade");
                 return;
             case GRASS:
                 player.closeInventory();
-                MagicAssistant.sendToServer(player, "Creative");
+                MagicAssistant.getInstance().sendToServer(player, "Creative");
                 return;
             case RED_ROSE:
                 player.closeInventory();
-                MagicAssistant.sendToServer(player, "Seasonal");
+                MagicAssistant.getInstance().sendToServer(player, "Seasonal");
         }
     }
 }

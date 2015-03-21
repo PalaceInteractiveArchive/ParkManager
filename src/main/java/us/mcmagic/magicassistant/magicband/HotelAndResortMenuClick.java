@@ -27,7 +27,7 @@ public class HotelAndResortMenuClick {
         Material itemType = item.getType();
         switch (itemType) {
             case GLOWSTONE_DUST:
-                MagicAssistant.sendToServer(player, "Resorts");
+                MagicAssistant.getInstance().sendToServer(player, "Resorts");
                 return;
             case BOOK:
                 InventoryUtil.openInventory(player, InventoryType.MYHOTELROOMS);

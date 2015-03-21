@@ -2,13 +2,18 @@ package us.mcmagic.magicassistant.utils;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
-import us.mcmagic.magicassistant.magicband.BandColor;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.coins.Coins;
+import us.mcmagic.mcmagiccore.credits.Credits;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.mcmagiccore.uuidconverter.UUIDConverter;
 
 import java.io.ByteArrayOutputStream;
@@ -23,26 +28,51 @@ import java.util.Date;
  */
 public class BandUtil {
     private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
-    public static List<UUID> loading = new ArrayList<>();
+    public List<UUID> loading = new ArrayList<>();
+    private HashMap<UUID, Inventory> loadingPlayerData = new HashMap<>();
 
-    public static void initialize() {
+    public void initialize() {
         ItemMeta bm = back.getItemMeta();
         bm.setDisplayName(ChatColor.GREEN + "Back");
         back.setItemMeta(bm);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (Map.Entry<UUID, Inventory> entry : loadingPlayerData.entrySet()) {
+                    System.out.println("Sending " + entry.getKey());
+                    User user = MCMagicCore.getUser(entry.getKey());
+                    Player player = Bukkit.getPlayer(user.getUniqueId());
+                    if (player == null) {
+                        loadingPlayerData.remove(user.getUniqueId());
+                        continue;
+                    }
+                    Rank rank = user.getRank();
+                    List<String> lore = Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
+                            ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
+                            ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + Coins.getSqlCoins(user.getUniqueId()),
+                            ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(user.getUniqueId()),
+                            ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW +
+                                    DateUtil.formatDateDiff(MagicAssistant.getInstance().bandUtil
+                                            .getOnlineTime(user.getUniqueId().toString())));
+                    ItemStack pinfo = new ItemCreator(user.getName(), ChatColor.GREEN + "Player Info", lore);
+                    entry.getValue().setItem(15, pinfo);
+                    loadingPlayerData.remove(user.getUniqueId());
+                }
+            }
+        }, 0L, 20L);
     }
 
-    public static boolean isLoading(Player player) {
+    public boolean isLoading(Player player) {
         return loading.contains(player.getUniqueId());
     }
 
-    public static void setupPlayerData(Player player) {
+    public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");
-            sql.setString(1, player.getUniqueId() + "");
+            sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
-                player.kickPlayer("Sorry, there was an issue! Please report this to a staff member.");
-                return;
+                return null;
             }
             HashMap<UUID, String> friendlist = new HashMap<>();
             int pages;
@@ -52,16 +82,16 @@ public class BandUtil {
                 Collections.addAll(flist, friends);
                 Collections.sort(flist);
                 for (String friend : flist) {
-                    UUID uuid = UUID.fromString(friend.replaceAll(" ", ""));
+                    UUID nuuid = UUID.fromString(friend.replaceAll(" ", ""));
                     String name;
-                    if (MagicAssistant.userCache.containsKey(uuid)) {
-                        name = MagicAssistant.userCache.get(uuid);
+                    if (MagicAssistant.userCache.containsKey(nuuid)) {
+                        name = MagicAssistant.userCache.get(nuuid);
                     } else {
 
                         name = UUIDConverter.convert(friend);
-                        MagicAssistant.userCache.put(uuid, name);
+                        MagicAssistant.userCache.put(nuuid, name);
                     }
-                    friendlist.put(uuid, name);
+                    friendlist.put(nuuid, name);
                 }
                 pages = (int) Math.ceil(flist.size() / 7);
             } else {
@@ -94,27 +124,28 @@ public class BandUtil {
                 }
             }
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
-            PlayerData data = new PlayerData(player.getUniqueId(),
-                    getBandNameColor(result.getString("namecolor")),
-                    getBandColor(result.getString("bandcolor")),
+            PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
+                    getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, plist, special);
             result.close();
             sql.close();
             MagicAssistant.playerData.add(data);
-            loading.remove(player.getUniqueId());
+            loading.remove(uuid);
+            return data;
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    public static void removePlayerData(Player player) {
+    public void removePlayerData(Player player) {
         try {
             MagicAssistant.playerData.remove(MagicAssistant.getPlayerData(player.getUniqueId()));
         } catch (Exception ignored) {
         }
     }
 
-    public static long getOnlineTime(String uuid) {
+    public long getOnlineTime(String uuid) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM `player_data` WHERE uuid=?");
             sql.setString(1, uuid);
@@ -130,11 +161,11 @@ public class BandUtil {
         }
     }
 
-    public static void setBandColor(Player player, BandColor color) {
+    public void setBandColor(Player player, PlayerData.BandColor color) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
             sql.setString(1, color.getName());
-            sql.setString(2, player.getUniqueId() + "");
+            sql.setString(2, player.getUniqueId().toString());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -147,11 +178,11 @@ public class BandUtil {
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
     }
 
-    public static void setBandColor(Player player, Material color) {
+    public void setBandColor(Player player, Material color) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
             sql.setString(1, getBandName(color));
-            sql.setString(2, player.getUniqueId() + "");
+            sql.setString(2, player.getUniqueId().toString());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -164,7 +195,7 @@ public class BandUtil {
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
     }
 
-    public static void giveBandToPlayer(Player player) {
+    public void giveBandToPlayer(Player player) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         ItemStack mb;
         if (data.getSpecial()) {
@@ -177,16 +208,31 @@ public class BandUtil {
         } else {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
-            mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
+            mbm.setEffect(FireworkEffect.builder().withColor(getBandColor(data.getBandColor())).build());
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));
             mb.setItemMeta(mbm);
         }
-        player.getInventory().setItem(8, mb);
+        if (mb == null) {
+            player.sendMessage(ChatColor.RED + "An error has occured! Please report this to a Staff Member (Error Code 105)");
+        } else {
+            player.getInventory().setItem(8, mb);
+        }
     }
 
-    public static String getBandName(Material color) {
+    public void loadPlayerData(Player player, Inventory inventory) {
+        if (loadingPlayerData.containsKey(player.getUniqueId())) {
+            return;
+        }
+        loadingPlayerData.put(player.getUniqueId(), inventory);
+    }
+
+    public void cancelLoadPlayerData(UUID uuid) {
+        loadingPlayerData.remove(uuid);
+    }
+
+    public String getBandName(Material color) {
         switch (color) {
             case PAPER:
                 return "s1";
@@ -203,11 +249,11 @@ public class BandUtil {
         }
     }
 
-    public static void setBandName(Player player, ChatColor color) {
+    public void setBandName(Player player, ChatColor color) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET namecolor=? WHERE uuid=?");
             sql.setString(1, getBandNameColor(color));
-            sql.setString(2, player.getUniqueId() + "");
+            sql.setString(2, player.getUniqueId().toString());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -223,38 +269,38 @@ public class BandUtil {
         return back;
     }
 
-    public static BandColor getBandColor(String string) {
+    public PlayerData.BandColor getBandColor(String string) {
         switch (string) {
             case "red":
-                return BandColor.RED;
+                return PlayerData.BandColor.RED;
             case "orange":
-                return BandColor.ORANGE;
+                return PlayerData.BandColor.ORANGE;
             case "yellow":
-                return BandColor.YELLOW;
+                return PlayerData.BandColor.YELLOW;
             case "green":
-                return BandColor.GREEN;
+                return PlayerData.BandColor.GREEN;
             case "blue":
-                return BandColor.BLUE;
+                return PlayerData.BandColor.BLUE;
             case "purple":
-                return BandColor.PURPLE;
+                return PlayerData.BandColor.PURPLE;
             case "pink":
-                return BandColor.PINK;
+                return PlayerData.BandColor.PINK;
             case "s1":
-                return BandColor.SPECIAL1;
+                return PlayerData.BandColor.SPECIAL1;
             case "s2":
-                return BandColor.SPECIAL2;
+                return PlayerData.BandColor.SPECIAL2;
             case "s3":
-                return BandColor.SPECIAL3;
+                return PlayerData.BandColor.SPECIAL3;
             case "s4":
-                return BandColor.SPECIAL4;
+                return PlayerData.BandColor.SPECIAL4;
             case "s5":
-                return BandColor.SPECIAL5;
+                return PlayerData.BandColor.SPECIAL5;
             default:
-                return BandColor.BLUE;
+                return PlayerData.BandColor.BLUE;
         }
     }
 
-    public static Material getBandMaterial(BandColor color) {
+    public Material getBandMaterial(PlayerData.BandColor color) {
         switch (color) {
             case SPECIAL1:
                 return Material.PAPER;
@@ -271,7 +317,7 @@ public class BandUtil {
         }
     }
 
-    public static String getBandNameColor(ChatColor color) {
+    public String getBandNameColor(ChatColor color) {
         switch (color) {
             case RED:
                 return "red";
@@ -292,7 +338,7 @@ public class BandUtil {
         }
     }
 
-    public static ChatColor getBandNameColor(String string) {
+    public ChatColor getBandNameColor(String string) {
         switch (string) {
             case "red":
                 return ChatColor.RED;
@@ -313,7 +359,7 @@ public class BandUtil {
         }
     }
 
-    public static Color getBandColor(BandColor color) {
+    public Color getBandColor(PlayerData.BandColor color) {
         switch (color) {
             case RED:
                 return Color.fromRGB(255, 40, 40);
@@ -334,7 +380,7 @@ public class BandUtil {
         }
     }
 
-    public static String currentTime() {
+    public String currentTime() {
         Date current = new Date(System.currentTimeMillis() + 10800);
         String h = new SimpleDateFormat("HH").format(current);
         String minute = new SimpleDateFormat("mm").format(current);
@@ -348,51 +394,45 @@ public class BandUtil {
         return hour;
     }
 
-    public static void friendTeleport(Player player, String friendUUID) {
+    public void friendTeleport(Player player, String friendUUID) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
             out.writeUTF("FriendTeleport");
-            out.writeUTF(player.getUniqueId() + "");
+            out.writeUTF(player.getUniqueId().toString());
             out.writeUTF(friendUUID);
-            player.sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
-                    "BungeeCord", b.toByteArray());
+            player.sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED
                     + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
         }
     }
 
-    public static void askForParty() {
+    public void askForParty() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
             out.writeUTF("PartyRequest");
             out.writeUTF(MagicAssistant.serverName);
-            PlayerUtil.randomPlayer().sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
-                    "BungeeCord", b.toByteArray());
+            Bukkit.getServer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             System.out.println("Error requesting Party Info");
         }
     }
 
-    public static void createParty() {
+    public void createParty() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
             out.writeUTF("MagicPartySetup");
             out.writeUTF(MagicAssistant.serverName);
-            PlayerUtil.randomPlayer().sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
-                    "BungeeCord", b.toByteArray());
+            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
-            System.out.println("Error requesting Party Setup");
+            System.out.println("Error creating Party");
         }
     }
 
-    public static void removeParty() {
+    public void removeParty() {
         MagicAssistant.party = false;
         MagicAssistant.partyServer.clear();
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -400,25 +440,21 @@ public class BandUtil {
         try {
             out.writeUTF("MagicPartyRemove");
             out.writeUTF(MagicAssistant.serverName);
-            PlayerUtil.randomPlayer().sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
-                    "BungeeCord", b.toByteArray());
+            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
-            System.out.println("Error requesting Party Setup");
+            System.out.println("Error removing Party");
         }
     }
 
-    public static void joinParty(Player player) {
+    public void joinParty(Player player) {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
         try {
             out.writeUTF("PartyJoin");
-            out.writeUTF(player.getUniqueId() + "");
-            PlayerUtil.randomPlayer().sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
-                    "BungeeCord", b.toByteArray());
+            out.writeUTF(player.getUniqueId().toString());
+            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
-            System.out.println("Error requesting Party Setup");
+            System.out.println("Error joining Party");
         }
     }
 }

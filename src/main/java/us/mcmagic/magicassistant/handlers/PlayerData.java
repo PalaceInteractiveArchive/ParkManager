@@ -2,9 +2,7 @@ package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import us.mcmagic.magicassistant.magicband.BandColor;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +20,9 @@ public class PlayerData {
     private HashMap<Integer, List<String>> pages = new HashMap<>();
     private boolean special;
 
-    public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, HashMap<UUID, String> friends, HashMap<Integer, List<String>> pages, boolean special) {
+    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, HashMap<UUID, String> friends, HashMap<Integer, List<String>> pages, boolean special) {
         this.uuid = uuid;
-        dvc = MCMagicCore.getUser(uuid).getRank().equals(Rank.DVCMEMBER);
+        this.dvc = dvc;
         this.bandName = bandName;
         this.bandColor = bandColor;
         this.friends = friends;
@@ -36,7 +34,7 @@ public class PlayerData {
         return uuid;
     }
 
-    public boolean getDVC() {
+    public boolean isDVC() {
         return dvc;
     }
 
@@ -87,5 +85,90 @@ public class PlayerData {
 
     public void setSpecial(boolean special) {
         this.special = special;
+    }
+
+    /**
+     * Created by Marc on 12/22/14
+     */
+    @SuppressWarnings("deprecation")
+    public static class Attraction {
+        private String displayName;
+        private String warp;
+        private int id;
+        private byte data;
+
+        public Attraction(String displayName, String warp, int id, byte data) {
+            this.displayName = displayName;
+            this.warp = warp;
+            this.id = id;
+            this.data = data;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public String getWarp() {
+            return warp;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public byte getData() {
+            return data;
+        }
+
+        public ItemStack getItem() {
+            return new ItemStack(id, 1, data);
+        }
+    }
+
+    /**
+     * Created by Marc on 12/13/14
+     */
+    public static enum BandColor {
+        RED("red"), ORANGE("orange"), YELLOW("yellow"), GREEN("green"), BLUE("blue"), PURPLE("purple"), PINK("pink"), SPECIAL1("s1"), SPECIAL2("s2"), SPECIAL3("s3"), SPECIAL4("s4"), SPECIAL5("s5");
+        String name;
+
+        BandColor(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public BandColor fromString(String s) {
+            switch (s) {
+                case "red":
+                    return RED;
+                case "orange":
+                    return ORANGE;
+                case "yellow":
+                    return YELLOW;
+                case "green":
+                    return GREEN;
+                case "blue":
+                    return BLUE;
+                case "purple":
+                    return PURPLE;
+                case "pink":
+                    return PINK;
+                case "s1":
+                    return SPECIAL1;
+                case "s2":
+                    return SPECIAL2;
+                case "s3":
+                    return SPECIAL3;
+                case "s4":
+                    return SPECIAL4;
+                case "s5":
+                    return SPECIAL5;
+                default:
+                    return BLUE;
+            }
+        }
     }
 }

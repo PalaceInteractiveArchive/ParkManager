@@ -16,7 +16,7 @@ public class PulseAction extends ShowAction {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void Play() {
+    public void play() {
         Block pre = Location.getBlock();
         Location.getBlock().setType(Material.REDSTONE_BLOCK);
         Location.getBlock().setType(pre.getType());

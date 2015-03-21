@@ -148,7 +148,7 @@ commands:
    autograph:
       description: Update the player's inventory
       permission: mcmagic.mb
-      permission-message: §4Only Cast Members can use this command!
+      permission-message: §4§4Please notify a Cast Member that you can’t do this.
    hrl:
       description: Reload hotel rooms
       permission: mcmagic.hotel.reload
@@ -156,6 +156,10 @@ commands:
    hotel:
       description: Perform various hotel-related actions
       permission: mcmagic.hotel
-      permission-message: Â§4Only Staff Members can use this command!
+      permission-message: §4Please notify a Cast Member that you can’t do this.
+   pack:
+      description: Perform various hotel-related actions
+      permission: mcmagic.mb
+      permission-message: §4Please notify a Cast Member that you can’t do this.
    autograph:
       description: Autograph Command

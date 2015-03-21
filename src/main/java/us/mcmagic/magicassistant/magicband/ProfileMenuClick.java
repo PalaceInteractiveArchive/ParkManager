@@ -1,11 +1,11 @@
 package us.mcmagic.magicassistant.magicband;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -62,7 +62,8 @@ public class ProfileMenuClick {
                 return;
             case "Resource/Audio Packs":
                 player.closeInventory();
-                sendPluginMessage(player, "packs");
+                MagicAssistant.getInstance().packManager.openMenu(player);
+                //sendPluginMessage(player, "packs");
         }
     }
 
@@ -71,11 +72,9 @@ public class ProfileMenuClick {
         DataOutputStream out = new DataOutputStream(b);
         try {
             out.writeUTF("MagicBand");
-            out.writeUTF(player.getUniqueId() + "");
+            out.writeUTF(player.getUniqueId().toString());
             out.writeUTF(action);
-            player.sendPluginMessage(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
-                    "BungeeCord", b.toByteArray());
+            player.sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED
                     + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");

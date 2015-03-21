@@ -35,12 +35,8 @@ import java.util.*;
  * Created by Marc on 1/7/15
  */
 public class Command_magic implements Listener, CommandExecutor {
-    public static List<String> containsCommandBlockOnly = Arrays.asList("stitch");
-
-    public Command_magic() {
-    }
-
     private static HashMap<String, Show> songs = new HashMap<>();
+    public static List<String> containsCommandBlockOnly = Arrays.asList("stitch");
 
     @SuppressWarnings("deprecation")
     @Override
@@ -405,9 +401,8 @@ public class Command_magic implements Listener, CommandExecutor {
     }
 
     @EventHandler
-    public void Update(TickEvent event) {
+    public void onTick(TickEvent event) {
         Iterator<Show> showIterator = songs.values().iterator();
-
         while (showIterator.hasNext()) {
             Show show = showIterator.next();
             if (show.update()) {

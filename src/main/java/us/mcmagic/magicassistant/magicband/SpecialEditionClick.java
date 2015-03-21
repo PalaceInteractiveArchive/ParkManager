@@ -37,21 +37,22 @@ public class SpecialEditionClick {
             return;
         }
         Material color = item.getType();
-        if (color.equals(BandUtil.getBandMaterial(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor()))) {
+        if (color.equals(MagicAssistant.getInstance().bandUtil.getBandMaterial(MagicAssistant.getPlayerData(
+                player.getUniqueId()).getBandColor()))) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
         if (!player.hasPermission("band.change")) {
-            int coins = Coins.getSqlCoins(player);
+            int coins = Coins.getSqlCoins(player.getUniqueId());
             if (coins < 500) {
                 player.closeInventory();
                 player.sendMessage(ChatColor.RED + "You need at least " + ChatColor.GREEN + "500 Coins" + ChatColor.RED + " to get this!");
                 return;
             }
-            Coins.minusSqlCoins(player, 500);
+            Coins.minusSqlCoins(player.getUniqueId(), 500);
         }
         player.closeInventory();
-        BandUtil.setBandColor(player, color);
+        MagicAssistant.getInstance().bandUtil.setBandColor(player, color);
     }
 }

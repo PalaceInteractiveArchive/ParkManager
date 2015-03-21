@@ -1,17 +1,11 @@
 package us.mcmagic.magicassistant.show.ticker;
 
-import us.mcmagic.magicassistant.MagicAssistant;
+import org.bukkit.Bukkit;
 
 public class Ticker implements Runnable {
-    private MagicAssistant pl;
-
-    public Ticker(MagicAssistant plugin) {
-        pl = plugin;
-        pl.getServer().getScheduler().scheduleSyncRepeatingTask(pl, this, 0L, 1L);
-    }
 
     @Override
     public void run() {
-        pl.getServer().getPluginManager().callEvent(new TickEvent());
+        Bukkit.getServer().getPluginManager().callEvent(new TickEvent());
     }
 }

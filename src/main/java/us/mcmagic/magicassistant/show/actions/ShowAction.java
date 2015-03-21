@@ -5,12 +5,12 @@ import us.mcmagic.magicassistant.show.Show;
 
 public abstract class ShowAction {
     public Show Show;
-    public long Time;
+    public long time;
 
     public ShowAction(Show show, long time) {
         Show = show;
-        Time = time;
+        this.time = time;
     }
 
-    public abstract void Play();
+    public abstract void play();
 }

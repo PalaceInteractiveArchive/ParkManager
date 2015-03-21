@@ -13,7 +13,7 @@ public class TextAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         Show.displayText(Text);
     }
 }

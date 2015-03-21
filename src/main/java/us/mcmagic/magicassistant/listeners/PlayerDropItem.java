@@ -12,7 +12,6 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
-import us.mcmagic.magicassistant.utils.BandUtil;
 
 import java.util.Arrays;
 
@@ -25,7 +24,7 @@ public class PlayerDropItem implements Listener {
         ItemStack drop = event.getItemDrop().getItemStack();
         ItemStack mb;
         if (data.getSpecial()) {
-            mb = new ItemStack(BandUtil.getBandMaterial(data.getBandColor()));
+            mb = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
@@ -34,7 +33,8 @@ public class PlayerDropItem implements Listener {
         } else {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
-            mbm.setEffect(FireworkEffect.builder().withColor(BandUtil.getBandColor(data.getBandColor())).build());
+            mbm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.getInstance().bandUtil.getBandColor(
+                    data.getBandColor())).build());
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));

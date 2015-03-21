@@ -34,32 +34,32 @@ public class ParkMenuClick {
             case "Magic Kingdom":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Magic Kingdom...");
-                MagicAssistant.sendToServer(player, "MK");
+                MagicAssistant.getInstance().sendToServer(player, "MK");
                 return;
             case "Epcot":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Epcot...");
-                MagicAssistant.sendToServer(player, "Epcot");
+                MagicAssistant.getInstance().sendToServer(player, "Epcot");
                 return;
             case "Hollywood Studios":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Hollywood Studios...");
-                MagicAssistant.sendToServer(player, "HWS");
+                MagicAssistant.getInstance().sendToServer(player, "HWS");
                 return;
             case "Animal Kingdom":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Animal Kingdom...");
-                MagicAssistant.sendToServer(player, "AK");
+                MagicAssistant.getInstance().sendToServer(player, "AK");
                 return;
             case "Typhoon Lagoon":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Typhoon Lagoon...");
-                MagicAssistant.sendToServer(player, "Typhoon");
+                MagicAssistant.getInstance().sendToServer(player, "Typhoon");
                 return;
             case "Disney Cruise Line":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Disney Cruise Line...");
-                MagicAssistant.sendToServer(player, "DCL");
+                MagicAssistant.getInstance().sendToServer(player, "DCL");
                 return;
             default:
                 player.closeInventory();

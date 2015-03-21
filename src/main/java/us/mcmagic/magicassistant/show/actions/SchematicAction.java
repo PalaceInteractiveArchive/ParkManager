@@ -29,7 +29,7 @@ public class SchematicAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
         TerrainManager tm = new TerrainManager(wep, world);
         try {

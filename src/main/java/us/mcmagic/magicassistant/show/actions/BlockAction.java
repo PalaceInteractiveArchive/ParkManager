@@ -19,7 +19,7 @@ public class BlockAction extends ShowAction {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void Play() {
+    public void play() {
         Block block = location.getBlock();
         block.setTypeId(type);
         block.setData(data);

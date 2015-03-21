@@ -5,7 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.MagicAssistant;
 
 public class Command_mb implements CommandExecutor {
 
@@ -17,11 +17,11 @@ public class Command_mb implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (BandUtil.isLoading(player)) {
+        if (MagicAssistant.getInstance().bandUtil.isLoading(player)) {
             player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
             return true;
         }
-        BandUtil.giveBandToPlayer(player);
+        MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
         player.sendMessage(ChatColor.GRAY + "MagicBand has been restored!");
         return true;
     }

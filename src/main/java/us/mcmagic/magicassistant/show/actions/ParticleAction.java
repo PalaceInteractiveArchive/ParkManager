@@ -17,7 +17,7 @@ public class ParticleAction extends ShowAction {
     public float speed;
     public int amount;
 
-    public ParticleAction(Show show, long time, ParticleEffect effect, Location location, float offsetX, float offsetY, float offsetZ, float speed, int amoun) {
+    public ParticleAction(Show show, long time, ParticleEffect effect, Location location, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
         super(show, time);
         this.effect = effect;
         this.location = location;
@@ -29,7 +29,7 @@ public class ParticleAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         ParticleUtil.spawnParticle(effect, location, offsetX, offsetY, offsetZ, speed, amount);
     }
 }

@@ -6,6 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -34,13 +35,13 @@ public class CustomBandClick {
             InventoryUtil.openInventory(player, InventoryType.SPECIALCOLOR);
             return;
         }
-        BandColor color = BandUtil.getBandColor(name.toLowerCase());
+        PlayerData.BandColor color = MagicAssistant.getInstance().bandUtil.getBandColor(name.toLowerCase());
         if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
         player.closeInventory();
-        BandUtil.setBandColor(player, color);
+        MagicAssistant.getInstance().bandUtil.setBandColor(player, color);
     }
 }

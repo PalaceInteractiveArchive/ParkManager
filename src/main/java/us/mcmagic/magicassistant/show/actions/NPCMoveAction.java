@@ -18,7 +18,7 @@ public class NPCMoveAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         ShowNPC npc = Show.GetNPC().get(Name);
         if (npc != null) {
             npc.SetTarget(Location, Speed);

@@ -36,7 +36,7 @@ public class NPCSpawnAction extends ShowAction {
     }
 
     @Override
-    public void Play() {
+    public void play() {
         // Remove Old
         ShowNPC npc = Show.GetNPC().remove(Name);
         if (npc != null)

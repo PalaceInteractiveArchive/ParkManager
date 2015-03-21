@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -35,7 +36,7 @@ public class FriendListClick {
             if (((SkullMeta) item.getItemMeta()).getOwner().equals("Herobrine")) {
                 return;
             }
-            BandUtil.friendTeleport(player, name);
+            MagicAssistant.getInstance().bandUtil.friendTeleport(player, name);
             return;
         }
         String invName = ChatColor.stripColor(event.getInventory().getName());

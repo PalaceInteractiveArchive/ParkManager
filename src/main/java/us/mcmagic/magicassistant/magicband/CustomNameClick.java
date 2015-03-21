@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -29,8 +30,8 @@ public class CustomNameClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        ChatColor color = BandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
+        ChatColor color = MagicAssistant.getInstance().bandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
         player.closeInventory();
-        BandUtil.setBandName(player, color);
+        MagicAssistant.getInstance().bandUtil.setBandName(player, color);
     }
 }
