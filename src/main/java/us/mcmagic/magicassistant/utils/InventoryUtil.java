@@ -407,7 +407,6 @@ public class InventoryUtil implements Listener {
                 return;
             case FOOD:
                 Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
-                player.closeInventory();
                 List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                 // If odd amount of items
                 int place = 13;

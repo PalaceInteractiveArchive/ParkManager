@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
@@ -36,7 +37,6 @@ public class PackManager implements Listener {
 
     @SuppressWarnings("deprecation")
     public void initialize() {
-        Bukkit.getPluginManager().registerEvents(this, MCMagicCore.getInstance());
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/packs.yml"));
         for (String s : config.getStringList("pack-list")) {
             String name = config.getString("packs." + s + ".name");
@@ -46,16 +46,21 @@ public class PackManager implements Listener {
         }
     }
 
-    public void login(Player player) {
+    public void login(final Player player) {
         User user = MCMagicCore.getUser(player.getUniqueId());
         String current = user.getPack();
         if (current.equals("none")) {
             player.sendMessage(ChatColor.GREEN + "Please select a Resource Pack. If you do not want one, select " +
                     ChatColor.RED + "Disabled.");
-            openMenu(player);
+            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    openMenu(player);
+                }
+            }, 20L);
             return;
         }
-        if (current.equals("disabled")) {
+        if (current.equalsIgnoreCase("disabled")) {
             return;
         }
         ResourcePack pack = MCMagicCore.getInstance().resourceManager.getPack(current);
@@ -86,8 +91,15 @@ public class PackManager implements Listener {
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.endsWith("(SELECTED)")) {
             player.closeInventory();
-            player.sendMessage(ChatColor.RED + "You already have this pack selected!");
+            player.sendMessage(ChatColor.RED + "You already have this selected!");
             player.playSound(player.getLocation(), Sound.ITEM_BREAK, 100, 0);
+            return;
+        }
+        if (event.getSlot() == 8) {
+            player.closeInventory();
+            player.sendMessage(ChatColor.RED + "You disabled the Auto-Resource Pack!");
+            MCMagicCore.getUser(player.getUniqueId()).setPack("Disabled");
+            MCMagicCore.getInstance().resourceManager.setPack(player.getUniqueId(), "Disabled");
             return;
         }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
@@ -103,7 +115,6 @@ public class PackManager implements Listener {
     public void openMenu(Player player) {
         List<ResourcePack> packs = MCMagicCore.getInstance().resourceManager.getPacks();
         Inventory menu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Resource Pack Menu");
-        player.closeInventory();
         int place = 13;
         //If odd, increase place by 1
         if (packs.size() % 2 != 1) {
@@ -111,6 +122,12 @@ public class PackManager implements Listener {
         }
         int amount = 1;
         String current = MCMagicCore.getUser(player.getUniqueId()).getPack();
+        ItemStack disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled");
+        if (current.equalsIgnoreCase("disabled")) {
+            ItemMeta meta = disabled.getItemMeta();
+            meta.setDisplayName(meta.getDisplayName() + ChatColor.GREEN + " (SELECTED)");
+            disabled.setItemMeta(meta);
+        }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
             if (place > 16) {
                 break;
@@ -129,6 +146,7 @@ public class PackManager implements Listener {
             }
             amount++;
         }
+        menu.setItem(8, disabled);
         menu.setItem(22, BandUtil.getBackItem());
         player.openInventory(menu);
     }

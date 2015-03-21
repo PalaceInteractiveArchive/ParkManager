@@ -12,7 +12,7 @@ public class PlayerCloseInventory implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getInventory().getTitle().contains("'s MagicBand")) {
+        if (event.getInventory().getTitle().toLowerCase().endsWith("'s MagicBand")) {
             MagicAssistant.getInstance().bandUtil.cancelLoadPlayerData(event.getPlayer().getUniqueId());
         }
     }

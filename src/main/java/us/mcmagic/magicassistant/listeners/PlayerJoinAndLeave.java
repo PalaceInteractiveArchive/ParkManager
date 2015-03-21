@@ -16,6 +16,7 @@ import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Command_vanish;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
@@ -32,113 +33,123 @@ public class PlayerJoinAndLeave implements Listener {
     private static HashMap<UUID, ItemStack[]> armorData = new HashMap<>();
     private static HashMap<UUID, ItemStack[]> endData = new HashMap<>();
 
+    @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-        UUID uuid = event.getUniqueId();
-        if (MagicAssistant.crossServerInv) {
-            List<ItemStack[]> stuff = InventorySql.invContents(uuid);
-            ItemStack[] inv = stuff.get(0);
-            ItemStack[] armor = stuff.get(1);
-            ItemStack[] end = InventorySql.endInvContents(uuid);
-            if (invData.containsKey(uuid)) {
-                invData.remove(uuid);
+        try {
+            UUID uuid = event.getUniqueId();
+            if (MagicAssistant.crossServerInv) {
+                List<ItemStack[]> stuff = InventorySql.invContents(uuid);
+                ItemStack[] inv = stuff.get(0);
+                ItemStack[] armor = stuff.get(1);
+                ItemStack[] end = InventorySql.endInvContents(uuid);
+                if (invData.containsKey(uuid)) {
+                    invData.remove(uuid);
+                }
+                if (armorData.containsKey(uuid)) {
+                    armorData.remove(uuid);
+                }
+                if (endData.containsKey(uuid)) {
+                    endData.remove(uuid);
+                }
+                if (inv != null) {
+                    invData.put(uuid, inv);
+                }
+                if (armor != null) {
+                    armorData.put(uuid, inv);
+                }
+                if (end != null) {
+                    endData.put(uuid, inv);
+                }
             }
-            if (armorData.containsKey(uuid)) {
-                armorData.remove(uuid);
+            MagicAssistant.getInstance().bandUtil.loading.add(uuid);
+            PlayerData data = MagicAssistant.getInstance().bandUtil.setupPlayerData(uuid);
+            if (MagicAssistant.getPlayerData(uuid) == null) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                event.setKickMessage("There was an error joining this server! (Error Code 106)");
             }
-            if (endData.containsKey(uuid)) {
-                endData.remove(uuid);
-            }
-            if (inv != null) {
-                invData.put(uuid, inv);
-            }
-            if (armor != null) {
-                armorData.put(uuid, inv);
-            }
-            if (end != null) {
-                endData.put(uuid, inv);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        MagicAssistant.getInstance().bandUtil.setupPlayerData(uuid);
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        MagicAssistant.getInstance().packManager.login(player);
-        MagicAssistant.getInstance().bandUtil.loading.add(player.getUniqueId());
-        if (!MagicAssistant.userCache.containsKey(player.getUniqueId())) {
-            MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
-        } else {
-            if (!MagicAssistant.userCache.get(player.getUniqueId()).equals(player.getName())) {
+        try {
+            final Player player = event.getPlayer();
+            MagicAssistant.getInstance().packManager.login(player);
+            if (!MagicAssistant.userCache.containsKey(player.getUniqueId())) {
                 MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
-            }
+            } else {
+                if (!MagicAssistant.userCache.get(player.getUniqueId()).equals(player.getName())) {
+                    MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
+                }
 
-        }
-        if (MagicAssistant.spawnOnJoin) {
-            player.performCommand("spawn");
-        }
-        for (String msg : MagicAssistant.joinMessages) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
-        }
-        if (!player.hasPermission("band.stayvisible")) {
-            VisibleUtil.hideForHideAll(player);
-        }
-        if (MagicAssistant.hubServer) {
-            if (!player.hasPlayedBefore()) {
-                int total = Bukkit.getOfflinePlayers().length + 100000;
-                for (String msg : MagicAssistant.newJoinMessage) {
-                    String nmsg = msg.replaceAll("%pl%", player.getName());
-                    Bukkit.broadcastMessage(nmsg.replaceAll("%total%", "" + (total)));
+            }
+            if (MagicAssistant.spawnOnJoin) {
+                player.performCommand("spawn");
+            }
+            for (String msg : MagicAssistant.joinMessages) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+            }
+            if (!player.hasPermission("band.stayvisible")) {
+                VisibleUtil.hideForHideAll(player);
+            }
+            if (MagicAssistant.hubServer) {
+                if (!player.hasPlayedBefore()) {
+                    int total = Bukkit.getOfflinePlayers().length + 100000;
+                    for (String msg : MagicAssistant.newJoinMessage) {
+                        String nmsg = msg.replaceAll("%pl%", player.getName());
+                        Bukkit.broadcastMessage(nmsg.replaceAll("%total%", "" + (total)));
+                    }
+                    PlayerInventory pi = player.getInventory();
+                    for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {
+                        ItemStack i = new ItemStack(item.getKey(), item.getValue());
+                        pi.addItem(i);
+                    }
                 }
+            }
+            if (MagicAssistant.crossServerInv) {
                 PlayerInventory pi = player.getInventory();
-                for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {
-                    ItemStack i = new ItemStack(item.getKey(), item.getValue());
-                    pi.addItem(i);
+                if (invData.containsKey(player.getUniqueId())) {
+                    ItemStack[] inv = invData.remove(player.getUniqueId());
+                    if (inv == null) {
+                        player.sendMessage(ChatColor.RED +
+                                "An error has occured! Please report this to a Staff Member (Error Code 102)");
+                    } else {
+                        pi.setContents(inv);
+                    }
                 }
-            }
-        }
-        if (MagicAssistant.crossServerInv) {
-            PlayerInventory pi = player.getInventory();
-            if (invData.containsKey(player.getUniqueId())) {
-                ItemStack[] inv = invData.remove(player.getUniqueId());
-                if (inv == null) {
-                    player.sendMessage(ChatColor.RED +
-                            "An error has occured! Please report this to a Staff Member (Error Code 102)");
-                } else {
-                    pi.setContents(inv);
+                if (armorData.containsKey(player.getUniqueId())) {
+                    ItemStack[] armor = armorData.remove(player.getUniqueId());
+                    if (armor == null) {
+                        player.sendMessage(ChatColor.RED +
+                                "An error has occured! Please report this to a Staff Member (Error Code 103)");
+                    } else {
+                        pi.setArmorContents(armor);
+                    }
                 }
-            }
-            if (armorData.containsKey(player.getUniqueId())) {
-                ItemStack[] armor = armorData.remove(player.getUniqueId());
-                if (armor == null) {
-                    player.sendMessage(ChatColor.RED +
-                            "An error has occured! Please report this to a Staff Member (Error Code 103)");
-                } else {
-                    pi.setArmorContents(armor);
+                if (endData.containsKey(player.getUniqueId())) {
+                    ItemStack[] end = endData.remove(player.getUniqueId());
+                    if (end == null) {
+                        player.sendMessage(ChatColor.RED +
+                                "An error has occured! Please report this to a Staff Member (Error Code 104)");
+                    } else {
+                        player.getEnderChest().setContents(end);
+                    }
                 }
-            }
-            if (endData.containsKey(player.getUniqueId())) {
-                ItemStack[] end = endData.remove(player.getUniqueId());
-                if (end == null) {
-                    player.sendMessage(ChatColor.RED +
-                            "An error has occured! Please report this to a Staff Member (Error Code 104)");
-                } else {
-                    player.getEnderChest().setContents(end);
+                MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
+                if (Shooter.game != null) {
+                    pi.remove(Shooter.getItem().getType());
                 }
-            }
-            MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
-            if (Shooter.game != null) {
                 pi.remove(Shooter.getItem().getType());
-            }
-            pi.remove(Shooter.getItem().getType());
-            ItemStack helm = player.getInventory().getHelmet();
-            if (helm != null && helm.getItemMeta() != null) {
-                if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
-                    player.getInventory().setHelmet(new ItemCreator(Material.AIR));
+                ItemStack helm = player.getInventory().getHelmet();
+                if (helm != null && helm.getItemMeta() != null) {
+                    if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
+                        player.getInventory().setHelmet(new ItemCreator(Material.AIR));
+                    }
                 }
-            }
-            player.sendMessage(ChatColor.GREEN + "Inventory updated!");
+                player.sendMessage(ChatColor.GREEN + "Inventory updated!");
             /*
             Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
                     new Runnable() {
@@ -163,40 +174,42 @@ public class PlayerJoinAndLeave implements Listener {
                         }
                     }, 100L);
                     */
-        } else {
-            ItemStack helm = player.getInventory().getHelmet();
-            if (helm != null && helm.getItemMeta() != null) {
-                if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
-                    player.getInventory().setHelmet(new ItemStack(Material.AIR));
-                }
-            }
-            if (Shooter.game != null) {
-                player.getInventory().remove(Shooter.getItem().getType());
-            }
-        }
-        MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
-        Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                boolean updateNecessary = false;
-                for (HotelRoom room : MagicAssistant.hotelRooms) {
-                    if (room.getCheckoutNotificationRecipient() != null && room.getCheckoutNotificationRecipient().equalsIgnoreCase(player.getUniqueId().toString())) {
-                        UUID uuid = UUID.fromString(room.getCheckoutNotificationRecipient());
-                        if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
-                            Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() + " room has lapsed and you have been checked out.  Please come stay with us again soon!");
-                            room.setCheckoutNotificationRecipient(null);
-                            HotelUtil.updateRoom(room);
-                            updateNecessary = true;
-                        }
-                        break;
+            } else {
+                ItemStack helm = player.getInventory().getHelmet();
+                if (helm != null && helm.getItemMeta() != null) {
+                    if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
+                        player.getInventory().setHelmet(new ItemStack(Material.AIR));
                     }
                 }
-                if (updateNecessary) {
-                    HotelUtil.updateRooms();
+                if (Shooter.game != null) {
+                    player.getInventory().remove(Shooter.getItem().getType());
                 }
             }
-        }, 60L);
-
+            MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
+            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    boolean updateNecessary = false;
+                    for (HotelRoom room : MagicAssistant.hotelRooms) {
+                        if (room.getCheckoutNotificationRecipient() != null && room.getCheckoutNotificationRecipient().equalsIgnoreCase(player.getUniqueId().toString())) {
+                            UUID uuid = UUID.fromString(room.getCheckoutNotificationRecipient());
+                            if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
+                                Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() + " room has lapsed and you have been checked out.  Please come stay with us again soon!");
+                                room.setCheckoutNotificationRecipient(null);
+                                HotelUtil.updateRoom(room);
+                                updateNecessary = true;
+                            }
+                            break;
+                        }
+                    }
+                    if (updateNecessary) {
+                        HotelUtil.updateRooms();
+                    }
+                }
+            }, 60L);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @EventHandler
@@ -220,19 +233,10 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             });
         }
-        try {
-            MagicAssistant.getInstance().bandUtil.loading.remove(player.getUniqueId());
-        } catch (Exception ignored) {
-        }
+        MagicAssistant.getInstance().bandUtil.loading.remove(player.getUniqueId());
         MagicAssistant.getInstance().bandUtil.removePlayerData(player);
-        try {
-            VisibleUtil.hideall.remove(player.getUniqueId());
-        } catch (Exception ignored) {
-        }
-        try {
-            Command_vanish.hidden.remove(player.getUniqueId());
-        } catch (Exception ignored) {
-        }
+        VisibleUtil.hideall.remove(player.getUniqueId());
+        Command_vanish.hidden.remove(player.getUniqueId());
         MagicAssistant.getInstance().blockChanger.logout(player);
         if (Shooter.getItem() != null) {
             if (player.getInventory().contains(Shooter.getItem())) {

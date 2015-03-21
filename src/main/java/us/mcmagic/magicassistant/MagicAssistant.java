@@ -32,7 +32,7 @@ import java.util.*;
 public class MagicAssistant extends JavaPlugin implements Listener {
     public static Inventory ni;
     public static List<FoodLocation> foodLocations = new ArrayList<>();
-    public static List<PlayerData> playerData = new ArrayList<>();
+    public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
     public int randomNumber = 0;
     public static List<Warp> warps = new ArrayList<>();
     public static List<HotelRoom> hotelRooms = new ArrayList<>();
@@ -250,12 +250,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public static PlayerData getPlayerData(UUID uuid) {
-        for (PlayerData data : playerData) {
-            if (data.getUuid().equals(uuid)) {
-                return data;
-            }
-        }
-        return null;
+        return playerData.get(uuid);
     }
 
     public void setupFoodLocations() {

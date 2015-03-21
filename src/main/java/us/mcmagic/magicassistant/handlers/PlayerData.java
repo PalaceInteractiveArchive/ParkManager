@@ -30,7 +30,7 @@ public class PlayerData {
         this.special = special;
     }
 
-    public UUID getUuid() {
+    public UUID getUniqueId() {
         return uuid;
     }
 

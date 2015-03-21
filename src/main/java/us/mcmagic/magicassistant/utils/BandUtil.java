@@ -39,7 +39,6 @@ public class BandUtil {
             @Override
             public void run() {
                 for (Map.Entry<UUID, Inventory> entry : loadingPlayerData.entrySet()) {
-                    System.out.println("Sending " + entry.getKey());
                     User user = MCMagicCore.getUser(entry.getKey());
                     Player player = Bukkit.getPlayer(user.getUniqueId());
                     if (player == null) {
@@ -68,7 +67,7 @@ public class BandUtil {
 
     public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `player_data` WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
@@ -129,7 +128,7 @@ public class BandUtil {
                     friendlist, plist, special);
             result.close();
             sql.close();
-            MagicAssistant.playerData.add(data);
+            MagicAssistant.playerData.put(uuid, data);
             loading.remove(uuid);
             return data;
         } catch (SQLException e) {
@@ -139,15 +138,12 @@ public class BandUtil {
     }
 
     public void removePlayerData(Player player) {
-        try {
-            MagicAssistant.playerData.remove(MagicAssistant.getPlayerData(player.getUniqueId()));
-        } catch (Exception ignored) {
-        }
+        MagicAssistant.playerData.remove(player.getUniqueId());
     }
 
     public long getOnlineTime(String uuid) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM `player_data` WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM player_data WHERE uuid=?");
             sql.setString(1, uuid);
             ResultSet result = sql.executeQuery();
             result.next();
@@ -163,7 +159,7 @@ public class BandUtil {
 
     public void setBandColor(Player player, PlayerData.BandColor color) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
             sql.setString(1, color.getName());
             sql.setString(2, player.getUniqueId().toString());
             sql.execute();
@@ -180,7 +176,7 @@ public class BandUtil {
 
     public void setBandColor(Player player, Material color) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET bandcolor=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
             sql.setString(1, getBandName(color));
             sql.setString(2, player.getUniqueId().toString());
             sql.execute();
@@ -251,7 +247,7 @@ public class BandUtil {
 
     public void setBandName(Player player, ChatColor color) {
         try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE `player_data` SET namecolor=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE uuid=?");
             sql.setString(1, getBandNameColor(color));
             sql.setString(2, player.getUniqueId().toString());
             sql.execute();
