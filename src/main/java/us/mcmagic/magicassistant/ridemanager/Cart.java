@@ -112,8 +112,8 @@ public class Cart extends EntityMinecartRideable {
         Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                removeStation();
                 setSpeed(MagicAssistant.getInstance().rideManager.getVector(getDirection(), station.getLaunchPower()));
+                removeStation();
             }
         }, (long) (s.getLength() * 20));
     }
