@@ -93,9 +93,10 @@ public class Shooter implements Listener {
         if (event.getAction().equals(Action.PHYSICAL)) {
             return;
         }
-        String displayName = meta.getDisplayName();
-        if (displayName == null) return;
+
         if (meta == null) return;
+        if (meta.getDisplayName() == null) return;
+        String displayName = meta.getDisplayName();
         if (inHand.getType() == stack.getType()) {
             meta.getDisplayName().equals(stack.getItemMeta().getDisplayName());
             event.getPlayer().launchProjectile(Snowball.class);
