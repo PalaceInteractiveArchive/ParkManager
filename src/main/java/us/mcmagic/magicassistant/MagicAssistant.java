@@ -8,23 +8,20 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
+import us.mcmagic.magicassistant.ridemanager.RideManager;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.utils.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.resource.ResourceStatusEvent;
 
 import java.io.*;
 import java.util.*;
@@ -59,6 +56,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public BlockChanger blockChanger = new BlockChanger();
     public PackManager packManager = new PackManager();
     public BandUtil bandUtil = new BandUtil();
+    public RideManager rideManager = new RideManager();
 
 
     public void onEnable() {
@@ -417,11 +415,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("head").setExecutor(new Command_head());
         getCommand("heal").setExecutor(new Command_heal());
         getCommand("helpop").setExecutor(new Command_helpop());
-        getCommand("helpop").setAliases(Arrays.asList("ac"));
+        getCommand("helpop").setAliases(Collections.singletonList("ac"));
         getCommand("hub").setExecutor(new Command_hub());
         getCommand("invsee").setExecutor(new Command_invsee());
         getCommand("item").setExecutor(new Command_item());
-        getCommand("item").setAliases(Arrays.asList("i"));
+        getCommand("item").setAliases(Collections.singletonList("i"));
         getCommand("magic").setExecutor(magic);
         getCommand("mb").setExecutor(new Command_mb());
         getCommand("more").setExecutor(new Command_more());
@@ -442,7 +440,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("tp").setExecutor(new Command_tp());
         getCommand("uwarp").setExecutor(new Command_uwarp());
         getCommand("vanish").setExecutor(new Command_vanish());
-        getCommand("vanish").setAliases(Arrays.asList("v"));
+        getCommand("vanish").setAliases(Collections.singletonList("v"));
         getCommand("warp").setExecutor(new Command_warp());
         getCommand("wrl").setExecutor(new Command_wrl());
         Bukkit.getPluginManager().registerEvents(magic, this);
@@ -465,21 +463,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryUtil(this), this);
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
+        pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);
-        }
-        System.out.println("Resource");
-        for (RegisteredListener list : ResourceStatusEvent.getHandlerList().getRegisteredListeners()) {
-            System.out.println(list.getListener().toString());
-        }
-        System.out.println("InventoryClick");
-        for (RegisteredListener list : InventoryClickEvent.getHandlerList().getRegisteredListeners()) {
-            System.out.println(list.getListener().toString());
-        }
-        System.out.println("InventoryClose");
-        for (RegisteredListener list : InventoryCloseEvent.getHandlerList().getRegisteredListeners()) {
-            System.out.println(list.getListener().toString());
         }
     }
 }
