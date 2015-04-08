@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -32,6 +33,7 @@ public class Shooter implements Listener {
     public static List<UUID> ingame = new ArrayList<>();
     public MagicAssistant pl;
     public static String game;
+
 
     public Shooter(MagicAssistant instance) {
         pl = instance;
@@ -82,20 +84,35 @@ public class Shooter implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        //Bukkit.getLogger().info("Item: " + stack);
+        //Bukkit.getLogger().info("Held: " + event.getPlayer().getItemInHand());
+        //Bukkit.getLogger().info("Event: " + event.getAction());
+        ItemStack inHand = event.getPlayer().getItemInHand();
+        ItemMeta meta = inHand.getItemMeta();
+        if (inHand == null) return;
         if (event.getAction().equals(Action.PHYSICAL)) {
             return;
+        }
+
+        if (meta == null) return;
+        if (meta.getDisplayName() == null) return;
+        String displayName = meta.getDisplayName();
+        if (inHand.getType() == stack.getType()) {
+            meta.getDisplayName().equals(stack.getItemMeta().getDisplayName());
+            event.getPlayer().launchProjectile(Snowball.class);
+            event.setCancelled(true);
+            //  Bukkit.getLogger().info("THROWING PROJECTILE");
         }
         Player player = event.getPlayer();
         if (locations.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             Block block = locations.get(player.getUniqueId());
             player.sendBlockChange(block.getLocation(), block.getType(), (byte) 0);
+            return;
         }
-        if (player.getItemInHand().getType().equals(stack.getType())) {
-            event.setCancelled(true);
-            player.throwSnowball();
-        }
+
     }
+
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
