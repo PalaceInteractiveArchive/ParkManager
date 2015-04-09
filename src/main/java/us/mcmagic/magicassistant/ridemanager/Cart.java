@@ -30,7 +30,14 @@ public class Cart extends EntityMinecartRideable {
         CraftEntity e;
     }
 
-    @Override
+    /*
+    public void move(double d0, double d1, double d2) {
+        super.move(d0, d1, d2);
+        System.out.println(d0 + ", " + d1 + ", " + d2);
+    }
+    */
+
+
     public void move(double x, double y, double z) {
         Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
         Location to = from.clone().add(x, y, z);
@@ -79,7 +86,16 @@ public class Cart extends EntityMinecartRideable {
     }
 
     public void updateSpeed() {
-        speed = MagicAssistant.getInstance().rideManager.getVector(getDirection(), power);
+        updateSpeed(MagicAssistant.getInstance().rideManager.getVector(getDirection(), power));
+    }
+
+    public void updateSpeed(Vector speed) {
+        this.speed = speed;
+        motX = speed.getX();
+        motY = speed.getY();
+        motZ = speed.getZ();
+        velocityChanged = true;
+        System.out.println(motX + ", " + motY + ", " + motZ);
     }
 
     public Vector getSpeed() {
@@ -87,10 +103,7 @@ public class Cart extends EntityMinecartRideable {
     }
 
     public void setSpeed(Vector speed) {
-        this.speed = speed;
-        motX = speed.getX();
-        motZ = speed.getZ();
-        velocityChanged = true;
+        updateSpeed(speed);
     }
 
     public Station getStation() {
@@ -112,6 +125,8 @@ public class Cart extends EntityMinecartRideable {
         Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
+                System.out.println(MagicAssistant.getInstance().rideManager.getVector(getDirection(), station.getLaunchPower()));
+                setPower(station.getLaunchPower());
                 setSpeed(MagicAssistant.getInstance().rideManager.getVector(getDirection(), station.getLaunchPower()));
                 removeStation();
             }
@@ -139,6 +154,7 @@ public class Cart extends EntityMinecartRideable {
     }
 
     public Train getTrain() {
+        checkTrainNotNull();
         return train;
     }
 

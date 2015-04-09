@@ -4,8 +4,10 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -16,6 +18,7 @@ import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
+import us.mcmagic.magicassistant.ridemanager.Cart;
 import us.mcmagic.magicassistant.ridemanager.RideManager;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
@@ -93,7 +96,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             @Override
             public void run() {
-                if (MCMagicCore.getInstance().getMCMagicConfig().serverName.equalsIgnoreCase("Resorts")) { //Originally 'resorts'
+                if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("Resorts")) { //Originally 'resorts'
                     boolean updateNecessary = false;
                     for (HotelRoom room : hotelRooms) {
                         if (room.getOccupationCooldown() > 0) {
@@ -168,6 +171,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
     public void onDisable() {
         warps.clear();
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity e : world.getEntities()) {
+                if (e instanceof Cart) {
+                    ((Cart) e).die();
+                }
+            }
+        }
     }
 
     public static MagicAssistant getInstance() {

@@ -1,12 +1,10 @@
 package us.mcmagic.magicassistant.resourcepack;
 
-import net.minecraft.server.v1_8_R2.PacketPlayOutResourcePackSend;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +19,7 @@ import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.mcmagiccore.resource.CurrentPackReceivedEvent;
 import us.mcmagic.mcmagiccore.resource.ResourcePack;
 import us.mcmagic.mcmagiccore.resource.ResourceStatusEvent;
 
@@ -46,10 +45,12 @@ public class PackManager implements Listener {
         }
     }
 
-    public void login(final Player player) {
-        User user = MCMagicCore.getUser(player.getUniqueId());
-        String current = user.getPack();
-        if (current.equals("none")) {
+    @EventHandler
+    public void onCurrentPackReceived(CurrentPackReceivedEvent event) {
+        User user = event.getUser();
+        final Player player = Bukkit.getPlayer(user.getUniqueId());
+        String current = event.getPack();
+        if (user.getPreferredpack().equals("none")) {
             player.sendMessage(ChatColor.GREEN + "Please select a Resource Pack. If you do not want one, select " +
                     ChatColor.RED + "Disabled.");
             Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
@@ -60,19 +61,20 @@ public class PackManager implements Listener {
             }, 20L);
             return;
         }
-        if (current.equalsIgnoreCase("disabled")) {
+        if (user.getPreferredpack().equalsIgnoreCase("disabled")) {
             return;
         }
-        ResourcePack pack = MCMagicCore.getInstance().resourceManager.getPack(current);
+        if (user.getPreferredpack().equalsIgnoreCase(current)) {
+            return;
+        }
+        ResourcePack pack = MCMagicCore.resourceManager.getPack(user.getPreferredpack());
         if (pack == null) {
             player.sendMessage(ChatColor.RED + "Your selected Resource Pack is not available. Please select a new one.");
             openMenu(player);
             return;
         }
-        sendPack(player, pack.getName());
+        MCMagicCore.resourceManager.sendPack(player, pack.getName());
     }
-
-    //TODO: Finish and test Inventory
 
     public void handleClick(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -98,32 +100,37 @@ public class PackManager implements Listener {
         if (event.getSlot() == 8) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You disabled the Auto-Resource Pack!");
-            MCMagicCore.getUser(player.getUniqueId()).setPack("Disabled");
-            MCMagicCore.getInstance().resourceManager.setPack(player.getUniqueId(), "Disabled");
+            MCMagicCore.getUser(player.getUniqueId()).setCurrentPack("Disabled");
+            MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), "Disabled");
+            MCMagicCore.resourceManager.setCurrentPack(MCMagicCore.getUser(player.getUniqueId()), "Disabled");
+            MCMagicCore.resourceManager.sendPack(player, "Blank");
+
             return;
         }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
             ItemStack stack = entry.getValue();
             if (stack.getType().equals(item.getType())) {
                 player.closeInventory();
-                sendPack(player, entry.getKey());
+                MCMagicCore.getUser(player.getUniqueId()).setPreferredpack(entry.getKey());
+                MCMagicCore.resourceManager.sendPack(player, entry.getKey());
+                MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), entry.getKey());
                 return;
             }
         }
     }
 
     public void openMenu(Player player) {
-        List<ResourcePack> packs = MCMagicCore.getInstance().resourceManager.getPacks();
+        List<ResourcePack> packs = MCMagicCore.resourceManager.getPacks();
         Inventory menu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Resource Pack Menu");
         int place = 13;
-        //If odd, increase place by 1
-        if (packs.size() % 2 != 1) {
+        //If even, increase place by 1
+        if (packs.size() % 2 == 1) {
             place++;
         }
-        int amount = 1;
-        String current = MCMagicCore.getUser(player.getUniqueId()).getPack();
+        int amount = packs.size();
+        String preferred = MCMagicCore.getUser(player.getUniqueId()).getPreferredpack();
         ItemStack disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled");
-        if (current.equalsIgnoreCase("disabled")) {
+        if (preferred.equalsIgnoreCase("disabled")) {
             ItemMeta meta = disabled.getItemMeta();
             meta.setDisplayName(meta.getDisplayName() + ChatColor.GREEN + " (SELECTED)");
             disabled.setItemMeta(meta);
@@ -132,8 +139,8 @@ public class PackManager implements Listener {
             if (place > 16) {
                 break;
             }
-            ItemStack pack = entry.getValue();
-            if (entry.getKey().equalsIgnoreCase(current)) {
+            ItemStack pack = new ItemStack(entry.getValue());
+            if (entry.getKey().equalsIgnoreCase(preferred)) {
                 ItemMeta meta = pack.getItemMeta();
                 meta.setDisplayName(meta.getDisplayName() + ChatColor.GREEN + " (SELECTED)");
                 pack.setItemMeta(meta);
@@ -151,17 +158,17 @@ public class PackManager implements Listener {
         player.openInventory(menu);
     }
 
+    /*
     public void sendPack(Player player, ResourcePack pack) {
         player.sendMessage(ChatColor.GREEN + "Attempting to send you the " + ChatColor.YELLOW + pack.getName() +
                 ChatColor.GREEN + " Resource Pack! \n" + pack.getUrl());
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutResourcePackSend(pack.getUrl(),
                 "null"));
-        MCMagicCore.getUser(player.getUniqueId()).setPack(pack.getName());
-        MCMagicCore.getInstance().resourceManager.setPack(player.getUniqueId(), pack.getName());
+        MCMagicCore.getUser(player.getUniqueId()).setCurrentPack(pack.getName());
     }
 
     public void sendPack(Player player, String name) {
-        ResourcePack pack = MCMagicCore.getInstance().resourceManager.getPack(name);
+        ResourcePack pack = MCMagicCore.resourceManager.getPack(name);
         if (pack == null) {
             player.sendMessage(ChatColor.RED + "We tried to send you a Resource Pack, but it was not found!");
             player.sendMessage(ChatColor.RED + "Please contact a Staff Member about this. (Error Code 101)");
@@ -169,6 +176,7 @@ public class PackManager implements Listener {
         }
         sendPack(player, pack);
     }
+    */
 
     @EventHandler
     public void onResourceStatus(ResourceStatusEvent event) {

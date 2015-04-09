@@ -88,8 +88,15 @@ public class RideManager implements Listener {
                         Cart cart = spawn(loc.add(0.5, 0, 0.5));
                         EnumDirection d = cart.getDirection();
                         double power = 0;
+                        EnumDirection direction;
                         try {
-                            power += Double.parseDouble(list[1]);
+                            direction = dirFromString(list[1]);
+                        } catch (Exception e) {
+                            s.setLine(1, ChatColor.RED + "Direction Error");
+                            s.update();
+                        }
+                        try {
+                            power += Double.parseDouble(list[2]);
                         } catch (NumberFormatException nfe) {
                             s.setLine(1, ChatColor.RED + "Number Error");
                             s.update();
@@ -118,15 +125,31 @@ public class RideManager implements Listener {
         }
     }
 
+    private EnumDirection dirFromString(String s) {
+        String dir = s.toLowerCase();
+        switch (dir) {
+            case "n":
+                return EnumDirection.NORTH;
+            case "e":
+                return EnumDirection.EAST;
+            case "s":
+                return EnumDirection.SOUTH;
+            case "w":
+                return EnumDirection.WEST;
+            default:
+                return EnumDirection.NORTH;
+        }
+    }
+
     public Vector getVector(EnumDirection d, double power) {
         switch (d) {
-            case NORTH:
-                return new Vector(0, 0, -power);
-            case EAST:
-                return new Vector(power, 0, 0);
-            case SOUTH:
-                return new Vector(0, 0, power);
             case WEST:
+                return new Vector(0, 0, -power);
+            case NORTH:
+                return new Vector(power, 0, 0);
+            case EAST:
+                return new Vector(0, 0, power);
+            case SOUTH:
                 return new Vector(-power, 0, 0);
         }
         return new Vector(0, 0, 0);
@@ -153,19 +176,60 @@ public class RideManager implements Listener {
             if (type == null) {
                 return;
             }
+            boolean isPowered = isSignPowered(s);
             if (type.equals(SignType.STATION)) {
+                if (!isPowered) {
+                    System.out.println("Station not powered");
+                    return;
+                }
                 Station station = new Station(s);
                 cart.setStation(station);
                 to.getWorld().playSound(to, Sound.FIZZ, 10, 2);
+                return;
             }
             if (type.equals(SignType.DESTROY)) {
+                if (!isPowered) {
+                    System.out.println("Destroy not powered");
+                    return;
+                }
                 for (Cart c : cart.getTrain().getCarts()) {
                     c.die();
                 }
+                return;
             }
-            return;
+            if (type.equals(SignType.SPEED)) {
+                if (!isPowered) {
+                    System.out.println("Speed not powered");
+                    return;
+                }
+                Integer power;
+                try {
+                    power = Integer.parseInt(s.getLine(3));
+                } catch (NumberFormatException nfe) {
+                    s.setLine(3, ChatColor.RED + "Number Error");
+                    s.update();
+                    return;
+                }
+                cart.setSpeed(getVector(cart.getDirection(), power));
+            }
         }
-        event.setCancelled(false);
+    }
+
+    private boolean isSignPowered(Sign s) {
+        if (s.getLine(0).startsWith("[+") || s.getLine(0).startsWith("[!")) {
+            return true;
+        }
+        Block b = s.getBlock();
+        for (BlockFace face : faces) {
+            Block rel = b.getRelative(face);
+            if (rel.isBlockPowered() && rel.getBlockPower() > 1) {
+                return true;
+            }
+            if (rel.getType().equals(Material.REDSTONE_TORCH_ON) || rel.getType().equals(Material.REDSTONE_BLOCK)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @EventHandler
