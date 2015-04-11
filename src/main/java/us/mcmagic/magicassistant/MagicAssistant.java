@@ -23,6 +23,7 @@ import us.mcmagic.magicassistant.ridemanager.RideManager;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
+import us.mcmagic.magicassistant.stitch.Stitch;
 import us.mcmagic.magicassistant.utils.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
@@ -33,6 +34,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Inventory ni;
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
+    public static Stitch stitch;
     public int randomNumber = 0;
     public static List<Warp> warps = new ArrayList<>();
     public static List<HotelRoom> hotelRooms = new ArrayList<>();
@@ -61,10 +63,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public BandUtil bandUtil = new BandUtil();
     public RideManager rideManager = new RideManager();
 
-
     public void onEnable() {
         instance = this;
         SqlUtil.initialize();
+        stitch = new Stitch();
         registerListeners();
         registerCommands();
         InventoryUtil.initialize();
@@ -412,47 +414,47 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public void registerCommands() {
-        Command_magic magic = new Command_magic();
-        getCommand("autograph").setExecutor(new Command_autograph());
-        getCommand("bc").setExecutor(new Command_bc());
-        getCommand("day").setExecutor(new Command_day());
-        getCommand("delay").setExecutor(new Command_delay());
-        getCommand("delwarp").setExecutor(new Command_delwarp());
-        getCommand("enderchest").setExecutor(new Command_enderchest());
-        getCommand("fly").setExecutor(new Command_fly());
-        getCommand("give").setExecutor(new Command_give());
-        getCommand("gwts").setExecutor(new Command_gwts());
-        getCommand("head").setExecutor(new Command_head());
-        getCommand("heal").setExecutor(new Command_heal());
-        getCommand("helpop").setExecutor(new Command_helpop());
+        Commandmagic magic = new Commandmagic();
+        getCommand("autograph").setExecutor(new Commandautograph());
+        getCommand("bc").setExecutor(new Commandbc());
+        getCommand("day").setExecutor(new Commandday());
+        getCommand("delay").setExecutor(new Commanddelay());
+        getCommand("delwarp").setExecutor(new Commanddelwarp());
+        getCommand("enderchest").setExecutor(new Commandenderchest());
+        getCommand("fly").setExecutor(new Commandfly());
+        getCommand("give").setExecutor(new Commandgive());
+        getCommand("gwts").setExecutor(new Commandgwts());
+        getCommand("head").setExecutor(new Commandhead());
+        getCommand("heal").setExecutor(new Commandheal());
+        getCommand("helpop").setExecutor(new Commandhelpop());
         getCommand("helpop").setAliases(Collections.singletonList("ac"));
-        getCommand("hub").setExecutor(new Command_hub());
-        getCommand("invsee").setExecutor(new Command_invsee());
-        getCommand("item").setExecutor(new Command_item());
+        getCommand("hub").setExecutor(new Commandhub());
+        getCommand("invsee").setExecutor(new Commandinvsee());
+        getCommand("item").setExecutor(new Commanditem());
         getCommand("item").setAliases(Collections.singletonList("i"));
         getCommand("magic").setExecutor(magic);
-        getCommand("mb").setExecutor(new Command_mb());
-        getCommand("more").setExecutor(new Command_more());
-        getCommand("msg").setExecutor(new Command_msg());
+        getCommand("mb").setExecutor(new Commandmb());
+        getCommand("more").setExecutor(new Commandmore());
+        getCommand("msg").setExecutor(new Commandmsg());
         getCommand("msg").setAliases(Arrays.asList("tell", "t", "w", "whisper", "m"));
-        getCommand("night").setExecutor(new Command_night());
-        getCommand("noon").setExecutor(new Command_noon());
-        getCommand("pack").setExecutor(new Command_pack());
-        getCommand("ptime").setExecutor(new Command_ptime());
-        getCommand("pweather").setExecutor(new Command_pweather());
-        getCommand("serverparty").setExecutor(new Command_serverparty());
-        getCommand("sethub").setExecutor(new Command_sethub());
-        getCommand("setspawn").setExecutor(new Command_setspawn());
-        getCommand("setwarp").setExecutor(new Command_setwarp());
-        getCommand("smite").setExecutor(new Command_smite());
-        getCommand("spawn").setExecutor(new Command_spawn());
-        getCommand("top").setExecutor(new Command_top());
-        getCommand("tp").setExecutor(new Command_tp());
-        getCommand("uwarp").setExecutor(new Command_uwarp());
-        getCommand("vanish").setExecutor(new Command_vanish());
+        getCommand("night").setExecutor(new Commandnight());
+        getCommand("noon").setExecutor(new Commandnoon());
+        getCommand("pack").setExecutor(new Commandpack());
+        getCommand("ptime").setExecutor(new Commandptime());
+        getCommand("pweather").setExecutor(new Commandpweather());
+        getCommand("serverparty").setExecutor(new Commandserverparty());
+        getCommand("sethub").setExecutor(new Commandsethub());
+        getCommand("setspawn").setExecutor(new Commandsetspawn());
+        getCommand("setwarp").setExecutor(new Commandsetwarp());
+        getCommand("smite").setExecutor(new Commandsmite());
+        getCommand("spawn").setExecutor(new Commandspawn());
+        getCommand("top").setExecutor(new Commandtop());
+        getCommand("tp").setExecutor(new Commandtp());
+        getCommand("uwarp").setExecutor(new Commanduwarp());
+        getCommand("vanish").setExecutor(new Commandvanish());
         getCommand("vanish").setAliases(Collections.singletonList("v"));
-        getCommand("warp").setExecutor(new Command_warp());
-        getCommand("wrl").setExecutor(new Command_wrl());
+        getCommand("warp").setExecutor(new Commandwarp());
+        getCommand("wrl").setExecutor(new Commandwrl());
         Bukkit.getPluginManager().registerEvents(magic, this);
     }
 
