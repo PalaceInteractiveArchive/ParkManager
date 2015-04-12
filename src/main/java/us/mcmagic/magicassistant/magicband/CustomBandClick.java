@@ -35,13 +35,13 @@ public class CustomBandClick {
             InventoryUtil.openInventory(player, InventoryType.SPECIALCOLOR);
             return;
         }
-        PlayerData.BandColor color = MagicAssistant.getInstance().bandUtil.getBandColor(name.toLowerCase());
+        PlayerData.BandColor color = MagicAssistant.bandUtil.getBandColor(name.toLowerCase());
         if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
         player.closeInventory();
-        MagicAssistant.getInstance().bandUtil.setBandColor(player, color);
+        MagicAssistant.bandUtil.setBandColor(player, color);
     }
 }

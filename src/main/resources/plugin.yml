@@ -163,3 +163,7 @@ commands:
       permission-message: §4Please notify a Cast Member that you can’t do this.
    autograph:
       description: Autograph Command
+   nv:
+      description: Give/take infinite Night Vision
+      permission: arcade.bypass
+      permission-message: §4Please notify a Cast Member that you can’t do this.

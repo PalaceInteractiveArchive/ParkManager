@@ -10,7 +10,10 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +66,8 @@ public class HotelUtil implements Listener {
             return;
         }
 
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?)");
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
             sql.setInt(2, room.getRoomNumber());
             sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant() : "");
@@ -82,9 +84,8 @@ public class HotelUtil implements Listener {
     }
 
     public synchronized static void addRoomWithoutCheckingExistance(HotelRoom room) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?)");
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
             sql.setInt(2, room.getRoomNumber());
             sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant() : "");
@@ -101,9 +102,8 @@ public class HotelUtil implements Listener {
     }
 
     public synchronized static void removeRoom(HotelRoom room) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("DELETE FROM `hotelrooms` WHERE name=?");
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("DELETE FROM `hotelrooms` WHERE name=?");
             sql.setString(1, room.getName());
             sql.execute();
             sql.close();

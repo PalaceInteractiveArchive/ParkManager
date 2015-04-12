@@ -31,6 +31,9 @@ public class ProfileMenuClick {
             InventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
+        if (item.getItemMeta() == null) {
+            return;
+        }
         ItemMeta meta = item.getItemMeta();
         if (meta.getDisplayName() == null) {
             return;
@@ -61,8 +64,7 @@ public class ProfileMenuClick {
                 sendPluginMessage(player, "mumble");
                 return;
             case "Resource/Audio Packs":
-                player.closeInventory();
-                MagicAssistant.getInstance().packManager.openMenu(player);
+                MagicAssistant.packManager.openMenu(player);
                 //sendPluginMessage(player, "packs");
         }
     }

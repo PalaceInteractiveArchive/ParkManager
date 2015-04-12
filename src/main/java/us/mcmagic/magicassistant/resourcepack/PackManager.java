@@ -20,13 +20,12 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.mcmagiccore.resource.CurrentPackReceivedEvent;
+import us.mcmagic.mcmagiccore.resource.ResourceManager;
 import us.mcmagic.mcmagiccore.resource.ResourcePack;
 import us.mcmagic.mcmagiccore.resource.ResourceStatusEvent;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Marc on 3/14/15
@@ -36,6 +35,7 @@ public class PackManager implements Listener {
 
     @SuppressWarnings("deprecation")
     public void initialize() {
+        packItems.clear();
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/packs.yml"));
         for (String s : config.getStringList("pack-list")) {
             String name = config.getString("packs." + s + ".name");
@@ -100,11 +100,14 @@ public class PackManager implements Listener {
         if (event.getSlot() == 8) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You disabled the Auto-Resource Pack!");
-            MCMagicCore.getUser(player.getUniqueId()).setCurrentPack("Disabled");
+            User user = MCMagicCore.getUser(player.getUniqueId());
+            boolean needsBlank = !user.getCurrentPack().equalsIgnoreCase("none");
             MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), "Disabled");
-            MCMagicCore.resourceManager.setCurrentPack(MCMagicCore.getUser(player.getUniqueId()), "Disabled");
-            MCMagicCore.resourceManager.sendPack(player, "Blank");
-
+            if (needsBlank) {
+                MCMagicCore.resourceManager.sendPack(player, "Blank");
+            }
+            user.setCurrentPack("Disabled");
+            MCMagicCore.resourceManager.setCurrentPack(user, "Disabled");
             return;
         }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
@@ -120,14 +123,14 @@ public class PackManager implements Listener {
     }
 
     public void openMenu(Player player) {
-        List<ResourcePack> packs = MCMagicCore.resourceManager.getPacks();
+        List<ResourcePack> packs = getPacks(packItems.keySet());
         Inventory menu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Resource Pack Menu");
+        int amount = packs.size();
         int place = 13;
         //If even, increase place by 1
-        if (packs.size() % 2 == 1) {
+        if (amount % 2 == 1) {
             place++;
         }
-        int amount = packs.size();
         String preferred = MCMagicCore.getUser(player.getUniqueId()).getPreferredpack();
         ItemStack disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled");
         if (preferred.equalsIgnoreCase("disabled")) {
@@ -156,6 +159,16 @@ public class PackManager implements Listener {
         menu.setItem(8, disabled);
         menu.setItem(22, BandUtil.getBackItem());
         player.openInventory(menu);
+    }
+
+    private List<ResourcePack> getPacks(Set<String> plist) {
+        List<ResourcePack> list = new ArrayList<>();
+        ResourceManager rm = MCMagicCore.resourceManager;
+        for (String s : plist) {
+            ResourcePack pack = rm.getPack(s);
+            list.add(pack);
+        }
+        return list;
     }
 
     /*

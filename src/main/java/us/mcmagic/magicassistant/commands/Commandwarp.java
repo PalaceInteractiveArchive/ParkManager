@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.stitch.Stitch;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -121,13 +122,19 @@ public class Commandwarp implements CommandExecutor {
                     return true;
                 }
                 player.teleport(warp.getLocation());
-                player.sendMessage(ChatColor.BLUE + "You have arrived at "
-                        + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                        + ChatColor.WHITE + "]");
+                if (warp.getName().equalsIgnoreCase("sge")) {
+                    Stitch stitch = MagicAssistant.stitch;
+                    if (stitch.isWatching(player.getUniqueId())) {
+                        stitch.leaveShow(player);
+                    }
+                } else {
+                    player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                            + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                            + ChatColor.WHITE + "]");
+                }
                 return true;
             } else {
-                WarpUtil.crossServerWarp(player.getUniqueId().toString(), w,
-                        targetServer);
+                WarpUtil.crossServerWarp(player.getUniqueId().toString(), warp.getName(), targetServer);
                 return true;
             }
         }

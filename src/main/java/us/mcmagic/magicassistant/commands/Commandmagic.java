@@ -18,7 +18,9 @@ import us.mcmagic.magicassistant.blockchanger.Changer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
+import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -348,6 +350,19 @@ public class Commandmagic implements Listener, CommandExecutor {
                         helpMenu("changer", sender);
                         return true;
                 }
+            case "reload":
+                MagicAssistant ma = MagicAssistant.getInstance();
+                sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
+                SqlUtil.initialize();
+                MagicAssistant.bandUtil.askForParty();
+                ma.setupFirstJoinItems();
+                ma.setupNewJoinMessages();
+                ma.setupFoodLocations();
+                ma.setupRides();
+                HotelUtil.refreshRooms();
+                MagicAssistant.packManager.initialize();
+                sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");
+                return true;
             default:
                 helpMenu("main", sender);
         }
@@ -358,6 +373,7 @@ public class Commandmagic implements Listener, CommandExecutor {
         switch (menu) {
             case "main":
                 sender.sendMessage(ChatColor.GREEN + "Magic Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic reload " + ChatColor.AQUA + "- Reload plugin");
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic block " + ChatColor.AQUA + "- Manipulate Blocks");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");

@@ -149,13 +149,13 @@ public class PlayerInteract implements Listener {
         if (pi.getHeldItemSlot() != 8) {
             return;
         }
-        if (MagicAssistant.getInstance().bandUtil.isLoading(player)) {
+        if (MagicAssistant.bandUtil.isLoading(player)) {
             player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
             return;
         }
         ItemStack mb;
         if (data.getSpecial()) {
-            mb = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(data.getBandColor()));
+            mb = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
@@ -164,7 +164,7 @@ public class PlayerInteract implements Listener {
         } else {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
-            mbm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.getInstance().bandUtil.getBandColor(
+            mbm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil.getBandColor(
                     data.getBandColor())).build());
             mbm.setDisplayName(data.getBandName() + "MagicBand");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",

@@ -58,10 +58,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean hubServer;
     public static boolean serverEnabling = true;
     public static MagicAssistant instance;
-    public BlockChanger blockChanger = new BlockChanger();
-    public PackManager packManager = new PackManager();
-    public BandUtil bandUtil = new BandUtil();
-    public RideManager rideManager = new RideManager();
+    public static BlockChanger blockChanger = new BlockChanger();
+    public static PackManager packManager = new PackManager();
+    public static BandUtil bandUtil = new BandUtil();
+    public static RideManager rideManager = new RideManager();
+    public static AutographUtil autographUtil = new AutographUtil();
 
     public void onEnable() {
         instance = this;
@@ -72,7 +73,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         InventoryUtil.initialize();
         bandUtil.initialize();
         bandUtil.askForParty();
-        getConfig().options().copyDefaults(true);
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
         saveConfig();
@@ -91,6 +91,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         warps.clear();
         setupFirstJoinItems();
         setupNewJoinMessages();
+        getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
         getLogger().info("Warps Initialized!");
         getLogger().info("Initializing Hotel Rooms...");
@@ -146,7 +147,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Hotel Rooms Initialized!");
         getLogger().info("Initializing Food Locations...");
         setupFoodLocations();
+        getLogger().info("Food Locations Initialized!");
+        getLogger().info("Initializing Rides...");
         setupRides();
+        getLogger().info("Rides Initialized!");
         setupAttractions();
         if (config.getBoolean("show-server")) {
             // Show Ticker
@@ -195,6 +199,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public void setupNewJoinMessages() {
+        newJoinMessage.clear();
         FileConfiguration config = getConfig();
         List<String> msgs = config.getStringList("first-join-message");
         for (String msg : msgs) {
@@ -203,6 +208,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public void setupFirstJoinItems() {
+        firstJoinItems.clear();
         FileConfiguration config = getConfig();
         for (String s : config.getStringList("first-join-items")) {
             String[] items = s.split(" ");
@@ -264,6 +270,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public void setupFoodLocations() {
+        foodLocations.clear();
         File file = new File("plugins/MagicAssistant/menus.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         List<String> locations = config.getStringList("food-names");
@@ -285,7 +292,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
     }
 
-    private void setupRides() {
+    public void setupRides() {
+        ridePages.clear();
         File file = new File("plugins/MagicAssistant/menus.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         List<String> locations = config.getStringList("ride-names");
@@ -312,7 +320,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } else {
             pages = ((int) Math.ceil(locations.size() / 21)) + 1;
         }
-        ridePages.clear();
         if (pages > 1) {
             int i = 1;
             int i2 = 1;
@@ -439,6 +446,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("msg").setAliases(Arrays.asList("tell", "t", "w", "whisper", "m"));
         getCommand("night").setExecutor(new Commandnight());
         getCommand("noon").setExecutor(new Commandnoon());
+        getCommand("nv").setExecutor(new Commandnv());
         getCommand("pack").setExecutor(new Commandpack());
         getCommand("ptime").setExecutor(new Commandptime());
         getCommand("pweather").setExecutor(new Commandpweather());
@@ -468,6 +476,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryClick(this), this);
         pm.registerEvents(new PlayerDropItem(), this);
         pm.registerEvents(new PlayerInteract(this), this);
+        pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
         pm.registerEvents(new VisibleUtil(this), this);

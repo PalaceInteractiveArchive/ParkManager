@@ -8,13 +8,17 @@ import java.util.UUID;
  * Created by Marc on 1/10/15
  */
 public class StitchSeat {
-    public int id;
-    public Location loc;
-    public UUID occupant;
+    private int id;
+    private Location location;
+    private UUID occupant;
 
-    public StitchSeat(int id, Location loc) {
+    public StitchSeat(int id, Location location) {
         this.id = id;
-        this.loc = loc;
+        this.location = location;
+    }
+
+    public boolean isInUse() {
+        return occupant != null;
     }
 
     public int getId() {
@@ -22,7 +26,7 @@ public class StitchSeat {
     }
 
     public Location getLocation() {
-        return loc;
+        return location;
     }
 
     public UUID getOccupant() {

@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.commands.Command_vanish;
+import us.mcmagic.magicassistant.commands.Commandvanish;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.shooter.Shooter;
@@ -61,8 +61,7 @@ public class PlayerJoinAndLeave implements Listener {
                     endData.put(uuid, inv);
                 }
             }
-            MagicAssistant.getInstance().bandUtil.loading.add(uuid);
-            PlayerData data = MagicAssistant.getInstance().bandUtil.setupPlayerData(uuid);
+            PlayerData data = MagicAssistant.bandUtil.setupPlayerData(uuid);
             if (MagicAssistant.getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
@@ -235,7 +234,7 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.getInstance().bandUtil.loading.remove(player.getUniqueId());
         MagicAssistant.getInstance().bandUtil.removePlayerData(player);
         VisibleUtil.hideall.remove(player.getUniqueId());
-        Command_vanish.hidden.remove(player.getUniqueId());
+        Commandvanish.hidden.remove(player.getUniqueId());
         MagicAssistant.getInstance().blockChanger.logout(player);
         if (Shooter.getItem() != null) {
             if (player.getInventory().contains(Shooter.getItem())) {

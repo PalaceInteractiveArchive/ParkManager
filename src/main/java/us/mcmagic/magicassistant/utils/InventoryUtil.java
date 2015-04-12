@@ -31,7 +31,6 @@ public class InventoryUtil implements Listener {
     public static ItemStack food = new ItemStack(Material.POTATO_ITEM);
     public static ItemStack hub = new ItemStack(Material.ENDER_PEARL);
     public static ItemStack parks = new ItemStack(Material.NETHER_STAR);
-    public static ItemStack report = new ItemStack(Material.COMPASS);
     public static ItemStack custom = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack arcade = new ItemStack(Material.GLOWSTONE_DUST);
     public static ItemStack creative = new ItemStack(Material.GRASS);
@@ -64,11 +63,11 @@ public class InventoryUtil implements Listener {
     public static ItemStack blueBand = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack purpleBand = new ItemStack(Material.FIREWORK_CHARGE);
     public static ItemStack pinkBand = new ItemStack(Material.FIREWORK_CHARGE);
-    public static ItemStack s1Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL1));
-    public static ItemStack s2Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL2));
-    public static ItemStack s3Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL3));
-    public static ItemStack s4Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL4));
-    public static ItemStack s5Band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL5));
+    public static ItemStack s1Band = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL1));
+    public static ItemStack s2Band = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL2));
+    public static ItemStack s3Band = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL3));
+    public static ItemStack s4Band = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL4));
+    public static ItemStack s5Band = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(PlayerData.BandColor.SPECIAL5));
     //Customize Color
     public static ItemStack red = new ItemStack(Material.WOOL, 1, (byte) 14);
     public static ItemStack orange = new ItemStack(Material.WOOL, 1, (byte) 1);
@@ -131,7 +130,6 @@ public class InventoryUtil implements Listener {
         ItemMeta fm = food.getItemMeta();
         ItemMeta hm = hub.getItemMeta();
         ItemMeta pm = parks.getItemMeta();
-        ItemMeta rm = report.getItemMeta();
         ItemMeta cm = custom.getItemMeta();
         ItemMeta am = arcade.getItemMeta();
         ItemMeta crm = creative.getItemMeta();
@@ -145,7 +143,6 @@ public class InventoryUtil implements Listener {
         fm.setDisplayName(ChatColor.GREEN + "Find Food");
         hm.setDisplayName(ChatColor.GREEN + "Return to Hub");
         pm.setDisplayName(ChatColor.GREEN + "Park Menu");
-        rm.setDisplayName(ChatColor.GREEN + "Create a Report");
         cm.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
         am.setDisplayName(ChatColor.GREEN + "Arcade");
         crm.setDisplayName(ChatColor.GREEN + "Creative");
@@ -153,11 +150,10 @@ public class InventoryUtil implements Listener {
         rnam.setLore(Arrays.asList(ChatColor.GREEN + "Ride or experience", ChatColor.GREEN + "an attraction from", ChatColor.GREEN + "Walt Disney World!"));
         snem.setLore(Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous MCMagic Shows!"));
         hnrm.setLore(Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
-        sm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
+        sm.setLore(Collections.singletonList(ChatColor.RED + "Coming Soon™"));
         fm.setLore(Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
         hm.setLore(Arrays.asList(ChatColor.GREEN + "Return to the", ChatColor.GREEN + "Hub Server!"));
         pm.setLore(Arrays.asList(ChatColor.GREEN + "Visit one of the Walt", ChatColor.GREEN + "Disney World Parks!"));
-        rm.setLore(Arrays.asList(ChatColor.RED + "Coming Soon™"));
         cm.setLore(Arrays.asList(ChatColor.GREEN + "Make your MagicBand", ChatColor.GREEN + "perfect for you!"));
         am.setLore(Arrays.asList(ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "MCMagic Mini-Games!"));
         crm.setLore(Arrays.asList(ChatColor.YELLOW + "Create your", ChatColor.GREEN + "own " + ChatColor.RED + "M" + ChatColor.GOLD + "a"
@@ -172,7 +168,6 @@ public class InventoryUtil implements Listener {
         food.setItemMeta(fm);
         hub.setItemMeta(hm);
         parks.setItemMeta(pm);
-        report.setItemMeta(rm);
         custom.setItemMeta(cm);
         arcade.setItemMeta(am);
         creative.setItemMeta(crm);
@@ -190,12 +185,12 @@ public class InventoryUtil implements Listener {
         akm.setDisplayName(ChatColor.AQUA + "Animal Kingdom");
         tlm.setDisplayName(ChatColor.AQUA + "Typhoon Lagoon");
         dclm.setDisplayName(ChatColor.AQUA + "Disney Cruise Line");
-        List<String> mkl = Arrays.asList(ChatColor.GREEN + "/join MK");
-        List<String> el = Arrays.asList(ChatColor.GREEN + "/join Epcot");
-        List<String> hwsl = Arrays.asList(ChatColor.GREEN + "/join HWS");
-        List<String> akl = Arrays.asList(ChatColor.GREEN + "/join AK");
-        List<String> tll = Arrays.asList(ChatColor.GREEN + "/join Typhoon");
-        List<String> dcll = Arrays.asList(ChatColor.GREEN + "/join DCL");
+        List<String> mkl = Collections.singletonList(ChatColor.GREEN + "/join MK");
+        List<String> el = Collections.singletonList(ChatColor.GREEN + "/join Epcot");
+        List<String> hwsl = Collections.singletonList(ChatColor.GREEN + "/join HWS");
+        List<String> akl = Collections.singletonList(ChatColor.GREEN + "/join AK");
+        List<String> tll = Collections.singletonList(ChatColor.GREEN + "/join Typhoon");
+        List<String> dcll = Collections.singletonList(ChatColor.GREEN + "/join DCL");
         mkm.setLore(mkl);
         em.setLore(el);
         hwsm.setLore(hwsl);
@@ -283,12 +278,6 @@ public class InventoryUtil implements Listener {
         bbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(41, 106, 255)).build());
         pbm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(176, 0, 220)).build());
         pibm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(246, 120, 255)).build());
-        List<String> lore = Arrays.asList(ChatColor.GREEN + "Cost: 500 Coins");
-        s1m.setLore(lore);
-        s2m.setLore(lore);
-        s3m.setLore(lore);
-        s4m.setLore(lore);
-        s5m.setLore(lore);
         rbm.setDisplayName(ChatColor.RED + "Red");
         obm.setDisplayName(ChatColor.GOLD + "Orange");
         ybm.setDisplayName(ChatColor.YELLOW + "Yellow");
@@ -300,7 +289,7 @@ public class InventoryUtil implements Listener {
         s2m.setDisplayName(ChatColor.RED + "Big Hero 6");
         s3m.setDisplayName(ChatColor.GRAY + "Haunted Mansion");
         s4m.setDisplayName(ChatColor.DARK_AQUA + "Sorcerer Mickey");
-        s5m.setDisplayName(ChatColor.LIGHT_PURPLE + "Princesses");
+        s5m.setDisplayName(ChatColor.LIGHT_PURPLE + "Princess");
         redBand.setItemMeta(rbm);
         orangeBand.setItemMeta(obm);
         yellowBand.setItemMeta(ybm);
@@ -329,7 +318,7 @@ public class InventoryUtil implements Listener {
         vhm.setDisplayName(ChatColor.GREEN + "Rent a New Hotel Room");
         List<String> jharml = Arrays.asList(ChatColor.GREEN + "Teleport yourself to the hotels", ChatColor.GREEN + "and resorts world!");
         List<String> vmrml = Arrays.asList(ChatColor.GREEN + "View the rooms that you've", ChatColor.GREEN + "currently booked!");
-        List<String> vhml = Arrays.asList(ChatColor.GREEN + "Book a hotel room!");
+        List<String> vhml = Collections.singletonList(ChatColor.GREEN + "Book a hotel room!");
         jharm.setLore(jharml);
         vmrm.setLore(vmrml);
         vhm.setLore(vhml);
@@ -340,16 +329,17 @@ public class InventoryUtil implements Listener {
 
     public static void openInventory(final Player player, InventoryType inv) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
         switch (inv) {
             case MAINMENU:
                 final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
                         + player.getName() + "'s MagicBand");
-                ItemStack playerInfo = new ItemCreator(player.getName(), ChatColor.GREEN + "Player Info",
-                        Arrays.asList(ChatColor.GRAY + "Loading..."));
+                ItemStack playerInfo = new ItemCreator(player.getName(), ChatColor.GREEN + "My Profile",
+                        Collections.singletonList(ChatColor.GRAY + "Loading..."));
                 ItemStack time = new ItemStack(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Arrays.asList(ChatColor.YELLOW + MagicAssistant.getInstance().bandUtil.currentTime()));
+                tm.setLore(Collections.singletonList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
                 time.setItemMeta(tm);
                 main.setItem(0, rna);
                 main.setItem(9, sne);
@@ -364,35 +354,14 @@ public class InventoryUtil implements Listener {
                 main.setItem(4, time);
                 main.setItem(13, hub);
                 main.setItem(22, parks);
-                main.setItem(6, report);
+                main.setItem(6, packs);
                 main.setItem(15, playerInfo);
                 main.setItem(24, custom);
                 main.setItem(8, arcade);
                 main.setItem(17, creative);
                 main.setItem(26, seasonal);
                 player.openInventory(main);
-                MagicAssistant.getInstance().bandUtil.loadPlayerData(player, main);
-                /*
-                Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
-                    @Override
-                    public void run() {
-                        User user = MCMagicCore.getUser(player.getUniqueId());
-                        Rank rank = user.getRank();
-                        ItemStack pinfo2 = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
-                        SkullMeta pm = (SkullMeta) playerInfo.getItemMeta();
-                        pm.setDisplayName(ChatColor.GREEN + "Player Info");
-                        pm.setOwner(player.getName());
-                        List<String> lore = Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + player.getName(),
-                                ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
-                                ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + Coins.getSqlCoins(player.getUniqueId()),
-                                ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(player.getUniqueId()),
-                                ChatColor.GREEN + "Online time: " + ChatColor.YELLOW + DateUtil.formatDateDiff(MagicAssistant.getInstance().bandUtil.getOnlineTime(player.getUniqueId() + "")));
-                        pm.setLore(lore);
-                        pinfo2.setItemMeta(pm);
-                        main.setItem(15, pinfo2);
-                    }
-                }, 20L);
-                */
+                MagicAssistant.bandUtil.loadPlayerData(player, main);
                 return;
             case PARK:
                 Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
@@ -418,8 +387,8 @@ public class InventoryUtil implements Listener {
                         }
                         @SuppressWarnings("deprecation")
                         ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
-                                ChatColor.translateAlternateColorCodes('&', loc.getName()), Arrays.asList(ChatColor.GREEN
-                                + "/warp " + loc.getWarp()));
+                                ChatColor.translateAlternateColorCodes('&', loc.getName()),
+                                Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp()));
                         foodMenu.setItem(place, f);
                         if (amount % 2 == 1) {
                             place -= amount;
@@ -440,8 +409,8 @@ public class InventoryUtil implements Listener {
                         }
                         @SuppressWarnings("deprecation")
                         ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
-                                ChatColor.translateAlternateColorCodes('&', loc.getName()), Arrays.asList(ChatColor.GREEN
-                                + "/warp " + loc.getWarp()));
+                                ChatColor.translateAlternateColorCodes('&', loc.getName()),
+                                Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp()));
                         foodMenu.setItem(place, f);
                         if (amount % 2 == 0) {
                             place -= amount;
@@ -454,9 +423,8 @@ public class InventoryUtil implements Listener {
                     player.openInventory(foodMenu);
                 }
                 return;
-            case PLAYERINFO:
+            case MYPROFILE:
                 Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
-                Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
                 pmenu.setItem(10, web);
                 pmenu.setItem(11, flist);
                 pmenu.setItem(12, locker);
@@ -538,14 +506,14 @@ public class InventoryUtil implements Listener {
                 Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
                 ItemStack band;
                 if (data.getSpecial()) {
-                    band = new ItemStack(MagicAssistant.getInstance().bandUtil.getBandMaterial(data.getBandColor()));
+                    band = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()));
                     ItemMeta bm = band.getItemMeta();
                     bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                     band.setItemMeta(bm);
                 } else {
                     band = new ItemStack(Material.FIREWORK_CHARGE);
                     FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
-                    bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.getInstance().bandUtil.getBandColor(data.getBandColor())).build());
+                    bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil.getBandColor(data.getBandColor())).build());
                     bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                     band.setItemMeta(bm);
                 }
@@ -581,11 +549,17 @@ public class InventoryUtil implements Listener {
                 return;
             case SPECIALCOLOR:
                 Inventory special = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Special Edition MagicBands");
-                special.setItem(11, s1Band);
-                special.setItem(12, s2Band);
-                special.setItem(13, s3Band);
-                special.setItem(14, s4Band);
-                special.setItem(15, s5Band);
+                if (rank.equals(Rank.GUEST)) {
+                    special.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "DVC Members only!"
+                            , Arrays.asList(ChatColor.RED + "Sorry, but you have", ChatColor.RED + "to be a DVC Member",
+                            ChatColor.RED + "to use Special Edition", ChatColor.RED + "MagicBand Designs!")));
+                } else {
+                    special.setItem(11, s1Band);
+                    special.setItem(12, s2Band);
+                    special.setItem(13, s3Band);
+                    special.setItem(14, s4Band);
+                    special.setItem(15, s5Band);
+                }
                 special.setItem(21, lastPage);
                 special.setItem(22, BandUtil.getBackItem());
                 player.openInventory(special);
@@ -647,7 +621,7 @@ public class InventoryUtil implements Listener {
                     ItemStack hotelItem = new ItemStack(Material.BED, 1);
                     ItemMeta him = hotelItem.getItemMeta();
                     him.setDisplayName(ChatColor.GREEN + hotel);
-                    List<String> himl = Arrays.asList(ChatColor.GREEN + "Click to view rooms in this hotel.");
+                    List<String> himl = Collections.singletonList(ChatColor.GREEN + "Click to view rooms in this hotel.");
                     him.setLore(himl);
                     hotelItem.setItemMeta(him);
                     viewAvailableHotels.setItem(hotelItemPlacement, hotelItem);

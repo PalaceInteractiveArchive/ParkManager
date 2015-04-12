@@ -24,7 +24,7 @@ public class FriendListClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.PLAYERINFO);
+            InventoryUtil.openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         ItemMeta meta = item.getItemMeta();

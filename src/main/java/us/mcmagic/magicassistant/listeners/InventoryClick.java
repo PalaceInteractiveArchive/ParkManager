@@ -39,7 +39,7 @@ public class InventoryClick implements Listener {
         }
         if (name.startsWith("Resource Pack Menu")) {
             event.setCancelled(true);
-            MagicAssistant.getInstance().packManager.handleClick(event);
+            MagicAssistant.packManager.handleClick(event);
             return;
         }
         if (name.startsWith("Friend List")) {

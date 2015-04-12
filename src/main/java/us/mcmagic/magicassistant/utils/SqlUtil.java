@@ -15,9 +15,9 @@ public class SqlUtil {
     private static String password;
 
     public static void initialize() {
-        connString = MCMagicCore.getInstance().getMCMagicConfig().sqlConnectionUrl;
-        username = MCMagicCore.getInstance().getMCMagicConfig().sqlUser;
-        password = MCMagicCore.getInstance().getMCMagicConfig().sqlPassword;
+        connString = MCMagicCore.getMCMagicConfig().sqlConnectionUrl;
+        username = MCMagicCore.getMCMagicConfig().sqlUser;
+        password = MCMagicCore.getMCMagicConfig().sqlPassword;
     }
 
     public static Connection getConnection() {

@@ -125,10 +125,7 @@ public class PlayerData {
         }
     }
 
-    /**
-     * Created by Marc on 12/13/14
-     */
-    public static enum BandColor {
+    public enum BandColor {
         RED("red"), ORANGE("orange"), YELLOW("yellow"), GREEN("green"), BLUE("blue"), PURPLE("purple"), PINK("pink"), SPECIAL1("s1"), SPECIAL2("s2"), SPECIAL3("s3"), SPECIAL4("s4"), SPECIAL5("s5");
         String name;
 

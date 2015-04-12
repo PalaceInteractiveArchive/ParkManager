@@ -10,7 +10,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
-import us.mcmagic.mcmagiccore.coins.Coins;
 
 /**
  * Created by Marc on 12/23/14
@@ -28,6 +27,9 @@ public class SpecialEditionClick {
             return;
         }
         ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
         if (meta.getDisplayName() == null) {
             return;
         }
@@ -36,23 +38,17 @@ public class SpecialEditionClick {
             InventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
             return;
         }
-        Material color = item.getType();
-        if (color.equals(MagicAssistant.getInstance().bandUtil.getBandMaterial(MagicAssistant.getPlayerData(
+        Material type = item.getType();
+        if (type.equals(Material.REDSTONE_BLOCK)) {
+            return;
+        }
+        if (type.equals(MagicAssistant.bandUtil.getBandMaterial(MagicAssistant.getPlayerData(
                 player.getUniqueId()).getBandColor()))) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
-        if (!player.hasPermission("band.change")) {
-            int coins = Coins.getSqlCoins(player.getUniqueId());
-            if (coins < 500) {
-                player.closeInventory();
-                player.sendMessage(ChatColor.RED + "You need at least " + ChatColor.GREEN + "500 Coins" + ChatColor.RED + " to get this!");
-                return;
-            }
-            Coins.minusSqlCoins(player.getUniqueId(), 500);
-        }
         player.closeInventory();
-        MagicAssistant.getInstance().bandUtil.setBandColor(player, color);
+        MagicAssistant.bandUtil.setBandColor(player, type);
     }
 }

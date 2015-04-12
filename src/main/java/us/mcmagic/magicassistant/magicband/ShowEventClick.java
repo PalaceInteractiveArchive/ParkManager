@@ -38,46 +38,26 @@ public class ShowEventClick {
             } else if (item.getData().getData() == (byte) 5) {
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Joining Party...");
-                MagicAssistant.getInstance().bandUtil.joinParty(player);
+                MagicAssistant.bandUtil.joinParty(player);
                 return;
             }
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Fantasmic!":
-                if (MagicAssistant.serverName.equalsIgnoreCase("HWS")) {
-                    player.performCommand("warp fantasmic");
-                } else {
-                    MagicAssistant.getInstance().sendToServer(player, "HWS");
-                }
+                player.performCommand("warp fantasmic");
                 return;
             case "IROE":
-                if (MagicAssistant.serverName.equalsIgnoreCase("Epcot")) {
-                    player.performCommand("warp iroe");
-                } else {
-                    MagicAssistant.getInstance().sendToServer(player, "Epcot");
-                }
+                player.performCommand("warp iroe");
                 return;
             case "Wishes":
-                if (MagicAssistant.serverName.equalsIgnoreCase("MK")) {
-                    player.performCommand("warp castle");
-                } else {
-                    MagicAssistant.getInstance().sendToServer(player, "MK");
-                }
+                player.performCommand("warp castle");
                 return;
             case "Main Street Electrical Parade":
-                if (MagicAssistant.serverName.equalsIgnoreCase("MK")) {
-                    player.performCommand("warp mainstreet");
-                } else {
-                    MagicAssistant.getInstance().sendToServer(player, "MK");
-                }
+                player.performCommand("warp mainstreet");
                 return;
             case "Festival of Fantasy Parade":
-                if (MagicAssistant.serverName.equalsIgnoreCase("MK")) {
-                    player.performCommand("warp mainstreet");
-                } else {
-                    MagicAssistant.getInstance().sendToServer(player, "MK");
-                }
+                player.performCommand("warp mainstreet");
         }
     }
 }

@@ -12,8 +12,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.Arrays;
 
@@ -28,7 +26,7 @@ public class MainMenuClick {
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
         if (item.getType().equals(Material.SKULL_ITEM)) {
-            InventoryUtil.openInventory(player, InventoryType.PLAYERINFO);
+            InventoryUtil.openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         switch (item.getType()) {
@@ -64,7 +62,7 @@ public class MainMenuClick {
                 ItemStack time = new ItemStack(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Arrays.asList(ChatColor.YELLOW + MagicAssistant.getInstance().bandUtil.currentTime()));
+                tm.setLore(Arrays.asList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
                 time.setItemMeta(tm);
                 inv.setItem(4, time);
                 return;
@@ -81,17 +79,10 @@ public class MainMenuClick {
             case NETHER_STAR:
                 InventoryUtil.openInventory(player, InventoryType.PARK);
                 return;
-            case COMPASS:
-                InventoryUtil.featureComingSoon(player);
+            case NOTE_BLOCK:
+                MagicAssistant.packManager.openMenu(player);
                 return;
             case FIREWORK_CHARGE:
-                Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
-                if (rank.equals(Rank.GUEST)) {
-                    player.closeInventory();
-                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets() +
-                            ChatColor.RED + " Rank to use this!");
-                    return;
-                }
                 InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
                 return;
             case GLOWSTONE_DUST:
