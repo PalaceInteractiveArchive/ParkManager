@@ -38,6 +38,8 @@ import java.util.*;
 public class Commandmagic implements Listener, CommandExecutor {
     private static HashMap<String, Show> songs = new HashMap<>();
     public static List<String> containsCommandBlockOnly = Arrays.asList("stitch");
+    public ParticleEffect effect;
+    public Location location;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -47,6 +49,27 @@ public class Commandmagic implements Listener, CommandExecutor {
             return true;
         }
         switch (args[0]) {
+            case "effect":
+                if (args.length == 8) {
+                } else if (args[1].contains("Particle")) {
+                    // magic effect(0) Particle(1) type(2) x,y,z(3) oX(4) oY(5) oZ(6) speed(7) amount(8)
+                    ParticleEffect effect = ParticleEffect.fromString(args[2]);
+                    Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + args[3]);
+                    try {
+                        double offsetX = Float.parseFloat(args[4]);
+                        double offsetY = Float.parseFloat(args[5]);
+                        double offsetZ = Float.parseFloat(args[6]);
+                        float speed = Float.parseFloat(args[7]);
+                        int amount = getInt(args[8]);
+
+                        ParticleUtil.spawnParticle(effect, loc, (float) offsetX, (float) offsetY, (float) offsetZ, speed, amount);
+
+                    } catch (NumberFormatException ignored) {
+                        sender.sendMessage(ChatColor.RED + "There was an error with numbers!");
+                    }
+                    helpMenu("effect", sender);
+                }
+
             case "show":
                 if (args.length == 3) {
                     switch (args[1]) {
