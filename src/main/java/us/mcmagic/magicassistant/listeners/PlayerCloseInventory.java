@@ -20,10 +20,10 @@ public class PlayerCloseInventory implements Listener {
             MagicAssistant.bandUtil.cancelLoadPlayerData(event.getPlayer().getUniqueId());
             return;
         }
-        if (title.endsWith("Resource Pack Menu")) {
+        if (title.endsWith("resource pack menu")) {
             User user = MCMagicCore.getUser(event.getPlayer().getUniqueId());
-            if (user.getCurrentPack().equalsIgnoreCase("none")) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You haven't chosen any Resource Pack!");
+            if (user.getCurrentPack().equals("none")) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You haven't chosen any Resource Pack Setting!");
             }
         }
     }

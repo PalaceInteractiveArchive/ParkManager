@@ -9,7 +9,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +36,10 @@ public class Commandautograph implements CommandExecutor {
         }
         Player player = (Player) sender;
         ListIterator<ItemStack> li = player.getInventory().iterator();
-
-
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+            return true;
+        }
         switch (args[0]) {
             case "book":
                 helpMenu("book", sender);

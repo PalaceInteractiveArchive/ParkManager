@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.ridemanager;
 
+import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R2.EnumDirection;
 import net.minecraft.server.v1_8_R2.WorldServer;
 import org.bukkit.ChatColor;
@@ -15,7 +16,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,20 +103,6 @@ public class RideManager implements Listener {
                             return;
                         }
                         cart.setPower(power);
-                        switch (d) {
-                            case NORTH:
-                                cart.setSpeed(new Vector(0, 0, -power));
-                                break;
-                            case EAST:
-                                cart.setSpeed(new Vector(power, 0, 0));
-                                break;
-                            case SOUTH:
-                                cart.setSpeed(new Vector(0, 0, power));
-                                break;
-                            case WEST:
-                                cart.setSpeed(new Vector(-power, 0, 0));
-                                break;
-                        }
                     }
                 }
             }
@@ -139,20 +125,6 @@ public class RideManager implements Listener {
             default:
                 return EnumDirection.NORTH;
         }
-    }
-
-    public Vector getVector(EnumDirection d, double power) {
-        switch (d) {
-            case WEST:
-                return new Vector(0, 0, -power);
-            case NORTH:
-                return new Vector(power, 0, 0);
-            case EAST:
-                return new Vector(0, 0, power);
-            case SOUTH:
-                return new Vector(-power, 0, 0);
-        }
-        return new Vector(0, 0, 0);
     }
 
     @EventHandler
@@ -179,7 +151,6 @@ public class RideManager implements Listener {
             boolean isPowered = isSignPowered(s);
             if (type.equals(SignType.STATION)) {
                 if (!isPowered) {
-                    System.out.println("Station not powered");
                     return;
                 }
                 Station station = new Station(s);
@@ -189,7 +160,6 @@ public class RideManager implements Listener {
             }
             if (type.equals(SignType.DESTROY)) {
                 if (!isPowered) {
-                    System.out.println("Destroy not powered");
                     return;
                 }
                 for (Cart c : cart.getTrain().getCarts()) {
@@ -199,7 +169,6 @@ public class RideManager implements Listener {
             }
             if (type.equals(SignType.SPEED)) {
                 if (!isPowered) {
-                    System.out.println("Speed not powered");
                     return;
                 }
                 Integer power;
@@ -210,7 +179,7 @@ public class RideManager implements Listener {
                     s.update();
                     return;
                 }
-                cart.setSpeed(getVector(cart.getDirection(), power));
+                cart.setPower(power);
             }
         }
     }
@@ -292,5 +261,47 @@ public class RideManager implements Listener {
         Material type = loc.getBlock().getType();
         return type.equals(Material.RAILS) || type.equals(Material.DETECTOR_RAIL) || type.equals(Material.ACTIVATOR_RAIL)
                 || type.equals(Material.POWERED_RAIL);
+    }
+
+    public static int locInt(double d) {
+        if (d < 0) {
+            return (int) Math.floor(d);
+        }
+        return (int) Math.ceil(d);
+    }
+
+    @SuppressWarnings("deprecation")
+    public BlockMinecartTrackAbstract.EnumTrackPosition getTrackPosition(Block block) {
+        if (!isRail(block.getLocation())) {
+            return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;
+        }
+        byte data = block.getData();
+        if (data > 9) {
+            data -= 10;
+        }
+        switch (data) {
+            case 0:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;
+            case 1:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.EAST_WEST;
+            case 2:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_EAST;
+            case 3:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_WEST;
+            case 4:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_NORTH;
+            case 5:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_SOUTH;
+            case 6:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.SOUTH_EAST;
+            case 7:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.SOUTH_WEST;
+            case 8:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_WEST;
+            case 9:
+                return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_EAST;
+            default:
+                return null;
+        }
     }
 }

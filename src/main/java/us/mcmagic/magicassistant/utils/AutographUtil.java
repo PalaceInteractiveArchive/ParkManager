@@ -90,7 +90,7 @@ public class AutographUtil {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 if (event.getPacketType().equals(PacketType.Play.Client.BLOCK_PLACE)) {
-                    ItemStack current = (ItemStack) getField(event.getPacket().getHandle(), "e");
+                    ItemStack current = (ItemStack) getField(event.getPacket().getHandle(), "d");
                     if (current != null && current.getItem() != null && (current.getItem() == Items.WRITTEN_BOOK || current.getItem() == Items.WRITABLE_BOOK) && current.getTag() != null) {
                         rewriteBookIn(current.getTag());
                     }
@@ -113,8 +113,8 @@ public class AutographUtil {
     }
 
     private void rewriteBookIn(NBTTagCompound tag) {
-        if (tag.hasKeyOfType("tagMcMagicOriginal", 10)) {
-            tag.set("tag", tag.getCompound("tagMcMagicOriginal"));
+        if (tag.hasKeyOfType("tagMCMagicOriginal", 10)) {
+            tag.set("tag", tag.getCompound("tagMCMagicOriginal"));
         }
     }
 
@@ -137,7 +137,7 @@ public class AutographUtil {
                     s = stripUuids(s);
                     pages.a(i, new NBTTagString(s));
                 }
-                tag.set("tagMcMagicOriginal", bookDataOriginal);
+                tag.set("tagMCMagicOriginal", bookDataOriginal);
             }
         }
     }

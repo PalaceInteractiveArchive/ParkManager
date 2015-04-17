@@ -8,8 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -136,7 +134,7 @@ public class PlayerJoinAndLeave implements Listener {
                         player.getEnderChest().setContents(end);
                     }
                 }
-                MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
+                MagicAssistant.bandUtil.giveBandToPlayer(player);
                 if (Shooter.game != null) {
                     pi.remove(Shooter.getItem().getType());
                 }
@@ -183,7 +181,7 @@ public class PlayerJoinAndLeave implements Listener {
                     player.getInventory().remove(Shooter.getItem().getType());
                 }
             }
-            MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
+            MagicAssistant.bandUtil.giveBandToPlayer(player);
             Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
@@ -211,15 +209,6 @@ public class PlayerJoinAndLeave implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-        if (MagicAssistant.serverEnabling) {
-            event.setResult(Result.KICK_OTHER);
-            event.setKickMessage("This server is still starting up!");
-        }
-    }
-
-    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (MagicAssistant.crossServerInv) {
@@ -231,11 +220,11 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             });
         }
-        MagicAssistant.getInstance().bandUtil.loading.remove(player.getUniqueId());
-        MagicAssistant.getInstance().bandUtil.removePlayerData(player);
+        MagicAssistant.bandUtil.loading.remove(player.getUniqueId());
+        MagicAssistant.bandUtil.removePlayerData(player);
         VisibleUtil.hideall.remove(player.getUniqueId());
         Commandvanish.hidden.remove(player.getUniqueId());
-        MagicAssistant.getInstance().blockChanger.logout(player);
+        MagicAssistant.blockChanger.logout(player);
         if (Shooter.getItem() != null) {
             if (player.getInventory().contains(Shooter.getItem())) {
                 player.getInventory().remove(Shooter.getItem());

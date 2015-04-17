@@ -56,18 +56,18 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();
     public static boolean hubServer;
-    public static boolean serverEnabling = true;
     public static MagicAssistant instance;
     public static BlockChanger blockChanger = new BlockChanger();
     public static PackManager packManager = new PackManager();
     public static BandUtil bandUtil = new BandUtil();
     public static RideManager rideManager = new RideManager();
-    public static AutographUtil autographUtil = new AutographUtil();
+    public static AutographUtil autographUtil;
 
     public void onEnable() {
         instance = this;
         SqlUtil.initialize();
         stitch = new Stitch();
+        autographUtil = new AutographUtil();
         registerListeners();
         registerCommands();
         InventoryUtil.initialize();
@@ -166,13 +166,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         resortsServer = serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
-        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-            @Override
-            public void run() {
-                getLogger().info("Players can now join");
-                serverEnabling = false;
-            }
-        }, 100L);
     }
 
     public void onDisable() {

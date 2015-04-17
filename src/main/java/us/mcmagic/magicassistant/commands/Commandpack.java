@@ -16,7 +16,7 @@ public class Commandpack implements CommandExecutor {
         if (!(sender instanceof Player)) {
             return true;
         }
-        MagicAssistant.getInstance().packManager.openMenu((Player) sender);
+        MagicAssistant.packManager.openMenu((Player) sender);
         return true;
     }
 }

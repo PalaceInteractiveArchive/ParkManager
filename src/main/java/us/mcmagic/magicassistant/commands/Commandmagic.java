@@ -27,6 +27,7 @@ import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,6 +46,13 @@ public class Commandmagic implements Listener, CommandExecutor {
         if (args.length == 0) {
             helpMenu("main", sender);
             return true;
+        }
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            User user = MCMagicCore.getUser(player.getUniqueId());
+            if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+                return true;
+            }
         }
         switch (args[0]) {
             case "show":
@@ -188,7 +196,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                     case 2:
                         switch (args[1]) {
                             case "list":
-                                List<String> list = MagicAssistant.getInstance().blockChanger.changerList();
+                                List<String> list = MagicAssistant.blockChanger.changerList();
                                 if (list.isEmpty()) {
                                     sender.sendMessage(ChatColor.RED + "No Changers on this server!");
                                     return true;
@@ -201,7 +209,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                             case "reload":
                                 sender.sendMessage(ChatColor.GREEN + "Reloading Changer Areas...");
                                 try {
-                                    MagicAssistant.getInstance().blockChanger.reload();
+                                    MagicAssistant.blockChanger.reload();
                                 } catch (FileNotFoundException e) {
                                     sender.sendMessage(ChatColor.RED + "Error reloading, see console for details.");
                                     e.printStackTrace();
@@ -211,7 +219,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 return true;
                             case "debug":
                                 if (sender instanceof Player) {
-                                    if (MagicAssistant.getInstance().blockChanger.toggleDebug(((Player) sender))) {
+                                    if (MagicAssistant.blockChanger.toggleDebug(((Player) sender))) {
                                         sender.sendMessage(ChatColor.YELLOW + "You're no longer in Changer Debugging mode!");
                                         return true;
                                     } else {
@@ -247,7 +255,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                             + ChatColor.RED + " Rank!");
                                     return true;
                                 }
-                                if (MagicAssistant.getInstance().blockChanger.toggleDebug(tp)) {
+                                if (MagicAssistant.blockChanger.toggleDebug(tp)) {
                                     sender.sendMessage(ChatColor.YELLOW + "Removed " + tp.getName() + " from Changer Debugging!");
                                     tp.sendMessage(ChatColor.YELLOW + "You're no longer in Changer Debugging mode!");
                                     return true;
@@ -257,13 +265,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     return true;
                                 }
                             case "remove":
-                                final Changer changer = MagicAssistant.getInstance().blockChanger.getChanger(args[2]);
+                                final Changer changer = MagicAssistant.blockChanger.getChanger(args[2]);
                                 if (changer == null) {
                                     sender.sendMessage(ChatColor.RED + "Changer not found by the name of " +
                                             ChatColor.GREEN + args[2]);
                                     return true;
                                 }
-                                final List<Changer> l = MagicAssistant.getInstance().blockChanger.getChangers();
+                                final List<Changer> l = MagicAssistant.blockChanger.getChangers();
                                 Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                                     @Override
                                     public void run() {
@@ -274,13 +282,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                                                 }
                                             }
                                         }
-                                        MagicAssistant.getInstance().blockChanger.removeChanger(changer.getName());
+                                        MagicAssistant.blockChanger.removeChanger(changer.getName());
                                         sender.sendMessage(ChatColor.GREEN + "Removed changer " + ChatColor.AQUA + args[2]);
                                     }
                                 });
                                 return true;
                             case "info":
-                                Changer chngr = MagicAssistant.getInstance().blockChanger.getChanger(args[2]);
+                                Changer chngr = MagicAssistant.blockChanger.getChanger(args[2]);
                                 if (chngr == null) {
                                     sender.sendMessage(ChatColor.RED + "Changer not found by the name of " +
                                             ChatColor.GREEN + args[2]);
@@ -310,11 +318,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                         if (args[1].equalsIgnoreCase("create")) {
                             try {
                                 String name = args[2];
-                                if (MagicAssistant.getInstance().blockChanger.getChanger(name) != null) {
+                                if (MagicAssistant.blockChanger.getChanger(name) != null) {
                                     sender.sendMessage(ChatColor.RED + "A changer with that name already exists!");
                                     return true;
                                 }
-                                HashMap<Material, Byte> from = MagicAssistant.getInstance().blockChanger.blocksFromString(args[3]);
+                                HashMap<Material, Byte> from = MagicAssistant.blockChanger.blocksFromString(args[3]);
                                 int to;
                                 byte data;
                                 String[] list = args[4].split(":");
@@ -326,9 +334,9 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     data = Byte.valueOf(list[1]);
                                 }
                                 int send = Integer.parseInt(args[5]);
-                                Location loc1 = MagicAssistant.getInstance().blockChanger.getSelection(0, ((Player) sender));
+                                Location loc1 = MagicAssistant.blockChanger.getSelection(0, ((Player) sender));
                                 //loc1 = getLocation(((Player) sender).getWorld(), args[6]);
-                                Location loc2 = MagicAssistant.getInstance().blockChanger.getSelection(1, ((Player) sender));
+                                Location loc2 = MagicAssistant.blockChanger.getSelection(1, ((Player) sender));
                                 //loc2 = getLocation(((Player) sender).getWorld(), args[7]);
                                 if (loc1 == null || loc2 == null) {
                                     sender.sendMessage(ChatColor.RED + "You don't have a full selection selected!");
@@ -336,9 +344,9 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 }
                                 Changer changer = new Changer(name, loc1, loc2, from, Material.getMaterial(to), data,
                                         Material.getMaterial(send));
-                                MagicAssistant.getInstance().blockChanger.addChanger(changer);
+                                MagicAssistant.blockChanger.addChanger(changer);
                                 sender.sendMessage(ChatColor.GREEN + "Created Changer " + ChatColor.AQUA + name);
-                                MagicAssistant.getInstance().blockChanger.clearSelection(((Player) sender).getUniqueId());
+                                MagicAssistant.blockChanger.clearSelection(((Player) sender).getUniqueId());
                                 return true;
                             } catch (Exception e) {
                                 sender.sendMessage(ChatColor.RED + "There was an error creating that Changer!");

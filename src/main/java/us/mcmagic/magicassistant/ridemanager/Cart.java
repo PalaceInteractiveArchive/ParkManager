@@ -1,10 +1,12 @@
 package us.mcmagic.magicassistant.ridemanager;
 
+import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R2.EntityMinecartRideable;
 import net.minecraft.server.v1_8_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -15,29 +17,58 @@ import java.util.UUID;
  * Created by Marc on 4/1/15
  */
 public class Cart extends EntityMinecartRideable {
+    private static final int[][][] matrix = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}},
+            {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}},
+            {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
     private Train train;
-    private Vector speed = new Vector(0.0, 0.0, 0.0);
     private UUID passenger;
     private boolean atStation = false;
     private Station station;
     private boolean slowdown = false;
     private boolean playerEnter = true;
     private boolean playerExit;
-    private double power = 0;
+    private double power = 0.2;
 
     public Cart(World world, double d0, double d1, double d2) {
         super(world, d0, d1, d2);
         CraftEntity e;
     }
 
-    /*
-    public void move(double d0, double d1, double d2) {
-        super.move(d0, d1, d2);
-        System.out.println(d0 + ", " + d1 + ", " + d2);
+    public void move(double dx, double dy, double dz) {
+        Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
+        double x = motX;
+        double y = motY;
+        double z = motZ;
+        Vector v = getFlyingVelocityMod();
+        x *= v.getX();
+        y *= v.getY();
+        z *= v.getZ();
+        //Bukkit.broadcastMessage(v.getX() + ", " + v.getY() + "," + v.getZ());
+        Location to = from.clone().add(motX, motY, motZ);
+        CartMoveEvent e = new CartMoveEvent(this, from, to);
+        Bukkit.getPluginManager().callEvent(e);
+        if (!e.isCancelled()) {
+            Block b = from.getWorld().getBlockAt(RideManager.locInt(locX), RideManager.locInt(locY), RideManager.locInt(locZ));
+            if (MagicAssistant.rideManager.isRail(b.getLocation())) {
+                BlockMinecartTrackAbstract.EnumTrackPosition pos = MagicAssistant.rideManager.getTrackPosition(b);
+                int[][] aint = matrix[pos.a()];
+                double d1 = (double) (aint[1][0] - aint[0][0]);
+                double d2 = (double) (aint[1][2] - aint[0][2]);
+                double d3 = Math.sqrt(d1 * d1 + d2 * d2);
+                double d5 = Math.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+                this.motX = d5 * d1 / d3;
+                this.motZ = d5 * d2 / d3;
+                super.velocityChanged = true;
+                return;
+            }
+        }
+        super.motX = 0.0;
+        super.motY = 0.0;
+        super.motZ = 0.0;
+        super.positionChanged = false;
     }
-    */
 
-
+    /*
     public void move(double x, double y, double z) {
         Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
         Location to = from.clone().add(x, y, z);
@@ -56,6 +87,7 @@ public class Cart extends EntityMinecartRideable {
         super.motZ = 0.0;
         super.positionChanged = false;
     }
+    */
 
     @Override
     public void die() {
@@ -85,27 +117,6 @@ public class Cart extends EntityMinecartRideable {
         return power;
     }
 
-    public void updateSpeed() {
-        updateSpeed(MagicAssistant.getInstance().rideManager.getVector(getDirection(), power));
-    }
-
-    public void updateSpeed(Vector speed) {
-        this.speed = speed;
-        motX = speed.getX();
-        motY = speed.getY();
-        motZ = speed.getZ();
-        velocityChanged = true;
-        System.out.println(motX + ", " + motY + ", " + motZ);
-    }
-
-    public Vector getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Vector speed) {
-        updateSpeed(speed);
-    }
-
     public Station getStation() {
         return station;
     }
@@ -125,9 +136,7 @@ public class Cart extends EntityMinecartRideable {
         Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                System.out.println(MagicAssistant.getInstance().rideManager.getVector(getDirection(), station.getLaunchPower()));
                 setPower(station.getLaunchPower());
-                setSpeed(MagicAssistant.getInstance().rideManager.getVector(getDirection(), station.getLaunchPower()));
                 removeStation();
             }
         }, (long) (s.getLength() * 20));
