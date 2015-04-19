@@ -172,7 +172,7 @@ public class PlayerJoinAndLeave implements Listener {
                     */
             } else {
                 ItemStack helm = player.getInventory().getHelmet();
-                if (helm != null && helm.getItemMeta() != null) {
+                if (helm != null && helm.getItemMeta() != null && helm.getItemMeta().getDisplayName() != null) {
                     if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
                         player.getInventory().setHelmet(new ItemStack(Material.AIR));
                     }
@@ -220,7 +220,10 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             });
         }
-        MagicAssistant.bandUtil.loading.remove(player.getUniqueId());
+        if (player.getVehicle() != null) {
+            player.getVehicle().eject();
+        }
+        MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
         VisibleUtil.hideall.remove(player.getUniqueId());
         Commandvanish.hidden.remove(player.getUniqueId());

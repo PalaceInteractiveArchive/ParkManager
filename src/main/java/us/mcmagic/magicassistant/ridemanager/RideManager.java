@@ -89,15 +89,17 @@ public class RideManager implements Listener {
                         EnumDirection d = cart.getDirection();
                         double power = 0;
                         EnumDirection direction;
+                        /*
                         try {
                             direction = dirFromString(list[1]);
                         } catch (Exception e) {
                             s.setLine(1, ChatColor.RED + "Direction Error");
                             s.update();
                         }
+                        */
                         try {
-                            power += Double.parseDouble(list[2]);
-                        } catch (NumberFormatException nfe) {
+                            power += Double.parseDouble(list[1]);
+                        } catch (Exception nfe) {
                             s.setLine(1, ChatColor.RED + "Number Error");
                             s.update();
                             return;
@@ -123,7 +125,7 @@ public class RideManager implements Listener {
             case "w":
                 return EnumDirection.WEST;
             default:
-                return EnumDirection.NORTH;
+                return null;
         }
     }
 

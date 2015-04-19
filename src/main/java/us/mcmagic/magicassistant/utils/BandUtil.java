@@ -28,7 +28,6 @@ import java.util.Date;
  */
 public class BandUtil {
     private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
-    public List<UUID> loading = new ArrayList<>();
     private HashMap<UUID, Inventory> loadingPlayerData = new HashMap<>();
 
     public void initialize() {
@@ -38,11 +37,15 @@ public class BandUtil {
         Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                for (Map.Entry<UUID, Inventory> entry : loadingPlayerData.entrySet()) {
+                for (Map.Entry<UUID, Inventory> entry : new HashSet<>(loadingPlayerData.entrySet())) {
                     User user = MCMagicCore.getUser(entry.getKey());
+                    if (user == null) {
+                        loadingPlayerData.remove(entry.getKey());
+                        continue;
+                    }
                     Player player = Bukkit.getPlayer(user.getUniqueId());
                     if (player == null) {
-                        loadingPlayerData.remove(user.getUniqueId());
+                        loadingPlayerData.remove(entry.getKey());
                         continue;
                     }
                     Rank rank = user.getRank();
@@ -62,7 +65,7 @@ public class BandUtil {
     }
 
     public boolean isLoading(Player player) {
-        return loading.contains(player.getUniqueId());
+        return loadingPlayerData.containsKey(player.getUniqueId());
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
@@ -129,7 +132,7 @@ public class BandUtil {
             result.close();
             sql.close();
             MagicAssistant.playerData.put(uuid, data);
-            loading.remove(uuid);
+            loadingPlayerData.remove(uuid);
             return data;
         } catch (SQLException e) {
             e.printStackTrace();

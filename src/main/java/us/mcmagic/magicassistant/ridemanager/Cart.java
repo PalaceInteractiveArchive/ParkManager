@@ -6,10 +6,14 @@ import net.minecraft.server.v1_8_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.FaceUtil;
+import us.mcmagic.magicassistant.utils.MathUtil;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 
 import java.util.UUID;
 
@@ -22,6 +26,9 @@ public class Cart extends EntityMinecartRideable {
             {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
     private Train train;
     private UUID passenger;
+    private BlockFace direction;
+    private BlockFace directionTo;
+    private BlockFace directionFrom = BlockFace.SELF;
     private boolean atStation = false;
     private Station station;
     private boolean slowdown = false;
@@ -31,9 +38,18 @@ public class Cart extends EntityMinecartRideable {
 
     public Cart(World world, double d0, double d1, double d2) {
         super(world, d0, d1, d2);
-        CraftEntity e;
     }
 
+    @Override
+    public void move(double x, double y, double z) {
+        Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
+        updateDirection();
+        motX = power * FaceUtil.cos(direction);
+        motZ = power * FaceUtil.sin(direction);
+        super.move(x, y, z);
+    }
+
+    /*
     public void move(double dx, double dy, double dz) {
         Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
         double x = motX;
@@ -91,12 +107,11 @@ public class Cart extends EntityMinecartRideable {
 
     @Override
     public void die() {
-        if (atStation) {
-            return;
-        }
         CartDestroyEvent e = new CartDestroyEvent(this);
         if (!e.isCancelled()) {
-            getBukkitEntity().getWorld().playSound(getBukkitEntity().getLocation(), Sound.FIZZ, 10, 2);
+            CraftEntity entity = getBukkitEntity();
+            ParticleUtil.spawnParticle(ParticleEffect.SMOKE, entity.getLocation(), 0.1f, 0.1f, 0.1f, 0, 5);
+            entity.getWorld().playSound(getBukkitEntity().getLocation(), Sound.FIZZ, 10, 2);
             super.die();
         }
     }
@@ -194,5 +209,174 @@ public class Cart extends EntityMinecartRideable {
 
     public void setSlowdown(boolean slowdown) {
         this.slowdown = slowdown;
+    }
+
+    private void updateDirection() {
+        Vector vec = getBukkitEntity().getVelocity();
+        if (direction == null) {
+            direction = FaceUtil.getDirection(vec);
+        }
+        BlockFace mdir = getMovementDirection(vec);
+        System.out.println(mdir);
+        updateDirection(mdir);
+    }
+
+    public void updateDirection(BlockFace movement) {
+        if (this.direction == null) {
+            this.direction = movement;
+        }
+        if (this.directionTo == null) {
+            if (FaceUtil.isSubCardinal(movement))
+                this.directionTo = FaceUtil.getDirection(getBukkitEntity().getVelocity(), false);
+            else {
+                this.directionTo = movement;
+            }
+        }
+        boolean fromInvalid = this.directionFrom == BlockFace.SELF;
+        if (fromInvalid) {
+            this.directionFrom = this.directionTo;
+        }
+        this.direction = movement;
+        if (FaceUtil.isSubCardinal(this.direction)) {
+            BlockFace raildirection = getRailDirection();
+            if (this.direction == BlockFace.NORTH_EAST) {
+                this.directionTo = (raildirection == BlockFace.NORTH_WEST ? BlockFace.EAST : BlockFace.NORTH);
+            } else if (this.direction == BlockFace.SOUTH_EAST) {
+                this.directionTo = (raildirection == BlockFace.NORTH_EAST ? BlockFace.SOUTH : BlockFace.EAST);
+            } else if (this.direction == BlockFace.SOUTH_WEST) {
+                this.directionTo = (raildirection == BlockFace.NORTH_WEST ? BlockFace.SOUTH : BlockFace.WEST);
+            } else if (this.direction == BlockFace.NORTH_WEST) {
+                this.directionTo = (raildirection == BlockFace.NORTH_EAST ? BlockFace.WEST : BlockFace.NORTH);
+            }
+        } else {
+            this.directionTo = this.direction;
+        }
+        if (fromInvalid) {
+            this.directionFrom = this.directionTo;
+        }
+    }
+
+    private boolean isSloped() {
+        BlockMinecartTrackAbstract.EnumTrackPosition pos =
+                MagicAssistant.rideManager.getTrackPosition(getBukkitEntity().getLocation().getBlock());
+        return pos.name().contains("ASCENDING");
+    }
+
+    public BlockFace getMovementDirection(Vector movement) {
+        BlockFace raildirection = getRailDirection();
+        boolean isHorizontalMovement = (Math.abs(movement.getX()) >= 0.0001D) || (Math.abs(movement.getZ()) >= 0.0001D);
+        BlockFace direction = null;
+        if (isSloped()) {
+            if (isHorizontalMovement) {
+                float moveYaw = MathUtil.getLookAtYaw(movement);
+                float diff1 = MathUtil.getAngleDifference(moveYaw, FaceUtil.faceToYaw(raildirection));
+                float diff2 = MathUtil.getAngleDifference(moveYaw, FaceUtil.faceToYaw(raildirection.getOppositeFace()));
+
+                if (diff1 == diff2) {
+                    diff1 = FaceUtil.getFaceYawDifference(directionFrom, raildirection);
+                    diff2 = FaceUtil.getFaceYawDifference(directionFrom, raildirection.getOppositeFace());
+                }
+                if (diff1 > diff2)
+                    direction = raildirection.getOppositeFace();
+                else
+                    direction = raildirection;
+            } else {
+                if (Math.abs(movement.getY()) > 0.0001D) {
+                    if (movement.getY() > 0.0D)
+                        direction = raildirection;
+                    else
+                        direction = raildirection.getOppositeFace();
+                } else {
+                    direction = raildirection.getOppositeFace();
+                }
+            }
+        } else if (isCurved()) {
+            BlockFace movementDir = FaceUtil.getDirection(movement);
+            BlockFace[] possibleDirections = FaceUtil.getFaces(raildirection.getOppositeFace());
+            if (FaceUtil.isSubCardinal(movementDir)) {
+                direction = movementDir;
+            } else {
+                BlockFace directionTo;
+                if (possibleDirections[0] == movementDir) {
+                    directionTo = possibleDirections[0];
+                } else {
+                    if (possibleDirections[1] == movementDir) {
+                        directionTo = possibleDirections[1];
+                    } else {
+                        if (possibleDirections[0].getOppositeFace() == movementDir) {
+                            directionTo = possibleDirections[1];
+                        } else {
+                            if (possibleDirections[1].getOppositeFace() == movementDir) {
+                                directionTo = possibleDirections[0];
+                            } else
+                                directionTo = movementDir;
+                        }
+                    }
+                }
+                direction = FaceUtil.getRailsCartDirection(raildirection);
+                if (!mapContains(directionTo, FaceUtil.getFaces(direction))) {
+                    direction = direction.getOppositeFace();
+                }
+            }
+        } else {
+            float angleSide1 = FaceUtil.faceToYaw(raildirection);
+            float angleSide2 = FaceUtil.faceToYaw(raildirection.getOppositeFace());
+            float movAngle = MathUtil.getLookAtYaw(movement);
+            if (MathUtil.getAngleDifference(angleSide1, movAngle) < MathUtil.getAngleDifference(angleSide2, movAngle))
+                direction = raildirection;
+            else {
+                direction = raildirection.getOppositeFace();
+            }
+        }
+        return direction;
+    }
+
+    private boolean mapContains(Object object, Object[] array) {
+        for (Object o : array) {
+            if (o == null && object == null) {
+                return true;
+            }
+            if (object == o) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isCurved() {
+        boolean alongX = FaceUtil.isAlongX(direction);
+        boolean alongZ = FaceUtil.isAlongZ(direction);
+        boolean alongY = FaceUtil.isAlongY(direction);
+        System.out.println(alongX + " " + alongY + " " + alongZ);
+        return ((!alongZ) && (!alongY) && (!alongX));
+    }
+
+    public BlockFace getRailDirection() {
+        Location loc = getBukkitEntity().getLocation();
+        BlockMinecartTrackAbstract.EnumTrackPosition pos = MagicAssistant.rideManager.getTrackPosition(loc.getBlock());
+        switch (pos) {
+            case NORTH_SOUTH:
+                return BlockFace.SOUTH;
+            case EAST_WEST:
+                return BlockFace.WEST;
+            case ASCENDING_EAST:
+                return BlockFace.EAST;
+            case ASCENDING_WEST:
+                return BlockFace.WEST;
+            case ASCENDING_NORTH:
+                return BlockFace.NORTH;
+            case ASCENDING_SOUTH:
+                return BlockFace.SOUTH;
+            case SOUTH_EAST:
+                return BlockFace.SOUTH_EAST;
+            case SOUTH_WEST:
+                return BlockFace.SOUTH_WEST;
+            case NORTH_WEST:
+                return BlockFace.NORTH_WEST;
+            case NORTH_EAST:
+                return BlockFace.NORTH_EAST;
+            default:
+                return BlockFace.NORTH;
+        }
     }
 }

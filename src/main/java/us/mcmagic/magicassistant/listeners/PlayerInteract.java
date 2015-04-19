@@ -48,10 +48,10 @@ public class PlayerInteract implements Listener {
             if (player.getItemInHand().getType().equals(Material.DIAMOND_AXE)) {
                 if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
                     event.setCancelled(true);
-                    MagicAssistant.getInstance().blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
+                    MagicAssistant.blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
                 } else {
                     event.setCancelled(true);
-                    MagicAssistant.getInstance().blockChanger.setSelection(1, player, event.getClickedBlock().getLocation());
+                    MagicAssistant.blockChanger.setSelection(1, player, event.getClickedBlock().getLocation());
                 }
                 return;
             }
@@ -137,9 +137,11 @@ public class PlayerInteract implements Listener {
             } else if (type == Material.SKULL) {
                 Skull skull = (Skull) event.getClickedBlock().getState();
                 if (skull.getSkullType() == SkullType.PLAYER) {
-                    if (skull.getOwner().equalsIgnoreCase("Telephone") || skull.getOwner().equalsIgnoreCase("a15f8f85-3f97-4c4e-a61d-43b5ad6aafec")) {
-                        player.sendMessage(ChatColor.RED + "You cannot use hotel room telephones yet!");
-                        return;
+                    if (skull.getOwner() != null) {
+                        if (skull.getOwner().equalsIgnoreCase("Telephone") || skull.getOwner().equalsIgnoreCase("a15f8f85-3f97-4c4e-a61d-43b5ad6aafec")) {
+                            player.sendMessage(ChatColor.RED + "You cannot use hotel room telephones yet!");
+                            return;
+                        }
                     }
                 }
                 return;

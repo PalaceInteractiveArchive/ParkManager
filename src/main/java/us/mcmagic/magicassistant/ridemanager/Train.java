@@ -1,10 +1,5 @@
 package us.mcmagic.magicassistant.ridemanager;
 
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
-import us.mcmagic.mcmagiccore.particles.ParticleEffect;
-import us.mcmagic.mcmagiccore.particles.ParticleUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +21,11 @@ public class Train {
     }
 
     public List<Cart> getCarts() {
-        return carts;
+        return new ArrayList<>(carts);
     }
 
     public void despawn() {
         for (Cart c : carts) {
-            CraftEntity e = c.getBukkitEntity();
-            ParticleUtil.spawnParticle(ParticleEffect.SMOKE, e.getLocation(), 0.1f, 0.1f, 0.1f, 0, 5);
-            e.getWorld().playSound(e.getLocation(), Sound.FIZZ, 10, 0);
             c.die();
         }
     }

@@ -60,12 +60,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static BlockChanger blockChanger = new BlockChanger();
     public static PackManager packManager = new PackManager();
     public static BandUtil bandUtil = new BandUtil();
-    public static RideManager rideManager = new RideManager();
+    public static RideManager rideManager;
     public static AutographUtil autographUtil;
 
     public void onEnable() {
         instance = this;
         SqlUtil.initialize();
+        rideManager = new RideManager();
         stitch = new Stitch();
         autographUtil = new AutographUtil();
         registerListeners();
@@ -477,7 +478,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryUtil(this), this);
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
-        pm.registerEvents(rideManager, this);
+        //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);

@@ -23,6 +23,9 @@ public class VisibleUtil implements Listener {
         hideall.add(player.getUniqueId());
         for (User user : MCMagicCore.getUsers()) {
             Player tp = Bukkit.getPlayer(user.getUniqueId());
+            if (tp == null) {
+                continue;
+            }
             if (!tp.getName().equals(player.getName())) {
                 if (!tp.hasPermission("band.stayvisible")) {
                     player.hidePlayer(tp);
