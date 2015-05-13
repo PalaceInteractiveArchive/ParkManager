@@ -1,13 +1,12 @@
 package us.mcmagic.magicassistant.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -19,7 +18,10 @@ import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,11 +71,25 @@ public class PlayerJoinAndLeave implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        Player player = event.getPlayer();
+        if (MCMagicCore.serverStarting) {
+            return;
+        }
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        if (user.getRank().getRankId() < Rank.INTERN.getRankId()) {
+            event.setKickMessage("This server will be available soon!");
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         try {
             final Player player = event.getPlayer();
+            User user = MCMagicCore.getUser(player.getUniqueId());
             if (!MagicAssistant.userCache.containsKey(player.getUniqueId())) {
                 MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
             } else {
@@ -82,13 +98,22 @@ public class PlayerJoinAndLeave implements Listener {
                 }
 
             }
+            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+            if (!data.getVisibility()) {
+                VisibleUtil.addToHideAll(player);
+            }
+            if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                player.setGameMode(GameMode.CREATIVE);
+            } else {
+                player.setGameMode(GameMode.ADVENTURE);
+            }
             if (MagicAssistant.spawnOnJoin) {
                 player.performCommand("spawn");
             }
             for (String msg : MagicAssistant.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
-            if (!player.hasPermission("band.stayvisible")) {
+            if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 VisibleUtil.hideForHideAll(player);
             }
             if (MagicAssistant.hubServer) {
@@ -146,30 +171,6 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
                 player.sendMessage(ChatColor.GREEN + "Inventory updated!");
-            /*
-            Bukkit.getScheduler().runTaskLaterAsynchronously(pl,
-                    new Runnable() {
-                        public void run() {
-                            if (!InventorySql.playerDataContainsPlayer(player)) {
-                                player.performCommand("spawn");
-                                InventorySql.setupData(player);
-                            } else {
-                                List<ItemStack[]> stuff = InventorySql.invContents(player);
-                                player.getInventory().setContents(stuff.get(0));
-                                player.getInventory().setArmorContents(stuff.get(1));
-                            }
-                            if (!InventorySql.endPlayerDataContainsPlayer(player)) {
-                                InventorySql.setupEndData(player);
-                            } else {
-                                player.getEnderChest().setContents(
-                                        InventorySql.endInvContents(player));
-                            }
-                            MagicAssistant.getInstance().bandUtil.giveBandToPlayer(player);
-                            player.sendMessage(ChatColor.GREEN + "Inventory Updated!");
-                            player.getInventory().remove(Shooter.getItem().getType());
-                        }
-                    }, 100L);
-                    */
             } else {
                 ItemStack helm = player.getInventory().getHelmet();
                 if (helm != null && helm.getItemMeta() != null && helm.getItemMeta().getDisplayName() != null) {
@@ -182,24 +183,26 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             MagicAssistant.bandUtil.giveBandToPlayer(player);
-            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    boolean updateNecessary = false;
                     for (HotelRoom room : MagicAssistant.hotelRooms) {
-                        if (room.getCheckoutNotificationRecipient() != null && room.getCheckoutNotificationRecipient().equalsIgnoreCase(player.getUniqueId().toString())) {
-                            UUID uuid = UUID.fromString(room.getCheckoutNotificationRecipient());
-                            if (Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline()) {
-                                Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() + " room has lapsed and you have been checked out.  Please come stay with us again soon!");
-                                room.setCheckoutNotificationRecipient(null);
-                                HotelUtil.updateRoom(room);
-                                updateNecessary = true;
-                            }
-                            break;
+                        if (room.getCheckoutNotificationRecipient() != null &&
+                                room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
+                            room.setCheckoutNotificationRecipient(null);
+                            room.setCheckoutTime(0);
+                            HotelUtil.updateHotelRoom(room);
+                            HotelUtil.updateRooms();
+                            player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
+                                    " room has lapsed and you have been checked out. Please come stay with us again soon!");
+                            HotelUtil.expire.send(player);
+                            player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                            return;
                         }
-                    }
-                    if (updateNecessary) {
-                        HotelUtil.updateRooms();
+                        if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCurrentOccupant()
+                                != null && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                            HotelUtil.checkout(room, true);
+                        }
                     }
                 }
             }, 60L);
@@ -223,9 +226,15 @@ public class PlayerJoinAndLeave implements Listener {
         if (player.getVehicle() != null) {
             player.getVehicle().eject();
         }
+        for (HotelRoom room : HotelUtil.getRooms()) {
+            if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                HotelUtil.closeDoor(room);
+                break;
+            }
+        }
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
-        VisibleUtil.hideall.remove(player.getUniqueId());
+        VisibleUtil.logout(player.getUniqueId());
         Commandvanish.hidden.remove(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
         if (Shooter.getItem() != null) {

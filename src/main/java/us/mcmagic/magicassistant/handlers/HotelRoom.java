@@ -1,26 +1,37 @@
 package us.mcmagic.magicassistant.handlers;
 
+import java.util.UUID;
+
 /**
  * Created by Greenlock28 on 1/23/2015.
  */
 public class HotelRoom {
-    public String hotelName;
-    public int roomNumber;
-    public String currentOccupant;
-    public int occupationCooldown;
-    public Warp roomWarp;
-    public int cost;
-    public String checkoutNotificationRecipient = null;
+    private String hotelName;
+    private int roomNumber;
+    private UUID currentOccupant;
+    private String occupantName;
+    private long checkoutTime;
+    private Warp roomWarp;
+    private int cost;
+    private UUID checkoutNotificationRecipient;
+    private long stayLength;
+    private int x;
+    private int y;
+    private int z;
 
-    public HotelRoom(String hotelName, int roomNumber, String currentOccupant, int occupationCooldown, Warp roomWarp,
-                     int cost, String checkoutNotificationRecipient) {
+    public HotelRoom(String hotelName, int roomNumber, UUID currentOccupant, long checkoutTime, Warp roomWarp,
+                     int cost, UUID checkoutNotificationRecipient, long stayLength, int x, int y, int z) {
         this.hotelName = hotelName;
-        this.occupationCooldown = occupationCooldown;
+        this.checkoutTime = checkoutTime;
         this.currentOccupant = currentOccupant;
         this.roomNumber = roomNumber;
         this.roomWarp = roomWarp;
         this.cost = cost;
         this.checkoutNotificationRecipient = checkoutNotificationRecipient;
+        this.stayLength = stayLength;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public String getName() {
@@ -35,12 +46,12 @@ public class HotelRoom {
         return roomNumber;
     }
 
-    public String getCurrentOccupant() {
+    public UUID getCurrentOccupant() {
         return currentOccupant;
     }
 
-    public int getOccupationCooldown() {
-        return occupationCooldown;
+    public long getCheckoutTime() {
+        return checkoutTime;
     }
 
     public Warp getWarp() {
@@ -51,7 +62,7 @@ public class HotelRoom {
         return cost;
     }
 
-    public String getCheckoutNotificationRecipient() {
+    public UUID getCheckoutNotificationRecipient() {
         return checkoutNotificationRecipient;
     }
 
@@ -63,12 +74,12 @@ public class HotelRoom {
         this.roomNumber = roomNumber;
     }
 
-    public void setCurrentOccupant(String currentOccupant) {
+    public void setCurrentOccupant(UUID currentOccupant) {
         this.currentOccupant = currentOccupant;
     }
 
-    public void setOccupationCooldown(int currentOccupationCooldown) {
-        this.occupationCooldown = currentOccupationCooldown;
+    public void setCheckoutTime(long checkoutTime) {
+        this.checkoutTime = checkoutTime;
     }
 
     public void setWarp(Warp roomWarp) {
@@ -79,7 +90,7 @@ public class HotelRoom {
         this.cost = cost;
     }
 
-    public void setCheckoutNotificationRecipient(String cnr) {
+    public void setCheckoutNotificationRecipient(UUID cnr) {
         this.checkoutNotificationRecipient = cnr;
     }
 
@@ -88,6 +99,30 @@ public class HotelRoom {
     }
 
     public void decrementOccupationCooldown() {
-        this.occupationCooldown--;
+        this.checkoutTime--;
+    }
+
+    public long getStayLength() {
+        return stayLength;
+    }
+
+    public String getOccupantName() {
+        return occupantName;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public void setOccupantName(String occupantName) {
+        this.occupantName = occupantName;
     }
 }

@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/23/14
@@ -23,7 +22,8 @@ public class SpecialEditionClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            event.setCancelled(true);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -35,7 +35,7 @@ public class SpecialEditionClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Last Page")) {
-            InventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
             return;
         }
         Material type = item.getType();

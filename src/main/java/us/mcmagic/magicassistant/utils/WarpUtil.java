@@ -28,7 +28,7 @@ public class WarpUtil implements Listener {
     }
 
     public static boolean warpExists(String warp) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps` WHERE name = ?");
             sql.setString(1, warp);
@@ -44,7 +44,7 @@ public class WarpUtil implements Listener {
     }
 
     public static String getServer(String warp) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps` WHERE name = ?");
             sql.setString(1, warp);
@@ -61,7 +61,7 @@ public class WarpUtil implements Listener {
     }
 
     public static Location getLocation(String warp) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps` WHERE name=?");
             sql.setString(1, warp);
@@ -101,7 +101,7 @@ public class WarpUtil implements Listener {
     public synchronized static List<Warp> getWarps() {
         List<String> names = new ArrayList<>();
         List<Warp> warps = new ArrayList<>();
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT * FROM `warps`");
             ResultSet result = sql.executeQuery();
@@ -133,7 +133,7 @@ public class WarpUtil implements Listener {
     }
 
     public synchronized static void addWarp(Warp warp) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("INSERT INTO `warps` values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, warp.getName());
@@ -152,7 +152,7 @@ public class WarpUtil implements Listener {
     }
 
     public synchronized static void removeWarp(Warp warp) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("DELETE FROM `warps` WHERE name=?");
             sql.setString(1, warp.getName());
@@ -178,7 +178,7 @@ public class WarpUtil implements Listener {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             out.writeUTF("UpdateWarps");
-            out.writeUTF(MagicAssistant.serverName);
+            out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
             Bukkit.getServer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (IOException e) {
             Bukkit.getServer().getLogger().severe("There was an error contacting the Bungee server to update Warps!");

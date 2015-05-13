@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Greenlock28 on 1/24/2015.
@@ -19,9 +18,12 @@ public class HotelAndResortMenuClick {
         if (item == null) {
             return;
         }
+        if (item.getItemMeta() == null) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
         Material itemType = item.getType();
@@ -30,10 +32,10 @@ public class HotelAndResortMenuClick {
                 MagicAssistant.getInstance().sendToServer(player, "Resorts");
                 return;
             case BOOK:
-                InventoryUtil.openInventory(player, InventoryType.MYHOTELROOMS);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MYHOTELROOMS);
                 return;
             case BED:
-                InventoryUtil.openInventory(player, InventoryType.HOTELS);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELS);
         }
     }
 }

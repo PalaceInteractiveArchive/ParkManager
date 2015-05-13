@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.WarpUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 
 public class Commanduwarp implements CommandExecutor {
 
@@ -30,7 +31,7 @@ public class Commanduwarp implements CommandExecutor {
             }
             Location loc = player.getLocation();
             final Warp warp = WarpUtil.findWarp(w);
-            final Warp newWarp = new Warp(w, MagicAssistant.serverName, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(),
+            final Warp newWarp = new Warp(w, MCMagicCore.getMCMagicConfig().serverName, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(),
                     loc.getPitch(), loc.getWorld().getName());
             Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(),
                     new Runnable() {

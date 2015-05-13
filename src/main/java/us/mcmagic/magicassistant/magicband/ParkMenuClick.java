@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/15/14
@@ -20,9 +19,12 @@ public class ParkMenuClick {
         if (item == null) {
             return;
         }
+        if (item.getItemMeta() == null) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();

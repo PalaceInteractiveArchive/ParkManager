@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,18 +16,25 @@ public class PlayerData {
     private boolean dvc;
     private ChatColor bandName;
     private BandColor bandColor;
-    private HashMap<UUID, String> friends = new HashMap<>();
-    private HashMap<Integer, List<String>> pages = new HashMap<>();
+    private List<UUID> friends;
     private boolean special;
+    private boolean flash;
+    private boolean visibility;
+    private boolean loop;
+    private boolean hotel;
 
-    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, HashMap<UUID, String> friends, HashMap<Integer, List<String>> pages, boolean special) {
+    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends,
+                      boolean special, boolean flash, boolean visibility, boolean loop, boolean hotel) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
         this.bandColor = bandColor;
         this.friends = friends;
-        this.pages = pages;
         this.special = special;
+        this.flash = flash;
+        this.visibility = visibility;
+        this.loop = loop;
+        this.hotel = hotel;
     }
 
     public UUID getUniqueId() {
@@ -46,16 +53,28 @@ public class PlayerData {
         return bandColor;
     }
 
-    public HashMap<UUID, String> getFriendList() {
-        return friends;
-    }
-
-    public HashMap<Integer, List<String>> getPages() {
-        return pages;
+    public List<UUID> getFriendList() {
+        return new ArrayList<>(friends);
     }
 
     public void setBandColor(BandColor color) {
         this.bandColor = color;
+    }
+
+    public boolean getFlash() {
+        return flash;
+    }
+
+    public void setFlash(boolean flash) {
+        this.flash = flash;
+    }
+
+    public boolean getLoop() {
+        return loop;
+    }
+
+    public void setLoop(boolean loop) {
+        this.loop = loop;
     }
 
     public void setBandColor(Material color) {
@@ -85,6 +104,22 @@ public class PlayerData {
 
     public void setSpecial(boolean special) {
         this.special = special;
+    }
+
+    public boolean getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    public void setHotel(boolean hotel) {
+        this.hotel = hotel;
+    }
+
+    public boolean getHotel() {
+        return hotel;
     }
 
     /**
@@ -125,47 +160,4 @@ public class PlayerData {
         }
     }
 
-    public enum BandColor {
-        RED("red"), ORANGE("orange"), YELLOW("yellow"), GREEN("green"), BLUE("blue"), PURPLE("purple"), PINK("pink"), SPECIAL1("s1"), SPECIAL2("s2"), SPECIAL3("s3"), SPECIAL4("s4"), SPECIAL5("s5");
-        String name;
-
-        BandColor(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public BandColor fromString(String s) {
-            switch (s) {
-                case "red":
-                    return RED;
-                case "orange":
-                    return ORANGE;
-                case "yellow":
-                    return YELLOW;
-                case "green":
-                    return GREEN;
-                case "blue":
-                    return BLUE;
-                case "purple":
-                    return PURPLE;
-                case "pink":
-                    return PINK;
-                case "s1":
-                    return SPECIAL1;
-                case "s2":
-                    return SPECIAL2;
-                case "s3":
-                    return SPECIAL3;
-                case "s4":
-                    return SPECIAL4;
-                case "s5":
-                    return SPECIAL5;
-                default:
-                    return BLUE;
-            }
-        }
-    }
 }

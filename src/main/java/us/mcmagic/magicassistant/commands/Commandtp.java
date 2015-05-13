@@ -28,13 +28,13 @@ public class Commandtp implements CommandExecutor {
                 try {
                     Player tp = PlayerUtil.findPlayer(args[0]);
                     double x = args[1].startsWith("~") ? tp.getLocation().getX()
-                            + Integer.parseInt(args[1].substring(1)) : Integer
+                            + Double.parseDouble(args[1].substring(1)) : Integer
                             .parseInt(args[1]);
                     double y = args[2].startsWith("~") ? tp.getLocation().getY()
-                            + Integer.parseInt(args[2].substring(1)) : Integer
+                            + Double.parseDouble(args[2].substring(1)) : Integer
                             .parseInt(args[2]);
                     double z = args[3].startsWith("~") ? tp.getLocation().getZ()
-                            + Integer.parseInt(args[3].substring(1)) : Integer
+                            + Double.parseDouble(args[3].substring(1)) : Integer
                             .parseInt(args[3]);
                     Location loc = new Location(tp.getWorld(), x, y, z, tp
                             .getLocation().getYaw(), tp.getLocation().getPitch());
@@ -76,14 +76,11 @@ public class Commandtp implements CommandExecutor {
         if (args.length == 3) {
             try {
                 double x = args[0].startsWith("~") ? player.getLocation().getX()
-                        + Integer.parseInt(args[0].substring(1)) : Integer
-                        .parseInt(args[0]);
+                        + Double.parseDouble(args[0].substring(1)) : Double.parseDouble(args[0]);
                 double y = args[1].startsWith("~") ? player.getLocation().getY()
-                        + Integer.parseInt(args[1].substring(1)) : Integer
-                        .parseInt(args[1]);
+                        + Double.parseDouble(args[1].substring(1)) : Double.parseDouble(args[1]);
                 double z = args[2].startsWith("~") ? player.getLocation().getZ()
-                        + Integer.parseInt(args[2].substring(1)) : Integer
-                        .parseInt(args[2]);
+                        + Double.parseDouble(args[2].substring(1)) : Double.parseDouble(args[2]);
                 Location loc = new Location(player.getWorld(), x, y, z, player
                         .getLocation().getYaw(), player.getLocation().getPitch());
                 player.teleport(loc);
@@ -98,13 +95,13 @@ public class Commandtp implements CommandExecutor {
             try {
                 Player tp = PlayerUtil.findPlayer(args[0]);
                 double x = args[0].startsWith("~") ? player.getLocation().getX()
-                        + Integer.parseInt(args[0].substring(1)) : Integer
+                        + Double.parseDouble(args[0].substring(1)) : Integer
                         .parseInt(args[0]);
                 double y = args[1].startsWith("~") ? player.getLocation().getY()
-                        + Integer.parseInt(args[1].substring(1)) : Integer
+                        + Double.parseDouble(args[1].substring(1)) : Integer
                         .parseInt(args[1]);
                 double z = args[2].startsWith("~") ? player.getLocation().getZ()
-                        + Integer.parseInt(args[2].substring(1)) : Integer
+                        + Double.parseDouble(args[2].substring(1)) : Integer
                         .parseInt(args[2]);
                 Location loc = new Location(tp.getWorld(), x, y, z, tp
                         .getLocation().getYaw(), tp.getLocation().getPitch());

@@ -1,14 +1,19 @@
 package us.mcmagic.magicassistant.listeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
+import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 
 public class SignChange implements Listener {
     public MagicAssistant pl;
@@ -19,6 +24,7 @@ public class SignChange implements Listener {
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
+        Player player = event.getPlayer();
         Block b = event.getBlock();
         if (b.getType().equals(Material.SIGN)
                 || b.getType().equals(Material.SIGN_POST)
@@ -40,12 +46,19 @@ public class SignChange implements Listener {
                 int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace(" Coins", "").replace(" Coin", "").replace("$", "")));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(event.getLine(1));
                 if (HotelUtil.getRoom(fullRoomName) == null) {
-                    HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, 0, null, cost, null);
-                    pl.hotelRooms.add(newRoom);
+                    Location loc = HotelUtil.locFromSign(((Sign) b.getState()));
+                    HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, 0, null, cost, null, 259200, loc.getBlockX(),
+                            loc.getBlockY(), loc.getBlockZ());
+                    Warp warp = null;
+                    if (loc != null) {
+                        warp = new Warp(newRoom.getName().replace(" ", ""), MCMagicCore.getMCMagicConfig().serverName,
+                                loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(),
+                                player.getWorld().getName());
+                    }
+                    newRoom.setWarp(warp);
                     HotelUtil.addRoom(newRoom);
                     HotelUtil.updateRooms();
                 }
-                return;
             }
 
         }

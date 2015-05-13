@@ -15,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -53,21 +52,7 @@ public class PackManager implements Listener {
         final Player player = Bukkit.getPlayer(user.getUniqueId());
         String current = event.getPacks();
         String preferred = user.getPreferredPack();
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-            if (!MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal")) {
-                return;
-            }
-            if (current.equals("Seasonal")) {
-                return;
-            }
-            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    MCMagicCore.resourceManager.sendPack(player, "Seasonal");
-                }
-            }, 60L);
-            return;
-        }
+        boolean doSeasonal = !Bukkit.hasWhitelist();
         if (preferred.equals("none")) {
             player.sendMessage(ChatColor.GREEN + "Please select a Resource Pack. If you do not want one, select " +
                     ChatColor.RED + "Disabled.");
@@ -83,29 +68,40 @@ public class PackManager implements Listener {
             return;
         }
         if (preferred.equals("NoPrefer")) {
-            if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal")) {
+            if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
                 if (!user.getCurrentPack().equals("Seasonal")) {
                     MCMagicCore.resourceManager.sendPack(player, "Seasonal");
                 }
-            }
-            return;
-        }
-        if (!current.equals(preferred)) {
-            ResourcePack pack = MCMagicCore.resourceManager.getPack(preferred);
-            if (pack == null) {
-                player.sendMessage(ChatColor.RED + "Your selected Resource Pack is not available. Please select a new one.");
-                openMenu(player);
                 return;
             }
-            MCMagicCore.resourceManager.sendPack(player, pack.getName());
+            if (!user.getCurrentPack().equals("none")) {
+                MCMagicCore.resourceManager.sendPack(player, "Blank");
+            }
+            user.setCurrentPack("none");
+            MCMagicCore.resourceManager.setCurrentPack(user, "none");
+            return;
         }
-        if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal")) {
+        if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
             Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
                     MCMagicCore.resourceManager.sendPack(player, "Seasonal");
                 }
             }, 100L);
+        }
+        if (!current.equals(preferred)) {
+            ResourcePack pack = MCMagicCore.resourceManager.getPack(preferred);
+            if (pack == null) {
+                player.sendMessage(ChatColor.RED + "Your selected Resource Pack is not available. Please select a new one.");
+                Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        openMenu(player);
+                    }
+                }, 20L);
+                return;
+            }
+            MCMagicCore.resourceManager.sendPack(player, pack.getName());
         }
     }
 
@@ -116,8 +112,12 @@ public class PackManager implements Listener {
         }
         Player player = (Player) event.getWhoClicked();
         User user = MCMagicCore.getUser(player.getUniqueId());
+        boolean doSeasonal = !Bukkit.hasWhitelist();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            return;
+        }
+        if (item.getItemMeta() == null) {
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -133,28 +133,31 @@ public class PackManager implements Listener {
         }
         if (event.getSlot() == 8) {
             player.sendMessage(ChatColor.RED + "You disabled the Auto-Resource Pack!");
-            boolean needsBlank = !user.getCurrentPack().equals("none");
             MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), "Disabled");
-            user.setCurrentPack("Disabled");
             player.closeInventory();
-            if (needsBlank) {
+            if (!user.getCurrentPack().equalsIgnoreCase("none")) {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
+            user.setCurrentPack("none");
+            MCMagicCore.resourceManager.setCurrentPack(user, "none");
             return;
         }
         if (event.getSlot() == 0) {
             player.sendMessage(ChatColor.RED +
                     "You don't prefer any of the available packs, but still want packs like Seasonal to be installed.");
-            boolean needsBlank = !user.getCurrentPack().equals("none") && !user.getCurrentPack().equalsIgnoreCase("disabled");
             MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), "NoPrefer");
-            user.setCurrentPack("NoPrefer");
             player.closeInventory();
-            if (needsBlank) {
+            if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
+                if (!user.getCurrentPack().equals("Seasonal")) {
+                    MCMagicCore.resourceManager.sendPack(player, "Seasonal");
+                }
+                return;
+            }
+            if (!user.getCurrentPack().equals("none")) {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
-            if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal")) {
-                MCMagicCore.resourceManager.sendPack(player, "Seasonal");
-            }
+            user.setCurrentPack("none");
+            MCMagicCore.resourceManager.setCurrentPack(user, "none");
             return;
         }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
@@ -162,6 +165,7 @@ public class PackManager implements Listener {
             if (stack.getType().equals(item.getType())) {
                 user.setPreferredPack(entry.getKey());
                 user.setCurrentPack(entry.getKey());
+                MCMagicCore.resourceManager.setCurrentPack(user, "none");
                 player.closeInventory();
                 MCMagicCore.resourceManager.sendPack(player, entry.getKey());
                 MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), entry.getKey());
@@ -185,16 +189,18 @@ public class PackManager implements Listener {
         ItemStack none;
         if (preferred.equalsIgnoreCase("disabled")) {
             disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled " + ChatColor.GREEN +
-                    "(SELECTED)");
+                    "(SELECTED)", Arrays.asList(ChatColor.RED + "You will never be sent any", ChatColor.RED +
+                    "Resource Pack by our servers."));
         } else {
-            disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled");
+            disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled", Arrays.asList(ChatColor.RED
+                    + "You will never be sent any", ChatColor.RED + "Resource Pack by our servers."));
         }
         if (preferred.equalsIgnoreCase("NoPrefer")) {
-            none = new ItemCreator(Material.STONE, 1, (byte) 6, ChatColor.DARK_GRAY + "None " + ChatColor.GREEN +
+            none = new ItemCreator(Material.STONE, 1, (byte) 6, ChatColor.BLUE + "None " + ChatColor.GREEN +
                     "(SELECTED)", Arrays.asList(ChatColor.DARK_AQUA + "Selecting this still allows",
                     ChatColor.DARK_AQUA + "other Packs like Seasonal", ChatColor.DARK_AQUA + "to be installed automatically"));
         } else {
-            none = new ItemCreator(Material.STONE, 1, (byte) 6, ChatColor.DARK_GRAY + "None", Arrays.asList(ChatColor.DARK_AQUA
+            none = new ItemCreator(Material.STONE, 1, (byte) 6, ChatColor.BLUE + "None", Arrays.asList(ChatColor.DARK_AQUA
                             + "Selecting this still allows", ChatColor.DARK_AQUA + "other Packs like Seasonal",
                     ChatColor.DARK_AQUA + "to be installed automatically"));
         }
@@ -273,6 +279,9 @@ public class PackManager implements Listener {
                 player.sendMessage(ChatColor.RED + "Download failed! Please report this to a Staff Member. (Error Code 101)");
                 break;
             case DECLINED:
+                for (int i = 0; i < 5; i++) {
+                    player.sendMessage(" ");
+                }
                 player.sendMessage(ChatColor.RED + "You have declined the Resource Pack!");
                 player.sendMessage(ChatColor.YELLOW + "For help with this, visit: " + ChatColor.AQUA +
                         "http://mcmagic.us/rphelp");

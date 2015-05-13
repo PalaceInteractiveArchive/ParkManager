@@ -9,7 +9,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/23/14
@@ -23,7 +22,10 @@ public class AttractionListClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            return;
+        }
+        if (item.getItemMeta() == null) {
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -39,10 +41,12 @@ public class AttractionListClick {
         String invName = ChatColor.stripColor(event.getInventory().getName());
         switch (name) {
             case "Next Page":
-                InventoryUtil.openAttractionListPage(player, Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) + 1);
+                MagicAssistant.inventoryUtil.openAttractionListPage(player,
+                        Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) + 1);
                 return;
             case "Last Page":
-                InventoryUtil.openAttractionListPage(player, Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) - 1);
+                MagicAssistant.inventoryUtil.openAttractionListPage(player,
+                        Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) - 1);
                 return;
         }
         PlayerData.Attraction attraction = MagicAssistant.getAttraction(name);

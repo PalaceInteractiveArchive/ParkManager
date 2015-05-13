@@ -166,4 +166,4 @@ commands:
    nv:
       description: Give/take infinite Night Vision
       permission: arcade.bypass
-      permission-message: §4Please notify a Cast Member that you can’t do this.
+      permission-message: §4Only Cast Members can use this command!

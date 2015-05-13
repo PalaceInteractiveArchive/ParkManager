@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.magicband;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -9,10 +10,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -26,36 +31,43 @@ public class MainMenuClick {
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
         if (item.getType().equals(Material.SKULL_ITEM)) {
-            InventoryUtil.openInventory(player, InventoryType.MYPROFILE);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
             return;
         }
+        PlayerData pdata = MagicAssistant.getPlayerData(player.getUniqueId());
         switch (item.getType()) {
             case MINECART:
-                InventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
                 return;
             case FIREWORK:
-                InventoryUtil.openInventory(player, InventoryType.SHOWSANDEVENTS);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.SHOWSANDEVENTS);
                 return;
             case BED:
-                /*if (MagicAssistant.resortsServer) {
-                    InventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+                if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
                 } else {
-                    MagicAssistant.sendToServer(player, "Resorts");
-                }*/
-                InventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+                    Inventory hotel = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Visit Hotels and Resorts?");
+                    hotel.setItem(11, new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes", new ArrayList<String>()));
+                    hotel.setItem(15, new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No", new ArrayList<String>()));
+                    hotel.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(hotel);
+                }
                 return;
             case WOOL:
                 byte data = item.getData().getData();
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 if (data == 5) {
-                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
                     player.closeInventory();
                     VisibleUtil.addToHideAll(player);
+                    pdata.setVisibility(false);
+                    MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 } else {
-                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
                     VisibleUtil.removeFromHideAll(player);
+                    pdata.setVisibility(true);
+                    MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 }
                 return;
             case WATCH:
@@ -67,23 +79,23 @@ public class MainMenuClick {
                 inv.setItem(4, time);
                 return;
             case GOLD_BOOTS:
-                InventoryUtil.featureComingSoon(player);
+                MagicAssistant.inventoryUtil.featureComingSoon(player);
                 return;
             case POTATO_ITEM:
-                InventoryUtil.openInventory(player, InventoryType.FOOD);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FOOD);
                 return;
             case ENDER_PEARL:
                 player.closeInventory();
                 MagicAssistant.getInstance().sendToServer(player, "Hub");
                 return;
             case NETHER_STAR:
-                InventoryUtil.openInventory(player, InventoryType.PARK);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PARK);
                 return;
             case NOTE_BLOCK:
                 MagicAssistant.packManager.openMenu(player);
                 return;
             case FIREWORK_CHARGE:
-                InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
                 return;
             case GLOWSTONE_DUST:
                 player.closeInventory();

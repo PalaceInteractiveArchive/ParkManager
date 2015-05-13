@@ -1,20 +1,25 @@
 package us.mcmagic.magicassistant.commands;
 
+import net.minecraft.server.v1_8_R2.BlockPosition;
+import net.minecraft.server.v1_8_R2.PacketPlayOutBlockChange;
+import net.minecraft.server.v1_8_R2.PacketPlayOutNamedSoundEffect;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.FallingBlock;
+import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.blockchanger.Changer;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
@@ -38,7 +43,7 @@ import java.util.*;
  */
 public class Commandmagic implements Listener, CommandExecutor {
     private static HashMap<String, Show> songs = new HashMap<>();
-    public static List<String> containsCommandBlockOnly = Arrays.asList("stitch");
+    public static List<String> containsCommandBlockOnly = new ArrayList<>();
     public ParticleEffect effect;
     public Location location;
 
@@ -57,27 +62,123 @@ public class Commandmagic implements Listener, CommandExecutor {
             }
         }
         switch (args[0]) {
-            case "effect":
-                if (args.length == 8) {
-                } else if (args[1].contains("Particle")) {
-                    // magic effect(0) Particle(1) type(2) x,y,z(3) oX(4) oY(5) oZ(6) speed(7) amount(8)
-                    ParticleEffect effect = ParticleEffect.fromString(args[2]);
-                    Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + args[3]);
-                    try {
-                        double offsetX = Float.parseFloat(args[4]);
-                        double offsetY = Float.parseFloat(args[5]);
-                        double offsetZ = Float.parseFloat(args[6]);
-                        float speed = Float.parseFloat(args[7]);
-                        int amount = getInt(args[8]);
-
-                        ParticleUtil.spawnParticle(effect, loc, (float) offsetX, (float) offsetY, (float) offsetZ, speed, amount);
-
-                    } catch (NumberFormatException ignored) {
-                        sender.sendMessage(ChatColor.RED + "There was an error with numbers!");
-                    }
-                    helpMenu("effect", sender);
+            case "loop":
+                if (args.length != 8) {
+                    helpMenu("loop", sender);
+                    return true;
                 }
-
+                try {
+                    String sound = args[1];
+                    Player tp = PlayerUtil.findPlayer(args[2]);
+                    if (tp == null) {
+                        sender.sendMessage(ChatColor.RED + "Player not found!");
+                        return true;
+                    }
+                    PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
+                    if (!data.getLoop()) {
+                        return true;
+                    }
+                    double x = Double.parseDouble(args[3]);
+                    double y = Double.parseDouble(args[4]);
+                    double z = Double.parseDouble(args[5]);
+                    float volume = Float.parseFloat(args[6]);
+                    float pitch = Float.parseFloat(args[7]);
+                    PacketPlayOutNamedSoundEffect packet = new PacketPlayOutNamedSoundEffect(sound, x, y, z, volume, pitch);
+                    ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(packet);
+                    return true;
+                } catch (Exception e) {
+                    sender.sendMessage(ChatColor.RED + "Number Error!");
+                }
+                return true;
+            case "effect":
+                if (args.length == 1) {
+                    helpMenu("effect", sender);
+                    return true;
+                }
+                if (args[1].equalsIgnoreCase("particle")) {
+                    if (args.length == 11) {
+                        // magic effect(0) Particle(1) type(2) x(3) y(4) z(5) oX(6) oY(7) oZ(8) speed(9) amount(10)
+                        ParticleEffect effect = ParticleEffect.fromString(args[2]);
+                        Location loc = locFromArray(args[3], args[4], args[5]);
+                        try {
+                            double offsetX = Float.parseFloat(args[6]);
+                            double offsetY = Float.parseFloat(args[7]);
+                            double offsetZ = Float.parseFloat(args[8]);
+                            float speed = Float.parseFloat(args[9]);
+                            int amount = getInt(args[10]);
+                            for (Player tp : Bukkit.getOnlinePlayers()) {
+                                if (tp.getLocation().distance(loc) > 50) {
+                                    continue;
+                                }
+                                PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
+                                if (!data.getFlash()) {
+                                    continue;
+                                }
+                                ParticleUtil.spawnParticleForPlayer(effect, loc, (float) offsetX, (float) offsetY,
+                                        (float) offsetZ, speed, amount, tp);
+                            }
+                            return true;
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(ChatColor.RED + "There was an error with numbers!");
+                        }
+                    }
+                }
+                if (args[1].equalsIgnoreCase("flash")) {
+                    // magic effect(0) flash(1) x(2) y(3) z(4)
+                    if (args.length == 5) {
+                        try {
+                            Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(args[2]),
+                                    Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+                            double x = loc.getX();
+                            double y = loc.getY();
+                            double z = loc.getZ();
+                            Block block = loc.getBlock();
+                            final Material type = block.getType();
+                            final List<UUID> uuids = new ArrayList<>();
+                            for (Player tp : Bukkit.getOnlinePlayers()) {
+                                if (tp.getLocation().distance(loc) > 50) {
+                                    continue;
+                                }
+                                PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
+                                if (!data.getFlash()) {
+                                    continue;
+                                }
+                                uuids.add(tp.getUniqueId());
+                            }
+                            PacketPlayOutBlockChange blockChangeFirst = new PacketPlayOutBlockChange(((CraftWorld)
+                                    loc.getWorld()).getHandle(), new BlockPosition(x, y, z));
+                            final PacketPlayOutBlockChange blockChangeSecond = new PacketPlayOutBlockChange(((CraftWorld)
+                                    loc.getWorld()).getHandle(), new BlockPosition(x, y, z));
+                            blockChangeFirst.block = CraftMagicNumbers.getBlock(Material.REDSTONE_LAMP_ON).fromLegacyData(0);
+                            blockChangeSecond.block = CraftMagicNumbers.getBlock(type).fromLegacyData(block.getData());
+                            for (UUID uuid : uuids) {
+                                Player tp = Bukkit.getPlayer(uuid);
+                                if (tp == null) {
+                                    continue;
+                                }
+                                ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(blockChangeFirst);
+                            }
+                            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (UUID uuid : uuids) {
+                                        Player tp = Bukkit.getPlayer(uuid);
+                                        if (tp == null) {
+                                            continue;
+                                        }
+                                        ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(blockChangeSecond);
+                                    }
+                                }
+                            }, 6L);
+                            return true;
+                        } catch (NumberFormatException ignored) {
+                            sender.sendMessage(ChatColor.RED + "There was an error with numbers!");
+                            return true;
+                        }
+                    }
+                }
+                helpMenu("effect", sender);
+                return true;
             case "show":
                 if (args.length == 3) {
                     switch (args[1]) {
@@ -117,38 +218,54 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 helpMenu("show", sender);
                 return true;
-            case "block":
-                if (args.length == 9) {
-                    //magic block move 35 0.5 x1,y1,z1 x2,y2,z2 addX addY addZ
-                    sender.sendMessage("Working on it!");
-                    try {
-                        World world = Bukkit.getWorlds().get(0);
-                        String action = args[1];
-                        int id = getInt(args[2]);
-                        float speed = getFloat(args[3]);
-                        Location loc1 = getLocation(world, args[4]);
-                        Location loc2 = getLocation(world, args[5]);
-                        Bukkit.broadcastMessage("" + loc1 + " " + loc2);
-                        double maxX = getDouble(args[6]);
-                        double maxY = getDouble(args[7]);
-                        double maxZ = getDouble(args[8]);
-                        List<Block> blockList = getBlocks(loc1, loc2, id);
-                        Vector add = new Vector(maxX, maxY, maxZ);
-                        for (Block block : blockList) {
-                            block.setType(Material.AIR);
-                            FallingBlock fb = world.spawnFallingBlock(block.getLocation(), block.getType(), block.getData());
-                            fb.setVelocity(block.getLocation().add(maxX, maxY, maxZ).toVector());
+            case "uoe":
+                if (args.length == 4) {
+                    if (args[1].equalsIgnoreCase("eject")) {
+                        try {
+                            Location loc = getLocation(Bukkit.getWorlds().get(0), args[2]);
+                            int radius = getInt(args[3]);
+                            MagicAssistant.universeEnergyRide.eject(loc, radius);
+                        } catch (Exception e) {
+                            sender.sendMessage(ChatColor.RED + "There was an error!");
+                            e.printStackTrace();
                         }
-                        sender.sendMessage("Done!");
-                    } catch (NumberFormatException ignored) {
-                        sender.sendMessage(ChatColor.RED + "There was an error with numbers!");
-                    } catch (Exception e) {
-                        sender.sendMessage(ChatColor.RED + "There was an error!");
-                        e.printStackTrace();
+                        return true;
+                    }
+                }
+                if (args.length == 10) {
+                    if (args[1].equalsIgnoreCase("move")) {
+                        try {
+                            World world = Bukkit.getWorlds().get(0);
+                            String[] list = args[2].split(":");
+                            int id;
+                            Byte data = null;
+                            if (list.length == 2) {
+                                id = getInt(list[0]);
+                                data = Byte.parseByte(list[1]);
+                            } else {
+                                id = getInt(args[2]);
+                            }
+                            double speed = getDouble(args[3]);
+                            Location loc1 = getLocation(world, args[4]);
+                            Location loc2 = getLocation(world, args[5]);
+                            double moveX = getDouble(args[6]);
+                            double moveY = getDouble(args[7]);
+                            double moveZ = getDouble(args[8]);
+                            int radius = getInt(args[9]);
+                            MagicAssistant.universeEnergyRide.moveBlocks(loc1, loc2, id, data, moveX, moveY,
+                                    moveZ, speed, radius);
+                            sender.sendMessage(ChatColor.GREEN + "Spawned BlockMover successfully");
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage(ChatColor.RED + "There was an error with numbers!");
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            sender.sendMessage(ChatColor.RED + "There was an error!");
+                            e.printStackTrace();
+                        }
                     }
                     return true;
                 }
-                helpMenu("block", sender);
+                helpMenu("uoe", sender);
                 return true;
             case "sge":
                 switch (args.length) {
@@ -156,6 +273,16 @@ public class Commandmagic implements Listener, CommandExecutor {
                         if (args[1].equalsIgnoreCase("lock")) {
                             MagicAssistant.stitch.toggleLock(sender);
                             return true;
+                        }
+                        return true;
+                    case 3:
+                        if (args[1].equalsIgnoreCase("join")) {
+                            Player tp = PlayerUtil.findPlayer(args[2]);
+                            if (tp == null) {
+                                sender.sendMessage(ChatColor.RED + "Player not found!");
+                                return true;
+                            }
+                            MagicAssistant.stitch.joinShow(tp);
                         }
                         return true;
                     case 4:
@@ -259,7 +386,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                         "Changer Wand", Collections.singletonList(""));
                                 ((Player) sender).getInventory().addItem(wand);
                                 sender.sendMessage(ChatColor.LIGHT_PURPLE + "There's your wand!");
-                                sender.sendMessage(ChatColor.RED + "REMEMBER: NorthEast bottom to SouthWest top");
+                                sender.sendMessage(ChatColor.RED + "REMEMBER: NorthWest bottom to SouthEast top");
                                 sender.sendMessage(ChatColor.RED + "If done any other way, it won't work!");
                                 return true;
                         }
@@ -400,25 +527,41 @@ public class Commandmagic implements Listener, CommandExecutor {
         return true;
     }
 
+    private Location locFromArray(String... args) throws NumberFormatException {
+        if (args.length != 3) {
+            return null;
+        }
+        return new Location(Bukkit.getWorlds().get(0), Double.parseDouble(args[0]), Double.parseDouble(args[1]),
+                Double.parseDouble(args[2]));
+    }
+
     public static void helpMenu(String menu, CommandSender sender) {
         switch (menu) {
             case "main":
                 sender.sendMessage(ChatColor.GREEN + "Magic Commands:");
-                sender.sendMessage(ChatColor.GREEN + "/magic reload " + ChatColor.AQUA + "- Reload plugin");
-                sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
-                sender.sendMessage(ChatColor.GREEN + "/magic block " + ChatColor.AQUA + "- Manipulate Blocks");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
                 sender.sendMessage(ChatColor.GREEN + "/magic changer " + ChatColor.AQUA + "- Change blocks for rides!");
+                sender.sendMessage(ChatColor.GREEN + "/magic effect " + ChatColor.AQUA + "- Cool effects for shows!");
+                sender.sendMessage(ChatColor.GREEN + "/magic loop " + ChatColor.AQUA + "- Play Park-Loop Music");
+                sender.sendMessage(ChatColor.GREEN + "/magic reload " + ChatColor.AQUA + "- Reload plugin");
+                sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
+                sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
+                sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
                 break;
             case "show":
                 sender.sendMessage(ChatColor.GREEN + "Show Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic show start [Show Name] " + ChatColor.AQUA + "- Start a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic show stop [Show Name] " + ChatColor.AQUA + "- Stop a Show");
                 break;
-            case "block":
-                sender.sendMessage(ChatColor.GREEN + "Block Commands:");
-                sender.sendMessage(ChatColor.GREEN + "/magic block move [blockID] [speed] x1,y1,z1 x2,y2,z2 addX addY addZ");
+            case "uoe":
+                sender.sendMessage(ChatColor.GREEN + "UOE Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic uoe move BlockID(:Data) [speed] x1,y1,z1 x2,y2,z2 addX addY addZ radius");
+                sender.sendMessage(ChatColor.GREEN + "/magic uoe eject x,y,z radius");
+                break;
+            case "loop":
+                sender.sendMessage(ChatColor.GREEN + "Loop Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic loop [Sound] [Player] x y z volume pitch " + ChatColor.AQUA
+                        + "- Modified");
                 break;
             case "sge":
                 sender.sendMessage(ChatColor.GREEN + "Stitch Commands:");
@@ -436,10 +579,14 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic changer create [Name] [From] [To] [Sender]" + ChatColor.AQUA
                         + "- Create a Changer Area");
                 sender.sendMessage(ChatColor.AQUA + "*Remember, use Block IDs instead of Block Names*");
-                sender.sendMessage(ChatColor.GREEN + "/magic changer wand " + ChatColor.AQUA + "Get the Changer Wand");
-                sender.sendMessage(ChatColor.GREEN + "/magic changer remove [Name] " + ChatColor.AQUA + "Remove a Changer Area");
+                sender.sendMessage(ChatColor.GREEN + "/magic changer wand " + ChatColor.AQUA + "- Get the Changer Wand");
+                sender.sendMessage(ChatColor.GREEN + "/magic changer remove [Name] " + ChatColor.AQUA + "- Remove a Changer Area");
                 sender.sendMessage(ChatColor.GREEN + "/magic changer reload " + ChatColor.AQUA + "- Reload areas");
                 break;
+            case "effect":
+                sender.sendMessage(ChatColor.GREEN + "Effect Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic effect particle type x y z xd yd zd speed amount");
+                sender.sendMessage(ChatColor.GREEN + "/magic effect flash x y z");
         }
         if (containsCommandBlockOnly.contains(menu)) {
             sender.sendMessage(ChatColor.RED + "* Only Command Blocks can do this");

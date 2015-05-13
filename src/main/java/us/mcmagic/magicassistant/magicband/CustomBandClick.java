@@ -6,10 +6,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.handlers.BandColor;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/21/14
@@ -21,9 +20,12 @@ public class CustomBandClick {
         if (item == null) {
             return;
         }
+        if (item.getItemMeta() == null) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -32,10 +34,10 @@ public class CustomBandClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Next Page")) {
-            InventoryUtil.openInventory(player, InventoryType.SPECIALCOLOR);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.SPECIALCOLOR);
             return;
         }
-        PlayerData.BandColor color = MagicAssistant.bandUtil.getBandColor(name.toLowerCase());
+        BandColor color = MagicAssistant.bandUtil.getBandColor(name.toLowerCase());
         if (color.equals(MagicAssistant.getPlayerData(player.getUniqueId()).getBandColor())) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");

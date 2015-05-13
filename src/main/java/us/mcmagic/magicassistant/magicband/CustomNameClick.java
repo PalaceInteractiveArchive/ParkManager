@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/21/14
@@ -22,7 +21,10 @@ public class CustomNameClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            return;
+        }
+        if (item.getItemMeta() == null) {
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -30,8 +32,8 @@ public class CustomNameClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        ChatColor color = MagicAssistant.getInstance().bandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
+        ChatColor color = MagicAssistant.bandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
         player.closeInventory();
-        MagicAssistant.getInstance().bandUtil.setBandName(player, color);
+        MagicAssistant.bandUtil.setBandName(player, color);
     }
 }

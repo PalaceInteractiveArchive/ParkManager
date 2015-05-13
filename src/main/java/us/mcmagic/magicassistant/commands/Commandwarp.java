@@ -39,7 +39,7 @@ public class Commandwarp implements CommandExecutor {
                     warp = WarpUtil.findWarp(w);
                 }
                 String targetServer = warp.getServer();
-                String currentServer = MagicAssistant.serverName;
+                String currentServer = MCMagicCore.getMCMagicConfig().serverName;
                 final Location loc = warp.getLocation();
                 if (targetServer.equals(currentServer)) {
                     if (tp.isInsideVehicle()) {
@@ -105,7 +105,7 @@ public class Commandwarp implements CommandExecutor {
                 }
             }
             String targetServer = warp.getServer();
-            String currentServer = MagicAssistant.serverName;
+            String currentServer = MCMagicCore.getMCMagicConfig().serverName;
             final Location loc = warp.getLocation();
             if (targetServer.equals(currentServer)) {
                 if (player.isInsideVehicle()) {
@@ -156,7 +156,7 @@ public class Commandwarp implements CommandExecutor {
                 warp = WarpUtil.findWarp(w);
             }
             final String targetServer = warp.getServer();
-            String currentServer = MagicAssistant.serverName;
+            String currentServer = MCMagicCore.getMCMagicConfig().serverName;
             final Location loc = warp.getLocation();
             if (targetServer.equals(currentServer)) {
                 player.sendMessage(ChatColor.BLUE + tp.getName()

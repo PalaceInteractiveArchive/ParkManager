@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -148,7 +149,9 @@ public class MathUtil {
     }
 
     public static float getLookAtYaw(double dx, double dz) {
-        return atan2(dz, dx) - 180.0F;
+        float amount = atan2(dz, dx) - 90.0F;
+        Bukkit.broadcastMessage(dx + " " + dz + " " + String.valueOf(amount));
+        return amount;
     }
 
     public static float getLookAtPitch(double dX, double dY, double dZ) {

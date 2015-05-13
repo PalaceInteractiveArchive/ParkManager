@@ -1,7 +1,12 @@
 package us.mcmagic.magicassistant.ridemanager;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R2.EnumDirection;
+import net.minecraft.server.v1_8_R2.PacketPlayInSteerVehicle;
 import net.minecraft.server.v1_8_R2.WorldServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,12 +16,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import us.mcmagic.magicassistant.MagicAssistant;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,13 +34,16 @@ public class RideManager implements Listener {
     private List<Train> trains = new ArrayList<>();
     private List<BlockFace> faces = Arrays.asList(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
 
+    public RideManager() {
+        registerProtocolLibListener();
+    }
+
     public Cart spawn(Location loc) {
         if (!canSpawn(loc)) {
             return null;
         }
         Cart cart = new Cart(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ());
         WorldServer realWorld = ((CraftWorld) loc.getWorld()).getHandle();
-        realWorld.addEntity(cart);
         return cart;
     }
 
@@ -85,10 +94,7 @@ public class RideManager implements Listener {
                         //Spawning
                         spawn(loc.add(0.5, 0, 0.5));
                     } else {
-                        Cart cart = spawn(loc.add(0.5, 0, 0.5));
-                        EnumDirection d = cart.getDirection();
                         double power = 0;
-                        EnumDirection direction;
                         /*
                         try {
                             direction = dirFromString(list[1]);
@@ -104,6 +110,7 @@ public class RideManager implements Listener {
                             s.update();
                             return;
                         }
+                        Cart cart = spawn(loc.add(0.5, 0, 0.5), power);
                         cart.setPower(power);
                     }
                 }
@@ -111,6 +118,16 @@ public class RideManager implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Cart spawn(Location loc, double power) {
+        if (!canSpawn(loc)) {
+            return null;
+        }
+        Cart cart = new Cart(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), power);
+        WorldServer realWorld = ((CraftWorld) loc.getWorld()).getHandle();
+        realWorld.addEntity(cart);
+        return cart;
     }
 
     private EnumDirection dirFromString(String s) {
@@ -127,6 +144,31 @@ public class RideManager implements Listener {
             default:
                 return null;
         }
+    }
+
+    private void registerProtocolLibListener() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
+                PacketType.Play.Client.STEER_VEHICLE) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                Player player = event.getPlayer();
+                if (player.isInsideVehicle()) {
+                    Entity vehicle = player.getVehicle();
+                    if (!(vehicle instanceof Cart) && !(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand)) {
+                        return;
+                    }
+                    if (event.getPacket().getHandle() instanceof PacketPlayInSteerVehicle) {
+                        try {
+                            Field f = PacketPlayInSteerVehicle.class.getDeclaredField("d");
+                            f.setAccessible(true);
+                            f.set(event.getPacket().getHandle(), false);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @EventHandler

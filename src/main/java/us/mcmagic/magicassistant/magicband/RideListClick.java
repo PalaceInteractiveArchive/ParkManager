@@ -9,7 +9,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Ride;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/22/14
@@ -21,9 +20,12 @@ public class RideListClick {
         if (item == null) {
             return;
         }
+        if (item.getItemMeta() == null) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -39,10 +41,12 @@ public class RideListClick {
         String invName = ChatColor.stripColor(event.getInventory().getName());
         switch (name) {
             case "Next Page":
-                InventoryUtil.openRideListPage(player, Integer.parseInt(invName.replaceAll("Ride List Page ", "")) + 1);
+                MagicAssistant.inventoryUtil.openRideListPage(player,
+                        Integer.parseInt(invName.replaceAll("Ride List Page ", "")) + 1);
                 return;
             case "Last Page":
-                InventoryUtil.openRideListPage(player, Integer.parseInt(invName.replaceAll("Ride List Page ", "")) - 1);
+                MagicAssistant.inventoryUtil.openRideListPage(player,
+                        Integer.parseInt(invName.replaceAll("Ride List Page ", "")) - 1);
                 return;
         }
         Ride ride = MagicAssistant.getRide(name);

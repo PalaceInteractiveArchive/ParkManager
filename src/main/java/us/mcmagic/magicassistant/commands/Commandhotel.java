@@ -1,75 +1,77 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Greenlock28 on 1/23/2015.
  */
-public class Commandhotel {
+public class Commandhotel implements CommandExecutor {
 
     private static List<String> usersNeedingConfirmationForClear = new ArrayList<>();
 
-    public static void execute(CommandSender sender, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.isOp()) {
             sender.sendMessage(ChatColor.RED + "You do not have permission to perform this command!");
-            return;
+            return true;
         }
 
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.RED + "/hotel <reload|list|clear|add|remove|vacate|occupy|gift|setwarp|info|extendtime|settime>");
-            return;
+            sender.sendMessage(ChatColor.RED + "/hotel <reload|list|clear|remove|vacate|occupy|gift|setwarp|info|extendtime|settime>");
+            return true;
         }
 
         switch (args[0]) {
             case "confirm":
                 execute_confirm(sender, args);
-                return;
+                return true;
             case "reload":
                 execute_reload(sender, args);
-                return;
+                return true;
             case "list":
                 execute_list(sender, args);
-                return;
+                return true;
             case "clear":
                 execute_clear(sender, args, false);
-                return;
-            case "add":
-                execute_add(sender, args);
-                return;
+                return true;
             case "remove":
                 execute_remove(sender, args);
-                return;
+                return true;
             case "vacate":
                 execute_vacate(sender, args);
-                return;
+                return true;
             case "occupy":
                 execute_occupy(sender, args);
-                return;
+                return true;
             case "gift":
                 execute_gift(sender, args);
-                return;
+                return true;
             case "setwarp":
                 execute_setwarp(sender, args);
-                return;
+                return true;
             case "info":
                 execute_info(sender, args);
-                return;
+                return true;
             case "extendtime":
                 execute_extendtime(sender, args);
-                return;
+                return true;
             case "settime":
                 execute_settime(sender, args);
         }
+        return true;
     }
 
     private static void execute_confirm(CommandSender sender, String[] args) {
@@ -128,25 +130,6 @@ public class Commandhotel {
         sender.sendMessage(ChatColor.BLUE + "Hotel rooms have been cleared!");
     }
 
-    private static void execute_add(CommandSender sender, String[] args) {
-        List<String> tweakedArgs = getAdvancedArguments(args);
-
-        if (tweakedArgs.size() < 4) {
-            sender.sendMessage(ChatColor.RED + "Not enough arguments were provided!");
-            sender.sendMessage(ChatColor.RED + "Usage: /hotel add <hotelName> <roomNumber> <cost>");
-            sender.sendMessage(ChatColor.RED + "This command supports the use of \" and ' to include spaces in command arguments.");
-            return;
-        }
-
-        HotelRoom newRoom = new HotelRoom(tweakedArgs.get(1), Integer.parseInt(tweakedArgs.get(2)), null, 0, null,
-                Integer.parseInt(tweakedArgs.get(3)), null);
-        HotelUtil.addRoom(newRoom);
-        HotelUtil.refreshRooms();
-        HotelUtil.updateRooms();
-
-        sender.sendMessage(ChatColor.BLUE + "Room \"" + newRoom.getName() + "\" has been created!");
-    }
-
     private static void execute_remove(CommandSender sender, String[] args) {
         List<String> tweakedArgs = getAdvancedArguments(args);
 
@@ -185,8 +168,8 @@ public class Commandhotel {
             return;
         }
         room.setCurrentOccupant(null);
-        room.setOccupationCooldown(0);
-        HotelUtil.updateRoom(room);
+        room.setCheckoutTime(0);
+        HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
 
         sender.sendMessage(ChatColor.BLUE + "Room \"" + tweakedArgs.get(1) + "\" has been vacated!");
@@ -213,9 +196,9 @@ public class Commandhotel {
             sender.sendMessage(ChatColor.RED + "The specified room does not exist!");
             return;
         }
-        room.setCurrentOccupant(player.getUniqueId().toString());
-        room.setOccupationCooldown(72);
-        HotelUtil.updateRoom(room);
+        room.setCurrentOccupant(player.getUniqueId());
+        room.setCheckoutTime(72);
+        HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
 
         sender.sendMessage(ChatColor.BLUE + "You are now occupying room \"" + tweakedArgs.get(1) + "\"!");
@@ -251,9 +234,9 @@ public class Commandhotel {
             return;
         }
         //room.setCurrentOccupant(targetPlayer.getUniqueId().toString());
-        room.setCurrentOccupant(targetPlayer);
-        room.setOccupationCooldown(72);
-        HotelUtil.updateRoom(room);
+        room.setCurrentOccupant(UUID.fromString(targetPlayer));
+        room.setCheckoutTime(72);
+        HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
 
         sender.sendMessage(ChatColor.BLUE + "You gifted room \"" + tweakedArgs.get(1) + "\" to " + tweakedArgs.get(2) + "!");
@@ -280,11 +263,11 @@ public class Commandhotel {
             sender.sendMessage(ChatColor.RED + "The specified room does not exist!");
             return;
         }
-        Warp roomWarp = new Warp(tweakedArgs.get(1).replace(" ", ""), MagicAssistant.serverName, player.getLocation().getX(),
+        Warp roomWarp = new Warp(tweakedArgs.get(1).replace(" ", ""), MCMagicCore.getMCMagicConfig().serverName, player.getLocation().getX(),
                 player.getLocation().getY(), player.getLocation().getZ(), player.getLocation().getYaw(),
                 player.getLocation().getPitch(), player.getLocation().getWorld().getName());
         room.setWarp(roomWarp);
-        HotelUtil.updateRoom(room);
+        HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
 
         sender.sendMessage(ChatColor.BLUE + "You set the warp for room \"" + tweakedArgs.get(1) + "\"!");
@@ -320,7 +303,7 @@ public class Commandhotel {
             sender.sendMessage(ChatColor.YELLOW + "Current Occupant: " + room.getCurrentOccupant() + " (" +
                     PlayerUtil.getNameFromUUID(room.getCurrentOccupant()) + ")");
         }
-        sender.sendMessage(ChatColor.YELLOW + "Occupation Cooldown (Hours Left + 1): " + Integer.toString(room.getOccupationCooldown()));
+        sender.sendMessage(ChatColor.YELLOW + "Occupation Cooldown (Hours Left + 1): " + Long.toString(room.getCheckoutTime()));
         sender.sendMessage(ChatColor.YELLOW + "Cost (Coins): " + Integer.toString(room.getCost()));
         sender.sendMessage(ChatColor.YELLOW + "Checkout Notification Recipient: " + (room.getCheckoutNotificationRecipient() == null ? "None" : room.getCheckoutNotificationRecipient()));
     }
@@ -346,8 +329,8 @@ public class Commandhotel {
             sender.sendMessage(ChatColor.RED + "The specified room does not exist!");
             return;
         }
-        room.setOccupationCooldown(room.getOccupationCooldown() + Integer.parseInt(tweakedArgs.get(2)));
-        HotelUtil.updateRoom(room);
+        room.setCheckoutTime(room.getCheckoutTime() + Integer.parseInt(tweakedArgs.get(2)));
+        HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
 
         sender.sendMessage(ChatColor.BLUE + "You extended the reservation time for the room \"" + tweakedArgs.get(1) + "\"!");
@@ -374,8 +357,8 @@ public class Commandhotel {
             sender.sendMessage(ChatColor.RED + "The specified room does not exist!");
             return;
         }
-        room.setOccupationCooldown(Integer.parseInt(tweakedArgs.get(2)));
-        HotelUtil.updateRoom(room);
+        room.setCheckoutTime(Integer.parseInt(tweakedArgs.get(2)));
+        HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
 
         sender.sendMessage(ChatColor.BLUE + "You extended the reservation time for the room \"" + tweakedArgs.get(1) + "\"!");

@@ -34,7 +34,12 @@ public class Cart extends EntityMinecartRideable {
     private boolean slowdown = false;
     private boolean playerEnter = true;
     private boolean playerExit;
-    private double power = 0.2;
+    private double power = 0.1;
+
+    public Cart(World world, double d0, double d1, double d2, double power) {
+        this(world, d0, d1, d2);
+        this.power = power;
+    }
 
     public Cart(World world, double d0, double d1, double d2) {
         super(world, d0, d1, d2);
@@ -44,8 +49,11 @@ public class Cart extends EntityMinecartRideable {
     public void move(double x, double y, double z) {
         Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
         updateDirection();
+        double cos = FaceUtil.cos(direction);
+        double sin = FaceUtil.sin(direction);
         motX = power * FaceUtil.cos(direction);
         motZ = power * FaceUtil.sin(direction);
+        System.out.println(direction);
         super.move(x, y, z);
     }
 
@@ -108,9 +116,10 @@ public class Cart extends EntityMinecartRideable {
     @Override
     public void die() {
         CartDestroyEvent e = new CartDestroyEvent(this);
+        Bukkit.getPluginManager().callEvent(e);
         if (!e.isCancelled()) {
             CraftEntity entity = getBukkitEntity();
-            ParticleUtil.spawnParticle(ParticleEffect.SMOKE, entity.getLocation(), 0.1f, 0.1f, 0.1f, 0, 5);
+            ParticleUtil.spawnParticle(ParticleEffect.SMOKE, entity.getLocation().add(0, 0.3, 0), 0.1f, 0.1f, 0.1f, 0, 5);
             entity.getWorld().playSound(getBukkitEntity().getLocation(), Sound.FIZZ, 10, 2);
             super.die();
         }
@@ -213,11 +222,11 @@ public class Cart extends EntityMinecartRideable {
 
     private void updateDirection() {
         Vector vec = getBukkitEntity().getVelocity();
+        //Bukkit.broadcastMessage(vec.toString());
         if (direction == null) {
             direction = FaceUtil.getDirection(vec);
         }
         BlockFace mdir = getMovementDirection(vec);
-        System.out.println(mdir);
         updateDirection(mdir);
     }
 
@@ -293,9 +302,12 @@ public class Cart extends EntityMinecartRideable {
         } else if (isCurved()) {
             BlockFace movementDir = FaceUtil.getDirection(movement);
             BlockFace[] possibleDirections = FaceUtil.getFaces(raildirection.getOppositeFace());
+            //System.out.println(movementDir);
             if (FaceUtil.isSubCardinal(movementDir)) {
+                System.out.println("sub");
                 direction = movementDir;
             } else {
+                System.out.println("not");
                 BlockFace directionTo;
                 if (possibleDirections[0] == movementDir) {
                     directionTo = possibleDirections[0];
@@ -347,7 +359,6 @@ public class Cart extends EntityMinecartRideable {
         boolean alongX = FaceUtil.isAlongX(direction);
         boolean alongZ = FaceUtil.isAlongZ(direction);
         boolean alongY = FaceUtil.isAlongY(direction);
-        System.out.println(alongX + " " + alongY + " " + alongZ);
         return ((!alongZ) && (!alongY) && (!alongX));
     }
 

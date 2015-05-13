@@ -67,7 +67,7 @@ public class ChatListener implements Listener {
         } else {
             emsg = msg;
         }
-        String servername = MagicAssistant.serverName;
+        String servername = MCMagicCore.getMCMagicConfig().serverName;
         String message = ChatColor.WHITE + "[" + ChatColor.GREEN + servername
                 + ChatColor.WHITE + "] " + "" + rank.getNameWithBrackets() + ChatColor.WHITE + " "
                 + ChatColor.GRAY + player.getName() + ": " + ChatColor.WHITE

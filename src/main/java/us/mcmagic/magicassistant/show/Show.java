@@ -95,7 +95,7 @@ public class Show {
 
                 // Load Firework Effects
                 if (tokens[0].equals("Effect")) {
-                    FireworkEffect effect = ParseEffect(tokens[2]);
+                    FireworkEffect effect = parseEffect(tokens[2]);
 
                     if (effect == null) {
                         _invalidLines.put(strLine, "Invalid Effect Line");
@@ -290,10 +290,18 @@ public class Show {
                 }
 
                 // Firework
-                else if (tokens[1].contains("Firework")) {
+                else if (tokens[1].contains("CustomFirework")) {
+                    if (tokens.length != 6) {
+                        _invalidLines.put(strLine, "Invalid CustomFirework Line Length");
+                    }
+                    Location loc = WorldUtil.strToLoc(tokens[2]);
+                    Vector motion = new Vector(Double.parseDouble(tokens[3]), Double.parseDouble(tokens[4]),
+                            Double.parseDouble(tokens[5]));
+                    _actions.add(new CustomFireworkAction(this, time, loc, motion));
+                    continue;
+                } else if (tokens[1].contains("Firework")) {
                     if (tokens.length != 7) {
-                        _invalidLines.put(strLine,
-                                "Invalid Firework Line Length");
+                        _invalidLines.put(strLine, "Invalid Firework Line Length");
                         continue;
                     }
 
@@ -344,6 +352,8 @@ public class Show {
                         continue;
                     }
 
+                    ///summon FireworksRocketEntity -86 73 3024 {LifeTime:0,Motion:[0.6,1.4,-0.1],FireworksItem:{id:401,Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:0,Trail:1,Colors:[16252672],FadeColors:[8552544]}]}}}}
+
                     // Dir Power
                     double dirPower;
                     try {
@@ -358,9 +368,7 @@ public class Show {
                         _invalidLines.put(strLine, "Invalid Direction Power");
                         continue;
                     }
-
-                    _actions.add(new FireworkAction(this, time, loc,
-                            effectList, power, dir, dirPower));
+                    _actions.add(new FireworkAction(this, time, loc, effectList, power, dir, dirPower));
                 }
 
                 // Schematic
@@ -513,7 +521,7 @@ public class Show {
         }
     }
 
-    public FireworkEffect ParseEffect(String effect) {
+    public FireworkEffect parseEffect(String effect) {
         String[] tokens = effect.split(",");
 
         // Shape

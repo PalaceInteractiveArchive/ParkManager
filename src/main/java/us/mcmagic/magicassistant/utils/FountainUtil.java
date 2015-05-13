@@ -7,18 +7,19 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.show.Fountain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class FountainUtil implements Listener {
     public World _world;
     public MagicAssistant pl;
     public static List<Fountain> fountains = new ArrayList<>();
+    private List<UUID> blocks = new ArrayList<>();
 
     public FountainUtil(MagicAssistant instance) {
         pl = instance;
@@ -30,10 +31,9 @@ public class FountainUtil implements Listener {
     public void start() {
         Bukkit.getScheduler().runTaskTimer(pl, new Runnable() {
             public void run() {
-                for (int i = 0; i < fountains.size(); i++) {
-                    Fountain f = fountains.get(i);
+                for (Fountain f : new ArrayList<>(fountains)) {
                     double duration = f.getDuration();
-                    if (duration < 0) {
+                    if (duration <= 0) {
                         fountains.remove(f);
                         continue;
                     }
@@ -44,20 +44,18 @@ public class FountainUtil implements Listener {
                     FallingBlock fb = _world.spawnFallingBlock(loc, type, data);
                     fb.setVelocity(force);
                     fb.setDropItem(false);
-                    fb.setMetadata("fountain", new FixedMetadataValue(pl, true));
                     f.setDuration(duration - 0.1);
+                    blocks.add(fb.getUniqueId());
                 }
             }
-        }, 1, 1);
+        }, 2, 2);
     }
 
     @EventHandler
     public void entityToBlock(EntityChangeBlockEvent event) {
-        if (event.getEntity().hasMetadata("fountain")) {
-            if (event.getEntity().getMetadata("fountain").get(0).asBoolean()) {
-                event.setCancelled(true);
-                event.getEntity().remove();
-            }
+        if (blocks.contains(event.getEntity().getUniqueId())) {
+            event.setCancelled(true);
+            event.getEntity().remove();
         }
     }
 }

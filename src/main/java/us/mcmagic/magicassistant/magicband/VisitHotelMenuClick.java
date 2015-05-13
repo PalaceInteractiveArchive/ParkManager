@@ -10,14 +10,11 @@ import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.coins.Coins;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 /**
- * Created by Greenlock28 on 1/25/2015.
+ * Created by Marc on 5/10/15
  */
-public class HotelRoomMenuClick {
+public class VisitHotelMenuClick {
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -26,7 +23,7 @@ public class HotelRoomMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELS);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
 
@@ -48,23 +45,14 @@ public class HotelRoomMenuClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        HotelRoom room = HotelUtil.getRoom(name);
-        boolean staff = MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.INTERN.getRankId();
-        if (staff || Coins.getSqlCoins(player.getUniqueId()) >= room.getCost()) {
-            if (!staff) {
-                Coins.minusSqlCoins(player.getUniqueId(), room.getCost());
-            }
-            room.setCurrentOccupant(player.getUniqueId());
-            room.setCheckoutTime((System.currentTimeMillis() / 1000) + room.getStayLength());
-            HotelUtil.updateHotelRoom(room);
-            HotelUtil.updateRooms();
-            player.closeInventory();
-            player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for " +
-                    Integer.toString(room.getCost()) + " coins!");
-            player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
-        } else {
-            player.closeInventory();
-            player.sendMessage(ChatColor.RED + "You don't have enough coins to book this room!");
+        switch (name) {
+            case "Yes":
+                MagicAssistant.getInstance().sendToServer(player, "Resorts");
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Resorts...");
+                return;
+            case "No":
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }
 }

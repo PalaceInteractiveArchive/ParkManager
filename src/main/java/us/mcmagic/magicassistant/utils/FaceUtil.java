@@ -116,8 +116,11 @@ public class FaceUtil {
     public static boolean isSubCardinal(BlockFace face) {
         switch (face.ordinal()) {
             case 1:
+                return true;
             case 2:
+                return true;
             case 3:
+                return true;
             case 4:
                 return true;
         }
@@ -173,38 +176,41 @@ public class FaceUtil {
     }
 
     public static double cos(BlockFace face) {
-        switch (face.ordinal()) {
-            case 2:
-            case 4:
-                return -0.707106781D;
-            case 1:
-            case 3:
-                return 0.707106781D;
-            case 7:
-                return 1.0D;
-            case 6:
-                return -1.0D;
-            case 5:
+        switch (face) {
+            case SOUTH_WEST:
+                return -MathUtil.HALFROOTOFTWO;
+            case NORTH_WEST:
+                return -MathUtil.HALFROOTOFTWO;
+            case SOUTH_EAST:
+                return MathUtil.HALFROOTOFTWO;
+            case NORTH_EAST:
+                return MathUtil.HALFROOTOFTWO;
+            case EAST:
+                return 1;
+            case WEST:
+                return -1;
+            default:
+                return 0;
         }
-        return 0.0D;
     }
 
     public static double sin(BlockFace face) {
-        switch (face.ordinal()) {
-            case 3:
-            case 4:
-                return -0.707106781D;
-            case 1:
-            case 2:
-                return 0.707106781D;
-            case 5:
-                return -1.0D;
-            case 8:
-                return 1.0D;
-            case 6:
-            case 7:
+        switch (face) {
+            case NORTH_EAST:
+                return -MathUtil.HALFROOTOFTWO;
+            case NORTH_WEST:
+                return -MathUtil.HALFROOTOFTWO;
+            case SOUTH_WEST:
+                return MathUtil.HALFROOTOFTWO;
+            case SOUTH_EAST:
+                return MathUtil.HALFROOTOFTWO;
+            case NORTH:
+                return -1;
+            case SOUTH:
+                return 1;
+            default:
+                return 0;
         }
-        return 0.0D;
     }
 
     public static int faceToYaw(BlockFace face) {

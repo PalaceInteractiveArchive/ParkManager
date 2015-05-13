@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -18,8 +17,8 @@ import java.util.List;
 /**
  * Created by Marc on 12/19/14
  */
-public class ProfileMenuClick {
-    public static List<String> dvcmsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
+public class MyProfileMenuClick {
+    public static List<String> donatemsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -28,7 +27,7 @@ public class ProfileMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -40,8 +39,8 @@ public class ProfileMenuClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
-            case "Become a DVC Member!":
-                for (String msg : dvcmsgs) {
+            case "Make a Donation!":
+                for (String msg : donatemsgs) {
                     player.sendMessage(msg);
                 }
                 player.closeInventory();
@@ -50,22 +49,18 @@ public class ProfileMenuClick {
                 player.closeInventory();
                 sendPluginMessage(player, "website");
                 return;
-            case "Friends List":
-                InventoryUtil.openFriendListPage(player, 1);
-                return;
             case "Locker":
                 player.openInventory(player.getEnderChest());
                 return;
             case "Achievements":
-                InventoryUtil.featureComingSoon(player);
+                MagicAssistant.inventoryUtil.featureComingSoon(player);
                 return;
             case "Mumble":
                 player.closeInventory();
                 sendPluginMessage(player, "mumble");
                 return;
-            case "Resource/Audio Packs":
-                MagicAssistant.packManager.openMenu(player);
-                //sendPluginMessage(player, "packs");
+            case "Player Settings":
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
         }
     }
 

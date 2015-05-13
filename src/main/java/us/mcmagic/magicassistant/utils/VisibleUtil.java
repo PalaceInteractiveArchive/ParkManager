@@ -5,14 +5,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Commandvanish;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class VisibleUtil implements Listener {
-    public static ArrayList<UUID> hideall = new ArrayList<>();
+    private static ArrayList<UUID> hideall = new ArrayList<>();
     public static MagicAssistant pl;
 
     public VisibleUtil(MagicAssistant instance) {
@@ -20,22 +23,37 @@ public class VisibleUtil implements Listener {
     }
 
     public static void addToHideAll(final Player player) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        List<UUID> friends = data.getFriendList();
         hideall.add(player.getUniqueId());
         for (User user : MCMagicCore.getUsers()) {
             Player tp = Bukkit.getPlayer(user.getUniqueId());
             if (tp == null) {
                 continue;
             }
-            if (!tp.getName().equals(player.getName())) {
-                if (!tp.hasPermission("band.stayvisible")) {
+            if (friends.contains(user.getUniqueId())) {
+                player.showPlayer(tp);
+                continue;
+            }
+            if (!tp.getUniqueId().equals(player.getUniqueId())) {
+                if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                     player.hidePlayer(tp);
                 }
             }
         }
     }
 
+    public static boolean isInHideAll(UUID uuid) {
+        return hideall.contains(uuid);
+    }
+
     public static void hideForHideAll(Player player) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        List<UUID> friends = data.getFriendList();
         for (UUID uuid : hideall) {
+            if (friends.contains(uuid)) {
+                continue;
+            }
             Bukkit.getPlayer(uuid).hidePlayer(player);
         }
         for (UUID uuid : Commandvanish.hidden) {
@@ -43,12 +61,21 @@ public class VisibleUtil implements Listener {
         }
     }
 
+    public static void logout(UUID uuid) {
+        hideall.remove(uuid);
+    }
+
     public static void removeFromHideAll(final Player player) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        List<UUID> friends = data.getFriendList();
         hideall.remove(player.getUniqueId());
         for (User user : MCMagicCore.getUsers()) {
             Player tp = Bukkit.getPlayer(user.getUniqueId());
-            if (!tp.getName().equals(player.getName())) {
-                if (!tp.hasPermission("band.stayvisible")) {
+            if (tp == null) {
+                continue;
+            }
+            if (!tp.getUniqueId().equals(player.getUniqueId())) {
+                if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                     player.showPlayer(tp);
                 }
             }

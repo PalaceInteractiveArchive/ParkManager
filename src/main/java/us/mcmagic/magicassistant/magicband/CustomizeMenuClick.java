@@ -5,9 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
-import us.mcmagic.magicassistant.utils.InventoryUtil;
 
 /**
  * Created by Marc on 12/21/14
@@ -21,7 +21,7 @@ public class CustomizeMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -31,10 +31,10 @@ public class CustomizeMenuClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Change MagicBand Color":
-                InventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
                 return;
             case "Change Name Color":
-                InventoryUtil.openInventory(player, InventoryType.CUSTOMNAME);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMNAME);
         }
     }
 }

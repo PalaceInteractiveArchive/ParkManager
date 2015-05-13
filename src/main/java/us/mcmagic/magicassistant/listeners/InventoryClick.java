@@ -13,6 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.magicband.*;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.Arrays;
 
@@ -42,11 +45,6 @@ public class InventoryClick implements Listener {
             MagicAssistant.packManager.handleClick(event);
             return;
         }
-        if (name.startsWith("Friend List")) {
-            event.setCancelled(true);
-            FriendListClick.handle(event);
-            return;
-        }
         if (name.startsWith("Ride List")) {
             event.setCancelled(true);
             RideListClick.handle(event);
@@ -62,11 +60,14 @@ public class InventoryClick implements Listener {
             HotelRoomMenuClick.handle(event);
             return;
         }
-
         switch (name) {
+            case "Player Settings":
+                event.setCancelled(true);
+                PlayerSettingsClick.handle(event);
+                return;
             case "My Profile":
                 event.setCancelled(true);
-                ProfileMenuClick.handle(event);
+                MyProfileMenuClick.handle(event);
                 return;
             case "Shows and Events":
                 event.setCancelled(true);
@@ -119,6 +120,10 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 HotelCheckoutMenuClick.handle(event);
                 return;
+            case "Visit Hotels and Resorts?":
+                event.setCancelled(true);
+                VisitHotelMenuClick.handle(event);
+                return;
 
         }
         if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
@@ -127,13 +132,14 @@ public class InventoryClick implements Listener {
                 event.setResult(Event.Result.DENY);
                 return;
             }
+            User user = MCMagicCore.getUser(player.getUniqueId());
             if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
-                    event.setCancelled(!player.hasPermission("band.change"));
+                    event.setCancelled(user.getRank().getRankId() < Rank.CASTMEMBER.getRankId());
                 }
             } else {
                 if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("MagicBand")) {
-                    event.setCancelled(!player.hasPermission("band.change"));
+                    event.setCancelled(user.getRank().getRankId() < Rank.CASTMEMBER.getRankId());
                 }
             }
         }

@@ -8,7 +8,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.Warp;
-import us.mcmagic.magicassistant.utils.*;
+import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.utils.WarpUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 
 /**
  * Created by Greenlock28 on 1/25/2015.
@@ -22,7 +26,7 @@ public class MyHotelRoomsMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            InventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -34,7 +38,7 @@ public class MyHotelRoomsMenuClick {
         if (room != null) {
             Warp warp = room.getWarp();
             if (warp != null) {
-                if (warp.getServer().equals(MagicAssistant.serverName)) {
+                if (warp.getServer().equals(MCMagicCore.getMCMagicConfig().serverName)) {
                     if (player.isInsideVehicle()) {
                         player.getVehicle().eject();
                     }
@@ -45,7 +49,6 @@ public class MyHotelRoomsMenuClick {
             } else {
                 player.sendMessage(ChatColor.RED + "This room does not have a warp set!");
                 player.closeInventory();
-                return;
             }
         } else {
             player.closeInventory();
