@@ -29,34 +29,34 @@ public class DesignStation {
     public static ItemStack createTruck = new ItemStack(Material.MINECART, 1);
     public static ItemStack createSmartcar = new ItemStack(Material.MINECART, 1);
 
-    public static ItemStack nextButton = new ItemStack(Material.STAINED_CLAY, 1, (short)5);
-    public static ItemStack backButton = new ItemStack(Material.STAINED_CLAY, 1, (short)14);
+    public static ItemStack nextButton = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
+    public static ItemStack backButton = new ItemStack(Material.STAINED_CLAY, 1, (short) 14);
 
-    public static ItemStack tallerButton = new ItemStack(Material.STAINED_CLAY, 1, (short)9);
-    public static ItemStack shorterButton = new ItemStack(Material.STAINED_CLAY, 1, (short)9);
-    public static ItemStack widerButton = new ItemStack(Material.STAINED_CLAY, 1, (short)9);
-    public static ItemStack thinnerButton = new ItemStack(Material.STAINED_CLAY, 1, (short)9);
+    public static ItemStack tallerButton = new ItemStack(Material.STAINED_CLAY, 1, (short) 9);
+    public static ItemStack shorterButton = new ItemStack(Material.STAINED_CLAY, 1, (short) 9);
+    public static ItemStack widerButton = new ItemStack(Material.STAINED_CLAY, 1, (short) 9);
+    public static ItemStack thinnerButton = new ItemStack(Material.STAINED_CLAY, 1, (short) 9);
 
-    public static ItemStack redButton = new ItemStack(Material.WOOL, 1, (short)14);
-    public static ItemStack darkGreenButton = new ItemStack(Material.WOOL, 1, (short)13);
-    public static ItemStack lightGreenButton = new ItemStack(Material.WOOL, 1, (short)5);
-    public static ItemStack yellowButton = new ItemStack(Material.WOOL, 1, (short)4);
-    public static ItemStack purpleButton = new ItemStack(Material.WOOL, 1, (short)10);
-    public static ItemStack magentaButton = new ItemStack(Material.WOOL, 1, (short)2);
-    public static ItemStack darkGreyButton = new ItemStack(Material.WOOL, 1, (short)7);
-    public static ItemStack lightGreyButton = new ItemStack(Material.WOOL, 1, (short)8);
-    public static ItemStack whiteButton = new ItemStack(Material.WOOL, 1, (short)0);
-    public static ItemStack darkBlueButton = new ItemStack(Material.WOOL, 1, (short)11);
-    public static ItemStack cyanButton = new ItemStack(Material.WOOL, 1, (short)9);
-    public static ItemStack lightBlueButton = new ItemStack(Material.WOOL, 1, (short)3);
+    public static ItemStack redButton = new ItemStack(Material.WOOL, 1, (short) 14);
+    public static ItemStack darkGreenButton = new ItemStack(Material.WOOL, 1, (short) 13);
+    public static ItemStack lightGreenButton = new ItemStack(Material.WOOL, 1, (short) 5);
+    public static ItemStack yellowButton = new ItemStack(Material.WOOL, 1, (short) 4);
+    public static ItemStack purpleButton = new ItemStack(Material.WOOL, 1, (short) 10);
+    public static ItemStack magentaButton = new ItemStack(Material.WOOL, 1, (short) 2);
+    public static ItemStack darkGreyButton = new ItemStack(Material.WOOL, 1, (short) 7);
+    public static ItemStack lightGreyButton = new ItemStack(Material.WOOL, 1, (short) 8);
+    public static ItemStack whiteButton = new ItemStack(Material.WOOL, 1, (short) 0);
+    public static ItemStack darkBlueButton = new ItemStack(Material.WOOL, 1, (short) 11);
+    public static ItemStack cyanButton = new ItemStack(Material.WOOL, 1, (short) 9);
+    public static ItemStack lightBlueButton = new ItemStack(Material.WOOL, 1, (short) 3);
 
-    public static ItemStack solarDriveEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)5);
-    public static ItemStack fuelCellEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)5);
-    public static ItemStack ecoElectricEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)5);
-    public static ItemStack evHybridEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)9);
-    public static ItemStack gasEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)2);
-    public static ItemStack superChargedEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)2);
-    public static ItemStack plasmaBurnerEngine = new ItemStack(Material.STAINED_CLAY, 1, (short)2);
+    public static ItemStack solarDriveEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
+    public static ItemStack fuelCellEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
+    public static ItemStack ecoElectricEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
+    public static ItemStack evHybridEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 9);
+    public static ItemStack gasEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 2);
+    public static ItemStack superChargedEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 2);
+    public static ItemStack plasmaBurnerEngine = new ItemStack(Material.STAINED_CLAY, 1, (short) 2);
 
     //Power - Light Purple
     //Responsiveness - Aqua
@@ -210,7 +210,7 @@ public class DesignStation {
     }
 
 
-    private static String carTemplate = "&f9$2w&f7\n*&f7$4w&f5\n&f1$w97&f1\n^$99w\n$3o2$w8o2$3\n&f3o2&fw8o2&f3";
+    private static String carTemplate = "&09$2w&07\n*&07$4w&05\n&01$w97&01\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
     private static String truckTemplate = "";
     private static String ecoCarTemplate = "";
 
@@ -265,7 +265,7 @@ public class DesignStation {
                         }
                     } else if (c == '&') {
                         loreLine += "§";
-                        loreLine += line.charAt(i+1);
+                        loreLine += line.charAt(i + 1);
                         i++;
                     } else if (c == '$') {
                         loreLine += vehicle.color;
@@ -297,7 +297,9 @@ public class DesignStation {
                     lore.add(loreLine);
                 }
             }
-        } catch (Exception ex) { lore.add("Vehicle render failed."); }
+        } catch (Exception ex) {
+            lore.add("Vehicle render failed.");
+        }
 
         itemMeta.setLore(lore);
 

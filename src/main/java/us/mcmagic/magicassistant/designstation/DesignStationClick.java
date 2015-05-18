@@ -30,12 +30,10 @@ public class DesignStationClick {
     }
 
     public static void handleSizeAndColor(InventoryClickEvent event) {
-        ItemStack clickedItem = event.getInventory().getItem(event.getSlot());
+        ItemStack clickedItem = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
         TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId().toString());
-
         boolean resetVehicleItem = true;
-
         if (itemEquals(clickedItem, DesignStation.nextButton)) {
             DesignStation.openPickEngineInventory(player);
             resetVehicleItem = false;
@@ -82,11 +80,11 @@ public class DesignStationClick {
             vehicle.color = ChatColor.BLUE;
         } else if (itemEquals(clickedItem, DesignStation.cyanButton)) {
             vehicle.color = ChatColor.DARK_AQUA;
+        } else {
+            Bukkit.broadcastMessage("Nothing changed!");
         }
-
         if (resetVehicleItem) {
             event.getInventory().setItem(31, DesignStation.getPlayerVehicleItem(player.getUniqueId().toString()));
-            player.updateInventory();
         }
     }
 
@@ -120,7 +118,7 @@ public class DesignStationClick {
                 @Override
                 public void run() {
                     player.closeInventory();
-                    player.sendMessage(ChatColor.GREEN + "You have completed the design process!  Please continue to the boarding area to test-drive your vehicle.");
+                    player.sendMessage(ChatColor.GREEN + "You have completed the design process! Please continue to the boarding area to test-drive your vehicle.");
                 }
             }, 5L);
         }
@@ -130,23 +128,18 @@ public class DesignStationClick {
         if (a == null || b == null) {
             return false;
         }
-
         if (a.getType() != b.getType()) {
             return false;
         }
-
         if (a.getDurability() != b.getDurability()) {
             return false;
         }
-
         if (a.getItemMeta().hasDisplayName() != b.getItemMeta().hasDisplayName()) {
             return false;
         }
-
-        if (a.getItemMeta().getDisplayName().equals(b.getItemMeta().getDisplayName())) {
+        if (!a.getItemMeta().getDisplayName().equals(b.getItemMeta().getDisplayName())) {
             return false;
         }
-
         return true;
     }
 

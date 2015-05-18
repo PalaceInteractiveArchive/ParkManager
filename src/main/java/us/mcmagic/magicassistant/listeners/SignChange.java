@@ -66,7 +66,8 @@ public class SignChange implements Listener {
             }
             if (event.getLine(0).equalsIgnoreCase("[design station]")) {
                 event.setLine(0, PlayerInteract.designStation);
-                return;
+                event.setLine(1, ChatColor.GOLD + event.getLine(1));
+                event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
             }
         }
     }
