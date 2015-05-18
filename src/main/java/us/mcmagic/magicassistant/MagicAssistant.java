@@ -443,7 +443,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("heal").setExecutor(new Commandheal());
         getCommand("helpop").setExecutor(new Commandhelpop());
         getCommand("helpop").setAliases(Collections.singletonList("ac"));
-        getCommand("hotel").setExecutor(new Commandhotel());
         getCommand("hub").setExecutor(new Commandhub());
         getCommand("invsee").setExecutor(new Commandinvsee());
         getCommand("item").setExecutor(new Commanditem());
@@ -481,7 +480,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new ChatListener(this), this);
         pm.registerEvents(new PlayerJoinAndLeave(), this);
         pm.registerEvents(new SignChange(this), this);
-        pm.registerEvents(new BlockEdit(this), this);
+        pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new InventoryClick(this), this);
         pm.registerEvents(new PlayerDropItem(), this);
         pm.registerEvents(new PlayerInteract(this), this);

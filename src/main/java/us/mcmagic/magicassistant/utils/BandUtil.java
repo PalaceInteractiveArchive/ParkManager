@@ -1,16 +1,14 @@
 package us.mcmagic.magicassistant.utils;
 
-import net.minecraft.server.v1_8_R2.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.BandColor;
+import us.mcmagic.magicassistant.handlers.DataResponse;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.coins.Coins;
@@ -30,41 +28,40 @@ import java.util.Date;
  */
 public class BandUtil {
     private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
-    private HashMap<UUID, Inventory> loadingPlayerData = new HashMap<>();
+    private HashMap<UUID, DataResponse> dataResponses = new HashMap<>();
 
     public void initialize() {
         FireworkEffectMeta bm = (FireworkEffectMeta) back.getItemMeta();
         bm.setDisplayName(ChatColor.GREEN + "Back");
         bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(41, 106, 255)).build());
         back.setItemMeta(bm);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                for (Map.Entry<UUID, Inventory> entry : new HashSet<>(loadingPlayerData.entrySet())) {
+                for (Map.Entry<UUID, DataResponse> entry : new HashSet<>(dataResponses.entrySet())) {
+                    DataResponse response = dataResponses.remove(entry.getKey());
                     User user = MCMagicCore.getUser(entry.getKey());
                     if (user == null) {
-                        loadingPlayerData.remove(entry.getKey());
                         continue;
                     }
-                    loadingPlayerData.remove(user.getUniqueId());
                     Player player = Bukkit.getPlayer(user.getUniqueId());
                     if (player == null) {
-                        loadingPlayerData.remove(entry.getKey());
                         continue;
                     }
                     Rank rank = user.getRank();
-                    List<String> lore = Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
+                    Inventory inv = player.getOpenInventory().getTopInventory();
+                    if (inv == null) {
+                        continue;
+                    }
+                    ItemStack pinfo = inv.getItem(15);//new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+                    ItemMeta meta = pinfo.getItemMeta();
+                    meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
                             ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
-                            ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + Coins.getSqlCoins(user.getUniqueId()),
-                            ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + Credits.getSqlCredits(user.getUniqueId()),
-                            ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW +
-                                    DateUtil.formatDateDiff(getOnlineTime(user.getUniqueId().toString())));
-                    ItemStack pinfo = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-                    SkullMeta sm = (SkullMeta) pinfo.getItemMeta();
-                    sm.setOwner(player.getName());
-                    sm.setDisplayName(ChatColor.GREEN + "My Profile");
-                    sm.setLore(lore);
-                    pinfo.setItemMeta(sm);
+                            ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + response.getCoins(),
+                            ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + response.getCredits(),
+                            ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
+                    pinfo.setItemMeta(meta);
+                    /*
                     net.minecraft.server.v1_8_R2.ItemStack i = CraftItemStack.asNMSCopy(pinfo);
                     NBTTagCompound tag = i.getTag();
                     NBTTagCompound name = tag.getCompound("SkullOwner");
@@ -72,15 +69,15 @@ public class BandUtil {
                     tag.set("SkullOwner", name);
                     i.setTag(tag);
                     ItemStack done = CraftItemStack.asBukkitCopy(i);
-                    entry.getValue().setItem(15, done);
-
+                    */
+                    inv.setItem(15, pinfo);
                 }
             }
-        }, 0L, 10L);
+        }, 0L, 20L);
     }
 
     public boolean isLoading(Player player) {
-        return loadingPlayerData.containsKey(player.getUniqueId());
+        return dataResponses.containsKey(player.getUniqueId());
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
@@ -106,7 +103,7 @@ public class BandUtil {
             result.close();
             sql.close();
             MagicAssistant.playerData.put(uuid, data);
-            loadingPlayerData.remove(uuid);
+            dataResponses.remove(uuid);
             return data;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -206,15 +203,22 @@ public class BandUtil {
         }
     }
 
-    public void loadPlayerData(Player player, Inventory inventory) {
-        if (loadingPlayerData.containsKey(player.getUniqueId())) {
+    public void loadPlayerData(Player player) {
+        if (dataResponses.containsKey(player.getUniqueId())) {
             return;
         }
-        loadingPlayerData.put(player.getUniqueId(), inventory);
+        final UUID uuid = player.getUniqueId();
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                dataResponses.put(uuid, new DataResponse(uuid, Coins.getSqlCoins(uuid), Credits.getSqlCredits(uuid),
+                        DateUtil.formatDateDiff(getOnlineTime(uuid.toString()))));
+            }
+        });
     }
 
     public void cancelLoadPlayerData(UUID uuid) {
-        loadingPlayerData.remove(uuid);
+        dataResponses.remove(uuid);
     }
 
     public String getBandName(Material color) {

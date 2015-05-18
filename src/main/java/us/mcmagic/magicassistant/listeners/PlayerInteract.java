@@ -83,10 +83,6 @@ public class PlayerInteract implements Listener {
                     String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
                             + ChatColor.stripColor(s.getLine(1));
                     HotelRoom room = HotelUtil.getRoom(roomName);
-                    if (s.getLine(3) != Integer.toString(room.getCost())) {
-                        s.setLine(3, Integer.toString(room.getCost()));
-                        s.update();
-                    }
                     if (room == null) {
                         player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
                         return;
