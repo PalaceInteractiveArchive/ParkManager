@@ -60,7 +60,10 @@ public class SignChange implements Listener {
                     HotelUtil.updateRooms();
                 }
             }
-
+            if (event.getLine(0).equalsIgnoreCase("[design station]")) {
+                event.setLine(0, PlayerInteract.designStation);
+                return;
+            }
         }
     }
 }

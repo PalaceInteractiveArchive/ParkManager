@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -466,6 +467,10 @@ public class InventoryUtil {
                 settings.setItem(16, hotel);
                 settings.setItem(22, BandUtil.getBackItem());
                 player.openInventory(settings);
+                return;
+            case DESIGNSTATION:
+                DesignStation.openPickModelInventory(player);
+                return;
         }
     }
 

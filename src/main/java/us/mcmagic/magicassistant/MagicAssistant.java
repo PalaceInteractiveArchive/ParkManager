@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
+import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
@@ -177,6 +178,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         resortsServer = MCMagicCore.getMCMagicConfig().serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
+        DesignStation.initialize();
     }
 
     public void onDisable() {

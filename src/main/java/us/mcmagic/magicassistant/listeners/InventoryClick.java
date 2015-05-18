@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.designstation.DesignStationClick;
 import us.mcmagic.magicassistant.magicband.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -124,7 +125,18 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 VisitHotelMenuClick.handle(event);
                 return;
-
+            case "Pick Model":
+                event.setCancelled(true);
+                DesignStationClick.handleModel(event);
+                return;
+            case "Pick Size/Color":
+                event.setCancelled(true);
+                DesignStationClick.handleSizeAndColor(event);
+                return;
+            case "Pick Engine":
+                event.setCancelled(true);
+                DesignStationClick.handleEngine(event);
+                return;
         }
         if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
             if (clicked.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {

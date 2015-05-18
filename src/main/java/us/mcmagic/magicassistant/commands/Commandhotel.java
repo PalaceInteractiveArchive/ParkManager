@@ -366,32 +366,51 @@ public class Commandhotel implements CommandExecutor {
 
 
     private static List<String> getAdvancedArguments(String[] args) {
+        String squish = "";
+        for (String arg : args) {
+            squish += arg + " ";
+        }
+        squish = squish.trim();
+
         List<String> tweakedArgs = new ArrayList<>();
         String currentArg = "";
         boolean literal = false;
-        for (String arg : args) {
+        char literalChar = '0';
+
+        for (int i = 0; i < squish.trim().toCharArray().length; i++) {
+            char c = squish.trim().toCharArray()[i];
             if (literal) {
-                if (arg.endsWith("\"") || arg.endsWith("'")) {
-                    currentArg += arg.substring(0, arg.length() - 1);
-                    tweakedArgs.add(currentArg);
-                    currentArg = "";
-                    literal = false;
-                } else {
-                    currentArg += arg + " ";
-                }
-            } else {
-                if (arg.startsWith("\"") || arg.startsWith("'")) {
+                if (c == literalChar) {
                     if (currentArg.length() > 0) {
                         tweakedArgs.add(currentArg);
                         currentArg = "";
                     }
-                    currentArg += arg.substring(1) + " ";
-                    literal = true;
+                    literal = false;
+                } else if (c == '\\') {
+                    currentArg += squish.trim().toCharArray()[i+1];
+                    i++;
                 } else {
-                    tweakedArgs.add(arg);
+                    currentArg += c;
+                }
+            } else {
+                if (c == '"' || c == '\'') {
+                    literalChar = c;
+                    literal = true;
+                } else if (c == ' ') {
+                    if (currentArg.length() > 0) {
+                        tweakedArgs.add(currentArg);
+                        currentArg = "";
+                    }
+                } else {
+                    currentArg += c;
                 }
             }
         }
+
+        if (currentArg.length() > 0) {
+            tweakedArgs.add(currentArg);
+        }
+
         return tweakedArgs;
     }
 }
