@@ -15,9 +15,9 @@ import java.util.*;
  */
 public class DesignStation {
 
-    private static Map<String, TestTrackVehicle> playerVehicles = new HashMap<>();
+    private static Map<UUID, TestTrackVehicle> playerVehicles = new HashMap<>();
 
-    public static TestTrackVehicle getPlayerVehicle(String uuid) {
+    public static TestTrackVehicle getPlayerVehicle(UUID uuid) {
         if (playerVehicles.get(uuid) == null) {
             playerVehicles.put(uuid, new TestTrackVehicle());
         }
@@ -210,7 +210,7 @@ public class DesignStation {
     }
 
 
-    private static String carTemplate = "&f9$2w&f7\n*&f7$4w&f5\n&f1$w97&f1\n^$99w\n$3o2$w8o2$3\n&f3o2&fw8o2&f3";
+    private static String carTemplate = "&09$2w&07\n*&07$6w&05\n&01$w97&01\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
     private static String truckTemplate = "";
     private static String ecoCarTemplate = "";
 
@@ -218,7 +218,7 @@ public class DesignStation {
     private static int truckWidthOffset = 0;
     private static int ecoCarWidthOffset = 0;
 
-    public static ItemStack getPlayerVehicleItem(String uuid) {
+    public static ItemStack getPlayerVehicleItem(UUID uuid) {
         TestTrackVehicle vehicle = getPlayerVehicle(uuid);
 
         ItemStack item = new ItemStack(Material.MINECART, 1);
@@ -235,7 +235,6 @@ public class DesignStation {
 
         String template = "";
         int widthOffset = 0;
-        int heightOffset = 0;
         if (vehicle.type == TestTrackVehicle.carType) {
             template = carTemplate;
             widthOffset = carWidthOffset;
@@ -257,11 +256,12 @@ public class DesignStation {
                     char c = line.charAt(i);
                     if (Character.isDigit(c)) {
                         for (int ii = 0; ii < Integer.parseInt(Character.toString(c)); ii++) {
-                            loreLine += "█";
+                            loreLine += "#";
                         }
                     } else if (c == 'w') {
                         for (int ii = 0; ii < widthOffset + vehicle.width; ii++) {
-                            loreLine += "█";
+                            loreLine += "#";
+                            //loreLine += "█";
                         }
                     } else if (c == '&') {
                         loreLine += "§";
@@ -317,8 +317,8 @@ public class DesignStation {
     public static void openPickSizeAndColorInventory(Player player) {
         Inventory designStationInventory = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Pick Size/Color");
 
-        designStationInventory.setItem(0, nextButton);
-        designStationInventory.setItem(1, backButton);
+        designStationInventory.setItem(1, nextButton);
+        designStationInventory.setItem(0, backButton);
 
         designStationInventory.setItem(19, tallerButton);
         designStationInventory.setItem(37, shorterButton);
@@ -338,7 +338,7 @@ public class DesignStation {
         designStationInventory.setItem(43, cyanButton);
         designStationInventory.setItem(44, lightBlueButton);
 
-        designStationInventory.setItem(31, getPlayerVehicleItem(player.getUniqueId().toString()));
+        designStationInventory.setItem(31, getPlayerVehicleItem(player.getUniqueId()));
 
         player.openInventory(designStationInventory);
     }
@@ -346,16 +346,15 @@ public class DesignStation {
     public static void openPickEngineInventory(Player player) {
         Inventory designStationInventory = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Pick Engine");
 
-        designStationInventory.setItem(0, nextButton);
-        designStationInventory.setItem(1, backButton);
+        designStationInventory.setItem(0, backButton);
 
-        designStationInventory.setItem(28, solarDriveEngine);
-        designStationInventory.setItem(29, fuelCellEngine);
-        designStationInventory.setItem(30, ecoElectricEngine);
-        designStationInventory.setItem(31, evHybridEngine);
-        designStationInventory.setItem(32, gasEngine);
-        designStationInventory.setItem(33, superChargedEngine);
-        designStationInventory.setItem(34, plasmaBurnerEngine);
+        designStationInventory.setItem(19, solarDriveEngine);
+        designStationInventory.setItem(20, fuelCellEngine);
+        designStationInventory.setItem(21, ecoElectricEngine);
+        designStationInventory.setItem(22, evHybridEngine);
+        designStationInventory.setItem(23, gasEngine);
+        designStationInventory.setItem(24, superChargedEngine);
+        designStationInventory.setItem(25, plasmaBurnerEngine);
 
         player.openInventory(designStationInventory);
     }

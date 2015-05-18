@@ -15,7 +15,7 @@ public class DesignStationClick {
     public static void handleModel(InventoryClickEvent event) {
         ItemStack clickedItem = event.getInventory().getItem(event.getSlot());
         Player player = (Player) event.getWhoClicked();
-        TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId().toString());
+        TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId());
 
         if (itemEquals(clickedItem, DesignStation.createCar)) {
             vehicle.type = TestTrackVehicle.carType;
@@ -32,16 +32,14 @@ public class DesignStationClick {
     public static void handleSizeAndColor(InventoryClickEvent event) {
         ItemStack clickedItem = event.getInventory().getItem(event.getSlot());
         Player player = (Player) event.getWhoClicked();
-        TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId().toString());
-
-        boolean resetVehicleItem = true;
+        TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId());
 
         if (itemEquals(clickedItem, DesignStation.nextButton)) {
             DesignStation.openPickEngineInventory(player);
-            resetVehicleItem = false;
+            return;
         } else if (itemEquals(clickedItem, DesignStation.backButton)) {
             DesignStation.openPickModelInventory(player);
-            resetVehicleItem = false;
+            return;
         } else if (itemEquals(clickedItem, DesignStation.tallerButton)) {
             if (vehicle.height < 8) {
                 vehicle.height++;
@@ -84,16 +82,13 @@ public class DesignStationClick {
             vehicle.color = ChatColor.DARK_AQUA;
         }
 
-        if (resetVehicleItem) {
-            event.getInventory().setItem(31, DesignStation.getPlayerVehicleItem(player.getUniqueId().toString()));
-            player.updateInventory();
-        }
+        event.getInventory().setItem(31, DesignStation.getPlayerVehicleItem(player.getUniqueId()));
     }
 
     public static void handleEngine(InventoryClickEvent event) {
         ItemStack clickedItem = event.getInventory().getItem(event.getSlot());
         final Player player = (Player) event.getWhoClicked();
-        TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId().toString());
+        TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId());
 
         boolean exitDesigner = true;
 
@@ -143,7 +138,7 @@ public class DesignStationClick {
             return false;
         }
 
-        if (a.getItemMeta().getDisplayName().equals(b.getItemMeta().getDisplayName())) {
+        if (!a.getItemMeta().getDisplayName().equals(b.getItemMeta().getDisplayName())) {
             return false;
         }
 
