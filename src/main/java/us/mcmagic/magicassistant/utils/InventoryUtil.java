@@ -184,7 +184,7 @@ public class InventoryUtil {
                 //skull.set("Properties", prop);
                 tag.set("SkullOwner", skull);
                 i.setTag(tag);
-                org.bukkit.inventory.ItemStack done = CraftItemStack.asBukkitCopy(i);
+                ItemStack done = CraftItemStack.asBukkitCopy(i);
                 ItemStack time = new ItemCreator(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
@@ -210,7 +210,7 @@ public class InventoryUtil {
                 main.setItem(17, creative);
                 main.setItem(26, seasonal);
                 player.openInventory(main);
-                MagicAssistant.bandUtil.loadPlayerData(player, main);
+                MagicAssistant.bandUtil.loadPlayerData(player);
                 return;
             case PARK:
                 Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");

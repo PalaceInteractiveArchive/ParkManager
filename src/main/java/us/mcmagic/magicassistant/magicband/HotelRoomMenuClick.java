@@ -54,14 +54,7 @@ public class HotelRoomMenuClick {
             if (!staff) {
                 Coins.minusSqlCoins(player.getUniqueId(), room.getCost());
             }
-            room.setCurrentOccupant(player.getUniqueId());
-            room.setCheckoutTime((System.currentTimeMillis() / 1000) + room.getStayLength());
-            HotelUtil.updateHotelRoom(room);
-            HotelUtil.updateRooms();
-            player.closeInventory();
-            player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for " +
-                    Integer.toString(room.getCost()) + " coins!");
-            player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
+            HotelUtil.rentRoom(room, player);
         } else {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You don't have enough coins to book this room!");

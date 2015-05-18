@@ -19,11 +19,12 @@ public class HotelRoom {
     private int y;
     private int z;
 
-    public HotelRoom(String hotelName, int roomNumber, UUID currentOccupant, long checkoutTime, Warp roomWarp,
-                     int cost, UUID checkoutNotificationRecipient, long stayLength, int x, int y, int z) {
+    public HotelRoom(String hotelName, int roomNumber, UUID currentOccupant, String occupantName, long checkoutTime,
+                     Warp roomWarp, int cost, UUID checkoutNotificationRecipient, long stayLength, int x, int y, int z) {
         this.hotelName = hotelName;
         this.checkoutTime = checkoutTime;
         this.currentOccupant = currentOccupant;
+        this.occupantName = occupantName;
         this.roomNumber = roomNumber;
         this.roomWarp = roomWarp;
         this.cost = cost;
