@@ -24,6 +24,12 @@ public class DesignStation {
         return playerVehicles.get(uuid);
     }
 
+    public static void removePlayerVehicle(UUID uuid) {
+        try {
+            playerVehicles.remove(uuid);
+        } catch (Exception ex) { }
+    }
+
 
     public static ItemStack createCar = new ItemStack(Material.MINECART, 1);
     public static ItemStack createTruck = new ItemStack(Material.MINECART, 1);
@@ -77,17 +83,17 @@ public class DesignStation {
 
         ItemMeta ccm = createCar.getItemMeta();
         ccm.setDisplayName(ChatColor.DARK_GREEN + "Design a Car");
-        ccm.setLore(Arrays.asList(ChatColor.WHITE + "Click to begin designing your own car.", ChatColor.LIGHT_PURPLE + "[+30% Power]", ChatColor.AQUA + "[+30% Responsiveness]"));
+        ccm.setLore(Arrays.asList(ChatColor.WHITE + "Click to begin designing your own car.", ChatColor.LIGHT_PURPLE + "[+Power]", ChatColor.AQUA + "[+Responsiveness]"));
         createCar.setItemMeta(ccm);
 
         ItemMeta ctm = createTruck.getItemMeta();
         ctm.setDisplayName(ChatColor.DARK_GREEN + "Design a Truck");
-        ctm.setLore(Arrays.asList(ChatColor.WHITE + "Click to begin designing your own truck.", ChatColor.YELLOW + "[+30% Capability]", ChatColor.LIGHT_PURPLE + "[+30% Power]", ChatColor.GREEN + "[-20% Efficiency]"));
+        ctm.setLore(Arrays.asList(ChatColor.WHITE + "Click to begin designing your own truck.", ChatColor.YELLOW + "[+Capability]", ChatColor.LIGHT_PURPLE + "[+Power]", ChatColor.GREEN + "[-Efficiency]"));
         createTruck.setItemMeta(ctm);
 
         ItemMeta cscm = createSmartcar.getItemMeta();
         cscm.setDisplayName(ChatColor.DARK_GREEN + "Design a Smart Car");
-        cscm.setLore(Arrays.asList(ChatColor.WHITE + "Click to begin designing your own eco-friendly car.", ChatColor.GREEN + "[+30% Efficiency]", ChatColor.LIGHT_PURPLE + "[-20% Power]"));
+        cscm.setLore(Arrays.asList(ChatColor.WHITE + "Click to begin designing your own eco-friendly car.", ChatColor.GREEN + "[+Efficiency]", ChatColor.LIGHT_PURPLE + "[-Power]"));
         createSmartcar.setItemMeta(cscm);
 
 
@@ -175,48 +181,44 @@ public class DesignStation {
 
         ItemMeta sdem = solarDriveEngine.getItemMeta();
         sdem.setDisplayName(ChatColor.GREEN + "Solar Drive Engine");
-        sdem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with the sun."));
+        sdem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with the sun.", ChatColor.LIGHT_PURPLE + "[-2 Power]", ChatColor.GREEN + "[+3 Efficiency]"));
         solarDriveEngine.setItemMeta(sdem);
 
         ItemMeta fcem = fuelCellEngine.getItemMeta();
         fcem.setDisplayName(ChatColor.GREEN + "Fuel Cell Engine");
-        fcem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with a fuel cell engine."));
+        fcem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with a fuel cell engine.", ChatColor.LIGHT_PURPLE + "[-1 Power]", ChatColor.GREEN + "[+2 Efficiency]"));
         fuelCellEngine.setItemMeta(fcem);
 
         ItemMeta eeem = ecoElectricEngine.getItemMeta();
         eeem.setDisplayName(ChatColor.GREEN + "Eco-Electric Engine");
-        eeem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with electricity."));
+        eeem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with electricity.", ChatColor.LIGHT_PURPLE + "[-1 Power]", ChatColor.GREEN + "[+1 Efficiency]"));
         ecoElectricEngine.setItemMeta(eeem);
 
         ItemMeta evem = evHybridEngine.getItemMeta();
         evem.setDisplayName(ChatColor.WHITE + "EV Hybrid Engine");
-        evem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with a hybrid engine."));
+        evem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with a hybrid engine.", ChatColor.AQUA + "[Balanced Power and Efficiency]"));
         evHybridEngine.setItemMeta(evem);
 
         ItemMeta gem = gasEngine.getItemMeta();
         gem.setDisplayName(ChatColor.LIGHT_PURPLE + "Gasoline Engine");
-        gem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with gasoline."));
+        gem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with gasoline.", ChatColor.LIGHT_PURPLE + "[+1 Power]", ChatColor.GREEN + "[-1 Efficiency]"));
         gasEngine.setItemMeta(gem);
 
         ItemMeta scem = superChargedEngine.getItemMeta();
         scem.setDisplayName(ChatColor.LIGHT_PURPLE + "Supercharged Engine");
-        scem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with a supercharged engine."));
+        scem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with a supercharged engine.", ChatColor.LIGHT_PURPLE + "[+2 Power]", ChatColor.GREEN + "[-1 Efficiency]"));
         superChargedEngine.setItemMeta(scem);
 
         ItemMeta pbem = plasmaBurnerEngine.getItemMeta();
         pbem.setDisplayName(ChatColor.LIGHT_PURPLE + "Plasma Burner Engine");
-        pbem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with pure speed."));
+        pbem.setLore(Arrays.asList(ChatColor.GRAY + "Click to power your vehicle with pure speed.", ChatColor.LIGHT_PURPLE + "[+3 Power]", ChatColor.GREEN + "[-2 Efficiency]"));
         plasmaBurnerEngine.setItemMeta(pbem);
     }
 
 
-    private static String carTemplate = "&09$2w&07\n*&07$4w&05\n&01$w97&01\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
-    private static String truckTemplate = "";
-    private static String ecoCarTemplate = "";
-
-    private static int carWidthOffset = 7;
-    private static int truckWidthOffset = 0;
-    private static int ecoCarWidthOffset = 0;
+    private static String carTemplate = "&09$2w&07\n*&07$6w&05\n&01$w97&01\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
+    private static String truckTemplate = "&08$2w&08\n*&06$4w&08\n&01$w98\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
+    private static String ecoCarTemplate = "&08$2w&05\n*&06$6w&03\n&01$w94&01\n^$96w\n$2o2$w7o2$2\n&02o2&0w7o2&02";
 
     public static ItemStack getPlayerVehicleItem(UUID uuid) {
         TestTrackVehicle vehicle = getPlayerVehicle(uuid);
@@ -228,23 +230,22 @@ public class DesignStation {
 
         List<String> lore = new ArrayList<>();
 
-        lore.add(ChatColor.LIGHT_PURPLE + "Power: " + Integer.toString(vehicle.getPowerScore()));
-        lore.add(ChatColor.AQUA + "Responsiveness: " + Integer.toString(vehicle.getResponsivenessScore()));
-        lore.add(ChatColor.YELLOW + "Capability: " + Integer.toString(vehicle.getCapabilityScore()));
-        lore.add(ChatColor.GREEN + "Efficiency: " + Integer.toString(vehicle.getEfficiencyScore()));
+        lore.add(ChatColor.LIGHT_PURPLE + "Power: " + Integer.toString(Math.max(1, Math.min(vehicle.getPowerScore(), 99))));
+        lore.add(ChatColor.AQUA + "Responsiveness: " + Integer.toString(Math.max(1, Math.min(vehicle.getResponsivenessScore(), 99))));
+        lore.add(ChatColor.YELLOW + "Capability: " + Integer.toString(Math.max(1, Math.min(vehicle.getCapabilityScore(), 99))));
+        lore.add(ChatColor.GREEN + "Efficiency: " + Integer.toString(Math.max(1, Math.min(vehicle.getEfficiencyScore(), 99))));
 
         String template = "";
-        int widthOffset = 0;
+
         if (vehicle.type == TestTrackVehicle.carType) {
             template = carTemplate;
-            widthOffset = carWidthOffset;
         } else if (vehicle.type == TestTrackVehicle.truckType) {
             template = truckTemplate;
-            widthOffset = truckWidthOffset;
         } else if (vehicle.type == TestTrackVehicle.ecoCarType) {
             template = ecoCarTemplate;
-            widthOffset = ecoCarWidthOffset;
         }
+
+        int widthOffset = vehicle.getWidthOffset();
 
         try {
             for (String line : template.split("\n")) {
@@ -256,12 +257,11 @@ public class DesignStation {
                     char c = line.charAt(i);
                     if (Character.isDigit(c)) {
                         for (int ii = 0; ii < Integer.parseInt(Character.toString(c)); ii++) {
-                            loreLine += "#";
+                            loreLine += "█";
                         }
                     } else if (c == 'w') {
                         for (int ii = 0; ii < widthOffset + vehicle.width; ii++) {
-                            loreLine += "#";
-                            //loreLine += "█";
+                            loreLine += "█";
                         }
                     } else if (c == '&') {
                         loreLine += "§";

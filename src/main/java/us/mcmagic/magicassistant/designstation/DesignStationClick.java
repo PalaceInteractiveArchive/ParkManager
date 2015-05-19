@@ -18,12 +18,27 @@ public class DesignStationClick {
         TestTrackVehicle vehicle = DesignStation.getPlayerVehicle(player.getUniqueId());
 
         if (itemEquals(clickedItem, DesignStation.createCar)) {
+            if (vehicle.type != TestTrackVehicle.carType) {
+                vehicle.height = 0;
+                vehicle.width = 0;
+                vehicle.engineType = TestTrackVehicle.EngineType.GASOLINE;
+            }
             vehicle.type = TestTrackVehicle.carType;
             DesignStation.openPickSizeAndColorInventory(player);
         } else if (itemEquals(clickedItem, DesignStation.createTruck)) {
+            if (vehicle.type != TestTrackVehicle.truckType) {
+                vehicle.height = 0;
+                vehicle.width = 0;
+                vehicle.engineType = TestTrackVehicle.EngineType.GASOLINE;
+            }
             vehicle.type = TestTrackVehicle.truckType;
             DesignStation.openPickSizeAndColorInventory(player);
         } else if (itemEquals(clickedItem, DesignStation.createSmartcar)) {
+            if (vehicle.type != TestTrackVehicle.ecoCarType) {
+                vehicle.height = 0;
+                vehicle.width = 0;
+                vehicle.engineType = TestTrackVehicle.EngineType.GASOLINE;
+            }
             vehicle.type = TestTrackVehicle.ecoCarType;
             DesignStation.openPickSizeAndColorInventory(player);
         }
@@ -53,7 +68,7 @@ public class DesignStationClick {
                 vehicle.width++;
             }
         } else if (itemEquals(clickedItem, DesignStation.thinnerButton)) {
-            if (vehicle.width > -7) {
+            if (vehicle.width > -vehicle.getWidthOffset()) {
                 vehicle.width--;
             }
         } else if (itemEquals(clickedItem, DesignStation.redButton)) {
@@ -94,7 +109,10 @@ public class DesignStationClick {
 
         boolean exitDesigner = true;
 
-        if (itemEquals(clickedItem, DesignStation.solarDriveEngine)) {
+        if (itemEquals(clickedItem, DesignStation.backButton)) {
+            DesignStation.openPickSizeAndColorInventory(player);
+            return;
+        } else if (itemEquals(clickedItem, DesignStation.solarDriveEngine)) {
             vehicle.engineType = TestTrackVehicle.EngineType.SOLAR;
         } else if (itemEquals(clickedItem, DesignStation.fuelCellEngine)) {
             vehicle.engineType = TestTrackVehicle.EngineType.FUELCELL;
