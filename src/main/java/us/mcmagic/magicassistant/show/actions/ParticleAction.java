@@ -1,6 +1,10 @@
 package us.mcmagic.magicassistant.show.actions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
@@ -10,17 +14,18 @@ import us.mcmagic.mcmagiccore.particles.ParticleUtil;
  */
 public class ParticleAction extends ShowAction {
     public ParticleEffect effect;
-    public Location location;
-    public float offsetX;
-    public float offsetY;
-    public float offsetZ;
+    public Location loc;
+    public double offsetX;
+    public double offsetY;
+    public double offsetZ;
     public float speed;
     public int amount;
 
-    public ParticleAction(Show show, long time, ParticleEffect effect, Location location, float offsetX, float offsetY, float offsetZ, float speed, int amount) {
+    public ParticleAction(Show show, long time, ParticleEffect effect, Location loc, double offsetX, double offsetY,
+                          double offsetZ, float speed, int amount) {
         super(show, time);
         this.effect = effect;
-        this.location = location;
+        this.loc = loc;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.offsetZ = offsetZ;
@@ -30,6 +35,16 @@ public class ParticleAction extends ShowAction {
 
     @Override
     public void play() {
-        ParticleUtil.spawnParticle(effect, location, offsetX, offsetY, offsetZ, speed, amount);
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (tp.getLocation().distance(loc) > 50) {
+                continue;
+            }
+            PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
+            if (!data.getFlash()) {
+                continue;
+            }
+            ParticleUtil.spawnParticleForPlayer(effect, loc, (float) offsetX, (float) offsetY, (float) offsetZ, speed,
+                    amount, tp);
+        }
     }
 }

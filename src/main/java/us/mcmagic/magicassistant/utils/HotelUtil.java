@@ -38,6 +38,7 @@ public class HotelUtil {
                 rooms.add(new HotelRoom(result.getString("hotelName"),
                         result.getInt("roomNumber"),
                         result.getString("currentOccupant") == "" ? null : UUID.fromString(result.getString("currentOccupant")),
+                        result.getString("occupantName"),
                         result.getLong("checkoutTime"),
                         Warp.fromDatabaseString(result.getString("roomWarp") != "" ? result.getString("roomWarp") : null),
                         result.getInt("cost"),
@@ -147,19 +148,20 @@ public class HotelUtil {
             return;
         }
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
             sql.setInt(2, room.getRoomNumber());
             sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");
-            sql.setLong(4, room.getCheckoutTime());
-            sql.setString(5, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
-            sql.setInt(6, room.getCost());
-            sql.setString(7, room.getCheckoutNotificationRecipient() != null ? room.getCheckoutNotificationRecipient().toString() : "");
-            sql.setString(8, room.getName());
-            sql.setLong(9, room.getStayLength());
-            sql.setInt(10, room.getX());
-            sql.setInt(11, room.getY());
-            sql.setInt(12, room.getZ());
+            sql.setString(4, room.getOccupantName() != null ? room.getOccupantName() : "");
+            sql.setLong(5, room.getCheckoutTime());
+            sql.setString(6, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
+            sql.setInt(7, room.getCost());
+            sql.setString(8, room.getCheckoutNotificationRecipient() != null ? room.getCheckoutNotificationRecipient().toString() : "");
+            sql.setString(9, room.getName());
+            sql.setLong(10, room.getStayLength());
+            sql.setInt(11, room.getX());
+            sql.setInt(12, room.getY());
+            sql.setInt(13, room.getZ());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -170,11 +172,12 @@ public class HotelUtil {
 
     public static void updateHotelRoom(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE `hotelrooms` SET currentOccupant=?, checkoutTime=?, checkoutNotificationRecipient=? WHERE name=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE `hotelrooms` SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=? WHERE name=?");
             sql.setString(1, room.getCurrentOccupant() == null ? "" : room.getCurrentOccupant().toString());
-            sql.setLong(2, room.getCheckoutTime());
-            sql.setString(3, room.getCheckoutNotificationRecipient() == null ? "" : room.getCheckoutNotificationRecipient().toString());
-            sql.setString(4, room.getName());
+            sql.setString(2, room.getOccupantName() == null ? "" : room.getOccupantName());
+            sql.setLong(3, room.getCheckoutTime());
+            sql.setString(4, room.getCheckoutNotificationRecipient() == null ? "" : room.getCheckoutNotificationRecipient().toString());
+            sql.setString(5, room.getName());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -236,10 +239,12 @@ public class HotelUtil {
                 continue;
             }
             Sign s = (Sign) b.getState();
+            s.setLine(1, "" + ChatColor.GOLD + room.getRoomNumber());
+            s.setLine(2, ChatColor.DARK_GREEN + room.getHotelName());
             if (room.isOccupied()) {
-                //s.setLine(3,room.getocc);
+                s.setLine(3, room.getOccupantName());
             } else {
-                s.setLine(3, Integer.toString(room.getCost()));
+                s.setLine(3, ChatColor.GREEN + Integer.toString(room.getCost()));
             }
             s.update();
         }
@@ -297,6 +302,25 @@ public class HotelUtil {
         return HotelUtil.getRoom(ChatColor.stripColor(s.getLine(2)) + " #" + ChatColor.stripColor(s.getLine(1)));
     }
 
+    public static void rentRoom(HotelRoom room, Player player) {
+        room.setCurrentOccupant(player.getUniqueId());
+        room.setOccupantName(player.getName());
+        room.setCheckoutTime((System.currentTimeMillis() / 1000) + room.getStayLength());
+        HotelUtil.updateHotelRoom(room);
+        HotelUtil.updateRooms();
+        Block b = player.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
+        Material type = b.getType();
+        if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
+            Sign s = (Sign) b.getState();
+            s.setLine(3, player.getName());
+            s.update();
+        }
+        player.closeInventory();
+        player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for " + room.getCost() +
+                " coins!");
+        player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
+    }
+
     public static void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
         HotelUtil.closeDoor(room);
@@ -319,8 +343,15 @@ public class HotelUtil {
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
         }
+        Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
+        Material type = b.getType();
+        if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
+            Sign s = (Sign) b.getState();
+            s.setLine(3, "" + ChatColor.GREEN + room.getCost());
+            s.update();
+        }
         room.setCurrentOccupant(null);
-        room.setCheckoutTime(0);
+        room.setOccupantName(null);
         HotelUtil.updateHotelRoom(room);
         HotelUtil.updateRooms();
     }

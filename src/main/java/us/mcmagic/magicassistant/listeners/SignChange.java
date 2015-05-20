@@ -46,13 +46,17 @@ public class SignChange implements Listener {
                 int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace(" Coins", "").replace(" Coin", "").replace("$", "")));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(event.getLine(1));
                 if (HotelUtil.getRoom(fullRoomName) == null) {
-                    Location loc = HotelUtil.locFromSign(((Sign) b.getState()));
-                    HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, 0, null, cost, null, 259200, loc.getBlockX(),
-                            loc.getBlockY(), loc.getBlockZ());
+                    Location loc = b.getLocation();
+                    HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, "", 0, null, cost, null, 259200,
+                            loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    event.setLine(1, "" + ChatColor.GOLD + newRoom.getRoomNumber());
+                    event.setLine(2, ChatColor.DARK_GREEN + event.getLine(2));
+                    event.setLine(3, "" + ChatColor.GREEN + cost);
+                    Location loc2 = HotelUtil.locFromSign(((Sign) b.getState()));
                     Warp warp = null;
                     if (loc != null) {
                         warp = new Warp(newRoom.getName().replace(" ", ""), MCMagicCore.getMCMagicConfig().serverName,
-                                loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(),
+                                loc2.getX(), loc2.getY(), loc2.getZ(), loc2.getYaw(), loc2.getPitch(),
                                 player.getWorld().getName());
                     }
                     newRoom.setWarp(warp);
@@ -60,7 +64,11 @@ public class SignChange implements Listener {
                     HotelUtil.updateRooms();
                 }
             }
-
+            if (event.getLine(0).equalsIgnoreCase("[design station]")) {
+                event.setLine(0, PlayerInteract.designStation);
+                event.setLine(1, ChatColor.GOLD + event.getLine(1));
+                event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
+            }
         }
     }
 }

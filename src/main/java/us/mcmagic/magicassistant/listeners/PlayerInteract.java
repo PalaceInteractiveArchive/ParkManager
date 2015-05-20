@@ -18,6 +18,7 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.utils.InventoryUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
@@ -29,6 +30,7 @@ public class PlayerInteract implements Listener {
     public static String disposal = ChatColor.BLUE + "[Disposal]";
     public static String warp = ChatColor.BLUE + "[Warp]";
     public static String hotel = ChatColor.BLUE + "[Hotel]";
+    public static String designStation = ChatColor.BLUE + "[Design Station]";
     static MagicAssistant pl;
 
     public PlayerInteract(MagicAssistant instance) {
@@ -83,10 +85,6 @@ public class PlayerInteract implements Listener {
                     String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
                             + ChatColor.stripColor(s.getLine(1));
                     HotelRoom room = HotelUtil.getRoom(roomName);
-                    if (s.getLine(3) != Integer.toString(room.getCost())) {
-                        s.setLine(3, Integer.toString(room.getCost()));
-                        s.update();
-                    }
                     if (room == null) {
                         player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
                         return;
@@ -110,6 +108,10 @@ public class PlayerInteract implements Listener {
 
                         MagicAssistant.inventoryUtil.openSpecificHotelRoomPage(player, HotelUtil.getRoom(roomName));
                     }
+                    return;
+                }
+                if (s.getLine(0).equals(designStation)) {
+                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
                     return;
                 }
             } else if (type.name().toLowerCase().contains("_door")) {

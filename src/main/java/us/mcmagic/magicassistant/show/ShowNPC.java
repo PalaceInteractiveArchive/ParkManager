@@ -10,52 +10,47 @@ import us.mcmagic.magicassistant.utils.AlgUtil;
 import us.mcmagic.magicassistant.utils.MathUtil;
 
 public class ShowNPC {
-    private Entity _ent;
-    private Location _target;
-    private float _speed;
+    private Entity entity;
+    private Location loc;
+    private float speed;
 
     public ShowNPC(Entity ent) {
-        _ent = ent;
-        _target = ent.getLocation();
+        entity = ent;
+        loc = ent.getLocation();
     }
 
     public void SetTarget(Location target, float speed) {
-        _target = target;
-        _speed = speed;
+        loc = target;
+        this.speed = speed;
     }
 
-    public void Move() {
-        if (_ent == null)
+    public void move() {
+        if (entity == null)
             return;
-
-        if (!(_ent instanceof Creature))
+        if (!(entity instanceof Creature))
             return;
-
-        if (MathUtil.offset(_ent.getLocation(), _target) < 0.25)
+        if (MathUtil.offset(entity.getLocation(), loc) < 0.25)
             return;
-
-        EntityCreature ec = ((CraftCreature) _ent).getHandle();
-
+        EntityCreature ec = ((CraftCreature) entity).getHandle();
         //Path Finding
         NavigationAbstract nav = ec.getNavigation();
-        if (MathUtil.offset(_ent.getLocation(), _target) > 12) {
-            Location newTarget = _ent.getLocation();
-            newTarget.add(AlgUtil.getTrajectory(_ent.getLocation(), _target).multiply(12));
-            nav.a(newTarget.getX(), newTarget.getY(), newTarget.getZ(), _speed);
+        if (MathUtil.offset(entity.getLocation(), loc) > 12) {
+            Location newTarget = entity.getLocation();
+            newTarget.add(AlgUtil.getTrajectory(entity.getLocation(), loc).multiply(12));
+            nav.a(newTarget.getX(), newTarget.getY(), newTarget.getZ(), speed);
         } else {
-            nav.a(_target.getX(), _target.getY(), _target.getZ(), _speed);
+            nav.a(loc.getX(), loc.getY(), loc.getZ(), speed);
         }
-
         //FAST
-        //ec.getControllerMove().a(_target.getX(), _target.getY(), _target.getZ(), _speed);
+        //ec.getControllerMove().a(loc.getX(), loc.getY(), loc.getZ(), speed);
     }
 
-    public void Clean() {
-        if (_ent != null)
-            _ent.remove();
+    public void clean() {
+        if (entity != null)
+            entity.remove();
     }
 
-    public Entity GetEntity() {
-        return _ent;
+    public Entity getEntity() {
+        return entity;
     }
 }

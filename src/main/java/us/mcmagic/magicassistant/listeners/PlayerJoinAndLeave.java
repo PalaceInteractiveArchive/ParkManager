@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Commandvanish;
+import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.shooter.Shooter;
@@ -242,5 +243,6 @@ public class PlayerJoinAndLeave implements Listener {
                 player.getInventory().remove(Shooter.getItem());
             }
         }
+        DesignStation.removePlayerVehicle(player.getUniqueId());
     }
 }

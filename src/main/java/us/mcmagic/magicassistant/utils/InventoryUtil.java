@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -183,7 +184,7 @@ public class InventoryUtil {
                 //skull.set("Properties", prop);
                 tag.set("SkullOwner", skull);
                 i.setTag(tag);
-                org.bukkit.inventory.ItemStack done = CraftItemStack.asBukkitCopy(i);
+                ItemStack done = CraftItemStack.asBukkitCopy(i);
                 ItemStack time = new ItemCreator(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
@@ -209,7 +210,7 @@ public class InventoryUtil {
                 main.setItem(17, creative);
                 main.setItem(26, seasonal);
                 player.openInventory(main);
-                MagicAssistant.bandUtil.loadPlayerData(player, main);
+                MagicAssistant.bandUtil.loadPlayerData(player);
                 return;
             case PARK:
                 Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
@@ -466,6 +467,10 @@ public class InventoryUtil {
                 settings.setItem(16, hotel);
                 settings.setItem(22, BandUtil.getBackItem());
                 player.openInventory(settings);
+                return;
+            case DESIGNSTATION:
+                DesignStation.openPickModelInventory(player);
+                return;
         }
     }
 

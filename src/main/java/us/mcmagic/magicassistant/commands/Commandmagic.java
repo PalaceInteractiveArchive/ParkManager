@@ -508,6 +508,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                         helpMenu("changer", sender);
                         return true;
                 }
+            case "hotel":
+                sender.sendMessage(ChatColor.BLUE + "Reloading hotel rooms...");
+                HotelUtil.refreshRooms();
+                sender.sendMessage(ChatColor.BLUE + "Hotel rooms reloaded!");
+                return true;
             case "reload":
                 MagicAssistant ma = MagicAssistant.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
