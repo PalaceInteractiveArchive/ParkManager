@@ -1,6 +1,6 @@
 package us.mcmagic.magicassistant.commands;
 
-import org.bukkit.Bukkit;
+;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -15,8 +15,7 @@ import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+
 
 /**
  * Created by Jacob on 1/20/15.
@@ -27,8 +26,100 @@ public class Commandautograph implements CommandExecutor {
     private static ItemStack stack = new ItemCreator(Material.WRITTEN_BOOK, ChatColor.DARK_AQUA + "Autograph Book", new ArrayList<String>());
     private static String buffer;
 
-
     @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        Player player = (Player) sender;
+        BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
+
+
+        if (args.length < 1) {
+            sender.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
+            sender.sendMessage(ChatColor.GREEN + "/autograph request <user> " + ChatColor.AQUA + "- Requests signature from Guest");
+            sender.sendMessage(ChatColor.GREEN + "/autograph accept " + ChatColor.AQUA + "- Accepts Autograph Book from Guest");
+            sender.sendMessage(ChatColor.GREEN + "/autograph deny " + ChatColor.AQUA + "- Denies Autograph Book from Guest");
+            sender.sendMessage(ChatColor.GREEN + "/autograph sign <message>" + ChatColor.AQUA + "- Add your signature");
+            sender.sendMessage(ChatColor.GREEN + "* /autograph csign <message> <name>" + ChatColor.AQUA + "- Add your signature with a different name *");
+            sender.sendMessage(ChatColor.GREEN + "/autograph remove <pg number>" + ChatColor.AQUA + "- Removes specific signature from book");
+            return true;
+
+        }
+
+        switch (args[0]) {
+            //todo Trading system with the request and accept and deny system
+            case "request":
+                return true;
+            case "accept":
+                return true;
+            case "deny":
+                return true;
+            case "sign":
+                if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
+                    if (args.length < 1) {
+                        player.sendMessage(ChatColor.GREEN + "You forgot to add message! Please type /signing for help");
+                        return true;
+                    }
+                    bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
+                    if ((bookmeta.hasTitle()) &&
+                            (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                        player.sendMessage(ChatColor.GREEN + "You have signed the book Sucessfully!");
+                        bookmeta.getPages();
+                        buffer = "";
+                    }
+                    bookmeta.addPage(buffer + "-" + player.getDisplayName());
+                    player.getItemInHand().setItemMeta(bookmeta);
+                    return true;
+                }
+
+                return true;
+            case "csign":
+                if (sender instanceof Player) {
+                    User user = MCMagicCore.getUser(player.getUniqueId());
+                    if (user.getRank().getRankId() < Rank.CHARACTERGUEST.getRankId()) {
+
+                    }
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "You forgot to add message! Please type /signing for help");
+                        return true;
+                    }
+                    if (player.getItemInHand().getType().equals(Material.WRITTEN_BOOK)) {
+                        bookmeta = ((BookMeta) player.getItemInHand().getItemMeta());
+                        if ((bookmeta.hasTitle()) &&
+                                (bookmeta.getTitle().equalsIgnoreCase("Autograph Book"))) {
+                            bookmeta.getPages();
+                            buffer = "";
+                            String character = args[2];
+                            args[2] = "";
+                            player.sendMessage(ChatColor.AQUA + "You are signing this book as: " + character);
+
+
+                            buffer = (buffer + " ");
+                        }
+                        player.getItemInHand().setItemMeta(bookmeta);
+                        return true;
+                    }
+                }
+                return true;
+            case "remove":
+
+                return true;
+        }
+        return true;
+    }
+}
+
+//  private static ItemStack stack = new ItemCreator(Material.WRITTEN_BOOK, ChatColor.DARK_AQUA + "Autograph Book", new ArrayList<String>());
+//  private static String buffer;
+
+// @Override
+//  public static void execute(CommandSender sender, String label, String[] args) {
+
+//  }
+
+
+
+
+
+/* @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             helpMenu("main", sender);
@@ -97,7 +188,7 @@ public class Commandautograph implements CommandExecutor {
                     bookmeta.addPage(new String[]{msg + "\n§0" + "- <uuid>" + player.getUniqueId() + "</uuid>"});
                     player.getItemInHand().setItemMeta(bookmeta);
                 }
-              */
+
             case "csign": {
                 if (!player.hasPermission("mcmagic.csign")) {
                     player.sendMessage(ChatColor.RED + "Only Characters may use this command!");
@@ -198,7 +289,7 @@ public class Commandautograph implements CommandExecutor {
                 }
                 player.sendMessage(ChatColor.WHITE + "[Autograph] "
                         + ChatColor.GREEN + "You do not have anyone else's autograph book.");
-                return true; */
+                return true;
 
             case "regain":
                 if (player.getInventory().contains(Material.WRITTEN_BOOK)) {
@@ -243,3 +334,4 @@ public class Commandautograph implements CommandExecutor {
 
     }
 }
+*/
