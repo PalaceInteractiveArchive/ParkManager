@@ -11,8 +11,6 @@ import us.mcmagic.magicassistant.handlers.BandColor;
 import us.mcmagic.magicassistant.handlers.DataResponse;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.coins.Coins;
-import us.mcmagic.mcmagiccore.credits.Credits;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
@@ -211,8 +209,8 @@ public class BandUtil {
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                dataResponses.put(uuid, new DataResponse(uuid, Coins.getSqlCoins(uuid), Credits.getSqlCredits(uuid),
-                        DateUtil.formatDateDiff(getOnlineTime(uuid.toString()))));
+                dataResponses.put(uuid, new DataResponse(uuid, MCMagicCore.economy.getCoins(uuid),
+                        MCMagicCore.economy.getCredits(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid.toString()))));
             }
         });
     }

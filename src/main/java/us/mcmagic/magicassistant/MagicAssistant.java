@@ -433,6 +433,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public void registerCommands() {
         Commandmagic magic = new Commandmagic();
         getCommand("autograph").setExecutor(new Commandautograph());
+        getCommand("autograph").setAliases(Arrays.asList("a", "auto"));
         getCommand("bc").setExecutor(new Commandbc());
         getCommand("day").setExecutor(new Commandday());
         getCommand("delay").setExecutor(new Commanddelay());
@@ -479,7 +480,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public void registerListeners() {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(this, this);
-        pm.registerEvents(new ChatListener(this), this);
+        pm.registerEvents(new ChatListener(), this);
         pm.registerEvents(new PlayerJoinAndLeave(), this);
         pm.registerEvents(new SignChange(this), this);
         pm.registerEvents(new BlockEdit(), this);

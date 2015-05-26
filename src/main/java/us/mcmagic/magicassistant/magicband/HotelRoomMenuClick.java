@@ -11,7 +11,6 @@ import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.coins.Coins;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 
 /**
@@ -50,9 +49,9 @@ public class HotelRoomMenuClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         HotelRoom room = HotelUtil.getRoom(name);
         boolean staff = MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.INTERN.getRankId();
-        if (staff || Coins.getSqlCoins(player.getUniqueId()) >= room.getCost()) {
+        if (staff || MCMagicCore.economy.getCoins(player.getUniqueId()) >= room.getCost()) {
             if (!staff) {
-                Coins.minusSqlCoins(player.getUniqueId(), room.getCost());
+                MCMagicCore.economy.addCoins(player.getUniqueId(), -room.getCost());
             }
             HotelUtil.rentRoom(room, player);
         } else {

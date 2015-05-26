@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.commands;
 
-;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -16,12 +15,9 @@ import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
 
-
 /**
  * Created by Jacob on 1/20/15.
  */
-
-
 public class Commandautograph implements CommandExecutor {
     private static ItemStack stack = new ItemCreator(Material.WRITTEN_BOOK, ChatColor.DARK_AQUA + "Autograph Book", new ArrayList<String>());
     private static String buffer;
@@ -30,8 +26,6 @@ public class Commandautograph implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
         BookMeta bookmeta = ((BookMeta) stack.getItemMeta());
-
-
         if (args.length < 1) {
             sender.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
             sender.sendMessage(ChatColor.GREEN + "/autograph request <user> " + ChatColor.AQUA + "- Requests signature from Guest");
@@ -43,9 +37,8 @@ public class Commandautograph implements CommandExecutor {
             return true;
 
         }
-
         switch (args[0]) {
-            //todo Trading system with the request and accept and deny system
+            //TODO: Trading system with the request and accept and deny system
             case "request":
                 return true;
             case "accept":
@@ -69,7 +62,6 @@ public class Commandautograph implements CommandExecutor {
                     player.getItemInHand().setItemMeta(bookmeta);
                     return true;
                 }
-
                 return true;
             case "csign":
                 if (sender instanceof Player) {
@@ -100,7 +92,6 @@ public class Commandautograph implements CommandExecutor {
                 }
                 return true;
             case "remove":
-
                 return true;
         }
         return true;
