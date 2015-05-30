@@ -14,10 +14,10 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.HotelUtil;
-import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
@@ -109,9 +109,11 @@ public class PlayerInteract implements Listener {
                     }
                     return;
                 }
-                if (s.getLine(0).equals(designStation)) {
-                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
-                    return;
+                if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
+                    if (s.getLine(0).equals(designStation)) {
+                        MagicAssistant.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
+                        return;
+                    }
                 }
             } else if (type.name().toLowerCase().contains("_door")) {
                 HotelRoom room = HotelUtil.getRoomFromDoor(event.getClickedBlock(), player);

@@ -64,10 +64,12 @@ public class SignChange implements Listener {
                     HotelUtil.updateRooms();
                 }
             }
-            if (event.getLine(0).equalsIgnoreCase("[design station]")) {
-                event.setLine(0, PlayerInteract.designStation);
-                event.setLine(1, ChatColor.GOLD + event.getLine(1));
-                event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
+            if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
+                if (event.getLine(0).equalsIgnoreCase("[design station]")) {
+                    event.setLine(0, PlayerInteract.designStation);
+                    event.setLine(1, ChatColor.GOLD + event.getLine(1));
+                    event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
+                }
             }
         }
     }
