@@ -20,6 +20,7 @@ import us.mcmagic.magicassistant.ridemanager.Cart;
 import us.mcmagic.magicassistant.ridemanager.RideManager;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
+import us.mcmagic.magicassistant.shop.ShopManager;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
 import us.mcmagic.magicassistant.uoe.UniverseEnergyRide;
@@ -62,6 +63,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static RideManager rideManager;
     public static AutographUtil autographUtil;
     public static InventoryUtil inventoryUtil;
+    public static ShopManager shopManager;
 
     public void onEnable() {
         instance = this;
@@ -96,6 +98,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
         getLogger().info("Warps Initialized!");
+        shopManager = new ShopManager();
         getLogger().info("Initializing Hotel Rooms...");
         HotelUtil.refreshRooms();
         if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("Resorts")) {

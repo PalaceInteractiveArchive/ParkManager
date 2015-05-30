@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
-import net.minecraft.server.v1_8_R2.EnumDirection;
 import net.minecraft.server.v1_8_R2.PacketPlayInSteerVehicle;
 import net.minecraft.server.v1_8_R2.WorldServer;
 import org.bukkit.ChatColor;
@@ -16,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -95,22 +95,22 @@ public class RideManager implements Listener {
                         spawn(loc.add(0.5, 0, 0.5));
                     } else {
                         double power = 0;
-                        /*
+                        BlockFace direction;
                         try {
                             direction = dirFromString(list[1]);
                         } catch (Exception e) {
-                            s.setLine(1, ChatColor.RED + "Direction Error");
-                            s.update();
-                        }
-                        */
-                        try {
-                            power += Double.parseDouble(list[1]);
-                        } catch (Exception nfe) {
-                            s.setLine(1, ChatColor.RED + "Number Error");
+                            s.setLine(2, ChatColor.RED + "Direction Error");
                             s.update();
                             return;
                         }
-                        Cart cart = spawn(loc.add(0.5, 0, 0.5), power);
+                        try {
+                            power += Double.parseDouble(list[2]);
+                        } catch (Exception nfe) {
+                            s.setLine(2, ChatColor.RED + "Number Error");
+                            s.update();
+                            return;
+                        }
+                        Cart cart = spawn(loc.add(0.5, 0, 0.5), Math.abs(power), direction);
                         cart.setPower(power);
                     }
                 }
@@ -120,29 +120,29 @@ public class RideManager implements Listener {
         }
     }
 
-    private Cart spawn(Location loc, double power) {
+    private Cart spawn(Location loc, double power, BlockFace direction) {
         if (!canSpawn(loc)) {
             return null;
         }
-        Cart cart = new Cart(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), power);
+        Cart cart = new Cart(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), power, direction);
         WorldServer realWorld = ((CraftWorld) loc.getWorld()).getHandle();
         realWorld.addEntity(cart);
         return cart;
     }
 
-    private EnumDirection dirFromString(String s) {
+    private BlockFace dirFromString(String s) throws Exception {
         String dir = s.toLowerCase();
         switch (dir) {
             case "n":
-                return EnumDirection.NORTH;
+                return BlockFace.NORTH;
             case "e":
-                return EnumDirection.EAST;
+                return BlockFace.EAST;
             case "s":
-                return EnumDirection.SOUTH;
+                return BlockFace.SOUTH;
             case "w":
-                return EnumDirection.WEST;
+                return BlockFace.WEST;
             default:
-                return null;
+                throw new Exception("Direction not set");
         }
     }
 
@@ -153,8 +153,9 @@ public class RideManager implements Listener {
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
                 if (player.isInsideVehicle()) {
+                    net.minecraft.server.v1_8_R2.Entity nmsEntity = ((CraftPlayer) player).getHandle().vehicle;
                     Entity vehicle = player.getVehicle();
-                    if (!(vehicle instanceof Cart) && !(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand)) {
+                    if (!(nmsEntity instanceof Cart) && !(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand)) {
                         return;
                     }
                     if (event.getPacket().getHandle() instanceof PacketPlayInSteerVehicle) {
@@ -346,6 +347,34 @@ public class RideManager implements Listener {
                 return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_EAST;
             default:
                 return null;
+        }
+    }
+
+    public BlockFace getRailDirection(Block b) {
+        BlockMinecartTrackAbstract.EnumTrackPosition pos = getTrackPosition(b);
+        switch (pos) {
+            case NORTH_SOUTH:
+                return BlockFace.SOUTH;
+            case EAST_WEST:
+                return BlockFace.WEST;
+            case ASCENDING_EAST:
+                return BlockFace.EAST;
+            case ASCENDING_WEST:
+                return BlockFace.WEST;
+            case ASCENDING_NORTH:
+                return BlockFace.NORTH;
+            case ASCENDING_SOUTH:
+                return BlockFace.SOUTH;
+            case SOUTH_EAST:
+                return BlockFace.SOUTH_EAST;
+            case SOUTH_WEST:
+                return BlockFace.SOUTH_WEST;
+            case NORTH_WEST:
+                return BlockFace.NORTH_WEST;
+            case NORTH_EAST:
+                return BlockFace.NORTH_EAST;
+            default:
+                return BlockFace.NORTH;
         }
     }
 }

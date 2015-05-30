@@ -9,7 +9,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.HotelUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 
 /**
  * Created by Marc on 5/10/15

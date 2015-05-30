@@ -4,9 +4,11 @@ import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R2.EntityMinecartRideable;
 import net.minecraft.server.v1_8_R2.World;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R2.TrigMath;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -27,7 +29,7 @@ public class Cart extends EntityMinecartRideable {
     private Train train;
     private UUID passenger;
     private BlockFace direction;
-    private BlockFace directionTo;
+    private BlockFace lastDirection;
     private BlockFace directionFrom = BlockFace.SELF;
     private boolean atStation = false;
     private Station station;
@@ -36,9 +38,11 @@ public class Cart extends EntityMinecartRideable {
     private boolean playerExit;
     private double power = 0.1;
 
-    public Cart(World world, double d0, double d1, double d2, double power) {
+    public Cart(World world, double d0, double d1, double d2, double power, BlockFace dir) {
         this(world, d0, d1, d2);
         this.power = power;
+        this.lastDirection = dir;
+        this.direction = dir;
     }
 
     public Cart(World world, double d0, double d1, double d2) {
@@ -48,70 +52,371 @@ public class Cart extends EntityMinecartRideable {
     @Override
     public void move(double x, double y, double z) {
         Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
-        updateDirection();
-        double cos = FaceUtil.cos(direction);
-        double sin = FaceUtil.sin(direction);
-        motX = power * FaceUtil.cos(direction);
-        motZ = power * FaceUtil.sin(direction);
-        System.out.println(direction);
+        //updateDirection2();
+        //Bukkit.broadcastMessage(yaw + " " + direction.toString());
+        //double cos = FaceUtil.cos(direction);
+        //double sin = FaceUtil.sin(direction);
+        updateFactors();
+        Location to = from.add(motX, motY, motZ);
         super.move(x, y, z);
     }
 
-    /*
-    public void move(double dx, double dy, double dz) {
-        Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
-        double x = motX;
-        double y = motY;
-        double z = motZ;
-        Vector v = getFlyingVelocityMod();
-        x *= v.getX();
-        y *= v.getY();
-        z *= v.getZ();
-        //Bukkit.broadcastMessage(v.getX() + ", " + v.getY() + "," + v.getZ());
-        Location to = from.clone().add(motX, motY, motZ);
-        CartMoveEvent e = new CartMoveEvent(this, from, to);
-        Bukkit.getPluginManager().callEvent(e);
-        if (!e.isCancelled()) {
-            Block b = from.getWorld().getBlockAt(RideManager.locInt(locX), RideManager.locInt(locY), RideManager.locInt(locZ));
-            if (MagicAssistant.rideManager.isRail(b.getLocation())) {
-                BlockMinecartTrackAbstract.EnumTrackPosition pos = MagicAssistant.rideManager.getTrackPosition(b);
-                int[][] aint = matrix[pos.a()];
-                double d1 = (double) (aint[1][0] - aint[0][0]);
-                double d2 = (double) (aint[1][2] - aint[0][2]);
-                double d3 = Math.sqrt(d1 * d1 + d2 * d2);
-                double d5 = Math.sqrt(this.motX * this.motX + this.motZ * this.motZ);
-                this.motX = d5 * d1 / d3;
-                this.motZ = d5 * d2 / d3;
-                super.velocityChanged = true;
-                return;
-            }
+    private BlockFace getStraightDirection(BlockFace direction) {
+        switch (direction) {
+            case NORTH:
+                return BlockFace.NORTH;
+            case EAST:
+                return BlockFace.EAST;
+            case SOUTH:
+                return BlockFace.SOUTH;
+            case WEST:
+                return BlockFace.WEST;
+            case NORTH_EAST:
+                if (lastDirection.equals(BlockFace.NORTH_NORTH_EAST)) {
+                    return BlockFace.EAST;
+                } else {
+                    return BlockFace.NORTH;
+                }
+            case NORTH_WEST:
+                if (lastDirection.equals(BlockFace.NORTH_NORTH_WEST)) {
+                    return BlockFace.WEST;
+                } else {
+                    return BlockFace.NORTH;
+                }
+            case SOUTH_EAST:
+                if (lastDirection.equals(BlockFace.SOUTH_SOUTH_EAST)) {
+                    return BlockFace.EAST;
+                } else {
+                    return BlockFace.SOUTH;
+                }
+            case SOUTH_WEST:
+                if (lastDirection.equals(BlockFace.SOUTH_SOUTH_WEST)) {
+                    return BlockFace.WEST;
+                } else {
+                    return BlockFace.SOUTH;
+                }
+            case WEST_NORTH_WEST:
+                if (lastDirection.equals(BlockFace.WEST)) {
+                    return BlockFace.NORTH;
+                } else {
+                    return BlockFace.WEST;
+                }
+            case NORTH_NORTH_WEST:
+                if (lastDirection.equals(BlockFace.NORTH)) {
+                    return BlockFace.WEST;
+                } else {
+                    return BlockFace.NORTH;
+                }
+            case NORTH_NORTH_EAST:
+                if (lastDirection.equals(BlockFace.NORTH)) {
+                    return BlockFace.EAST;
+                } else {
+                    return BlockFace.NORTH;
+                }
+            case EAST_NORTH_EAST:
+                if (lastDirection.equals(BlockFace.EAST)) {
+                    return BlockFace.NORTH;
+                } else {
+                    return BlockFace.EAST;
+                }
+            case EAST_SOUTH_EAST:
+                if (lastDirection.equals(BlockFace.EAST)) {
+                    return BlockFace.SOUTH;
+                } else {
+                    return BlockFace.EAST;
+                }
+            case SOUTH_SOUTH_EAST:
+                if (lastDirection.equals(BlockFace.SOUTH)) {
+                    return BlockFace.EAST;
+                } else {
+                    return BlockFace.SOUTH;
+                }
+            case SOUTH_SOUTH_WEST:
+                if (lastDirection.equals(BlockFace.SOUTH)) {
+                    return BlockFace.WEST;
+                } else {
+                    return BlockFace.SOUTH;
+                }
+            case WEST_SOUTH_WEST:
+                if (lastDirection.equals(BlockFace.WEST)) {
+                    return BlockFace.SOUTH;
+                } else {
+                    return BlockFace.WEST;
+                }
         }
-        super.motX = 0.0;
-        super.motY = 0.0;
-        super.motZ = 0.0;
-        super.positionChanged = false;
+        return BlockFace.NORTH;
     }
 
-    /*
-    public void move(double x, double y, double z) {
-        Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
-        Location to = from.clone().add(x, y, z);
-        CartMoveEvent e = new CartMoveEvent(this, from, to);
-        Bukkit.getPluginManager().callEvent(e);
-        if (!e.isCancelled()) {
-            if (!slowdown) {
-                updateSpeed();
-                setSpeed(getSpeed());
-            }
-            super.move(x, y, z);
-            return;
+    private void updateFactors() {
+        BlockMinecartTrackAbstract.EnumTrackPosition pos =
+                MagicAssistant.rideManager.getTrackPosition(getBukkitEntity().getLocation().getBlock());
+        double x = 0;
+        double z = 0;
+        Bukkit.broadcastMessage(ChatColor.BLUE + direction.name());
+        switch (pos) {
+            case NORTH_SOUTH:
+                if (direction.equals(BlockFace.NORTH)) {
+                    x = 0;
+                    z = -power;
+                } else {
+                    direction = getStraightDirection(direction);
+                    x = 0;
+                    z = power;
+                }
+                break;
+            case EAST_WEST:
+                if (direction.equals(BlockFace.EAST)) {
+                    x = power;
+                    z = 0;
+                } else {
+                    direction = getStraightDirection(direction);
+                    x = -power;
+                    z = 0;
+                }
+                break;
+            case ASCENDING_EAST:
+                if (direction.equals(BlockFace.EAST)) {
+                    x = power;
+                    z = 0;
+                } else {
+                    direction = getStraightDirection(direction);
+                    x = -power;
+                    z = 0;
+                }
+                break;
+            case ASCENDING_WEST:
+                if (direction.equals(BlockFace.EAST)) {
+                    x = power;
+                    z = 0;
+                } else {
+                    direction = getStraightDirection(direction);
+                    x = -power;
+                    z = 0;
+                }
+                break;
+            case ASCENDING_NORTH:
+                if (direction.equals(BlockFace.NORTH)) {
+                    x = 0;
+                    z = -power;
+                } else {
+                    direction = getStraightDirection(direction);
+                    x = 0;
+                    z = power;
+                }
+                break;
+            case ASCENDING_SOUTH:
+                if (direction.equals(BlockFace.NORTH)) {
+                    x = 0;
+                    z = -power;
+                } else {
+                    direction = getStraightDirection(direction);
+                    x = 0;
+                    z = power;
+                }
+                break;
+            case SOUTH_EAST:
+                switch (direction) {
+                    case NORTH:
+                        direction = BlockFace.NORTH_NORTH_EAST;
+                        x = power * 0.25;
+                        z = (-power) * 0.75;
+                        break;
+                    case WEST:
+                        direction = BlockFace.WEST_SOUTH_WEST;
+                        x = (-power) * 0.75;
+                        z = power * 0.25;
+                        break;
+                    case EAST:
+                        x = power;
+                        z = 0;
+                        break;
+                    case SOUTH:
+                        x = 0;
+                        z = power;
+                    case NORTH_EAST:
+                        direction = BlockFace.EAST_NORTH_EAST;
+                        x = power * 0.75;
+                        z = (-power) * 0.25;
+                        break;
+                    case SOUTH_WEST:
+                        direction = BlockFace.SOUTH_SOUTH_WEST;
+                        x = (-power) * 0.25;
+                        z = power * 0.75;
+                        break;
+                    case NORTH_NORTH_EAST:
+                        direction = BlockFace.NORTH_EAST;
+                        x = power * 0.55;
+                        z = (-power) * 0.45;
+                        break;
+                    case EAST_NORTH_EAST:
+                        direction = BlockFace.EAST;
+                        x = power;
+                        z = 0;
+                        break;
+                    case SOUTH_SOUTH_WEST:
+                        direction = BlockFace.SOUTH;
+                        x = 0;
+                        z = power;
+                        break;
+                    case WEST_SOUTH_WEST:
+                        direction = BlockFace.SOUTH_WEST;
+                        x = (-power) * 0.45;
+                        z = power * 0.55;
+                        break;
+                }
+                break;
+            case SOUTH_WEST:
+                if (direction.equals(BlockFace.NORTH)) {
+                    direction = BlockFace.WEST;
+                    x = 0;
+                    z = -power;
+                } else if (direction.equals(BlockFace.SOUTH)) {
+                    x = 0;
+                    z = power;
+                } else if (direction.equals(BlockFace.EAST)) {
+                    direction = BlockFace.SOUTH;
+                    x = power;
+                    z = 0;
+                } else if (direction.equals(BlockFace.WEST)) {
+                    x = -power;
+                    z = 0;
+                } else if (direction.equals(BlockFace.NORTH_WEST)) {
+                    direction = BlockFace.WEST;
+                    x = -power;
+                    x = -power;
+                } else if (direction.equals(BlockFace.SOUTH_EAST)) {
+                    direction = BlockFace.SOUTH;
+                    x = power;
+                    z = power;
+                }
+                break;
+            case NORTH_WEST:
+                if (direction.equals(BlockFace.NORTH)) {
+                    x = 0;
+                    z = -power;
+                } else if (direction.equals(BlockFace.SOUTH)) {
+                    direction = BlockFace.WEST;
+                    x = 0;
+                    z = power;
+                } else if (direction.equals(BlockFace.EAST)) {
+                    direction = BlockFace.NORTH;
+                    x = power;
+                    z = 0;
+                } else if (direction.equals(BlockFace.WEST)) {
+                    x = -power;
+                    z = 0;
+                } else if (direction.equals(BlockFace.NORTH_EAST)) {
+                    direction = BlockFace.NORTH;
+                    x = power;
+                    x = -power;
+                } else if (direction.equals(BlockFace.SOUTH_WEST)) {
+                    direction = BlockFace.WEST;
+                    x = -power;
+                    z = power;
+                }
+                break;
+            case NORTH_EAST:
+                if (direction.equals(BlockFace.NORTH)) {
+                    x = 0;
+                    z = -power;
+                } else if (direction.equals(BlockFace.SOUTH)) {
+                    direction = BlockFace.EAST;
+                    x = 0;
+                    z = power;
+                } else if (direction.equals(BlockFace.EAST)) {
+                    x = power;
+                    z = 0;
+                } else if (direction.equals(BlockFace.WEST)) {
+                    direction = BlockFace.NORTH;
+                    x = -power;
+                    z = 0;
+                } else if (direction.equals(BlockFace.NORTH_WEST)) {
+                    direction = BlockFace.NORTH;
+                    x = -power;
+                    x = -power;
+                } else if (direction.equals(BlockFace.SOUTH_EAST)) {
+                    direction = BlockFace.EAST;
+                    x = power;
+                    z = power;
+                }
+                break;
         }
-        super.motX = 0.0;
-        super.motY = 0.0;
-        super.motZ = 0.0;
-        super.positionChanged = false;
+        final double origx = motX;
+        final double origz = motZ;
+        motX = x;
+        motZ = z;
+        velocityChanged = motX != origx || motZ != origz;
+        lastDirection = direction;
     }
-    */
+
+    public void updateDirection2() {
+        float yaw = -180;
+        Bukkit.broadcastMessage("x: " + motX + " y: " + motY + " z: " + motZ);
+        TrigMath.atan2(1, 2);
+        direction = faceFromYaw(yaw);
+    }
+
+    private float getYaw() {
+        double x = motX;
+        double z = motZ;
+        double absX = Math.abs(x);
+        double absZ = Math.abs(z);
+        BlockMinecartTrackAbstract.EnumTrackPosition pos =
+                MagicAssistant.rideManager.getTrackPosition(getBukkitEntity().getLocation().getBlock());
+        if (!isSloped()) {
+            if (!(pos.equals(BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH) ||
+                    pos.equals(BlockMinecartTrackAbstract.EnumTrackPosition.EAST_WEST))) {
+                return 0;
+            }
+        }
+        if (absX == 0) {
+            if (z > 0) {
+                return 0;
+            }
+            return -180;
+        }
+        return 0;
+    }
+
+    private boolean isBetween(double original, double from, double to) {
+        return original >= from && original <= to;
+    }
+
+    private BlockFace faceFromYaw(float y) {
+        float yaw;
+        if (y == -180) {
+            yaw = 90;
+        } else {
+            yaw = y - 90;
+        }
+        //yaw = atan2(dz, dx) − 90∘
+        Bukkit.broadcastMessage(ChatColor.RED + String.valueOf(Math.atan2(motZ, motX) - 90f));
+        if (isBetween(Math.abs(yaw), 157.5, 180)) {
+            return BlockFace.NORTH;
+        }
+        if (isBetween(yaw, -137.5, 112.5)) {
+            return BlockFace.NORTH_EAST;
+        }
+        if (isBetween(yaw, -112.5, -67.5)) {
+            return BlockFace.EAST;
+        }
+        if (isBetween(yaw, -67.5, -22.5)) {
+            return BlockFace.SOUTH_EAST;
+        }
+        if (isBetween(yaw, -22.5, 22.5)) {
+            return BlockFace.SOUTH;
+        }
+        if (isBetween(yaw, 22.5, 67.5)) {
+            return BlockFace.SOUTH_WEST;
+        }
+        if (isBetween(yaw, 67.5, 112.5)) {
+            return BlockFace.WEST;
+        }
+        if (isBetween(yaw, 112.5, 157.5)) {
+            return BlockFace.NORTH_WEST;
+        }
+        return BlockFace.NORTH;
+    }
 
     @Override
     public void die() {
@@ -222,9 +527,11 @@ public class Cart extends EntityMinecartRideable {
 
     private void updateDirection() {
         Vector vec = getBukkitEntity().getVelocity();
-        //Bukkit.broadcastMessage(vec.toString());
         if (direction == null) {
             direction = FaceUtil.getDirection(vec);
+        }
+        if (this.lastDirection == null) {
+            this.lastDirection = FaceUtil.getDirection(vec, false);
         }
         BlockFace mdir = getMovementDirection(vec);
         updateDirection(mdir);
@@ -234,34 +541,34 @@ public class Cart extends EntityMinecartRideable {
         if (this.direction == null) {
             this.direction = movement;
         }
-        if (this.directionTo == null) {
+        if (this.lastDirection == null) {
             if (FaceUtil.isSubCardinal(movement))
-                this.directionTo = FaceUtil.getDirection(getBukkitEntity().getVelocity(), false);
+                this.lastDirection = FaceUtil.getDirection(getBukkitEntity().getVelocity(), false);
             else {
-                this.directionTo = movement;
+                this.lastDirection = movement;
             }
         }
         boolean fromInvalid = this.directionFrom == BlockFace.SELF;
         if (fromInvalid) {
-            this.directionFrom = this.directionTo;
+            this.directionFrom = this.lastDirection;
         }
         this.direction = movement;
         if (FaceUtil.isSubCardinal(this.direction)) {
-            BlockFace raildirection = getRailDirection();
+            BlockFace raildirection = MagicAssistant.rideManager.getRailDirection(getBukkitEntity().getLocation().getBlock());
             if (this.direction == BlockFace.NORTH_EAST) {
-                this.directionTo = (raildirection == BlockFace.NORTH_WEST ? BlockFace.EAST : BlockFace.NORTH);
+                this.lastDirection = (raildirection == BlockFace.NORTH_WEST ? BlockFace.EAST : BlockFace.NORTH);
             } else if (this.direction == BlockFace.SOUTH_EAST) {
-                this.directionTo = (raildirection == BlockFace.NORTH_EAST ? BlockFace.SOUTH : BlockFace.EAST);
+                this.lastDirection = (raildirection == BlockFace.NORTH_EAST ? BlockFace.SOUTH : BlockFace.EAST);
             } else if (this.direction == BlockFace.SOUTH_WEST) {
-                this.directionTo = (raildirection == BlockFace.NORTH_WEST ? BlockFace.SOUTH : BlockFace.WEST);
+                this.lastDirection = (raildirection == BlockFace.NORTH_WEST ? BlockFace.SOUTH : BlockFace.WEST);
             } else if (this.direction == BlockFace.NORTH_WEST) {
-                this.directionTo = (raildirection == BlockFace.NORTH_EAST ? BlockFace.WEST : BlockFace.NORTH);
+                this.lastDirection = (raildirection == BlockFace.NORTH_EAST ? BlockFace.WEST : BlockFace.NORTH);
             }
         } else {
-            this.directionTo = this.direction;
+            this.lastDirection = this.direction;
         }
         if (fromInvalid) {
-            this.directionFrom = this.directionTo;
+            this.directionFrom = this.lastDirection;
         }
     }
 
@@ -272,7 +579,7 @@ public class Cart extends EntityMinecartRideable {
     }
 
     public BlockFace getMovementDirection(Vector movement) {
-        BlockFace raildirection = getRailDirection();
+        BlockFace raildirection = MagicAssistant.rideManager.getRailDirection(getBukkitEntity().getLocation().getBlock());
         boolean isHorizontalMovement = (Math.abs(movement.getX()) >= 0.0001D) || (Math.abs(movement.getZ()) >= 0.0001D);
         BlockFace direction = null;
         if (isSloped()) {
@@ -304,10 +611,8 @@ public class Cart extends EntityMinecartRideable {
             BlockFace[] possibleDirections = FaceUtil.getFaces(raildirection.getOppositeFace());
             //System.out.println(movementDir);
             if (FaceUtil.isSubCardinal(movementDir)) {
-                System.out.println("sub");
                 direction = movementDir;
             } else {
-                System.out.println("not");
                 BlockFace directionTo;
                 if (possibleDirections[0] == movementDir) {
                     directionTo = possibleDirections[0];
@@ -334,6 +639,7 @@ public class Cart extends EntityMinecartRideable {
             float angleSide1 = FaceUtil.faceToYaw(raildirection);
             float angleSide2 = FaceUtil.faceToYaw(raildirection.getOppositeFace());
             float movAngle = MathUtil.getLookAtYaw(movement);
+            Bukkit.broadcastMessage("Important: " + movement.toString());
             if (MathUtil.getAngleDifference(angleSide1, movAngle) < MathUtil.getAngleDifference(angleSide2, movAngle))
                 direction = raildirection;
             else {
@@ -360,34 +666,5 @@ public class Cart extends EntityMinecartRideable {
         boolean alongZ = FaceUtil.isAlongZ(direction);
         boolean alongY = FaceUtil.isAlongY(direction);
         return ((!alongZ) && (!alongY) && (!alongX));
-    }
-
-    public BlockFace getRailDirection() {
-        Location loc = getBukkitEntity().getLocation();
-        BlockMinecartTrackAbstract.EnumTrackPosition pos = MagicAssistant.rideManager.getTrackPosition(loc.getBlock());
-        switch (pos) {
-            case NORTH_SOUTH:
-                return BlockFace.SOUTH;
-            case EAST_WEST:
-                return BlockFace.WEST;
-            case ASCENDING_EAST:
-                return BlockFace.EAST;
-            case ASCENDING_WEST:
-                return BlockFace.WEST;
-            case ASCENDING_NORTH:
-                return BlockFace.NORTH;
-            case ASCENDING_SOUTH:
-                return BlockFace.SOUTH;
-            case SOUTH_EAST:
-                return BlockFace.SOUTH_EAST;
-            case SOUTH_WEST:
-                return BlockFace.SOUTH_WEST;
-            case NORTH_WEST:
-                return BlockFace.NORTH_WEST;
-            case NORTH_EAST:
-                return BlockFace.NORTH_EAST;
-            default:
-                return BlockFace.NORTH;
-        }
     }
 }

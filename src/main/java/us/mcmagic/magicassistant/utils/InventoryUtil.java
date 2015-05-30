@@ -26,14 +26,14 @@ public class InventoryUtil {
     private ItemStack sne = new ItemCreator(Material.FIREWORK, ChatColor.GREEN + "Shows and Events",
             Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous " + ChatColor.AQUA +
                     "MCMagic " + ChatColor.GREEN + "Shows!"));
-    private ItemStack hnr = new ItemCreator(Material.BED, ChatColor.GREEN + "Hotels and Resorts",
+    private ItemStack hnr = new ItemCreator(Material.BED, ChatColor.GREEN + "Hotels and Resorts " + ChatColor.BLUE + "*New*",
             Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
     private ItemStack toggleon = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.AQUA + "Player Visibility " +
             ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden", Arrays.asList(""));
     private ItemStack toggleoff = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.AQUA + "Player Visibility " +
             ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible", Arrays.asList(""));
-    private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop",
-            Arrays.asList(ChatColor.RED + "Coming Soon"));
+    private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop " + ChatColor.BLUE + "*New*",
+            Arrays.asList(ChatColor.GREEN + "Purchase Items!"));
     private ItemStack food = new ItemCreator(Material.POTATO_ITEM, ChatColor.GREEN + "Find Food", Arrays.asList(
             ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
     private ItemStack hub = new ItemCreator(Material.ENDER_PEARL, ChatColor.GREEN + "Return to Hub", Arrays.asList(
@@ -68,7 +68,8 @@ public class InventoryUtil {
     private ItemStack locker = new ItemCreator(Material.ENDER_CHEST, ChatColor.GREEN + "Locker");
     private ItemStack ach = new ItemCreator(Material.EMERALD, ChatColor.GREEN + "Achievements");
     private ItemStack mumble = new ItemCreator(Material.COMPASS, ChatColor.GREEN + "Mumble");
-    private ItemStack packs = new ItemCreator(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs");
+    private ItemStack packs = new ItemCreator(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs " +
+            ChatColor.BLUE + "*New*");
     private ItemStack prefs = new ItemCreator(Material.DIODE, ChatColor.GREEN + "Player Settings");
     //Pages
     private ItemStack nextPage = new ItemCreator(Material.ARROW, ChatColor.GREEN + "Next Page");
@@ -470,7 +471,6 @@ public class InventoryUtil {
                 return;
             case DESIGNSTATION:
                 DesignStation.openPickModelInventory(player);
-                return;
         }
     }
 

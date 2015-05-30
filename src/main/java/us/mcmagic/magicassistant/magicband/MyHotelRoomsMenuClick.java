@@ -10,7 +10,7 @@ import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.HotelUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 

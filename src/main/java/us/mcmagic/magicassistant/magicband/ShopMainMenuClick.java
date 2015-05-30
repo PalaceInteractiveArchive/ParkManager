@@ -6,20 +6,18 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.shop.Shop;
+import us.mcmagic.magicassistant.utils.BandUtil;
 
 /**
- * Created by Marc on 12/22/14
+ * Created by Marc on 5/29/15
  */
-public class RideAttractionClick {
+public class ShopMainMenuClick {
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
         if (item == null) {
-            return;
-        }
-        if (item.getItemMeta() == null) {
             return;
         }
         Player player = (Player) event.getWhoClicked();
@@ -28,21 +26,17 @@ public class RideAttractionClick {
             return;
         }
         ItemMeta meta = item.getItemMeta();
-        if (meta.getDisplayName() == null) {
+        if (meta == null) {
             return;
         }
-        if (meta.getDisplayName().equals(ChatColor.RED + "Uh oh!")) {
+        String name = meta.getDisplayName();
+        Shop shop = MagicAssistant.shopManager.getShop(name);
+        if (shop == null) {
+            player.sendMessage(ChatColor.RED + "Error finding that Shop!");
             player.closeInventory();
-            player.sendMessage(ChatColor.RED + "Sorry, but there are no rides setup on this server!");
             return;
         }
-        String name = ChatColor.stripColor(meta.getDisplayName());
-        switch (name) {
-            case "Rides":
-                MagicAssistant.inventoryUtil.openRideListPage(player, 1);
-                return;
-            case "Attractions":
-                MagicAssistant.inventoryUtil.openAttractionListPage(player, 1);
-        }
+        player.performCommand("warp " + shop.getWarp());
+        player.closeInventory();
     }
 }

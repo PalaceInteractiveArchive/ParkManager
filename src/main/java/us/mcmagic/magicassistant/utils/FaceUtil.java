@@ -1,5 +1,7 @@
 package us.mcmagic.magicassistant.utils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -223,9 +225,11 @@ public class FaceUtil {
 
     public static BlockFace yawToFace(float yaw, boolean useSubCardinalDirections) {
         if (useSubCardinalDirections) {
-            return RADIAL[(java.lang.Math.round(yaw / 45.0F) & 0x7)];
+            int num = (Math.round(yaw / 45.0F) & 0x7);
+            Bukkit.broadcastMessage(ChatColor.RED + String.valueOf(num) + " " + RADIAL[num]);
+            return RADIAL[num];
         }
-        return AXIS[(java.lang.Math.round(yaw / 90.0F) & 0x3)];
+        return AXIS[(Math.round(yaw / 90.0F) & 0x3)];
     }
 
     static {

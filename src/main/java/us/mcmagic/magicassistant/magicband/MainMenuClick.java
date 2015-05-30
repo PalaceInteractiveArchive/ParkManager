@@ -10,9 +10,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -79,7 +79,7 @@ public class MainMenuClick {
                 inv.setItem(4, time);
                 return;
             case GOLD_BOOTS:
-                MagicAssistant.inventoryUtil.featureComingSoon(player);
+                MagicAssistant.shopManager.openMenu(player);
                 return;
             case POTATO_ITEM:
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FOOD);

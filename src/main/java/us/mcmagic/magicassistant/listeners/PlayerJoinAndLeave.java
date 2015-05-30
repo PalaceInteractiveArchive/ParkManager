@@ -79,7 +79,7 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.INTERN.getRankId()) {
+        if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
             event.setKickMessage("This server will be available soon!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }

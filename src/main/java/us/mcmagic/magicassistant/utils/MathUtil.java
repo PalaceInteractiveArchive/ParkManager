@@ -150,7 +150,7 @@ public class MathUtil {
 
     public static float getLookAtYaw(double dx, double dz) {
         float amount = atan2(dz, dx) - 90.0F;
-        Bukkit.broadcastMessage(dx + " " + dz + " " + String.valueOf(amount));
+        Bukkit.broadcastMessage("x: " + dx + " z: " + dz + " amount: " + String.valueOf(amount));
         return amount;
     }
 

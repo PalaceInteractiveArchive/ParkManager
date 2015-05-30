@@ -6,15 +6,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.handlers.HotelRoom;
-import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.HotelUtil;
-import us.mcmagic.magicassistant.handlers.InventoryType;
 
 /**
- * Created by Greenlock28 on 2/11/2015.
+ * Created by Marc on 5/29/15
  */
-public class HotelCheckoutMenuClick {
+public class ShopConfirmClick {
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -22,16 +18,18 @@ public class HotelCheckoutMenuClick {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
-            return;
-        }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return;
         }
-        String name = ChatColor.stripColor(meta.getDisplayName()).substring(13);
-        HotelRoom room = HotelUtil.getRoom(name);
-        HotelUtil.checkout(room, false);
+        String name = ChatColor.stripColor(meta.getDisplayName());
+        switch (name) {
+            case "Confirm Purchase":
+                MagicAssistant.shopManager.confirmPurchase(player);
+                return;
+            case "Cancel Purchase":
+                MagicAssistant.shopManager.cancelPurchase(player);
+                player.closeInventory();
+        }
     }
 }

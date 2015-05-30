@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;

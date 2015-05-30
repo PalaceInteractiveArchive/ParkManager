@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 
 /**
  * Created by Greenlock28 on 1/24/2015.

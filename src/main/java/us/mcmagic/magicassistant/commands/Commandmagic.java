@@ -524,6 +524,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 ma.setupRides();
                 HotelUtil.refreshRooms();
                 MagicAssistant.packManager.initialize();
+                MagicAssistant.shopManager.initialize();
                 sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");
                 return true;
             default:

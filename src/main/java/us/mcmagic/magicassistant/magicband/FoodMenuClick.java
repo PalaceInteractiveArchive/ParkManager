@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.FoodLocation;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.InventoryType;
+import us.mcmagic.magicassistant.handlers.InventoryType;
 
 /**
  * Created by Marc on 12/14/14
