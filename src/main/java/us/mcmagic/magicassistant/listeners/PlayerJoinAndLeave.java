@@ -97,7 +97,6 @@ public class PlayerJoinAndLeave implements Listener {
                 if (!MagicAssistant.userCache.get(player.getUniqueId()).equals(player.getName())) {
                     MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
                 }
-
             }
             PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             if (!data.getVisibility()) {
@@ -233,6 +232,7 @@ public class PlayerJoinAndLeave implements Listener {
                 break;
             }
         }
+        MagicAssistant.tradeManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
         VisibleUtil.logout(player.getUniqueId());

@@ -4,9 +4,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
-import net.minecraft.server.v1_8_R2.PacketPlayInSteerVehicle;
-import net.minecraft.server.v1_8_R2.WorldServer;
+import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
+import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,8 +14,8 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -153,7 +153,7 @@ public class RideManager implements Listener {
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
                 if (player.isInsideVehicle()) {
-                    net.minecraft.server.v1_8_R2.Entity nmsEntity = ((CraftPlayer) player).getHandle().vehicle;
+                    net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftPlayer) player).getHandle().vehicle;
                     Entity vehicle = player.getVehicle();
                     if (!(nmsEntity instanceof Cart) && !(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand)) {
                         return;

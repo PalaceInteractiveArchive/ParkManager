@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 public class Commandheal implements CommandExecutor {
 

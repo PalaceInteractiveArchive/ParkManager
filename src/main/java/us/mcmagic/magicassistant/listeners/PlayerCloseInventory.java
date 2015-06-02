@@ -29,6 +29,9 @@ public class PlayerCloseInventory implements Listener {
             }
             return;
         }
+        if (title.startsWith(ChatColor.BLUE + "trade with ")) {
+            MagicAssistant.tradeManager.closeMenu(player, ChatColor.stripColor(event.getInventory().getTitle()));
+        }
         if (title.endsWith("confirm")) {
             MagicAssistant.shopManager.cancelPurchase(player);
         }

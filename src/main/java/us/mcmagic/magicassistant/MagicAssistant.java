@@ -23,6 +23,7 @@ import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.shop.ShopManager;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
+import us.mcmagic.magicassistant.trade.TradeManager;
 import us.mcmagic.magicassistant.uoe.UniverseEnergyRide;
 import us.mcmagic.magicassistant.utils.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -64,6 +65,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static AutographUtil autographUtil;
     public static InventoryUtil inventoryUtil;
     public static ShopManager shopManager;
+    public static TradeManager tradeManager;
 
     public void onEnable() {
         instance = this;
@@ -73,6 +75,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         autographUtil = new AutographUtil();
         inventoryUtil = new InventoryUtil();
         universeEnergyRide = new UniverseEnergyRide();
+        tradeManager = new TradeManager();
         registerListeners();
         registerCommands();
         bandUtil.initialize();
@@ -472,6 +475,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("spawn").setExecutor(new Commandspawn());
         getCommand("top").setExecutor(new Commandtop());
         getCommand("tp").setExecutor(new Commandtp());
+        getCommand("trade").setExecutor(new Commandtrade());
         getCommand("uwarp").setExecutor(new Commanduwarp());
         getCommand("vanish").setExecutor(new Commandvanish());
         getCommand("vanish").setAliases(Collections.singletonList("v"));
@@ -485,7 +489,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(this, this);
         pm.registerEvents(new ChatListener(), this);
         pm.registerEvents(new PlayerJoinAndLeave(), this);
-        pm.registerEvents(new SignChange(this), this);
+        pm.registerEvents(new SignChange(), this);
         pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new InventoryClick(this), this);
         pm.registerEvents(new PlayerDropItem(), this);

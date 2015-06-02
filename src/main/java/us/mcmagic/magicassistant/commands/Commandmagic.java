@@ -1,16 +1,16 @@
 package us.mcmagic.magicassistant.commands;
 
-import net.minecraft.server.v1_8_R2.BlockPosition;
-import net.minecraft.server.v1_8_R2.PacketPlayOutBlockChange;
-import net.minecraft.server.v1_8_R2.PacketPlayOutNamedSoundEffect;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +24,6 @@ import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
 import us.mcmagic.magicassistant.utils.HotelUtil;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -32,6 +31,7 @@ import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.File;

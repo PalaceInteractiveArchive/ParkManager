@@ -9,18 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
-import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
 public class SignChange implements Listener {
-    public MagicAssistant pl;
-
-    public SignChange(MagicAssistant instance) {
-        pl = instance;
-    }
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
@@ -38,6 +32,7 @@ public class SignChange implements Listener {
             }
             if (event.getLine(0).equalsIgnoreCase("[disposal]")) {
                 event.setLine(0, PlayerInteract.disposal);
+                return;
             }
             if (event.getLine(0).equalsIgnoreCase("[hotel]")) {
                 event.setLine(0, PlayerInteract.hotel);
@@ -63,6 +58,12 @@ public class SignChange implements Listener {
                     HotelUtil.addRoom(newRoom);
                     HotelUtil.updateRooms();
                 }
+                return;
+            }
+            if (event.getLine(0).equalsIgnoreCase("[shop]")) {
+                event.setLine(0, PlayerInteract.shop);
+                event.setLine(1, ChatColor.DARK_GREEN + event.getLine(1));
+                return;
             }
             if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
                 if (event.getLine(0).equalsIgnoreCase("[design station]")) {

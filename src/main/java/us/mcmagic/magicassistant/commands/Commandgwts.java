@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import us.mcmagic.magicassistant.handlers.GlowType;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.util.Arrays;
 

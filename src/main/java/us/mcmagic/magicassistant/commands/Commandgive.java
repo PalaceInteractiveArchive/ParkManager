@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.utils.NumberUtil;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 public class Commandgive implements CommandExecutor {
 

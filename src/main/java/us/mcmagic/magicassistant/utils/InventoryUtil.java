@@ -1,8 +1,8 @@
 package us.mcmagic.magicassistant.utils;
 
-import net.minecraft.server.v1_8_R2.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -177,7 +177,7 @@ public class InventoryUtil {
                 sm.setDisplayName(ChatColor.GREEN + "My Profile");
                 sm.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
                 playerInfo.setItemMeta(sm);
-                net.minecraft.server.v1_8_R2.ItemStack i = CraftItemStack.asNMSCopy(playerInfo);
+                net.minecraft.server.v1_8_R3.ItemStack i = CraftItemStack.asNMSCopy(playerInfo);
                 NBTTagCompound tag = i.getTag();
                 NBTTagCompound skull = tag.getCompound("SkullOwner");
                 skull.setString("Name", player.getName());

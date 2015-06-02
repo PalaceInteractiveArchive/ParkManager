@@ -27,23 +27,30 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>us.mcmagic</groupId>
+            <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.3-R0.1-SNAPSHOT</version>
+            <version>1.8.6-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>us.mcmagic</groupId>
+            <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8.3-R0.1-SNAPSHOT</version>
+            <version>1.8.6-R0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>minecraft-server</artifactId>
+            <version>1.8.6-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>us.mcmagic</groupId>
             <artifactId>mcmagiccore</artifactId>
-            <version>2.3.1-SNAPSHOT</version>
+            <version>2.3.3-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

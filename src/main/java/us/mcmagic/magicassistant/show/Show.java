@@ -54,11 +54,11 @@ public class Show {
                 if (tokens.length < 3) {
                     System.out.println("Invalid Show Line [" + strLine + "]");
                 }
-                // Set Show loc
-                if (tokens[1].equals("loc")) {
+                // Set Show Location
+                if (tokens[1].equals("Location")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[2]);
                     if (loc == null) {
-                        invalidLines.put(strLine, "Invalid loc Line");
+                        invalidLines.put(strLine, "Invalid Location Line");
                         continue;
                     }
                     this.loc = loc;
@@ -112,7 +112,7 @@ public class Show {
                 else if (tokens[1].contains("Pulse")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[2]);
                     if (loc == null) {
-                        invalidLines.put(strLine, "Invalid loc");
+                        invalidLines.put(strLine, "Invalid Location");
                         continue;
                     }
                     actions.add(new PulseAction(this, time, loc));
@@ -121,7 +121,7 @@ public class Show {
                 else if (tokens[1].contains("Lightning")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[2]);
                     if (loc == null) {
-                        invalidLines.put(strLine, "Invalid loc");
+                        invalidLines.put(strLine, "Invalid Location");
                         continue;
                     }
                     actions.add(new LightningAction(this, time, loc));
@@ -165,7 +165,7 @@ public class Show {
                         // Loc
                         Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
                         if (loc == null) {
-                            invalidLines.put(strLine, "Invalid loc");
+                            invalidLines.put(strLine, "Invalid Location");
                             continue;
                         }
                         // Add
@@ -194,7 +194,7 @@ public class Show {
                         // Loc
                         Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
                         if (loc == null) {
-                            invalidLines.put(strLine, "Invalid loc");
+                            invalidLines.put(strLine, "Invalid Location");
                             continue;
                         }
                         actions.add(new NPCMoveAction(this, time, name, loc, speed));
@@ -204,7 +204,7 @@ public class Show {
                 else if (tokens[1].contains("Block")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
                     if (loc == null) {
-                        invalidLines.put(strLine, "Invalid loc");
+                        invalidLines.put(strLine, "Invalid Location");
                         continue;
                     }
                     String[] list;
@@ -259,7 +259,7 @@ public class Show {
                     // loc
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[2]);
                     if (loc == null) {
-                        invalidLines.put(strLine, "Invalid loc");
+                        invalidLines.put(strLine, "Invalid Location");
                         continue;
                     }
                     // Effect List

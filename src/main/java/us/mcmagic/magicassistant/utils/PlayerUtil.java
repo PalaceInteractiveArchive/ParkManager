@@ -10,15 +10,7 @@ import java.util.UUID;
 
 public class PlayerUtil {
 
-    public static Player findPlayer(String name) {
-        for (Player tp : Bukkit.getOnlinePlayers()) {
-            if (tp.getName().toLowerCase().contains(name.toLowerCase())) {
-                return tp;
-            }
-        }
-        return null;
-    }
-
+    @SuppressWarnings("unchecked")
     public static Player[] onlinePlayers() {
         try {
             Object rawPlayerList = (Bukkit.class.getMethod("getOnlinePlayers", null).invoke(null, null));

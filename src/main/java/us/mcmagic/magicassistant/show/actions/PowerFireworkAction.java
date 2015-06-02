@@ -1,9 +1,9 @@
 package us.mcmagic.magicassistant.show.actions;
 
-import net.minecraft.server.v1_8_R2.EntityFireworks;
+import net.minecraft.server.v1_8_R3.EntityFireworks;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftFirework;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftFirework;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;

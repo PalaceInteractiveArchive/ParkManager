@@ -30,6 +30,7 @@ public class PlayerInteract implements Listener {
     public static String warp = ChatColor.BLUE + "[Warp]";
     public static String hotel = ChatColor.BLUE + "[Hotel]";
     public static String designStation = ChatColor.BLUE + "[Design Station]";
+    public static String shop = ChatColor.BLUE + "[Shop]";
     static MagicAssistant pl;
 
     public PlayerInteract(MagicAssistant instance) {
@@ -107,6 +108,11 @@ public class PlayerInteract implements Listener {
 
                         MagicAssistant.inventoryUtil.openSpecificHotelRoomPage(player, HotelUtil.getRoom(roomName));
                     }
+                    return;
+                }
+                if (s.getLine(0).equals(shop)) {
+                    String shop = ChatColor.stripColor(s.getLine(1));
+                    MagicAssistant.shopManager.openMenu(player, shop);
                     return;
                 }
                 if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {

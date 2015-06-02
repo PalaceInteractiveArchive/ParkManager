@@ -1,15 +1,15 @@
 package us.mcmagic.magicassistant.ridemanager;
 
-import net.minecraft.server.v1_8_R2.BlockMinecartTrackAbstract;
-import net.minecraft.server.v1_8_R2.EntityMinecartRideable;
-import net.minecraft.server.v1_8_R2.World;
+import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
+import net.minecraft.server.v1_8_R3.EntityMinecartRideable;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R2.TrigMath;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.TrigMath;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.FaceUtil;
@@ -37,12 +37,29 @@ public class Cart extends EntityMinecartRideable {
     private boolean playerEnter = true;
     private boolean playerExit;
     private double power = 0.1;
+    private double lastSubtraction = 0;
+    private float yaw;
 
     public Cart(World world, double d0, double d1, double d2, double power, BlockFace dir) {
         this(world, d0, d1, d2);
         this.power = power;
         this.lastDirection = dir;
         this.direction = dir;
+        this.yaw = yawFromDir(dir);
+    }
+
+    private float yawFromDir(BlockFace dir) {
+        switch (dir) {
+            case NORTH:
+                return -180;
+            case EAST:
+                return -90;
+            case SOUTH:
+                return 0;
+            case WEST:
+                return 90;
+        }
+        return 0;
     }
 
     public Cart(World world, double d0, double d1, double d2) {
@@ -59,6 +76,16 @@ public class Cart extends EntityMinecartRideable {
         updateFactors();
         Location to = from.add(motX, motY, motZ);
         super.move(x, y, z);
+    }
+
+    private void updateFactors() {
+        if (motX != 0 && motZ != 0) {
+            double tan = Math.tan(motX / motZ);
+            if (tan != lastSubtraction) {
+                yaw = (float) (yaw - tan);
+            }
+        }
+        Bukkit.broadcastMessage(ChatColor.RED + "" + yaw);
     }
 
     private BlockFace getStraightDirection(BlockFace direction) {
@@ -147,7 +174,7 @@ public class Cart extends EntityMinecartRideable {
         return BlockFace.NORTH;
     }
 
-    private void updateFactors() {
+    private void updateFactorss() {
         BlockMinecartTrackAbstract.EnumTrackPosition pos =
                 MagicAssistant.rideManager.getTrackPosition(getBukkitEntity().getLocation().getBlock());
         double x = 0;

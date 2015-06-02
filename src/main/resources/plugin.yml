@@ -147,7 +147,7 @@ commands:
       aliases: [tell, t, w, whisper, m]
    autograph:
       description: Update the player's inventory
-      permission: mcmagic.mb
+      permission: mcmagic.warp
       permission-message: §4§4Please notify a Cast Member that you can’t do this.
    hrl:
       description: Reload hotel rooms
@@ -159,10 +159,16 @@ commands:
       permission-message: §4Please notify a Cast Member that you can’t do this.
    pack:
       description: Perform various hotel-related actions
-      permission: mcmagic.mb
+      permission: mcmagic.warp
       permission-message: §4Please notify a Cast Member that you can’t do this.
    autograph:
       description: Autograph Command
+      permission: mcmagic.warp
+      permission-message: §4Please notify a Cast Member that you can’t do this.
+   trade:
+      description: Trade Command
+      permission: mcmagic.warp
+      permission-message: §4Please notify a Cast Member that you can’t do this.
    nv:
       description: Give/take infinite Night Vision
       permission: arcade.bypass

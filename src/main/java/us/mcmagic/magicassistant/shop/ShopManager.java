@@ -222,12 +222,25 @@ public class ShopManager {
             player.openInventory(main);
             return;
         }
+        openMenu(player, shop);
+    }
+
+    public void openMenu(Player player, Shop shop) {
         Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + shop.getName());
         inv.setItem(11, ShopCategory.WARDROBE.getStack());
         inv.setItem(13, ShopCategory.TOYS.getStack());
         inv.setItem(15, ShopCategory.DOLLS.getStack());
         inv.setItem(22, BandUtil.getBackItem());
         player.openInventory(inv);
+    }
+
+    public void openMenu(Player player, String shopName) {
+        Shop shop = getShop(shopName);
+        if (shop == null) {
+            player.sendMessage(ChatColor.RED + "There was an error opening that Shop menu!");
+            return;
+        }
+        openMenu(player, shop);
     }
 
     public void handleClick(InventoryClickEvent event, String sname) {

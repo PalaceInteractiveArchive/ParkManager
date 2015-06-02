@@ -10,10 +10,11 @@ import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.stitch.Stitch;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +75,10 @@ public class Commandwarp implements CommandExecutor {
         }
         final Player player = (Player) sender;
         if (args.length == 1) {
+            if (isInt(args[0])) {
+                listWarps(player, Integer.parseInt(args[0]));
+                return true;
+            }
             final String w = args[0];
             Warp warp;
             if (WarpUtil.findWarp(w) == null) {
@@ -164,7 +169,7 @@ public class Commandwarp implements CommandExecutor {
                         + ChatColor.GREEN + w + ChatColor.WHITE + "]");
                 if (tp.isInsideVehicle()) {
                     tp.getVehicle().eject();
-                    Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("MagicAssistant"), new Runnable() {
+                    Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                         @Override
                         public void run() {
                             tp.teleport(loc);
@@ -188,27 +193,44 @@ public class Commandwarp implements CommandExecutor {
                 return true;
             }
         }
-        listWarps(player);
+        listWarps(player, 1);
         return true;
     }
 
-
-    public static void listWarps(Player player) {
-        List<Warp> warps = MagicAssistant.getWarps();
-        List<String> names = new ArrayList<>();
-        for (Warp w : warps) {
-            names.add(w.getName());
+    private boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
-        Collections.sort(names);
-        StringBuilder sb = new StringBuilder(ChatColor.GRAY + "");
+    }
+
+
+    public static void listWarps(Player player, int page) {
+        List<Warp> warps = MagicAssistant.getWarps();
+        List<String> nlist = new ArrayList<>();
+        for (Warp w : warps) {
+            nlist.add(w.getName());
+        }
+        Collections.sort(nlist);
+        if (nlist.size() < (page - 1) * 20) {
+            listWarps(player, 1);
+            return;
+        }
+        int max = page * 20;
+        List<String> names = nlist.subList(20 * (page - 1), nlist.size() < max ? nlist.size() : max);
+        FormattedMessage msg = new FormattedMessage("Warps (Page " + page + "):\n").color(ChatColor.GRAY);
         for (int i = 0; i < names.size(); i++) {
+            String warp = names.get(i);
             if (i == (names.size() - 1)) {
-                sb.append(names.get(i));
+                msg.then(warp).color(ChatColor.GRAY).command("/warp " + warp).tooltip(ChatColor.GREEN +
+                        "Click to warp to " + ChatColor.BLUE + warp + ChatColor.GREEN + "!");
                 continue;
             }
-            sb.append(names.get(i)).append(", ");
+            msg.then(warp + ", ").color(ChatColor.GRAY).command("/warp " + warp).tooltip(ChatColor.GREEN +
+                    "Click to warp to " + ChatColor.BLUE + warp + ChatColor.GREEN + "!");
         }
-        player.sendMessage(ChatColor.GRAY + "Warps:");
-        player.sendMessage(sb.toString());
+        msg.send(player);
     }
 }

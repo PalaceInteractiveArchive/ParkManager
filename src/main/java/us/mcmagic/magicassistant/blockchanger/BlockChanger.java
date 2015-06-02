@@ -176,13 +176,23 @@ public class BlockChanger implements Listener {
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     for (Changer changer : blocks.values()) {
-                        if (changer.getFirstLocation().distance(player.getLocation()) < 75) {
+                        if (isClose(player, changer.getFirstLocation(), changer.getSecondLocation())) {
                             changer.sendReverse(player);
                         }
                     }
                 }
             }
         });
+        return false;
+    }
+
+    private boolean isClose(Player player, Location... locs) {
+        Location loc = player.getLocation();
+        for (Location loc2 : locs) {
+            if (Math.abs(loc.getBlockX() - loc2.getBlockX()) < 75 || Math.abs(loc.getBlockZ() - loc2.getBlockZ()) < 75) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -221,8 +231,8 @@ public class BlockChanger implements Listener {
              * [][] <-- Check to see if this block
              * [][] <-- or this block equal changer.getSender()
              */
-            if (!canSend(changer.getSender(), to.getBlock()) ||
-                    changer.getFirstLocation().distance(player.getLocation()) > 75) {
+            if (!canSend(changer.getSender(), to.getBlock()) || !isClose(player, changer.getFirstLocation(),
+                    changer.getSecondLocation())) {
                 continue;
             }
             changer.send(player);

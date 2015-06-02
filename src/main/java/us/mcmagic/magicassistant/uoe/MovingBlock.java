@@ -1,12 +1,12 @@
 package us.mcmagic.magicassistant.uoe;
 
-import net.minecraft.server.v1_8_R2.EntityFallingBlock;
-import net.minecraft.server.v1_8_R2.IBlockData;
-import net.minecraft.server.v1_8_R2.World;
+import net.minecraft.server.v1_8_R3.EntityFallingBlock;
+import net.minecraft.server.v1_8_R3.IBlockData;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftArmorStand;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
 
 /**

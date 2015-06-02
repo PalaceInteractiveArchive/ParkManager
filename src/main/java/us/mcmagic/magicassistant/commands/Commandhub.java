@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.PlayerUtil;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 /**
  * Created by Marc on 3/10/15
