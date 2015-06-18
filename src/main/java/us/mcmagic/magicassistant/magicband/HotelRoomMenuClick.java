@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -30,7 +30,8 @@ public class HotelRoomMenuClick {
         }
 
         boolean playerOwnsRooms = false;
-        for (HotelRoom room : HotelUtil.getRooms()) {
+        HotelManager manager = MagicAssistant.hotelManager;
+        for (HotelRoom room : manager.getRooms()) {
             if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
                 playerOwnsRooms = true;
                 break;
@@ -47,13 +48,13 @@ public class HotelRoomMenuClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        HotelRoom room = HotelUtil.getRoom(name);
+        HotelRoom room = manager.getRoom(name);
         boolean staff = MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.INTERN.getRankId();
         if (staff || MCMagicCore.economy.getCoins(player.getUniqueId()) >= room.getCost()) {
             if (!staff) {
                 MCMagicCore.economy.addCoins(player.getUniqueId(), -room.getCost());
             }
-            HotelUtil.rentRoom(room, player);
+            manager.rentRoom(room, player);
         } else {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You don't have enough coins to book this room!");

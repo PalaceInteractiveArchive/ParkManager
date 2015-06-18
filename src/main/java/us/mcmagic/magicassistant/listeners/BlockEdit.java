@@ -8,7 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.hotels.HotelManager;
 
 public class BlockEdit implements Listener {
 
@@ -29,10 +30,11 @@ public class BlockEdit implements Listener {
                 }
                 String hotelName = ChatColor.stripColor(s.getLine(2));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(s.getLine(1));
-                if (HotelUtil.getRoom(fullRoomName) != null) {
-                    HotelUtil.removeRoom(HotelUtil.getRoom(fullRoomName));
-                    HotelUtil.refreshRooms();
-                    HotelUtil.updateRooms();
+                HotelManager manager = MagicAssistant.hotelManager;
+                if (manager.getRoom(fullRoomName) != null) {
+                    manager.removeRoom(manager.getRoom(fullRoomName));
+                    manager.refreshRooms();
+                    manager.updateRooms();
                 }
             }
         }

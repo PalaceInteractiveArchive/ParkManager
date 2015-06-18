@@ -23,7 +23,7 @@ public class InventorySql {
     public static List<UUID> players = new ArrayList<>();
 
     public static synchronized boolean playerDataContainsPlayer(Player player) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `inv_data` WHERE uuid=?;");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet resultset = sql.executeQuery();
@@ -40,9 +40,8 @@ public class InventorySql {
         PlayerInventory pi = player.getInventory();
         byte[] invdata = serial(pi.getContents());
         byte[] armordata = serial(pi.getArmorContents());
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection
-                    .prepareStatement("UPDATE `inv_data` SET content=? WHERE uuid=?");
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("UPDATE `inv_data` SET content=? WHERE uuid=?");
             sql.setBytes(1, invdata);
             sql.setBytes(2, armordata);
             sql.setString(3, player.getUniqueId() + "");
@@ -55,7 +54,7 @@ public class InventorySql {
     public synchronized static void updateEndInventory(Player player) {
         Inventory endinv = player.getEnderChest();
         byte[] invdata = serial(endinv.getContents());
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `endinv_data` SET content=? WHERE uuid=?");
             sql.setBytes(1, invdata);
             sql.setString(2, player.getUniqueId() + "");
@@ -67,7 +66,7 @@ public class InventorySql {
     }
 
     public static synchronized boolean endPlayerDataContainsPlayer(Player player) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM `endinv_data` WHERE UUID=?;");
             sql.setString(1, player.getUniqueId() + "");
             ResultSet resultset = sql.executeQuery();
@@ -84,7 +83,7 @@ public class InventorySql {
         PlayerInventory pi = player.getInventory();
         byte[] invdata = serial(pi.getContents());
         byte[] armordata = serial(pi.getArmorContents());
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("INSERT INTO `inv_data` values(0,?,?,?)");
             sql.setString(1, player.getUniqueId() + "");
@@ -100,7 +99,7 @@ public class InventorySql {
     public static synchronized void setupEndData(Player player) {
         Inventory endinv = player.getEnderChest();
         byte[] endinvdata = serial(endinv.getContents());
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement endsql = connection
                     .prepareStatement("INSERT INTO `endinv_data` values(0,?,?)");
             endsql.setString(1, player.getUniqueId() + "");
@@ -137,7 +136,7 @@ public class InventorySql {
     }
 
     public synchronized static ItemStack[] endInvContents(UUID uuid) {
-        try (Connection connection = MCMagicCore.getInstance().permSqlUtil.getConnection()) {
+        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
                     .prepareStatement("SELECT content FROM `endinv_data` WHERE uuid=?");
             sql.setString(1, uuid.toString());

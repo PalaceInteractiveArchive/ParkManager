@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 
 /**
@@ -30,8 +30,9 @@ public class HotelCheckoutMenuClick {
         if (meta == null) {
             return;
         }
+        HotelManager manager = MagicAssistant.hotelManager;
         String name = ChatColor.stripColor(meta.getDisplayName()).substring(13);
-        HotelRoom room = HotelUtil.getRoom(name);
-        HotelUtil.checkout(room, false);
+        HotelRoom room = manager.getRoom(name);
+        manager.checkout(room, false);
     }
 }

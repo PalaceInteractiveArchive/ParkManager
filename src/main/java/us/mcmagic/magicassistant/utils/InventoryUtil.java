@@ -379,7 +379,7 @@ public class InventoryUtil {
             case MYHOTELROOMS:
                 Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
                 List<HotelRoom> rooms = new ArrayList<>();
-                for (HotelRoom room : MagicAssistant.hotelRooms) {
+                for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
                     if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
                         rooms.add(room);
                     }
@@ -390,7 +390,7 @@ public class InventoryUtil {
                     ItemMeta rim = roomItem.getItemMeta();
                     rim.setDisplayName(ChatColor.GREEN + room.getName());
                     if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                        HotelUtil.checkout(room, true);
+                        MagicAssistant.hotelManager.checkout(room, true);
                         return;
                     }
                     String times = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);
@@ -411,7 +411,7 @@ public class InventoryUtil {
             case HOTELS:
                 Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
                 List<String> availableHotels = new ArrayList<>();
-                for (HotelRoom room : MagicAssistant.hotelRooms) {
+                for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
                     if (!availableHotels.contains(room.getHotelName())) {
                         availableHotels.add(room.getHotelName());
                     }
@@ -477,7 +477,7 @@ public class InventoryUtil {
     public void openHotelRoomListPage(final Player player, String hotelName) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rooms in " + hotelName);
         List<HotelRoom> availableHotelRooms = new ArrayList<>();
-        for (HotelRoom room : MagicAssistant.hotelRooms) {
+        for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
             if (room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()) {
                 availableHotelRooms.add(room);
             }
@@ -532,7 +532,7 @@ public class InventoryUtil {
     public void openSpecificHotelRoomCheckoutPage(final Player player, HotelRoom room) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Check Out?");
         if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-            HotelUtil.checkout(room, true);
+            MagicAssistant.hotelManager.checkout(room, true);
             return;
         }
         String time = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);

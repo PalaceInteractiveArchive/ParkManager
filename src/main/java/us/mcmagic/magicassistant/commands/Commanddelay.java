@@ -16,23 +16,21 @@ public class Commanddelay implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
-            sender.sendMessage(ChatColor.RED
-                    + "Only command blocks can use this command!");
+            sender.sendMessage(ChatColor.RED + "/delay [delay] x y z");
             return true;
         }
         if (args.length != 4) {
             sender.sendMessage(ChatColor.RED + "Incorrect amount of arguments!");
+            return true;
         }
-        if (isInt(args[0]) && isInt(args[1]) && isInt(args[2])
-                && isInt(args[3])) {
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            int z = Integer.parseInt(args[3]);
-            final Location loc = new Location(Bukkit.getWorlds().get(0), x, y,
-                    z);
+        if (isDouble(args[0]) && isDouble(args[1]) && isDouble(args[2]) && isDouble(args[3])) {
+            double x = Double.parseDouble(args[1]);
+            double y = Double.parseDouble(args[2]);
+            double z = Double.parseDouble(args[3]);
+            final Location loc = new Location(Bukkit.getWorlds().get(0), x, y, z);
             final Block b = loc.getBlock();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(
-                    Bukkit.getPluginManager().getPlugin("MagicAssistant"),
+            long delay = (long) (20 * (Double.parseDouble(args[0])));
+            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(),
                     new Runnable() {
                         public void run() {
                             b.setType(Material.REDSTONE_BLOCK);
@@ -42,16 +40,16 @@ public class Commanddelay implements CommandExecutor {
                                 }
                             }, 20L);
                         }
-                    }, (20 * (Integer.parseInt(args[0]))));
+                    }, delay);
             return true;
         }
         sender.sendMessage(ChatColor.RED + "/delay [delay] x y z");
         return true;
     }
 
-    private static boolean isInt(String s) {
+    private static boolean isDouble(String s) {
         try {
-            Integer.parseInt(s);
+            Double.parseDouble(s);
             return true;
         } catch (NumberFormatException e) {
             return false;

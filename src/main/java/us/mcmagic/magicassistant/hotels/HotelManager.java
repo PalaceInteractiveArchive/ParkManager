@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.utils;
+package us.mcmagic.magicassistant.hotels;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.utils.PlayerUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.title.TitleObject;
 
@@ -25,23 +26,62 @@ import java.util.UUID;
 /**
  * Created by Greenlock28 on 1/23/2015.
  */
-public class HotelUtil {
-    public static TitleObject expire = new TitleObject(ChatColor.RED + "Your Hotel Room Expired",
+public class HotelManager {
+    public TitleObject expire = new TitleObject(ChatColor.RED + "Your Hotel Room Expired",
             TitleObject.TitleType.SUBTITLE).setFadeIn(40).setStay(60).setFadeOut(40);
+    private List<HotelRoom> hotelRooms = new ArrayList<>();
 
-    public static List<HotelRoom> getRooms() {
+    public HotelManager() {
+        initialize();
+    }
+
+    private void initialize() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (HotelRoom room : hotelRooms) {
+                    if (room.getCheckoutNotificationRecipient() != null) {
+                        UUID uuid = room.getCheckoutNotificationRecipient();
+                        Player tp = Bukkit.getPlayer(uuid);
+                        if (tp != null && tp.isOnline()) {
+                            checkout(room, true);
+                        }
+                    }
+                }
+            }
+        }, 10L, 6000L);
+        if (!MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+            return;
+        }
+        refreshRooms();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (HotelRoom room : hotelRooms) {
+                    if (room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+                        checkout(room, true);
+                        return;
+                    }
+                }
+            }
+        }, 0L, 6000L);
+    }
+
+    public List<HotelRoom> getHotelRooms() {
+        return new ArrayList<>(hotelRooms);
+    }
+
+    public List<HotelRoom> getRooms() {
         List<HotelRoom> rooms = new ArrayList<>();
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `hotelrooms`");
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM hotelrooms");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
-                rooms.add(new HotelRoom(result.getString("hotelName"),
-                        result.getInt("roomNumber"),
-                        result.getString("currentOccupant") == "" ? null : UUID.fromString(result.getString("currentOccupant")),
-                        result.getString("occupantName"),
-                        result.getLong("checkoutTime"),
-                        Warp.fromDatabaseString(result.getString("roomWarp") != "" ? result.getString("roomWarp") : null),
-                        result.getInt("cost"),
+                rooms.add(new HotelRoom(result.getString("hotelName"), result.getInt("roomNumber"),
+                        result.getString("currentOccupant") == "" ? null :
+                                UUID.fromString(result.getString("currentOccupant")), result.getString("occupantName"),
+                        result.getLong("checkoutTime"), Warp.fromDatabaseString(result.getString("roomWarp") != "" ?
+                        result.getString("roomWarp") : null), result.getInt("cost"),
                         result.getString("checkoutNotificationRecipient") != "" ?
                                 UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
                         result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z")));
@@ -56,7 +96,7 @@ public class HotelUtil {
     }
 
     @SuppressWarnings("deprecation")
-    public static void closeDoor(HotelRoom room) {
+    public void closeDoor(HotelRoom room) {
         Block s = new Location(Bukkit.getWorlds().get(0), room.getX(), room.getY(), room.getZ()).getBlock();
         Sign sign;
         Material type = s.getType();
@@ -92,7 +132,7 @@ public class HotelUtil {
     }
 
     @SuppressWarnings("deprecation")
-    public static Location locFromSign(Sign sign) {
+    public Location locFromSign(Sign sign) {
         BlockFace facing = getFace(sign.getRawData());
         if (facing == null) {
             return null;
@@ -115,7 +155,7 @@ public class HotelUtil {
         return loc;
     }
 
-    public static BlockFace getFace(byte data) {
+    public BlockFace getFace(byte data) {
         switch (data) {
             case 0:
                 return BlockFace.NORTH;
@@ -133,8 +173,8 @@ public class HotelUtil {
         return BlockFace.SELF;
     }
 
-    public static HotelRoom getRoom(String name) {
-        for (HotelRoom room : MagicAssistant.hotelRooms) {
+    public HotelRoom getRoom(String name) {
+        for (HotelRoom room : hotelRooms) {
             if (room.getName().equalsIgnoreCase(name)) {
                 return room;
             }
@@ -142,7 +182,7 @@ public class HotelUtil {
         return null;
     }
 
-    public static void addRoom(HotelRoom room) {
+    public void addRoom(HotelRoom room) {
         if (getRoom(room.getName()) != null) {
             updateHotelRoom(room);
             return;
@@ -167,10 +207,10 @@ public class HotelUtil {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        MagicAssistant.hotelRooms.add(room);
+        hotelRooms.add(room);
     }
 
-    public static void updateHotelRoom(HotelRoom room) {
+    public void updateHotelRoom(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("UPDATE `hotelrooms` SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=? WHERE name=?");
             sql.setString(1, room.getCurrentOccupant() == null ? "" : room.getCurrentOccupant().toString());
@@ -185,7 +225,7 @@ public class HotelUtil {
         }
     }
 
-    public static void addRoomWithoutCheckingExistance(HotelRoom room) {
+    public void addRoomWithoutCheckingExistance(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
@@ -204,7 +244,7 @@ public class HotelUtil {
         }
     }
 
-    public static void removeRoom(HotelRoom room) {
+    public void removeRoom(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("DELETE FROM `hotelrooms` WHERE name=?");
             sql.setString(1, room.getName());
@@ -215,7 +255,7 @@ public class HotelUtil {
         }
     }
 
-    public static void updateRooms() {
+    public void updateRooms() {
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
@@ -230,10 +270,10 @@ public class HotelUtil {
         }
     }
 
-    public static void refreshRooms() {
-        MagicAssistant.hotelRooms.clear();
-        for (HotelRoom room : HotelUtil.getRooms()) {
-            MagicAssistant.hotelRooms.add(room);
+    public void refreshRooms() {
+        hotelRooms.clear();
+        for (HotelRoom room : getRooms()) {
+            hotelRooms.add(room);
             Block b = new Location(Bukkit.getWorlds().get(0), room.getX(), room.getY(), room.getZ()).getBlock();
             if (!MagicAssistant.rideManager.isSign(b.getLocation())) {
                 continue;
@@ -250,9 +290,9 @@ public class HotelUtil {
         }
     }
 
-    public static void serverStop() {
-        for (HotelRoom room : MagicAssistant.hotelRooms) {
-            if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+    public void serverStop() {
+        for (HotelRoom room : hotelRooms) {
+            if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCheckoutTime() != 0) {
                 room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
                 room.setCurrentOccupant(null);
                 room.setCheckoutTime(0);
@@ -261,7 +301,7 @@ public class HotelUtil {
         }
     }
 
-    public static Block getDoorFromSign(Block b) {
+    public Block getDoorFromSign(Block b) {
         for (int ix = b.getLocation().getBlockX() - 1; ix < b.getLocation().getBlockX() + 2; ix++) {
             for (int iz = b.getLocation().getBlockZ() - 1; iz < b.getLocation().getBlockZ() + 2; iz++) {
                 for (int iy = b.getLocation().getBlockY() - 1; iy < b.getLocation().getBlockY() + 2; iy++) {
@@ -276,7 +316,7 @@ public class HotelUtil {
         return null;
     }
 
-    public static HotelRoom getRoomFromDoor(Block b, Player p) {
+    public HotelRoom getRoomFromDoor(Block b, Player p) {
         for (int ix = b.getLocation().getBlockX() - 1; ix < b.getLocation().getBlockX() + 2; ix++) {
             for (int iz = b.getLocation().getBlockZ() - 1; iz < b.getLocation().getBlockZ() + 2; iz++) {
                 for (int iy = b.getLocation().getBlockY() - 1; iy < b.getLocation().getBlockY() + 2; iy++) {
@@ -295,19 +335,20 @@ public class HotelUtil {
         return null;
     }
 
-    public static HotelRoom getRoomFromSign(Sign s) {
-        if (!ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase("[hotel]") || s.getLine(1).equals("") || s.getLine(2).equals("")) {
+    public HotelRoom getRoomFromSign(Sign s) {
+        if (!ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase("[hotel]") || s.getLine(1).equals("") ||
+                s.getLine(2).equals("")) {
             return null;
         }
-        return HotelUtil.getRoom(ChatColor.stripColor(s.getLine(2)) + " #" + ChatColor.stripColor(s.getLine(1)));
+        return getRoom(ChatColor.stripColor(s.getLine(2)) + " #" + ChatColor.stripColor(s.getLine(1)));
     }
 
-    public static void rentRoom(HotelRoom room, Player player) {
+    public void rentRoom(HotelRoom room, Player player) {
         room.setCurrentOccupant(player.getUniqueId());
         room.setOccupantName(player.getName());
         room.setCheckoutTime((System.currentTimeMillis() / 1000) + room.getStayLength());
-        HotelUtil.updateHotelRoom(room);
-        HotelUtil.updateRooms();
+        updateHotelRoom(room);
+        updateRooms();
         Block b = player.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
         Material type = b.getType();
         if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
@@ -321,9 +362,9 @@ public class HotelUtil {
         player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
     }
 
-    public static void checkout(HotelRoom room, boolean lapsed) {
+    public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        HotelUtil.closeDoor(room);
+        closeDoor(room);
         room.setCheckoutTime(0);
         if (tp != null) {
             if (room.getWarp() != null) {
@@ -335,7 +376,7 @@ public class HotelUtil {
             if (lapsed) {
                 tp.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
                         " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                HotelUtil.expire.send(tp);
+                expire.send(tp);
                 tp.playSound(tp.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
             } else {
                 tp.sendMessage(ChatColor.GREEN + "You have checked out of your room. Have a wonderful rest of your visit!");
@@ -352,7 +393,7 @@ public class HotelUtil {
         }
         room.setCurrentOccupant(null);
         room.setOccupantName(null);
-        HotelUtil.updateHotelRoom(room);
-        HotelUtil.updateRooms();
+        updateHotelRoom(room);
+        updateRooms();
     }
 }

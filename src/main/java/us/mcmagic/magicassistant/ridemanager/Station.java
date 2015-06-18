@@ -16,6 +16,7 @@ public class Station {
         try {
             this.length = Double.parseDouble(s.getLine(2));
         } catch (NumberFormatException nfe) {
+            length = 5;
             s.setLine(2, ChatColor.RED + "Number Error");
             s.update();
         }
@@ -27,6 +28,7 @@ public class Station {
             }
             this.launchPower = Double.parseDouble(list[1]);
         } catch (NumberFormatException nfe) {
+            launchPower = 0.5;
             s.setLine(1, ChatColor.RED + "Number Error");
             s.update();
         }

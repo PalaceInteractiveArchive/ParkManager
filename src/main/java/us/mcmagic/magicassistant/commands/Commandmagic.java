@@ -23,7 +23,6 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
-import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -510,7 +509,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
             case "hotel":
                 sender.sendMessage(ChatColor.BLUE + "Reloading hotel rooms...");
-                HotelUtil.refreshRooms();
+                MagicAssistant.hotelManager.refreshRooms();
                 sender.sendMessage(ChatColor.BLUE + "Hotel rooms reloaded!");
                 return true;
             case "reload":
@@ -522,7 +521,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 ma.setupNewJoinMessages();
                 ma.setupFoodLocations();
                 ma.setupRides();
-                HotelUtil.refreshRooms();
+                MagicAssistant.hotelManager.refreshRooms();
                 MagicAssistant.packManager.initialize();
                 MagicAssistant.shopManager.initialize();
                 sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");

@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.Warp;
-import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
 public class SignChange implements Listener {
@@ -40,14 +40,14 @@ public class SignChange implements Listener {
                 String hotelName = ChatColor.stripColor(event.getLine(2));
                 int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace(" Coins", "").replace(" Coin", "").replace("$", "")));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(event.getLine(1));
-                if (HotelUtil.getRoom(fullRoomName) == null) {
+                if (MagicAssistant.hotelManager.getRoom(fullRoomName) == null) {
                     Location loc = b.getLocation();
                     HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, "", 0, null, cost, null, 259200,
                             loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     event.setLine(1, "" + ChatColor.GOLD + newRoom.getRoomNumber());
                     event.setLine(2, ChatColor.DARK_GREEN + event.getLine(2));
                     event.setLine(3, "" + ChatColor.GREEN + cost);
-                    Location loc2 = HotelUtil.locFromSign(((Sign) b.getState()));
+                    Location loc2 = MagicAssistant.hotelManager.locFromSign(((Sign) b.getState()));
                     Warp warp = null;
                     if (loc != null) {
                         warp = new Warp(newRoom.getName().replace(" ", ""), MCMagicCore.getMCMagicConfig().serverName,
@@ -55,8 +55,8 @@ public class SignChange implements Listener {
                                 player.getWorld().getName());
                     }
                     newRoom.setWarp(warp);
-                    HotelUtil.addRoom(newRoom);
-                    HotelUtil.updateRooms();
+                    MagicAssistant.hotelManager.addRoom(newRoom);
+                    MagicAssistant.hotelManager.updateRooms();
                 }
                 return;
             }

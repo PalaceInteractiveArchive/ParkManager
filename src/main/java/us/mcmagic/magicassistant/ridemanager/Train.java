@@ -25,8 +25,14 @@ public class Train {
     }
 
     public void despawn() {
-        for (Cart c : carts) {
+        for (Cart c : getCarts()) {
             c.die();
+        }
+    }
+
+    public void setStation(Station station) {
+        for (Cart c : getCarts()) {
+            c.setStation(station);
         }
     }
 

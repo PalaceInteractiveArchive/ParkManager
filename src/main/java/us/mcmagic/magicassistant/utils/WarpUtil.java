@@ -3,7 +3,6 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.event.Listener;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -20,12 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class WarpUtil implements Listener {
-    public static MagicAssistant pl;
-
-    public WarpUtil(MagicAssistant instance) {
-        pl = instance;
-    }
+public class WarpUtil {
 
     public static boolean warpExists(String warp) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {

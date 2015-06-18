@@ -14,7 +14,9 @@ import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
+import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
+import us.mcmagic.magicassistant.quiz.QuizManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
 import us.mcmagic.magicassistant.ridemanager.RideManager;
@@ -39,7 +41,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static UniverseEnergyRide universeEnergyRide;
     public int randomNumber = 0;
     public static List<Warp> warps = new ArrayList<>();
-    public static List<HotelRoom> hotelRooms = new ArrayList<>();
     public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
     public static HashMap<Integer, List<PlayerData.Attraction>> attPages = new HashMap<>();
     public static Location spawn;
@@ -59,23 +60,27 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean hubServer;
     public static MagicAssistant instance;
     public static BlockChanger blockChanger = new BlockChanger();
-    public static PackManager packManager = new PackManager();
+    public static PackManager packManager;
     public static BandUtil bandUtil = new BandUtil();
     public static RideManager rideManager;
     public static AutographUtil autographUtil;
     public static InventoryUtil inventoryUtil;
     public static ShopManager shopManager;
     public static TradeManager tradeManager;
+    public static QuizManager quizManager;
+    public static HotelManager hotelManager;
 
     public void onEnable() {
         instance = this;
         SqlUtil.initialize();
         rideManager = new RideManager();
         stitch = new Stitch();
+        packManager = new PackManager();
         autographUtil = new AutographUtil();
         inventoryUtil = new InventoryUtil();
         universeEnergyRide = new UniverseEnergyRide();
         tradeManager = new TradeManager();
+        quizManager = new QuizManager();
         registerListeners();
         registerCommands();
         bandUtil.initialize();
@@ -103,66 +108,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getLogger().info("Warps Initialized!");
         shopManager = new ShopManager();
         getLogger().info("Initializing Hotel Rooms...");
-        HotelUtil.refreshRooms();
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("Resorts")) {
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-                @Override
-                public void run() {
-                    boolean updateNecessary = false;
-                    for (HotelRoom room : hotelRooms) {
-                        if (room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                            HotelUtil.checkout(room, true);
-                            /*
-                            if (room.getCurrentOccupant() != null) {
-                                Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-                                if (tp != null) {
-                                    if (room.getWarp() != null) {
-                                        Warp w = room.getWarp();
-                                        if (tp.getLocation().distance(w.getLocation()) < 25) {
-                                            tp.teleport(w.getLocation());
-                                        }
-                                    }
-                                    tp.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
-                                            " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                                    HotelUtil.expire.send(tp);
-                                    tp.playSound(tp.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
-                                } else {
-                                    room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
-                                }
-                            } else {
-                                room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
-                            }
-                            room.setCurrentOccupant(null);
-                            room.setCheckoutTime(0);
-                            HotelUtil.updateHotelRoom(room);
-                            HotelUtil.updateRooms();
-                            */
-                            return;
-                        }
-                    }
-                }
-            }, 0L, 6000L);
-        }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                for (HotelRoom room : hotelRooms) {
-                    if (room.getCheckoutNotificationRecipient() != null) {
-                        UUID uuid = room.getCheckoutNotificationRecipient();
-                        Player tp = Bukkit.getPlayer(uuid);
-                        if (tp != null && tp.isOnline()) {
-                            tp.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
-                                    " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                            HotelUtil.expire.send(tp);
-                            tp.playSound(tp.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
-                            room.setCheckoutNotificationRecipient(null);
-                            HotelUtil.updateHotelRoom(room);
-                            HotelUtil.updateRooms();
-                        }
-                    }
-                }
-            }
-        }, 10L, 6000L);
+        hotelManager = new HotelManager();
         getLogger().info("Hotel Rooms Initialized!");
         getLogger().info("Initializing Food Locations...");
         setupFoodLocations();
@@ -191,7 +137,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         for (Player tp : Bukkit.getOnlinePlayers()) {
             tp.kickPlayer(Bukkit.getShutdownMessage());
         }
-        HotelUtil.serverStop();
+        hotelManager.serverStop();
         warps.clear();
         for (World world : Bukkit.getWorlds()) {
             for (Entity e : world.getEntities()) {
@@ -501,6 +447,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         pm.registerEvents(rideManager, this);
+        pm.registerEvents(quizManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);

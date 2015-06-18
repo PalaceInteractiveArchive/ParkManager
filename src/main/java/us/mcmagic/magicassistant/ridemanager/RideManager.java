@@ -7,10 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
 import net.minecraft.server.v1_8_R3.WorldServer;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -62,7 +59,7 @@ public class RideManager implements Listener {
     @EventHandler
     public void onBlockRedstone(BlockRedstoneEvent event) {
         try {
-            if (event.getNewCurrent() < 1) {
+            if (event.getNewCurrent() < event.getOldCurrent() || event.getNewCurrent() < 1) {
                 return;
             }
             Block ob = event.getBlock();
@@ -90,33 +87,72 @@ public class RideManager implements Listener {
                         continue;
                     }
                     String[] list = s.getLine(1).split(" ");
-                    if (list.length == 1) {
-                        //Spawning
-                        spawn(loc.add(0.5, 0, 0.5));
+                    if (list.length != 3) {
+                        continue;
                     } else {
                         double power = 0;
                         BlockFace direction;
+                        int amount = 1;
                         try {
                             direction = dirFromString(list[1]);
                         } catch (Exception e) {
-                            s.setLine(2, ChatColor.RED + "Direction Error");
+                            s.setLine(3, ChatColor.RED + "Direction Error");
                             s.update();
                             return;
                         }
                         try {
                             power += Double.parseDouble(list[2]);
                         } catch (Exception nfe) {
-                            s.setLine(2, ChatColor.RED + "Number Error");
+                            s.setLine(3, ChatColor.RED + "Number Error");
                             s.update();
                             return;
                         }
-                        Cart cart = spawn(loc.add(0.5, 0, 0.5), Math.abs(power), direction);
-                        cart.setPower(power);
+                        try {
+                            amount = Integer.parseInt(s.getLine(2));
+                        } catch (Exception nfe) {
+                            s.setLine(3, ChatColor.RED + "No Amount");
+                            s.update();
+                            return;
+                        }
+                        if (power < 0) {
+                            s.setLine(2, ChatColor.RED + "Negative Power");
+                            s.update();
+                            return;
+                        }
+                        if (power > 1) {
+                            s.setLine(2, ChatColor.RED + "Power > 1");
+                            s.update();
+                            return;
+                        }
+                        if (amount < 1 || amount > 10) {
+                            s.setLine(3, ChatColor.RED + "Invalid Amount");
+                            s.update();
+                            return;
+                        }
+                        if (amount == 1) {
+                            Cart cart = spawn(loc.add(0.5, 0, 0.5), power, direction);
+                            return;
+                        }
+                        spawnTrain(loc.add(0.5, 0, 0.5), amount, power, direction);
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void spawnTrain(Location loc, double amount, double power, BlockFace direction) {
+        List<Cart> carts = new ArrayList<>();
+        double addX = 0;
+        double addY = 0;
+        double addZ = 0;
+        for (int i = 0; i < amount; i++) {
+            if (i == 0) {
+                Cart c = spawn(loc, power, direction);
+                carts.add(c);
+                continue;
+            }
         }
     }
 
@@ -207,20 +243,23 @@ public class RideManager implements Listener {
                 if (!isPowered) {
                     return;
                 }
-                for (Cart c : cart.getTrain().getCarts()) {
-                    c.die();
-                }
+                cart.getTrain().despawn();
                 return;
             }
             if (type.equals(SignType.SPEED)) {
                 if (!isPowered) {
                     return;
                 }
-                Integer power;
+                Double power;
                 try {
-                    power = Integer.parseInt(s.getLine(3));
+                    power = Double.parseDouble(s.getLine(3));
                 } catch (NumberFormatException nfe) {
                     s.setLine(3, ChatColor.RED + "Number Error");
+                    s.update();
+                    return;
+                }
+                if (power > 1) {
+                    s.setLine(3, ChatColor.RED + "Power > 1");
                     s.update();
                     return;
                 }
@@ -304,8 +343,7 @@ public class RideManager implements Listener {
 
     public boolean isRail(Location loc) {
         Material type = loc.getBlock().getType();
-        return type.equals(Material.RAILS) || type.equals(Material.DETECTOR_RAIL) || type.equals(Material.ACTIVATOR_RAIL)
-                || type.equals(Material.POWERED_RAIL);
+        return type.name().toLowerCase().contains("rail");
     }
 
     public static int locInt(double d) {
@@ -324,6 +362,7 @@ public class RideManager implements Listener {
         if (data > 9) {
             data -= 10;
         }
+        Bukkit.broadcastMessage("" + data);
         switch (data) {
             case 0:
                 return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;

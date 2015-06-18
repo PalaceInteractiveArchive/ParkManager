@@ -1,8 +1,14 @@
 package us.mcmagic.magicassistant.listeners;
 
-import org.bukkit.*;
+import net.minecraft.server.v1_8_R3.ItemSkull;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
+import org.bukkit.craftbukkit.v1_8_R3.block.CraftSkull;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,18 +16,15 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.FireworkEffectMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
-import us.mcmagic.magicassistant.utils.HotelUtil;
+import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -84,7 +87,8 @@ public class PlayerInteract implements Listener {
                 if (s.getLine(0).equals(hotel)) {
                     String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
                             + ChatColor.stripColor(s.getLine(1));
-                    HotelRoom room = HotelUtil.getRoom(roomName);
+                    HotelManager manager = MagicAssistant.hotelManager;
+                    HotelRoom room = manager.getRoom(roomName);
                     if (room == null) {
                         player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
                         return;
@@ -95,7 +99,7 @@ public class PlayerInteract implements Listener {
                         player.sendMessage(ChatColor.RED + "This room is already occupied!");
                     } else {
                         boolean playerOwnsRooms = false;
-                        for (HotelRoom r : HotelUtil.getRooms()) {
+                        for (HotelRoom r : manager.getRooms()) {
                             if (r.isOccupied() && r.getCurrentOccupant().equals(player.getUniqueId())) {
                                 playerOwnsRooms = true;
                                 break;
@@ -106,7 +110,7 @@ public class PlayerInteract implements Listener {
                             return;
                         }
 
-                        MagicAssistant.inventoryUtil.openSpecificHotelRoomPage(player, HotelUtil.getRoom(roomName));
+                        MagicAssistant.inventoryUtil.openSpecificHotelRoomPage(player, manager.getRoom(roomName));
                     }
                     return;
                 }
@@ -122,7 +126,8 @@ public class PlayerInteract implements Listener {
                     }
                 }
             } else if (type.name().toLowerCase().contains("_door")) {
-                HotelRoom room = HotelUtil.getRoomFromDoor(event.getClickedBlock(), player);
+                HotelManager manager = MagicAssistant.hotelManager;
+                HotelRoom room = manager.getRoomFromDoor(event.getClickedBlock(), player);
                 if (room != null) {
                     if (room.isOccupied()) {
                         List<UUID> friends = data.getFriendList();
@@ -142,7 +147,7 @@ public class PlayerInteract implements Listener {
                         if (room.getCurrentOccupant().equals(player.getUniqueId())) {
                             if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
                                 event.setCancelled(true);
-                                HotelUtil.checkout(room, true);
+                                manager.checkout(room, true);
                                 return;
                             }
                             return;
@@ -156,42 +161,24 @@ public class PlayerInteract implements Listener {
                     }
                 }
                 return;
-            } else if (type == Material.SKULL) {
+            } else if (type.equals(Material.SKULL)) {
                 Skull skull = (Skull) event.getClickedBlock().getState();
-                if (skull.getSkullType() == SkullType.PLAYER) {
+                if (skull.getSkullType().equals(SkullType.PLAYER)) {
+                    CraftSkull s = (CraftSkull) skull;
+                    net.minecraft.server.v1_8_R3.ItemStack item = CraftItemStack.asNMSCopy(new ItemStack(Material.SKULL_ITEM, 1, (byte) 3));
+                    ItemSkull sk = new ItemSkull();
+                    s.getTileEntity().getUpdatePacket();
                     if (skull.getOwner() != null) {
-                        if (skull.getOwner().equalsIgnoreCase("Telephone") || skull.getOwner().equalsIgnoreCase("a15f8f85-3f97-4c4e-a61d-43b5ad6aafec")) {
-                            player.sendMessage(ChatColor.RED + "You cannot use hotel room telephones yet!");
-                            return;
-                        }
+                        Bukkit.broadcastMessage("Test: " + skull.getOwner());
                     }
                 }
-                return;
             }
         }
         PlayerInventory pi = player.getInventory();
         if (pi.getHeldItemSlot() != 8) {
             return;
         }
-        ItemStack mb;
-        if (data.getSpecial()) {
-            mb = new ItemStack(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()));
-            ItemMeta mbm = mb.getItemMeta();
-            mbm.setDisplayName(data.getBandName() + "MagicBand");
-            mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
-                    ChatColor.GREEN + "the MagicBand menu!"));
-            mb.setItemMeta(mbm);
-        } else {
-            mb = new ItemStack(Material.FIREWORK_CHARGE);
-            FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
-            mbm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil.getBandColor(
-                    data.getBandColor())).build());
-            mbm.setDisplayName(data.getBandName() + "MagicBand");
-            mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
-                    ChatColor.GREEN + "the MagicBand menu!"));
-            mb.setItemMeta(mbm);
-        }
-        if (pi.getItemInHand().equals(mb)) {
+        if (pi.getItemInHand().getType().equals(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()))) {
             event.setCancelled(true);
             MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }

@@ -7,8 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.HotelUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
+
+import java.util.UUID;
 
 public class PluginMessage implements PluginMessageListener {
     public static MagicAssistant pl;
@@ -29,7 +30,7 @@ public class PluginMessage implements PluginMessageListener {
             return;
         }
         if (subchannel.equals("UpdateHotelRooms")) {
-            HotelUtil.refreshRooms();
+            MagicAssistant.hotelManager.refreshRooms();
             return;
         }
         if (subchannel.equals("MagicParty")) {
@@ -40,6 +41,12 @@ public class PluginMessage implements PluginMessageListener {
             } else {
                 Bukkit.broadcast(ChatColor.RED + "No Party", "arcade.bypass");
             }
+        }
+        if (subchannel.equals("MagicInventory")) {
+            String server = in.readUTF();
+            UUID uuid = UUID.fromString(in.readUTF());
+            Boolean response = in.readBoolean();
+            PlayerJoinAndLeave.updateInventory(uuid, server, response);
         }
         if (subchannel.equals("AddParty")) {
             MagicAssistant.party = true;

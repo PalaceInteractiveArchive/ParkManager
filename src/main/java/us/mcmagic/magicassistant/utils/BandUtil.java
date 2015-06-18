@@ -1,6 +1,9 @@
 package us.mcmagic.magicassistant.utils;
 
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -72,10 +75,71 @@ public class BandUtil {
                 }
             }
         }, 0L, 20L);
+        /*
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
+                PacketType.Play.Server.SET_SLOT) {
+
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                try {
+                    Player player = event.getPlayer();
+                    PacketContainer container = event.getPacket();
+                    StructureModifier<ItemStack> items = container.getItemModifier();
+                    List<ItemStack> list = items.getValues();
+                    Inventory inv = player.getOpenInventory().getTopInventory();
+                    if (!list.get(0).getType().equals(Material.SKULL_ITEM) || !ChatColor.stripColor(inv.getTitle()).equals(player.getName() + "'s MagicBand")) {
+                        return;
+                    }
+                    Field field = items.getField(2);
+                    field.setAccessible(true);
+                    net.minecraft.server.v1_8_R3.ItemStack i = (net.minecraft.server.v1_8_R3.ItemStack)
+                            field.get(items.getTarget());
+                    i.setTag(getHeadTag(player, i.getTag()));
+                    field.set(items.getTarget(), i);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        */
+    }
+
+    private NBTTagCompound getHeadTag(Player player) {
+        return getHeadTag(player, new NBTTagCompound());
+    }
+
+    private NBTTagCompound getHeadTag(Player player, NBTTagCompound current) {
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        user.setTextureHash(((CraftPlayer) player).getHandle().getProfile().getProperties().get("textures").iterator().next().getValue());
+        NBTTagCompound name = current.getCompound("SkullOwner");
+        name.setString("Id", player.getUniqueId().toString());
+        current.set("SkullOwner", name);
+        return current;
     }
 
     public boolean isLoading(Player player) {
         return dataResponses.containsKey(player.getUniqueId());
+    }
+
+    public void sparkleBand(Player player) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        final ItemStack band = player.getInventory().getItem(8);
+        if (band == null) {
+            return;
+        }
+        if (!getBandMaterial(data.getBandColor()).equals(band.getType())) {
+            return;
+        }
+        if (band.getEnchantments().containsKey(Enchantment.PROTECTION_ENVIRONMENTAL)) {
+            return;
+        }
+        band.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+        Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                band.removeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL);
+            }
+        }, 20L);
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
