@@ -125,7 +125,7 @@ public class PlayerInteract implements Listener {
                         return;
                     }
                 }
-            } else if (type.name().toLowerCase().contains("_door")) {
+            } else if (type.name().toLowerCase().contains("_door") && !type.name().toLowerCase().contains("trap")) {
                 HotelManager manager = MagicAssistant.hotelManager;
                 HotelRoom room = manager.getRoomFromDoor(event.getClickedBlock(), player);
                 if (room != null) {

@@ -7,14 +7,14 @@ import java.util.UUID;
  */
 public class DataResponse {
     private UUID uuid;
-    private int coins;
-    private int credits;
+    private int balance;
+    private int tokens;
     private String onlineTime;
 
-    public DataResponse(UUID uuid, int coins, int credits, String onlineTime) {
+    public DataResponse(UUID uuid, int balance, int tokens, String onlineTime) {
         this.uuid = uuid;
-        this.coins = coins;
-        this.credits = credits;
+        this.balance = balance;
+        this.tokens = tokens;
         this.onlineTime = onlineTime;
     }
 
@@ -22,12 +22,12 @@ public class DataResponse {
         return uuid;
     }
 
-    public int getCoins() {
-        return coins;
+    public int getBalance() {
+        return balance;
     }
 
-    public int getCredits() {
-        return credits;
+    public int getTokens() {
+        return tokens;
     }
 
     public String getOnlineTime() {

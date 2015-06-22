@@ -284,7 +284,7 @@ public class HotelManager {
             if (room.isOccupied()) {
                 s.setLine(3, room.getOccupantName());
             } else {
-                s.setLine(3, ChatColor.GREEN + Integer.toString(room.getCost()));
+                s.setLine(3, ChatColor.GREEN + "$" + Integer.toString(room.getCost()));
             }
             s.update();
         }
@@ -357,8 +357,8 @@ public class HotelManager {
             s.update();
         }
         player.closeInventory();
-        player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for " + room.getCost() +
-                " coins!");
+        player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for $" + room.getCost() +
+                "!");
         player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
     }
 

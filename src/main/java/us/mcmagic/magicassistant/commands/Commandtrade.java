@@ -44,7 +44,7 @@ public class Commandtrade implements CommandExecutor {
             return true;
         }
         if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.INTERN.getRankId()) {
-            if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() > Rank.INTERN.getRankId()) {
+            if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() > Rank.SPECIALGUEST.getRankId()) {
                 player.sendMessage(ChatColor.RED + "You can't send this player a Trade Request!");
                 return true;
             }

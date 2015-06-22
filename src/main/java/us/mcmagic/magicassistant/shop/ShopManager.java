@@ -75,7 +75,8 @@ public class ShopManager {
             Location loc = new Location(Bukkit.getWorlds().get(0), config.getDouble("shop." + s + ".x"),
                     config.getDouble("shop." + s + ".y"), config.getDouble("shop." + s + ".z"));
             Shop shop = new Shop(display, loc, items, new ItemCreator(Material.getMaterial(id), 1, data, display,
-                    Arrays.asList(" ", ChatColor.GREEN + "/warp " + warp.getName())), warp.getName());
+                    Arrays.asList(" ", ChatColor.GREEN + "/warp " + warp.getName())), warp.getName(),
+                    config.getDouble("shop." + s + ".radius"));
             shops.add(shop);
         }
     }
@@ -93,7 +94,7 @@ public class ShopManager {
             menu.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "No items are available in this shop!"));
             return menu;
         }
-        int coins = MCMagicCore.economy.getCoins(player.getUniqueId());
+        int balance = MCMagicCore.economy.getBalance(player.getUniqueId());
         int size = items.size();
         int place = 13;
         int amount = 1;
@@ -106,8 +107,7 @@ public class ShopManager {
             List<String> lore = new ArrayList<>(item.getLore());
             int cost = item.getCost();
             lore.add(" ");
-            lore.add(ChatColor.YELLOW + "Price: " + (coins >= cost ? ChatColor.GREEN : ChatColor.RED) + cost +
-                    ChatColor.GOLD + " Coins");
+            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) + "$" + cost);
             ItemStack i = new ItemCreator(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
                     lore);
             menu.setItem(place, i);
@@ -180,7 +180,7 @@ public class ShopManager {
             player.openInventory(menu);
             return;
         }
-        int coins = MCMagicCore.economy.getCoins(player.getUniqueId());
+        int balance = MCMagicCore.economy.getBalance(player.getUniqueId());
         int size = items.size();
         int place = 13;
         int amount = 1;
@@ -193,8 +193,7 @@ public class ShopManager {
             List<String> lore = new ArrayList<>(item.getLore());
             int cost = item.getCost();
             lore.add(" ");
-            lore.add(ChatColor.YELLOW + "Price: " + (coins >= cost ? ChatColor.GREEN : ChatColor.RED) + cost +
-                    ChatColor.GOLD + " Coins");
+            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) + "$" + cost);
             ItemStack i = new ItemCreator(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
                     lore);
             menu.setItem(place, i);
@@ -296,13 +295,13 @@ public class ShopManager {
     public void confirmPurchase(Player player) {
         if (confirmations.containsKey(player.getUniqueId())) {
             ShopItem item = confirmations.remove(player.getUniqueId());
-            int coins = MCMagicCore.economy.getCoins(player.getUniqueId());
-            if (coins < item.getCost()) {
+            int balance = MCMagicCore.economy.getBalance(player.getUniqueId());
+            if (balance < item.getCost()) {
                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cannot afford that item!");
                 player.closeInventory();
                 return;
             }
-            MCMagicCore.economy.addCoins(player.getUniqueId(), -item.getCost());
+            MCMagicCore.economy.addBalance(player.getUniqueId(), -item.getCost());
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased " + item.getDisplayName() +
                     ChatColor.GREEN + "!");
             player.closeInventory();
@@ -314,7 +313,7 @@ public class ShopManager {
         Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
         ItemStack name = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
                 Arrays.asList(ChatColor.GREEN + "You are about to purchase", item.getDisplayName(), ChatColor.GREEN +
-                        "for " + ChatColor.YELLOW + item.getCost() + ChatColor.GREEN + " Coins."));
+                        "for " + ChatColor.YELLOW + "$" + item.getCost() + ChatColor.GREEN + "."));
         ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
                 Arrays.asList(ChatColor.GRAY + "This cannot be undone!"));
         ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",

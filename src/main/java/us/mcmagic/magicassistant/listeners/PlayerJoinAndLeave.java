@@ -18,8 +18,8 @@ import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
-import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.hotels.HotelManager;
+import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
@@ -27,7 +27,6 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
-import us.mcmagic.mcmagiccore.title.TitleObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -100,10 +99,12 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
+        /*
         if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
             event.setKickMessage("This server will be available soon!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
+        */
     }
 
     @SuppressWarnings("deprecation")
@@ -193,7 +194,6 @@ public class PlayerJoinAndLeave implements Listener {
                         player.getInventory().setHelmet(new ItemCreator(Material.AIR));
                     }
                 }
-                //startLoginScreen(player);
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
                 player.sendMessage(ChatColor.GREEN + "Inventory updated!");
             } else {
@@ -208,30 +208,32 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             MagicAssistant.bandUtil.giveBandToPlayer(player);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    HotelManager manager = MagicAssistant.hotelManager;
-                    for (HotelRoom room : manager.getHotelRooms()) {
-                        if (room.getCheckoutNotificationRecipient() != null &&
-                                room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
-                            room.setCheckoutNotificationRecipient(null);
-                            room.setCheckoutTime(0);
-                            manager.updateHotelRoom(room);
-                            manager.updateRooms();
-                            player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
-                                    " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                            manager.expire.send(player);
-                            player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
-                            return;
-                        }
-                        if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCurrentOccupant()
-                                != null && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                            manager.checkout(room, true);
+            if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        HotelManager manager = MagicAssistant.hotelManager;
+                        for (HotelRoom room : manager.getHotelRooms()) {
+                            if (room.getCheckoutNotificationRecipient() != null &&
+                                    room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
+                                room.setCheckoutNotificationRecipient(null);
+                                room.setCheckoutTime(0);
+                                manager.updateHotelRoom(room);
+                                manager.updateRooms();
+                                player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
+                                        " room has lapsed and you have been checked out. Please come stay with us again soon!");
+                                manager.expire.send(player);
+                                player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                                return;
+                            }
+                            if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCurrentOccupant()
+                                    != null && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                                manager.checkout(room, true);
+                            }
                         }
                     }
-                }
-            }, 60L);
+                }, 60L);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -293,37 +295,6 @@ public class PlayerJoinAndLeave implements Listener {
             }
         }
         DesignStation.removePlayerVehicle(player.getUniqueId());
-    }
-
-    private void startLoginScreen(final Player player) {
-        Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
-            int i = 0;
-
-            @Override
-            public void run() {
-                i++;
-                switch (i) {
-                    case 2:
-                        TitleObject title = new TitleObject(ChatColor.AQUA + "Welcome to " + ChatColor.LIGHT_PURPLE +
-                                "MCMagic,", ChatColor.GREEN + player.getName()).setFadeIn(20).setStay(40).setFadeOut(5);
-                        title.send(player);
-                        player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 1);
-                        break;
-                    case 6:
-                        TitleObject quiz = new TitleObject(ChatColor.AQUA + "Please take a quiz,", ChatColor.GREEN +
-                                "then you get to play!").setFadeIn(5).setStay(40).setFadeOut(5);
-                        quiz.send(player);
-                        break;
-                    case 9:
-                        TitleObject click = new TitleObject(ChatColor.AQUA + "Click the answer", ChatColor.GREEN +
-                                "by opening chat and clicking.").setFadeIn(5).setStay(40).setFadeOut(5);
-                        click.send(player);
-                        break;
-                    case 10:
-                        MagicAssistant.quizManager.start(player);
-                }
-            }
-        }, 0L, 20L);
     }
 
     private List<byte[]> invContents(UUID uuid) {

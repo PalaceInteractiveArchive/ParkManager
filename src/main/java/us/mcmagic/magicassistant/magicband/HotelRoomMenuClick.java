@@ -7,11 +7,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
-import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.hotels.HotelManager;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 /**
  * Created by Greenlock28 on 1/25/2015.
@@ -19,16 +18,15 @@ import us.mcmagic.mcmagiccore.permissions.Rank;
 public class HotelRoomMenuClick {
 
     public static void handle(InventoryClickEvent event) {
-        ItemStack item = event.getCurrentItem();
+        final ItemStack item = event.getCurrentItem();
         if (item == null) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
+        final Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
             MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELS);
             return;
         }
-
         boolean playerOwnsRooms = false;
         HotelManager manager = MagicAssistant.hotelManager;
         for (HotelRoom room : manager.getRooms()) {
@@ -49,15 +47,12 @@ public class HotelRoomMenuClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         HotelRoom room = manager.getRoom(name);
-        boolean staff = MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.INTERN.getRankId();
-        if (staff || MCMagicCore.economy.getCoins(player.getUniqueId()) >= room.getCost()) {
-            if (!staff) {
-                MCMagicCore.economy.addCoins(player.getUniqueId(), -room.getCost());
-            }
+        if (MCMagicCore.economy.getBalance(player.getUniqueId()) >= room.getCost()) {
+            MCMagicCore.economy.addBalance(player.getUniqueId(), -room.getCost());
             manager.rentRoom(room, player);
         } else {
             player.closeInventory();
-            player.sendMessage(ChatColor.RED + "You don't have enough coins to book this room!");
+            player.sendMessage(ChatColor.RED + "You don't have enough money to book this room!");
         }
     }
 }

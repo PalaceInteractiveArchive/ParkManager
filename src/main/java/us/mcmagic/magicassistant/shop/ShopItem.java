@@ -28,7 +28,7 @@ public class ShopItem {
 
     @SuppressWarnings("deprecation")
     public ItemStack getItem() {
-        return new ItemCreator(Material.getMaterial(id), displayName, lore);
+        return new ItemCreator(Material.getMaterial(id), 1, data, displayName, lore);
     }
 
     public String getDisplayName() {

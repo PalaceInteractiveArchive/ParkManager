@@ -58,8 +58,8 @@ public class BandUtil {
                     ItemMeta meta = pinfo.getItemMeta();
                     meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
                             ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
-                            ChatColor.GREEN + "Coins: " + ChatColor.YELLOW + response.getCoins(),
-                            ChatColor.GREEN + "Credits: " + ChatColor.YELLOW + response.getCredits(),
+                            ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + response.getBalance(),
+                            ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
                             ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
                     pinfo.setItemMeta(meta);
                     /*
@@ -273,8 +273,8 @@ public class BandUtil {
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                dataResponses.put(uuid, new DataResponse(uuid, MCMagicCore.economy.getCoins(uuid),
-                        MCMagicCore.economy.getCredits(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid.toString()))));
+                dataResponses.put(uuid, new DataResponse(uuid, MCMagicCore.economy.getBalance(uuid),
+                        MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid.toString()))));
             }
         });
     }

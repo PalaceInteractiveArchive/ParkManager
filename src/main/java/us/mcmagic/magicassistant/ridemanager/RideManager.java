@@ -4,10 +4,12 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
 import net.minecraft.server.v1_8_R3.WorldServer;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -351,69 +353,5 @@ public class RideManager implements Listener {
             return (int) Math.floor(d);
         }
         return (int) Math.ceil(d);
-    }
-
-    @SuppressWarnings("deprecation")
-    public BlockMinecartTrackAbstract.EnumTrackPosition getTrackPosition(Block block) {
-        if (!isRail(block.getLocation())) {
-            return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;
-        }
-        byte data = block.getData();
-        if (data > 9) {
-            data -= 10;
-        }
-        Bukkit.broadcastMessage("" + data);
-        switch (data) {
-            case 0:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;
-            case 1:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.EAST_WEST;
-            case 2:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_EAST;
-            case 3:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_WEST;
-            case 4:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_NORTH;
-            case 5:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.ASCENDING_SOUTH;
-            case 6:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.SOUTH_EAST;
-            case 7:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.SOUTH_WEST;
-            case 8:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_WEST;
-            case 9:
-                return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_EAST;
-            default:
-                return null;
-        }
-    }
-
-    public BlockFace getRailDirection(Block b) {
-        BlockMinecartTrackAbstract.EnumTrackPosition pos = getTrackPosition(b);
-        switch (pos) {
-            case NORTH_SOUTH:
-                return BlockFace.SOUTH;
-            case EAST_WEST:
-                return BlockFace.WEST;
-            case ASCENDING_EAST:
-                return BlockFace.EAST;
-            case ASCENDING_WEST:
-                return BlockFace.WEST;
-            case ASCENDING_NORTH:
-                return BlockFace.NORTH;
-            case ASCENDING_SOUTH:
-                return BlockFace.SOUTH;
-            case SOUTH_EAST:
-                return BlockFace.SOUTH_EAST;
-            case SOUTH_WEST:
-                return BlockFace.SOUTH_WEST;
-            case NORTH_WEST:
-                return BlockFace.NORTH_WEST;
-            case NORTH_EAST:
-                return BlockFace.NORTH_EAST;
-            default:
-                return BlockFace.NORTH;
-        }
     }
 }

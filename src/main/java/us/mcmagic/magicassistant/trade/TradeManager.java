@@ -17,10 +17,7 @@ import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Marc on 5/29/15
@@ -30,6 +27,8 @@ public class TradeManager {
     private HashMap<UUID, Integer> map2 = new HashMap<>();
     private HashMap<UUID, Integer> map3 = new HashMap<>();
     private HashMap<UUID, UUID> active = new HashMap<>();
+    private ItemStack finalize = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "Confirm Trade",
+            new ArrayList<String>());
 
     public void logout(Player player) {
         if (map.containsKey(player.getUniqueId())) {
@@ -193,10 +192,59 @@ public class TradeManager {
                 active.remove(entry.getKey());
             }
         }
+        Inventory inv = tp.getOpenInventory().getTopInventory();
+        boolean starter = active.containsKey(player.getUniqueId());
+        int pleast;
+        int pmost;
+        int tpleast;
+        int tpmost;
+        if (starter) {
+            pleast = 10;
+            pmost = 12;
+            tpleast = 14;
+            tpmost = 16;
+        } else {
+            pleast = 14;
+            pmost = 16;
+            tpleast = 10;
+            tpmost = 12;
+        }
+        List<ItemStack> pitems = getItems(inv, pleast, pmost);
+        List<ItemStack> tpitems = getItems(inv, tpleast, tpmost);
         tp.closeInventory();
         tp.sendMessage(MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName() +
                 ChatColor.RED + "" + ChatColor.BOLD + " cancelled the Trade!");
         player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cancelled the Trade!");
+        for (ItemStack i : pitems) {
+            if (i == null) {
+                continue;
+            }
+            if (i.getType().equals(Material.STAINED_CLAY)) {
+                continue;
+            }
+            player.getInventory().addItem(i);
+        }
+        for (ItemStack i : tpitems) {
+            if (i == null) {
+                continue;
+            }
+            if (i.getType().equals(Material.STAINED_CLAY)) {
+                continue;
+            }
+            tp.getInventory().addItem(i);
+        }
+    }
+
+    private List<ItemStack> getItems(Inventory inv, int start, int stop) {
+        if (start < 0 || stop < 0) {
+            return new ArrayList<>();
+        }
+        List<ItemStack> list = new ArrayList<>();
+        int n = 0;
+        for (int i = start; i < (stop + 1); i++) {
+            list.add(inv.getItem(i));
+        }
+        return list;
     }
 
     private void cancelTimer(UUID uuid) {
@@ -225,16 +273,30 @@ public class TradeManager {
         if (tp == null) {
             return;
         }
+        if (stack.equals(finalize)) {
+            finalize(player);
+            return;
+        }
         ItemMeta meta = stack.getItemMeta();
         InventoryAction action = event.getAction();
+        Bukkit.broadcastMessage(action.toString());
         int slot = event.getSlot();
-        //Left of Menu
-        int least = active.containsKey(player.getUniqueId()) ? 13 : 9;
-        int most = active.containsKey(player.getUniqueId()) ? 17 : 13;
+        boolean starter = active.containsKey(player.getUniqueId());
+        int least;
+        int most;
+        if (starter) {
+            least = 13;
+            most = 17;
+        } else {
+            least = 9;
+            most = 13;
+        }
         if (!event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
             if (slot > least && slot < most) {
                 if (action.name().startsWith("PLACE_")) {
                     event.setCancelled(false);
+                    updateInventory(player, tp.getOpenInventory().getTopInventory(), least + 1, most - 1);
+                    return;
                 }
                 if (action.name().startsWith("PICKUP_") || action.equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                     Inventory inv = tp.getOpenInventory().getTopInventory();
@@ -261,6 +323,36 @@ public class TradeManager {
             Inventory inv = tp.getOpenInventory().getTopInventory();
             inv.setItem(slot, stack);
         }
+    }
+
+    private void finalize(Player player) {
+        Player tp = PlayerUtil.findPlayer(ChatColor.stripColor(player.getOpenInventory().getTopInventory().getTitle())
+                .replaceFirst("Trade with ", ""));
+        if (tp == null) {
+            return;
+        }
+        Inventory inv = player.getOpenInventory().getTopInventory();
+        Inventory tpinv = tp.getOpenInventory().getTopInventory();
+    }
+
+    private void updateInventory(final Player p, final Inventory tinv, final int least, final int most) {
+        final ItemStack wait = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 4, ChatColor.GOLD + "Waiting...",
+                new ArrayList<String>());
+        Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                List<ItemStack> items = getItems(p.getOpenInventory().getTopInventory(), least, most);
+                int i = least;
+                for (ItemStack item : items) {
+                    if (item == null || item.getType().equals(Material.AIR)) {
+                        tinv.setItem(i, wait);
+                    } else {
+                        tinv.setItem(i, item);
+                    }
+                    i++;
+                }
+            }
+        }, 10L);
     }
 
     private String getTimerMessage(int i) {

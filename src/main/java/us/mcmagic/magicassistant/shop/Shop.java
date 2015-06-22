@@ -15,13 +15,15 @@ public class Shop {
     private List<ShopItem> items = new ArrayList<>();
     private ItemStack identifier;
     private String warp;
+    private double radius;
 
-    public Shop(String name, Location location, List<ShopItem> items, ItemStack identifier, String warp) {
+    public Shop(String name, Location location, List<ShopItem> items, ItemStack identifier, String warp, double radius) {
         this.name = name;
         this.location = location;
         this.items = items;
         this.identifier = identifier;
         this.warp = warp;
+        this.radius = radius;
     }
 
     public String getName() {
@@ -42,5 +44,9 @@ public class Shop {
 
     public String getWarp() {
         return warp;
+    }
+
+    public double getRadius() {
+        return radius;
     }
 }

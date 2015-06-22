@@ -1,9 +1,11 @@
 package us.mcmagic.magicassistant.blockchanger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.MagicAssistant;
 
 import java.util.*;
 
@@ -60,38 +62,47 @@ public class Changer {
     }
 
     @SuppressWarnings("deprecation")
-    public void sendReverse(Player player) {
-        for (int x = loc1.getBlockX(); x <= loc2.getBlockX(); x++) {
-            for (int y = loc1.getBlockY(); y <= loc2.getBlockY(); y++) {
-                for (int z = loc1.getBlockZ(); z <= loc2.getBlockZ(); z++) {
-                    Block b = loc1.getWorld().getBlockAt(new Location(loc1.getWorld(), x, y, z));
-                    player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    public void send(Player player) {
-        for (int x = loc1.getBlockX(); x <= loc2.getBlockX(); x++) {
-            for (int y = loc1.getBlockY(); y <= loc2.getBlockY(); y++) {
-                for (int z = loc1.getBlockZ(); z <= loc2.getBlockZ(); z++) {
-                    Block b = loc1.getWorld().getBlockAt(new Location(loc1.getWorld(), x, y, z));
-                    Location loc = b.getLocation();
-                    for (Map.Entry<Material, Byte> fromEntry : from.entrySet()) {
-                        if (fromEntry.getValue() != null) {
-                            if (b.getData() != fromEntry.getValue()) {
-                                continue;
-                            }
-                        }
-                        if (b.getType().equals(fromEntry.getKey())) {
-                            player.sendBlockChange(loc, to, toData);
-                            //player.sendMessage("Location: " + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + " to " + to.name() + ":" + toData);
+    public void sendReverse(final Player player) {
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (int x = loc1.getBlockX(); x <= loc2.getBlockX(); x++) {
+                    for (int y = loc1.getBlockY(); y <= loc2.getBlockY(); y++) {
+                        for (int z = loc1.getBlockZ(); z <= loc2.getBlockZ(); z++) {
+                            Block b = loc1.getWorld().getBlockAt(new Location(loc1.getWorld(), x, y, z));
+                            player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
                         }
                     }
                 }
             }
-        }
+        });
+    }
+
+    @SuppressWarnings("deprecation")
+    public void send(final Player player) {
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (int x = loc1.getBlockX(); x <= loc2.getBlockX(); x++) {
+                    for (int y = loc1.getBlockY(); y <= loc2.getBlockY(); y++) {
+                        for (int z = loc1.getBlockZ(); z <= loc2.getBlockZ(); z++) {
+                            Block b = loc1.getWorld().getBlockAt(new Location(loc1.getWorld(), x, y, z));
+                            Location loc = b.getLocation();
+                            for (Map.Entry<Material, Byte> fromEntry : from.entrySet()) {
+                                if (fromEntry.getValue() != null) {
+                                    if (b.getData() != fromEntry.getValue()) {
+                                        continue;
+                                    }
+                                }
+                                if (b.getType().equals(fromEntry.getKey())) {
+                                    player.sendBlockChange(loc, to, toData);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @SuppressWarnings("deprecation")

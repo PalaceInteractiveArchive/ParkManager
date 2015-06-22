@@ -38,7 +38,7 @@ public class Commandsmite implements CommandExecutor {
             tp.sendMessage(ChatColor.GRAY + "Thou hast been smitted!");
             return true;
         }
-        player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<Byte>(0), 50).getLocation());
+        player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<Byte>(), 50).getLocation());
         return true;
     }
 }

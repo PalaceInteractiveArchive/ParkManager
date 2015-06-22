@@ -16,7 +16,6 @@ import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
-import us.mcmagic.magicassistant.quiz.QuizManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
 import us.mcmagic.magicassistant.ridemanager.RideManager;
@@ -67,7 +66,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static InventoryUtil inventoryUtil;
     public static ShopManager shopManager;
     public static TradeManager tradeManager;
-    public static QuizManager quizManager;
     public static HotelManager hotelManager;
 
     public void onEnable() {
@@ -80,7 +78,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         inventoryUtil = new InventoryUtil();
         universeEnergyRide = new UniverseEnergyRide();
         tradeManager = new TradeManager();
-        quizManager = new QuizManager();
         registerListeners();
         registerCommands();
         bandUtil.initialize();
@@ -447,7 +444,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new FountainUtil(this), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         pm.registerEvents(rideManager, this);
-        pm.registerEvents(quizManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);

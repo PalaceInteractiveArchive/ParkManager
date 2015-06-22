@@ -499,7 +499,7 @@ public class InventoryUtil {
             ItemMeta him = item.getItemMeta();
             him.setDisplayName(ChatColor.GREEN + room.getName());
             long time = room.getStayLength() / 3600;
-            List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: " + Integer.toString(room.getCost()) + " Coins",
+            List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: $" + Integer.toString(room.getCost()),
                     ChatColor.GREEN + "Click to rent this room for " + time + " hours.");
             him.setLore(himl);
             item.setItemMeta(him);
@@ -520,7 +520,7 @@ public class InventoryUtil {
         ItemMeta him = item.getItemMeta();
         him.setDisplayName(ChatColor.GREEN + room.getName());
         long time = room.getStayLength() / 3600;
-        List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: " + Integer.toString(room.getCost()) + " Coins",
+        List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: $" + Integer.toString(room.getCost()),
                 ChatColor.GREEN + "Click to rent this room for " + time + " hours.");
         him.setLore(himl);
         item.setItemMeta(him);

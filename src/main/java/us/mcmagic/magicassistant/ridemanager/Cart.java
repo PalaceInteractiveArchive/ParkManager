@@ -3,9 +3,7 @@ package us.mcmagic.magicassistant.ridemanager;
 import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
 import net.minecraft.server.v1_8_R3.EntityMinecartRideable;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.util.Vector;
@@ -44,39 +42,45 @@ public class Cart extends EntityMinecartRideable {
     }
 
     @Override
-    public void move(double x, double y, double z) {
+    public void move(double x1, double y1, double z1) {
         Location from = new Location(this.getWorld().getWorld(), locX, locY, locZ);
         Vector v = getVelocity();
-        double motX = v.getX();
-        double motY = v.getY();
-        double motZ = v.getZ();
-        Location to = new Location(getWorld().getWorld(), locX + motX, locY + motY, locZ + motZ);
-        CartMoveEvent event = new CartMoveEvent(this, from, to);
+        Location to = from.clone();
+        to.add(v.getX(), v.getY(), v.getZ());
+        CartMoveEvent event = new CartMoveEvent(this, from.clone(), to.clone());
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
-        setPosition(locX + motX, locY + motY, locZ + motZ);
+        final double vx = this.motX;
+        final double vy = this.motY;
+        final double vz = this.motZ;
+        this.motX = v.getX();
+        this.motY = v.getY();
+        this.motZ = v.getZ();
+        velocityChanged = vx != this.motX || vy != this.motY || vz != this.motZ;
+        setPosition(locX + v.getX(), locY + v.getY(), locZ + v.getZ());
+    }
+
+    private Location getLoc() {
+        return new Location(getWorld().getWorld(), locX, locY, locZ);
     }
 
     @SuppressWarnings("deprecation")
     public Vector getVelocity() {
         BlockFace d = direction;
-        String dir = d.name().toLowerCase();
         Vector v = new Vector(0, 0, 0);
-        if (!MagicAssistant.rideManager.isRail(getBukkitEntity().getLocation())) {
-            return v;
-        }
-        BlockMinecartTrackAbstract.EnumTrackPosition pos = getTrackType(getBukkitEntity().getLocation().getBlock().getData());
-        if (pos == null) {
-            return v;
-        }
+        Location l = getLoc();
+        BlockMinecartTrackAbstract.EnumTrackPosition pos = getTrackType(l.getBlock().getData());
         double turnPwr = power * 0.7071067812;
+        if (pos == null) {
+            return new Vector(0, 0, 0);
+        }
         switch (pos) {
             case NORTH_SOUTH:
                 if (ascending) {
                     ascending = false;
-                    v.setY(0.0625);
+                    v.setY(0.1);
                 }
                 lastDirection = d;
                 if (direction != BlockFace.NORTH && direction != BlockFace.SOUTH) {
@@ -91,7 +95,7 @@ public class Cart extends EntityMinecartRideable {
             case EAST_WEST:
                 if (ascending) {
                     ascending = false;
-                    v.setY(0.0625);
+                    v.setY(0.1);
                 }
                 lastDirection = d;
                 if (direction != BlockFace.EAST && direction != BlockFace.WEST) {
@@ -106,7 +110,7 @@ public class Cart extends EntityMinecartRideable {
             case ASCENDING_EAST:
                 ascending = true;
                 lastDirection = d;
-                if (direction != BlockFace.NORTH && direction != BlockFace.SOUTH) {
+                if (direction != BlockFace.EAST && direction != BlockFace.WEST) {
                     direction = turningDirectionTo;
                 }
                 if (direction.name().toLowerCase().contains("east")) {
@@ -120,10 +124,10 @@ public class Cart extends EntityMinecartRideable {
             case ASCENDING_WEST:
                 ascending = true;
                 lastDirection = d;
-                if (direction != BlockFace.NORTH && direction != BlockFace.SOUTH) {
+                if (direction != BlockFace.EAST && direction != BlockFace.WEST) {
                     direction = turningDirectionTo;
                 }
-                if (direction.name().toLowerCase().contains("east")) {
+                if (direction.name().toLowerCase().contains("west")) {
                     v.setY(power);
                     v.setX(-power);
                 } else {
@@ -162,10 +166,13 @@ public class Cart extends EntityMinecartRideable {
             case SOUTH_EAST:
                 if (ascending) {
                     ascending = false;
-                    v.setY(0.0625);
+                    v.setY(0.1);
                 }
                 lastDirection = d;
-                if (dir.contains("north")) {
+                if (direction != BlockFace.WEST && direction != BlockFace.NORTH) {
+                    direction = turningDirectionTo;
+                }
+                if (direction.name().toLowerCase().contains("north")) {
                     turningDirectionTo = BlockFace.EAST;
                     v.setZ(-turnPwr);
                     v.setX(turnPwr);
@@ -178,10 +185,13 @@ public class Cart extends EntityMinecartRideable {
             case SOUTH_WEST:
                 if (ascending) {
                     ascending = false;
-                    v.setY(0.0625);
+                    v.setY(0.1);
                 }
                 lastDirection = d;
-                if (dir.contains("north")) {
+                if (direction != BlockFace.NORTH && direction != BlockFace.EAST) {
+                    direction = turningDirectionTo;
+                }
+                if (direction.name().toLowerCase().contains("north")) {
                     turningDirectionTo = BlockFace.WEST;
                     v.setZ(-turnPwr);
                     v.setX(-turnPwr);
@@ -194,10 +204,13 @@ public class Cart extends EntityMinecartRideable {
             case NORTH_WEST:
                 if (ascending) {
                     ascending = false;
-                    v.setY(0.0625);
+                    v.setY(0.1);
                 }
                 lastDirection = d;
-                if (dir.contains("south")) {
+                if (direction != BlockFace.EAST && direction != BlockFace.SOUTH) {
+                    direction = turningDirectionTo;
+                }
+                if (direction.name().toLowerCase().contains("south")) {
                     turningDirectionTo = BlockFace.WEST;
                     v.setZ(turnPwr);
                     v.setX(-turnPwr);
@@ -210,10 +223,13 @@ public class Cart extends EntityMinecartRideable {
             case NORTH_EAST:
                 if (ascending) {
                     ascending = false;
-                    v.setY(0.0625);
+                    v.setY(0.1);
                 }
                 lastDirection = d;
-                if (dir.contains("south")) {
+                if (direction != BlockFace.WEST && direction != BlockFace.SOUTH) {
+                    direction = turningDirectionTo;
+                }
+                if (direction.name().toLowerCase().contains("south")) {
                     turningDirectionTo = BlockFace.EAST;
                     v.setZ(turnPwr);
                     v.setX(turnPwr);
@@ -352,11 +368,5 @@ public class Cart extends EntityMinecartRideable {
 
     public void setSlowdown(boolean slowdown) {
         this.slowdown = slowdown;
-    }
-
-    private boolean isSloped() {
-        BlockMinecartTrackAbstract.EnumTrackPosition pos =
-                MagicAssistant.rideManager.getTrackPosition(getBukkitEntity().getLocation().getBlock());
-        return pos.name().toLowerCase().contains("ascending");
     }
 }
