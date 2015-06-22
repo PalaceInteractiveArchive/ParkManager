@@ -195,6 +195,7 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
+                MagicAssistant.autographUtil.join(player);
                 player.sendMessage(ChatColor.GREEN + "Inventory updated!");
             } else {
                 ItemStack helm = player.getInventory().getHelmet();

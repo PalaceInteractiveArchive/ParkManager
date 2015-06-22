@@ -62,11 +62,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static PackManager packManager;
     public static BandUtil bandUtil = new BandUtil();
     public static RideManager rideManager;
-    public static AutographUtil autographUtil;
     public static InventoryUtil inventoryUtil;
     public static ShopManager shopManager;
     public static TradeManager tradeManager;
     public static HotelManager hotelManager;
+    public static AutographUtil autographUtil;
 
     public void onEnable() {
         instance = this;
