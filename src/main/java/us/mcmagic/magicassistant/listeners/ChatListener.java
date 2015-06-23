@@ -9,8 +9,7 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        event.getPlayer().sendMessage(ChatColor.RED
-                + "There is currently a problem with chat. (Error Code 109)");
+        event.getPlayer().sendMessage(ChatColor.RED + "There is currently a problem with chat. (Error Code 109)");
         event.setCancelled(true);
     }
 }

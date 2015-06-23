@@ -48,7 +48,7 @@ public class MyHotelRoomsMenuClick {
                     }
                     player.teleport(warp.getLocation());
                 } else {
-                    WarpUtil.crossServerWarp(player.getUniqueId().toString(), warp.getName(), warp.getServer());
+                    WarpUtil.crossServerWarp(player.getUniqueId(), warp.getName(), warp.getServer());
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "This room does not have a warp set!");

@@ -84,7 +84,7 @@ public class PlayerJoinAndLeave implements Listener {
             }
             PlayerData data = MagicAssistant.bandUtil.setupPlayerData(uuid);
             if (MagicAssistant.getPlayerData(uuid) == null) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
             }
         } catch (Exception e) {
@@ -99,12 +99,10 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        /*
         if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
             event.setKickMessage("This server will be available soon!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
-        */
     }
 
     @SuppressWarnings("deprecation")
@@ -207,8 +205,9 @@ public class PlayerJoinAndLeave implements Listener {
                 if (Shooter.game != null) {
                     player.getInventory().remove(Shooter.getItem().getType());
                 }
+                MagicAssistant.bandUtil.giveBandToPlayer(player);
+                MagicAssistant.autographUtil.join(player);
             }
-            MagicAssistant.bandUtil.giveBandToPlayer(player);
             if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
                 Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                     @Override

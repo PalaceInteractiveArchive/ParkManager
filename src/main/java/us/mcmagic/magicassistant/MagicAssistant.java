@@ -1,19 +1,24 @@
 package us.mcmagic.magicassistant;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.designstation.DesignStation;
-import us.mcmagic.magicassistant.handlers.*;
+import us.mcmagic.magicassistant.handlers.FoodLocation;
+import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.handlers.Ride;
+import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
@@ -33,12 +38,10 @@ import java.io.*;
 import java.util.*;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
-    public static Inventory ni;
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
     public static Stitch stitch;
     public static UniverseEnergyRide universeEnergyRide;
-    public int randomNumber = 0;
     public static List<Warp> warps = new ArrayList<>();
     public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
     public static HashMap<Integer, List<PlayerData.Attraction>> attPages = new HashMap<>();
@@ -49,8 +52,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean resortsServer;
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
     private WorldGuardPlugin wg;
-    public static List<String> joinMessages = config
-            .getStringList("join-messages");
+    public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static Map<UUID, String> userCache = new HashMap<>();
     public static List<String> newJoinMessage = new ArrayList<>();
@@ -99,7 +101,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
         warps.clear();
         setupFirstJoinItems();
-        setupNewJoinMessages();
         getLogger().info("Initializing Warps...");
         WarpUtil.refreshWarps();
         getLogger().info("Warps Initialized!");
@@ -120,8 +121,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             Bukkit.getScheduler().runTaskTimer(this, new Ticker(), 1, 1);
             System.out.println("Show Timer Started!");
         }
-        hub = new Location(Bukkit.getWorlds().get(0), getConfig().getDouble("hub.x"), getConfig().getDouble("hub.y"), getConfig().getDouble("hub.z"), getConfig().getInt("hub.yaw"), getConfig().getInt("hub.pitch"));
-        spawn = new Location(Bukkit.getWorld(getConfig().getString("spawn.world")), getConfig().getDouble("spawn.x"), getConfig().getDouble("spawn.y"), getConfig().getDouble("spawn.z"), getConfig().getInt("spawn.yaw"), getConfig().getInt("spawn.pitch"));
+        hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
+                config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
+        spawn = new Location(Bukkit.getWorld(config.getString("spawn.world")), config.getDouble("spawn.x"),
+                config.getDouble("spawn.y"), config.getDouble("spawn.z"), config.getInt("spawn.yaw"),
+                config.getInt("spawn.pitch"));
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
         resortsServer = MCMagicCore.getMCMagicConfig().serverName == "Resorts";
@@ -157,15 +161,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         warps.clear();
     }
 
-    public void setupNewJoinMessages() {
-        newJoinMessage.clear();
-        FileConfiguration config = getConfig();
-        List<String> msgs = config.getStringList("first-join-message");
-        for (String msg : msgs) {
-            newJoinMessage.add(ChatColor.translateAlternateColorCodes('&', msg));
-        }
-    }
-
     public void setupFirstJoinItems() {
         firstJoinItems.clear();
         FileConfiguration config = getConfig();
@@ -181,6 +176,17 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
     public void setHub(Location loc) {
         hub = loc;
+        config.set("hub.x", loc.getX());
+        config.set("hub.y", loc.getY());
+        config.set("hub.z", loc.getZ());
+        config.set("hub.yaw", loc.getYaw());
+        config.set("hub.pitch", loc.getPitch());
+        config.set("hub.world", loc.getWorld().getName());
+        try {
+            config.save(new File("plugins/MagicAssistant/config.yml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public WorldGuardPlugin getWG() {
@@ -434,9 +440,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerJoinAndLeave(), this);
         pm.registerEvents(new SignChange(), this);
         pm.registerEvents(new BlockEdit(), this);
-        pm.registerEvents(new InventoryClick(this), this);
+        pm.registerEvents(new InventoryClick(), this);
         pm.registerEvents(new PlayerDropItem(), this);
-        pm.registerEvents(new PlayerInteract(this), this);
+        pm.registerEvents(new PlayerInteract(), this);
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);

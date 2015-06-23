@@ -38,7 +38,7 @@ public class SignChange implements Listener {
                 event.setLine(0, PlayerInteract.hotel);
                 int roomNumber = Integer.parseInt(ChatColor.stripColor(event.getLine(1)));
                 String hotelName = ChatColor.stripColor(event.getLine(2));
-                int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace(" Coins", "").replace(" Coin", "").replace("$", "")));
+                int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace("$", "")));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(event.getLine(1));
                 if (MagicAssistant.hotelManager.getRoom(fullRoomName) == null) {
                     Location loc = b.getLocation();

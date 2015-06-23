@@ -34,11 +34,6 @@ public class PlayerInteract implements Listener {
     public static String hotel = ChatColor.BLUE + "[Hotel]";
     public static String designStation = ChatColor.BLUE + "[Design Station]";
     public static String shop = ChatColor.BLUE + "[Shop]";
-    static MagicAssistant pl;
-
-    public PlayerInteract(MagicAssistant instance) {
-        pl = instance;
-    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -75,7 +70,7 @@ public class PlayerInteract implements Listener {
                         return;
                     }
                     if (!warp.getServer().equalsIgnoreCase(MCMagicCore.getMCMagicConfig().serverName)) {
-                        WarpUtil.crossServerWarp(player.getUniqueId().toString(), warp.getName(), warp.getServer());
+                        WarpUtil.crossServerWarp(player.getUniqueId(), warp.getName(), warp.getServer());
                         return;
                     }
                     player.teleport(warp.getLocation());

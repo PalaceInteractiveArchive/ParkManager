@@ -1,7 +1,6 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -64,16 +63,16 @@ public class Commandgwts implements CommandExecutor {
         LeatherArmorMeta pio = (LeatherArmorMeta) pink.getItemMeta();
         LeatherArmorMeta wo = (LeatherArmorMeta) white.getItemMeta();
         LeatherArmorMeta blo = (LeatherArmorMeta) black.getItemMeta();
-        ro.setColor(Color.fromRGB(170, 0, 0));
-        oo.setColor(Color.fromRGB(255, 102, 0));
-        yo.setColor(Color.fromRGB(255, 222, 0));
-        go.setColor(Color.fromRGB(0, 153, 0));
-        ao.setColor(Color.fromRGB(0, 255, 255));
-        bo.setColor(Color.fromRGB(51, 51, 255));
-        po.setColor(Color.fromRGB(39, 31, 155));
-        pio.setColor(Color.fromRGB(255, 0, 255));
-        wo.setColor(Color.fromRGB(255, 255, 255));
-        blo.setColor(Color.fromRGB(0, 0, 0));
+        ro.setColor(GlowType.RED.getColor());
+        oo.setColor(GlowType.ORANGE.getColor());
+        yo.setColor(GlowType.YELLOW.getColor());
+        go.setColor(GlowType.GREEN.getColor());
+        ao.setColor(GlowType.AQUA.getColor());
+        bo.setColor(GlowType.BLUE.getColor());
+        po.setColor(GlowType.PURPLE.getColor());
+        pio.setColor(GlowType.PINK.getColor());
+        wo.setColor(GlowType.WHITE.getColor());
+        blo.setColor(GlowType.BLACK.getColor());
         red.setItemMeta(ro);
         orange.setItemMeta(oo);
         yellow.setItemMeta(yo);
@@ -91,7 +90,7 @@ public class Commandgwts implements CommandExecutor {
         if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("help")) {
                 sender.sendMessage(ChatColor.RED +
-                        "/gwts <red, orange, yellow, green, aqua, blue, purple, pink, white, black, done> <Player>");
+                        "/gwts [red, orange, yellow, green, aqua, blue, purple, pink, white, black, done] [Player]");
                 return true;
             }
         }

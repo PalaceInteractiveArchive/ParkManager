@@ -22,22 +22,22 @@ public class Commandserverparty implements CommandExecutor {
         Player player = (Player) sender;
         if (args.length == 0) {
             player.sendMessage(ChatColor.YELLOW + "Creating Party for your server...");
-            MagicAssistant.getInstance().bandUtil.createParty();
+            MagicAssistant.bandUtil.createParty();
             Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    MagicAssistant.getInstance().bandUtil.askForParty();
+                    MagicAssistant.bandUtil.askForParty();
                 }
             }, 100L);
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("refresh")) {
                 player.sendMessage(ChatColor.GREEN + "Refreshing Party Data...");
-                MagicAssistant.getInstance().bandUtil.askForParty();
+                MagicAssistant.bandUtil.askForParty();
                 return true;
             }
             if (args[0].equalsIgnoreCase("stop")) {
                 player.sendMessage(ChatColor.RED + "Deleting Party Data...");
-                MagicAssistant.getInstance().bandUtil.removeParty();
+                MagicAssistant.bandUtil.removeParty();
             }
         }
         return true;

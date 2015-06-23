@@ -30,7 +30,8 @@ public class EntityDamage implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
-        if (entity.getType().equals(EntityType.ITEM_FRAME)) {
+        if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.PAINTING) ||
+                entity.getType().equals(EntityType.ARMOR_STAND)) {
             event.setCancelled(true);
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {

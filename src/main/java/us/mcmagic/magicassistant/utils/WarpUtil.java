@@ -24,7 +24,7 @@ public class WarpUtil {
     public static boolean warpExists(String warp) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `warps` WHERE name = ?");
+                    .prepareStatement("SELECT * FROM warps WHERE name = ?");
             sql.setString(1, warp);
             ResultSet result = sql.executeQuery();
             boolean contains = result.next();
@@ -40,7 +40,7 @@ public class WarpUtil {
     public static String getServer(String warp) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `warps` WHERE name = ?");
+                    .prepareStatement("SELECT * FROM warps WHERE name = ?");
             sql.setString(1, warp);
             ResultSet result = sql.executeQuery();
             result.next();
@@ -57,7 +57,7 @@ public class WarpUtil {
     public static Location getLocation(String warp) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `warps` WHERE name=?");
+                    .prepareStatement("SELECT * FROM warps WHERE name=?");
             sql.setString(1, warp);
             ResultSet result = sql.executeQuery();
             result.next();
@@ -76,19 +76,17 @@ public class WarpUtil {
         return null;
     }
 
-    public static void crossServerWarp(final String uuid, final String warp, final String server) {
+    public static void crossServerWarp(final UUID uuid, final String warp, final String server) {
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             out.writeUTF("MagicWarp");
-            out.writeUTF(uuid);
+            out.writeUTF(uuid.toString());
             out.writeUTF(server);
             out.writeUTF(warp);
-            Bukkit.getPlayer(UUID.fromString(uuid)).sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord",
-                    b.toByteArray());
+            Bukkit.getPlayer(uuid).sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (IOException e) {
-            Bukkit.getPlayer(UUID.fromString(uuid)).sendMessage(ChatColor.RED +
-                    "There was a problem joining that server, please type /join instead!");
+            Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "There was a problem joining that server!");
         }
     }
 
@@ -97,7 +95,7 @@ public class WarpUtil {
         List<Warp> warps = new ArrayList<>();
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("SELECT * FROM `warps`");
+                    .prepareStatement("SELECT * FROM warps");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
                 names.add(result.getString("name"));
@@ -129,7 +127,7 @@ public class WarpUtil {
     public synchronized static void addWarp(Warp warp) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("INSERT INTO `warps` values(0,?,?,?,?,?,?,?,?)");
+                    .prepareStatement("INSERT INTO warps values(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, warp.getName());
             sql.setDouble(2, warp.getX());
             sql.setDouble(3, warp.getY());
@@ -148,7 +146,7 @@ public class WarpUtil {
     public synchronized static void removeWarp(Warp warp) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("DELETE FROM `warps` WHERE name=?");
+                    .prepareStatement("DELETE FROM warps WHERE name=?");
             sql.setString(1, warp.getName());
             sql.execute();
             sql.close();

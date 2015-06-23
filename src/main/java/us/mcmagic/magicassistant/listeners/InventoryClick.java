@@ -21,14 +21,9 @@ import us.mcmagic.mcmagiccore.player.User;
 import java.util.Arrays;
 
 public class InventoryClick implements Listener {
-    static MagicAssistant pl;
-
-    public InventoryClick(MagicAssistant instance) {
-        pl = instance;
-    }
 
     @EventHandler
-    public void onPlayerInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
         ItemStack clicked = event.getCurrentItem();
@@ -164,13 +159,22 @@ public class InventoryClick implements Listener {
                 return;
             }
             User user = MCMagicCore.getUser(player.getUniqueId());
-            if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
-                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
-                    event.setCancelled(user.getRank().getRankId() < Rank.CASTMEMBER.getRankId());
+            if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+                if (event.getSlot() == 7 || event.getSlot() == 8) {
+                    event.setCancelled(true);
+                    event.setResult(Event.Result.DENY);
+                    return;
                 }
-            } else {
-                if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("MagicBand")) {
-                    event.setCancelled(user.getRank().getRankId() < Rank.CASTMEMBER.getRankId());
+                if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
+                    if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
+                        event.setCancelled(true);
+                        event.setResult(Event.Result.DENY);
+                    }
+                } else {
+                    if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("MagicBand")) {
+                        event.setCancelled(true);
+                        event.setResult(Event.Result.DENY);
+                    }
                 }
             }
         }
@@ -186,7 +190,7 @@ public class InventoryClick implements Listener {
             event.setResult(Event.Result.DENY);
             return;
         }
-        if (!player.hasPermission("band.stayvisible")) {
+        if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
             ItemStack mb = new ItemStack(Material.PAPER);
             ItemMeta mbm = mb.getItemMeta();
             mbm.setDisplayName(ChatColor.GOLD + "MagicBand");

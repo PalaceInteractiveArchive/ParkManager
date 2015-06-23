@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.StitchSeat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,14 @@ public class Stitch implements Listener {
     private String prefix = ChatColor.WHITE + "[" + ChatColor.BLUE + "SGE" + ChatColor.WHITE + "] ";
 
     public Stitch() {
-        FileConfiguration config = MagicAssistant.getInstance().getConfig();
+        initialize();
+    }
+
+    public void initialize() {
+        seats.clear();
+        watching.clear();
+        msgTimeout.clear();
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
         int amount = config.getInt("stitch.amount");
         for (int i = 1; i <= amount; i++) {
             double x = config.getDouble("stitch." + i + ".x");
@@ -60,12 +68,12 @@ public class Stitch implements Listener {
                 StitchSeat seat = seats.get(i);
                 player.teleport(seat.getLocation());
                 if (!msgTimeout.contains(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.AQUA + "------------------------------------------------");
+                    player.sendMessage(ChatColor.RED + "------------------------------------------------");
                     player.sendMessage(ChatColor.BLUE + "Please don't leave your seat during the show.");
                     player.sendMessage(ChatColor.BLUE + "If you wish to leave, type /warp sge");
-                    player.sendMessage(ChatColor.AQUA + "------------------------------------------------");
+                    player.sendMessage(ChatColor.RED + "------------------------------------------------");
                     msgTimeout.add(player.getUniqueId());
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(MagicAssistant.getInstance(), new Runnable() {
+                    Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                         public void run() {
                             msgTimeout.remove(player.getUniqueId());
                         }
@@ -86,12 +94,12 @@ public class Stitch implements Listener {
 
     public void ejectAll() {
         for (StitchSeat seat : seats.values()) {
-            if (!seat.isInUse()) {
+            if (!seat.inUse()) {
                 continue;
             }
-            seat.clearOccupant();
             Bukkit.getPlayer(seat.getOccupant()).sendMessage(prefix + ChatColor.BLUE +
                     "The show has ended, we hope you enjoyed it!");
+            seat.clearOccupant();
         }
     }
 
@@ -101,7 +109,7 @@ public class Stitch implements Listener {
             return;
         }
         for (StitchSeat seat : seats.values()) {
-            if (seat.isInUse()) {
+            if (seat.inUse()) {
                 continue;
             }
             watching.add(player.getUniqueId());

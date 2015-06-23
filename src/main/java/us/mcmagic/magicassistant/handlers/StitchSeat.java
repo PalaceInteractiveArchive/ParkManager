@@ -10,14 +10,14 @@ import java.util.UUID;
 public class StitchSeat {
     private int id;
     private Location location;
-    private UUID occupant;
+    private UUID occupant = null;
 
     public StitchSeat(int id, Location location) {
         this.id = id;
         this.location = location;
     }
 
-    public boolean isInUse() {
+    public boolean inUse() {
         return occupant != null;
     }
 

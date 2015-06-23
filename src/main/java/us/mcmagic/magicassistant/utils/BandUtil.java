@@ -465,7 +465,7 @@ public class BandUtil {
         try {
             out.writeUTF("PartyRequest");
             out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
-            Bukkit.getServer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
+            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             System.out.println("Error requesting Party Info");
         }
