@@ -1,12 +1,13 @@
 package us.mcmagic.magicassistant.designstation;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 
 import java.util.*;
 
@@ -27,7 +28,8 @@ public class DesignStation {
     public static void removePlayerVehicle(UUID uuid) {
         try {
             playerVehicles.remove(uuid);
-        } catch (Exception ex) { }
+        } catch (Exception ignored) {
+        }
     }
 
 
@@ -215,11 +217,6 @@ public class DesignStation {
         plasmaBurnerEngine.setItemMeta(pbem);
     }
 
-
-    private static String carTemplate = "&09$2w&07\n*&07$6w&05\n&01$w97&01\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
-    private static String truckTemplate = "&08$2w&08\n*&06$4w&08\n&01$w98\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
-    private static String ecoCarTemplate = "&08$2w&05\n*&06$6w&03\n&01$w94&01\n^$96w\n$2o2$w7o2$2\n&02o2&0w7o2&02";
-
     public static ItemStack getPlayerVehicleItem(UUID uuid) {
         TestTrackVehicle vehicle = getPlayerVehicle(uuid);
 
@@ -238,11 +235,11 @@ public class DesignStation {
         String template = "";
 
         if (vehicle.type == TestTrackVehicle.carType) {
-            template = carTemplate;
+            template = "&09$2w&07\n*&07$6w&05\n&01$w97&01\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
         } else if (vehicle.type == TestTrackVehicle.truckType) {
-            template = truckTemplate;
+            template = "&08$2w&08\n*&06$4w&08\n&01$w98\n^$99w\n$3o2$w8o2$3\n&03o2&0w8o2&03";
         } else if (vehicle.type == TestTrackVehicle.ecoCarType) {
-            template = ecoCarTemplate;
+            template = "&08$2w&05\n*&06$6w&03\n&01$w94&01\n^$96w\n$2o2$w7o2$2\n&02o2&0w7o2&02";
         }
 
         int widthOffset = vehicle.getWidthOffset();
@@ -361,4 +358,30 @@ public class DesignStation {
         player.openInventory(designStationInventory);
     }
 
+    public static void showStats(Player player) {
+        if (!playerVehicles.containsKey(player.getUniqueId())) {
+            return;
+        }
+        ItemStack item = getPlayerVehicleItem(player.getUniqueId());
+        TestTrackVehicle vehicle = playerVehicles.remove(player.getUniqueId());
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.BLUE + "Design Score");
+        List<String> lore = meta.getLore();
+        lore.add(" ");
+        int score = vehicle.getPowerScore() + vehicle.getEfficiencyScore() + vehicle.getCapabilityScore() +
+                vehicle.getResponsivenessScore();
+        lore.add(ChatColor.AQUA + "Final Score: " + score);
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        FormattedMessage msg = new FormattedMessage("Hover this message to see your score!\n");
+        msg.color(ChatColor.YELLOW);
+        msg.style(ChatColor.BOLD);
+        msg.itemTooltip(item);
+        msg.send(player);
+    }
+
+    private static int genRandom(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max - min + 1) + min;
+    }
 }

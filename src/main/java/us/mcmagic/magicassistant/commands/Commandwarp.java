@@ -42,6 +42,7 @@ public class Commandwarp implements CommandExecutor {
                 String currentServer = MCMagicCore.getMCMagicConfig().serverName;
                 final Location loc = warp.getLocation();
                 if (targetServer.equals(currentServer)) {
+                    MagicAssistant.queueManager.leaveAllQueues(tp);
                     if (tp.isInsideVehicle()) {
                         tp.getVehicle().eject();
                         Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
@@ -112,6 +113,7 @@ public class Commandwarp implements CommandExecutor {
             String currentServer = MCMagicCore.getMCMagicConfig().serverName;
             final Location loc = warp.getLocation();
             if (targetServer.equals(currentServer)) {
+                MagicAssistant.queueManager.leaveAllQueues(player);
                 if (player.isInsideVehicle()) {
                     player.getVehicle().eject();
                     Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
@@ -162,6 +164,7 @@ public class Commandwarp implements CommandExecutor {
             String currentServer = MCMagicCore.getMCMagicConfig().serverName;
             final Location loc = warp.getLocation();
             if (targetServer.equals(currentServer)) {
+                MagicAssistant.queueManager.leaveAllQueues(tp);
                 player.sendMessage(ChatColor.BLUE + tp.getName()
                         + " has arrived at " + ChatColor.WHITE + "["
                         + ChatColor.GREEN + w + ChatColor.WHITE + "]");

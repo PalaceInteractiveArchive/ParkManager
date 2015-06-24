@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
+import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -47,8 +48,9 @@ public class InventoryUtil {
     private ItemStack creative = new ItemCreator(Material.GRASS, ChatColor.GREEN + "Creative", Arrays.asList(
             ChatColor.YELLOW + "Create your", ChatColor.GREEN + "own " + ChatColor.RED + "M" + ChatColor.GOLD + "a"
                     + ChatColor.YELLOW + "g" + ChatColor.DARK_GREEN + "i" + ChatColor.BLUE + "c" + ChatColor.LIGHT_PURPLE + "!"));
-    private ItemStack seasonal = new ItemCreator(Material.RED_ROSE, 1, (byte) 2, ChatColor.GREEN + "Seasonal",
-            Arrays.asList(ChatColor.YELLOW + "Where Seasonal Events", ChatColor.YELLOW + "are held for the server!"));
+    private ItemStack fastpass = new ItemCreator(Material.CLAY_BRICK, 1, ChatColor.GREEN + "Purchase FastPass " +
+            ChatColor.BLUE + "*New*", Arrays.asList(ChatColor.YELLOW + "Use a FastPass to skip", ChatColor.YELLOW +
+            "the line on most rides!"));
     //Park Menu Items
     private ItemStack mk = new ItemCreator(Material.DIAMOND_HOE, ChatColor.AQUA + "Magic Kingdom",
             Arrays.asList(ChatColor.GREEN + "/join MK"));
@@ -130,6 +132,7 @@ public class InventoryUtil {
             "There is no Party right now!", Arrays.asList(""));
     //Rides and Attractions
     private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
+    private ItemStack wait = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Wait Times");
     private ItemStack attraction = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Attractions");
     //Hotels and Resorts
     private ItemStack joinHotelsAndResorts = new ItemCreator(Material.GLOWSTONE_DUST, 1, ChatColor.GREEN +
@@ -139,6 +142,8 @@ public class InventoryUtil {
             Arrays.asList(ChatColor.GREEN + "View the rooms that you've", ChatColor.GREEN + "currently booked!"));
     private ItemStack viewHotels = new ItemCreator(Material.BED, 1, ChatColor.GREEN + "Rent a New Hotel Room",
             Collections.singletonList(ChatColor.GREEN + "Book a hotel room!"));
+    //FastPass
+
 
     public InventoryUtil() {
         FireworkEffectMeta rbm = (FireworkEffectMeta) redBand.getItemMeta();
@@ -209,7 +214,7 @@ public class InventoryUtil {
                 main.setItem(24, custom);
                 main.setItem(8, arcade);
                 main.setItem(17, creative);
-                main.setItem(26, seasonal);
+                main.setItem(26, fastpass);
                 player.openInventory(main);
                 MagicAssistant.bandUtil.loadPlayerData(player);
                 return;
@@ -364,6 +369,7 @@ public class InventoryUtil {
             case RIDESANDATTRACTIONS:
                 Inventory rna = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides and Attractions");
                 rna.setItem(20, ride);
+                rna.setItem(22, wait);
                 rna.setItem(24, attraction);
                 rna.setItem(49, BandUtil.getBackItem());
                 player.openInventory(rna);
@@ -471,6 +477,30 @@ public class InventoryUtil {
                 return;
             case DESIGNSTATION:
                 DesignStation.openPickModelInventory(player);
+                return;
+            case FASTPASS:
+                Inventory fp = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Purchase FastPass");
+                fp.setItem(22, BandUtil.getBackItem());
+                int current = data.getFastpass();
+                if (current >= 3) {
+                    ItemStack max = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
+                            "You can only have up to 3 FastPasses at one time!");
+                    fp.setItem(13, max);
+                    player.openInventory(fp);
+                    return;
+                }
+                ItemStack info = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "You currently have " +
+                        ChatColor.AQUA + current + ChatColor.GREEN + " Fastpass" + (current == 1 ? "" : "es"),
+                        new ArrayList<String>());
+                ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes",
+                        Arrays.asList(ChatColor.DARK_AQUA + "Click to purchase a", ChatColor.DARK_AQUA +
+                                "FastPass for 50 Coins.", ChatColor.DARK_AQUA + "This cannot be undone!"));
+                ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
+                        Arrays.asList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
+                fp.setItem(4, info);
+                fp.setItem(11, yes);
+                fp.setItem(15, no);
+                player.openInventory(fp);
         }
     }
 
@@ -547,7 +577,7 @@ public class InventoryUtil {
 
     @SuppressWarnings("deprecation")
     public void openAttractionListPage(Player player, int page) {
-        HashMap<Integer, List<PlayerData.Attraction>> al = MagicAssistant.attPages;
+        HashMap<Integer, List<Attraction>> al = MagicAssistant.attPages;
         Inventory alist;
         if (al.size() > 1) {
             alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List Page " + page);
@@ -565,9 +595,9 @@ public class InventoryUtil {
             player.openInventory(alist);
             return;
         }
-        List<PlayerData.Attraction> pageList = al.get(page);
+        List<Attraction> pageList = al.get(page);
         List<ItemStack> items = new ArrayList<>();
-        for (PlayerData.Attraction attraction : pageList) {
+        for (Attraction attraction : pageList) {
             ItemStack rideItem = new ItemStack(attraction.getId(), 1, attraction.getData());
             ItemMeta itemMeta = rideItem.getItemMeta();
             itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', attraction.getDisplayName()));
@@ -657,5 +687,42 @@ public class InventoryUtil {
         player.playSound(player.getLocation(), Sound.ITEM_BREAK, 100, 0);
         player.closeInventory();
         player.sendMessage(ChatColor.RED + "This feature is coming soon!");
+    }
+
+    public void openWaitTimes(Player player) {
+        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wait Times");
+        List<ItemStack> items = new ArrayList<>();
+        for (QueueRide ride : MagicAssistant.queueManager.getRides()) {
+            List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + (ride.appxWaitTime() <= 0 ? "No Wait" :
+                    ride.appxWaitTime() + " Minutes"), ChatColor.YELLOW + "Players in Queue: " + (ride.getQueueSize()
+                    <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW + "Warp: " + ChatColor.GREEN + "/warp " +
+                    ride.getWarp());
+            items.add(new ItemCreator(Material.SIGN, 1, ride.getName(), lore));
+        }
+        int i = 10;
+        for (ItemStack item : items) {
+            if (i > 34) {
+                break;
+            }
+            inv.setItem(i, item);
+            if (i == 16 || i == 25) {
+                i += 3;
+            } else {
+                i++;
+            }
+        }
+        if (items.isEmpty()) {
+            ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemMeta itemMeta = empty.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup",
+                    ChatColor.RED + "on this server!"));
+            empty.setItemMeta(itemMeta);
+            inv.setItem(22, empty);
+            inv.setItem(49, BandUtil.getBackItem());
+            player.openInventory(inv);
+        }
+        inv.setItem(49, BandUtil.getBackItem());
+        player.openInventory(inv);
     }
 }

@@ -15,12 +15,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.designstation.DesignStation;
-import us.mcmagic.magicassistant.handlers.FoodLocation;
-import us.mcmagic.magicassistant.handlers.PlayerData;
-import us.mcmagic.magicassistant.handlers.Ride;
-import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
+import us.mcmagic.magicassistant.queue.QueueManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
 import us.mcmagic.magicassistant.ridemanager.RideManager;
@@ -44,7 +42,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static UniverseEnergyRide universeEnergyRide;
     public static List<Warp> warps = new ArrayList<>();
     public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
-    public static HashMap<Integer, List<PlayerData.Attraction>> attPages = new HashMap<>();
+    public static HashMap<Integer, List<Attraction>> attPages = new HashMap<>();
     public static Location spawn;
     public static Location hub;
     public static boolean spawnOnJoin;
@@ -62,28 +60,36 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static MagicAssistant instance;
     public static BlockChanger blockChanger = new BlockChanger();
     public static PackManager packManager;
-    public static BandUtil bandUtil = new BandUtil();
+    public static BandUtil bandUtil;
     public static RideManager rideManager;
     public static InventoryUtil inventoryUtil;
     public static ShopManager shopManager;
     public static TradeManager tradeManager;
     public static HotelManager hotelManager;
     public static AutographUtil autographUtil;
+    public static QueueManager queueManager;
 
     public void onEnable() {
         instance = this;
         SqlUtil.initialize();
+        log("Initializing Ride Manager...");
         rideManager = new RideManager();
+        log("Ride Manager Initialized!");
         stitch = new Stitch();
+        log("Initializing Pack Manager...");
         packManager = new PackManager();
+        log("Pack Manager Initialized!");
         autographUtil = new AutographUtil();
         inventoryUtil = new InventoryUtil();
         universeEnergyRide = new UniverseEnergyRide();
         tradeManager = new TradeManager();
+        log("Initializing Queue Manager...");
+        queueManager = new QueueManager();
+        log("Queue Manager Initialized!");
+        bandUtil = new BandUtil();
+        bandUtil.askForParty();
         registerListeners();
         registerCommands();
-        bandUtil.initialize();
-        bandUtil.askForParty();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
         saveConfig();
@@ -101,19 +107,19 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
         warps.clear();
         setupFirstJoinItems();
-        getLogger().info("Initializing Warps...");
+        log("Initializing Warps...");
         WarpUtil.refreshWarps();
-        getLogger().info("Warps Initialized!");
+        log("Warps Initialized!");
         shopManager = new ShopManager();
-        getLogger().info("Initializing Hotel Rooms...");
+        log("Initializing Hotel Rooms...");
         hotelManager = new HotelManager();
-        getLogger().info("Hotel Rooms Initialized!");
-        getLogger().info("Initializing Food Locations...");
+        log("Hotel Rooms Initialized!");
+        log("Initializing Food Locations...");
         setupFoodLocations();
-        getLogger().info("Food Locations Initialized!");
-        getLogger().info("Initializing Rides...");
+        log("Food Locations Initialized!");
+        log("Initializing Rides...");
         setupRides();
-        getLogger().info("Rides Initialized!");
+        log("Rides Initialized!");
         setupAttractions();
         if (config.getBoolean("show-server")) {
             // Show Ticker
@@ -132,6 +138,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
         DesignStation.initialize();
+    }
+
+    private void log(String s) {
+        getLogger().info(s);
     }
 
     public void onDisable() {
@@ -310,7 +320,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         File file = new File("plugins/MagicAssistant/menus.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         List<String> locations = config.getStringList("attraction-names");
-        List<PlayerData.Attraction> attractions = new ArrayList<>();
+        List<Attraction> attractions = new ArrayList<>();
         for (String location : locations) {
             String name = config
                     .getString("attraction." + location + ".name");
@@ -324,7 +334,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             } else {
                 data = 0;
             }
-            PlayerData.Attraction att = new PlayerData.Attraction(name, warp, type, data);
+            Attraction att = new Attraction(name, warp, type, data);
             attractions.add(att);
         }
         int pages;
@@ -337,13 +347,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         if (pages > 1) {
             int i = 1;
             int i2 = 1;
-            for (PlayerData.Attraction att : attractions) {
+            for (Attraction att : attractions) {
                 if (i2 >= 22) {
                     i++;
                     i2 = 1;
                 }
                 if (i2 == 1) {
-                    attPages.put(i, new ArrayList<PlayerData.Attraction>());
+                    attPages.put(i, new ArrayList<Attraction>());
                     attPages.get(i).add(att);
                 } else {
                     attPages.get(i).add(att);
@@ -366,9 +376,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         return null;
     }
 
-    public static PlayerData.Attraction getAttraction(String name) {
-        for (Map.Entry<Integer, List<PlayerData.Attraction>> attractions : attPages.entrySet()) {
-            for (PlayerData.Attraction ride : attractions.getValue()) {
+    public static Attraction getAttraction(String name) {
+        for (Map.Entry<Integer, List<Attraction>> attractions : attPages.entrySet()) {
+            for (Attraction ride : attractions.getValue()) {
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
                     return ride;
                 }

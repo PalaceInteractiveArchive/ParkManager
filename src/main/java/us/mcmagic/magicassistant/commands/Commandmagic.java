@@ -20,6 +20,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.blockchanger.Changer;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
@@ -512,6 +513,46 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant.hotelManager.refreshRooms();
                 sender.sendMessage(ChatColor.BLUE + "Hotel rooms reloaded!");
                 return true;
+            case "queue":
+                if (args.length == 3) {
+                    QueueRide ride = MagicAssistant.queueManager.getRide(args[1]);
+                    if (ride == null) {
+                        sender.sendMessage(ChatColor.RED + "Ride not found!");
+                        return true;
+                    }
+                    if (args[2].equalsIgnoreCase("info")) {
+                        String wait = "Wait Time: " + ride.appxWaitTime() + " Minutes";
+                        sender.sendMessage(ChatColor.GREEN + ride.getName() + ChatColor.YELLOW + "\n" + (ride.getQueueSize()
+                                <= 0 ? "Wait Time: No Wait" : wait) + "\nIn Queue: " + ride.getQueueSize() +
+                                "\nRiders per Group: " + ride.getAmountOfRiders() + "\nDelay between rides: " +
+                                ride.getDelay());
+                        return true;
+                    }
+                    if (args[2].equalsIgnoreCase("reset")) {
+                        if (ride.getQueueSize() <= 0) {
+                            sender.sendMessage(ChatColor.GREEN + "No one in Queue");
+                            return true;
+                        }
+                        if (!ride.canSpawn()) {
+                            sender.sendMessage(ChatColor.GREEN + "Cannot Spawn");
+                            return true;
+                        }
+                        ride.moveToStation();
+                        ride.spawn();
+                        sender.sendMessage(ChatColor.GREEN + "Spawned!");
+                    }
+                    if (args[2].equalsIgnoreCase("eject")) {
+                        ride.ejectQueue();
+                    }
+                    return true;
+                }
+                if (args.length == 4) {
+                    if (args[1].equalsIgnoreCase("set")) {
+                    }
+                    return true;
+                }
+                helpMenu("queue", sender);
+                return true;
             case "reload":
                 MagicAssistant ma = MagicAssistant.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
@@ -524,6 +565,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant.hotelManager.refreshRooms();
                 MagicAssistant.packManager.initialize();
                 MagicAssistant.shopManager.initialize();
+                MagicAssistant.queueManager.initialize();
                 sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");
                 return true;
             default:
@@ -592,6 +634,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Effect Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic effect particle type x y z xd yd zd speed amount");
                 sender.sendMessage(ChatColor.GREEN + "/magic effect flash x y z");
+                break;
+            case "queue":
+                sender.sendMessage(ChatColor.GREEN + "Queue Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] eject " + ChatColor.AQUA + "- Eject all from Queue");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] info" + ChatColor.AQUA + "- Queue Info");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] reset" + ChatColor.AQUA +
+                        "- Next group of Guests can ride");
         }
         if (containsCommandBlockOnly.contains(menu)) {
             sender.sendMessage(ChatColor.RED + "* Only Command Blocks can do this");

@@ -31,7 +31,11 @@ public class BandUtil {
     private static ItemStack back = new ItemStack(Material.FIREWORK_CHARGE);
     private HashMap<UUID, DataResponse> dataResponses = new HashMap<>();
 
-    public void initialize() {
+    public BandUtil() {
+        initialize();
+    }
+
+    private void initialize() {
         FireworkEffectMeta bm = (FireworkEffectMeta) back.getItemMeta();
         bm.setDisplayName(ChatColor.GREEN + "Back");
         bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(41, 106, 255)).build());
@@ -161,7 +165,7 @@ public class BandUtil {
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
-                    result.getInt("loop") == 1, result.getInt("hotel") == 1);
+                    result.getInt("loop") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"));
             result.close();
             sql.close();
             MagicAssistant.playerData.put(uuid, data);

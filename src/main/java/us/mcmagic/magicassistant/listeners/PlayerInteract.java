@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
@@ -34,6 +35,7 @@ public class PlayerInteract implements Listener {
     public static String hotel = ChatColor.BLUE + "[Hotel]";
     public static String designStation = ChatColor.BLUE + "[Design Station]";
     public static String shop = ChatColor.BLUE + "[Shop]";
+    public static String queue = ChatColor.BLUE + "[Queue]";
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -114,9 +116,17 @@ public class PlayerInteract implements Listener {
                     MagicAssistant.shopManager.openMenu(player, shop);
                     return;
                 }
+                if (s.getLine(0).equals(queue)) {
+                    MagicAssistant.queueManager.handle(event);
+                    return;
+                }
                 if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
                     if (s.getLine(0).equals(designStation)) {
-                        MagicAssistant.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
+                        if (isInt(ChatColor.stripColor(s.getLine(1)))) {
+                            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
+                            return;
+                        }
+                        DesignStation.showStats(player);
                         return;
                     }
                 }
@@ -176,6 +186,15 @@ public class PlayerInteract implements Listener {
         if (pi.getItemInHand().getType().equals(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()))) {
             event.setCancelled(true);
             MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+        }
+    }
+
+    private boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ignored) {
+            return false;
         }
     }
 }

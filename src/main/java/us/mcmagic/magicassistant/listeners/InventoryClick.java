@@ -151,6 +151,14 @@ public class InventoryClick implements Listener {
                 ShopMainMenuClick.handle(event);
                 event.setCancelled(true);
                 return;
+            case "Wait Times":
+                WaitTimeClick.handle(event);
+                event.setCancelled(true);
+                return;
+            case "Purchase FastPass":
+                FastPassMenuClick.handle(event);
+                event.setCancelled(true);
+                return;
         }
         if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
             if (clicked.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {

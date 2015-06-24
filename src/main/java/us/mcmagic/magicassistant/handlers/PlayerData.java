@@ -2,7 +2,6 @@ package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +21,10 @@ public class PlayerData {
     private boolean visibility;
     private boolean loop;
     private boolean hotel;
+    private int fastpass;
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends,
-                      boolean special, boolean flash, boolean visibility, boolean loop, boolean hotel) {
+                      boolean special, boolean flash, boolean visibility, boolean loop, boolean hotel, int fastpass) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -35,6 +35,7 @@ public class PlayerData {
         this.visibility = visibility;
         this.loop = loop;
         this.hotel = hotel;
+        this.fastpass = fastpass;
     }
 
     public UUID getUniqueId() {
@@ -122,42 +123,11 @@ public class PlayerData {
         return hotel;
     }
 
-    /**
-     * Created by Marc on 12/22/14
-     */
-    @SuppressWarnings("deprecation")
-    public static class Attraction {
-        private String displayName;
-        private String warp;
-        private int id;
-        private byte data;
-
-        public Attraction(String displayName, String warp, int id, byte data) {
-            this.displayName = displayName;
-            this.warp = warp;
-            this.id = id;
-            this.data = data;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public String getWarp() {
-            return warp;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public byte getData() {
-            return data;
-        }
-
-        public ItemStack getItem() {
-            return new ItemStack(id, 1, data);
-        }
+    public int getFastpass() {
+        return fastpass;
     }
 
+    public void setFastpass(int fastpass) {
+        this.fastpass = fastpass;
+    }
 }

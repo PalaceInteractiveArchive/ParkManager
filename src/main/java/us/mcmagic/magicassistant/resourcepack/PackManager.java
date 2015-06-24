@@ -185,16 +185,7 @@ public class PackManager implements Listener {
         Inventory menu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Resource Pack Menu");
         int place = 13;
         String preferred = user.getPreferredPack();
-        ItemStack disabled;
         ItemStack none;
-        if (preferred.equalsIgnoreCase("disabled")) {
-            disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled " + ChatColor.GREEN +
-                    "(SELECTED)", Arrays.asList(ChatColor.RED + "You will never be sent any", ChatColor.RED +
-                    "Resource Pack by our servers."));
-        } else {
-            disabled = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "Disabled", Arrays.asList(ChatColor.RED
-                    + "You will never be sent any", ChatColor.RED + "Resource Pack by our servers."));
-        }
         if (preferred.equalsIgnoreCase("NoPrefer")) {
             none = new ItemCreator(Material.STONE, 1, (byte) 6, ChatColor.BLUE + "None " + ChatColor.GREEN +
                     "(SELECTED)", Arrays.asList(ChatColor.DARK_AQUA + "Selecting this still allows",
@@ -230,7 +221,6 @@ public class PackManager implements Listener {
             amount++;
         }
         menu.setItem(0, none);
-        menu.setItem(8, disabled);
         menu.setItem(22, BandUtil.getBackItem());
         player.openInventory(menu);
     }

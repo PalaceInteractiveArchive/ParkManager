@@ -105,9 +105,9 @@ public class MainMenuClick {
                 player.closeInventory();
                 MagicAssistant.getInstance().sendToServer(player, "Creative");
                 return;
-            case RED_ROSE:
+            case CLAY_BRICK:
                 player.closeInventory();
-                MagicAssistant.getInstance().sendToServer(player, "Seasonal");
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FASTPASS);
         }
     }
 }

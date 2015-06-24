@@ -65,11 +65,21 @@ public class SignChange implements Listener {
                 event.setLine(1, ChatColor.DARK_GREEN + event.getLine(1));
                 return;
             }
+            if (event.getLine(0).equalsIgnoreCase("[queue]")) {
+                MagicAssistant.queueManager.createSign((Sign) event.getBlock().getState());
+                return;
+            }
             if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
                 if (event.getLine(0).equalsIgnoreCase("[design station]")) {
-                    event.setLine(0, PlayerInteract.designStation);
-                    event.setLine(1, ChatColor.GOLD + event.getLine(1));
-                    event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
+                    if (event.getLine(1).equalsIgnoreCase("stats")) {
+                        event.setLine(0, PlayerInteract.designStation);
+                        event.setLine(1, ChatColor.GOLD + "Stats");
+                        event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
+                    } else {
+                        event.setLine(0, PlayerInteract.designStation);
+                        event.setLine(1, ChatColor.GOLD + event.getLine(1));
+                        event.setLine(2, ChatColor.DARK_GREEN + "Test Track");
+                    }
                 }
             }
         }
