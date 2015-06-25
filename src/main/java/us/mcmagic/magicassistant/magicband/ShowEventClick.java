@@ -43,6 +43,9 @@ public class ShowEventClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
+            case "Show Timetable":
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.SHOWTIMES);
+                return;
             case "Fantasmic!":
                 player.performCommand("warp fantasmic");
                 return;
@@ -50,7 +53,7 @@ public class ShowEventClick {
                 player.performCommand("warp iroe");
                 return;
             case "Wishes!":
-                player.performCommand("warp castle");
+                player.performCommand("warp wishes");
                 return;
             case "Main Street Electrical Parade":
                 player.performCommand("warp mainstreet");

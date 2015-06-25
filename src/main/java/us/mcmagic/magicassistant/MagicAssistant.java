@@ -80,7 +80,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         packManager = new PackManager();
         log("Pack Manager Initialized!");
         autographUtil = new AutographUtil();
-        inventoryUtil = new InventoryUtil();
         universeEnergyRide = new UniverseEnergyRide();
         tradeManager = new TradeManager();
         log("Initializing Queue Manager...");
@@ -88,6 +87,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         log("Queue Manager Initialized!");
         bandUtil = new BandUtil();
         bandUtil.askForParty();
+        inventoryUtil = new InventoryUtil();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");

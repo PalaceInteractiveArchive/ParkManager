@@ -36,6 +36,7 @@ public class PlayerInteract implements Listener {
     public static String designStation = ChatColor.BLUE + "[Design Station]";
     public static String shop = ChatColor.BLUE + "[Shop]";
     public static String queue = ChatColor.BLUE + "[Queue]";
+    public static String fastpass = ChatColor.BLUE + "[Fastpass]";
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -116,7 +117,7 @@ public class PlayerInteract implements Listener {
                     MagicAssistant.shopManager.openMenu(player, shop);
                     return;
                 }
-                if (s.getLine(0).equals(queue)) {
+                if (s.getLine(0).equals(queue) || s.getLine(0).equals(fastpass)) {
                     MagicAssistant.queueManager.handle(event);
                     return;
                 }

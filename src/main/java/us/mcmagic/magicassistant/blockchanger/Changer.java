@@ -80,6 +80,8 @@ public class Changer {
 
     @SuppressWarnings("deprecation")
     public void send(final Player player) {
+        loc1.getChunk().load();
+        loc2.getChunk().load();
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {

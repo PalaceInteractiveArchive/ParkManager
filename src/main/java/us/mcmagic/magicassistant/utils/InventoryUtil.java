@@ -2,10 +2,13 @@ package us.mcmagic.magicassistant.utils;
 
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -130,6 +133,7 @@ public class InventoryUtil {
             "Click to join the Party!", Arrays.asList(""));
     private ItemStack noparty = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED +
             "There is no Party right now!", Arrays.asList(""));
+    private ItemStack times = new ItemCreator(Material.BOOK, ChatColor.GREEN + "Show Timetable");
     //Rides and Attractions
     private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
     private ItemStack wait = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Wait Times");
@@ -142,7 +146,20 @@ public class InventoryUtil {
             Arrays.asList(ChatColor.GREEN + "View the rooms that you've", ChatColor.GREEN + "currently booked!"));
     private ItemStack viewHotels = new ItemCreator(Material.BED, 1, ChatColor.GREEN + "Rent a New Hotel Room",
             Collections.singletonList(ChatColor.GREEN + "Book a hotel room!"));
-    //FastPass
+    //Show Timetable
+    private ItemStack dark49 = new ItemCreator(Material.WOOL, 1, (byte) 11, "4pm & 9pm EST", new ArrayList<String>());
+    private ItemStack dark11 = new ItemCreator(Material.WOOL, 1, (byte) 11, "11am EST", new ArrayList<String>());
+    private ItemStack light49 = new ItemCreator(Material.WOOL, 1, (byte) 3, "4pm & 9pm EST", new ArrayList<String>());
+    private ItemStack light11 = new ItemCreator(Material.WOOL, 1, (byte) 3, "11am EST", new ArrayList<String>());
+    private ItemStack assistance = new ItemCreator(Material.REDSTONE_BLOCK, 1, "Ask a Staff Member for assistance",
+            new ArrayList<String>());
+    private ItemStack m = new ItemStack(Material.BANNER);
+    private ItemStack t = new ItemStack(Material.BANNER);
+    private ItemStack w = new ItemStack(Material.BANNER);
+    private ItemStack th = new ItemStack(Material.BANNER);
+    private ItemStack f = new ItemStack(Material.BANNER);
+    private ItemStack s = new ItemStack(Material.BANNER);
+    private ItemStack su = new ItemStack(Material.BANNER);
 
 
     public InventoryUtil() {
@@ -167,6 +184,68 @@ public class InventoryUtil {
         blueBand.setItemMeta(bbm);
         purpleBand.setItemMeta(pbm);
         pinkBand.setItemMeta(pibm);
+        BannerMeta bm = (BannerMeta) m.getItemMeta();
+        BannerMeta bt = (BannerMeta) t.getItemMeta();
+        BannerMeta bw = (BannerMeta) w.getItemMeta();
+        BannerMeta bth = (BannerMeta) th.getItemMeta();
+        BannerMeta bf = (BannerMeta) f.getItemMeta();
+        BannerMeta bs = (BannerMeta) s.getItemMeta();
+        BannerMeta bsu = (BannerMeta) su.getItemMeta();
+        bm.setBaseColor(DyeColor.LIGHT_BLUE);
+        bt.setBaseColor(DyeColor.LIGHT_BLUE);
+        bw.setBaseColor(DyeColor.LIGHT_BLUE);
+        bth.setBaseColor(DyeColor.LIGHT_BLUE);
+        bf.setBaseColor(DyeColor.LIGHT_BLUE);
+        bs.setBaseColor(DyeColor.LIGHT_BLUE);
+        bsu.setBaseColor(DyeColor.LIGHT_BLUE);
+        List<Pattern> m = new ArrayList<>();
+        List<Pattern> t = new ArrayList<>();
+        List<Pattern> w = new ArrayList<>();
+        List<Pattern> f = new ArrayList<>();
+        List<Pattern> s = new ArrayList<>();
+        DyeColor bl = DyeColor.BLACK;
+        DyeColor blu = DyeColor.LIGHT_BLUE;
+        m.add(new Pattern(bl, PatternType.TRIANGLE_TOP));
+        m.add(new Pattern(bl, PatternType.TRIANGLES_TOP));
+        m.add(new Pattern(bl, PatternType.STRIPE_LEFT));
+        m.add(new Pattern(bl, PatternType.STRIPE_RIGHT));
+        t.add(new Pattern(bl, PatternType.STRIPE_CENTER));
+        t.add(new Pattern(bl, PatternType.STRIPE_TOP));
+        w.add(new Pattern(bl, PatternType.TRIANGLE_BOTTOM));
+        w.add(new Pattern(blu, PatternType.TRIANGLES_BOTTOM));
+        w.add(new Pattern(bl, PatternType.STRIPE_LEFT));
+        w.add(new Pattern(bl, PatternType.STRIPE_RIGHT));
+        f.add(new Pattern(bl, PatternType.STRIPE_MIDDLE));
+        f.add(new Pattern(blu, PatternType.STRIPE_RIGHT));
+        f.add(new Pattern(bl, PatternType.STRIPE_LEFT));
+        f.add(new Pattern(bl, PatternType.STRIPE_TOP));
+        s.add(new Pattern(bl, PatternType.TRIANGLE_TOP));
+        s.add(new Pattern(bl, PatternType.TRIANGLE_BOTTOM));
+        s.add(new Pattern(bl, PatternType.SQUARE_TOP_RIGHT));
+        s.add(new Pattern(bl, PatternType.SQUARE_BOTTOM_LEFT));
+        s.add(new Pattern(blu, PatternType.RHOMBUS_MIDDLE));
+        s.add(new Pattern(bl, PatternType.STRIPE_DOWNRIGHT));
+        bm.setPatterns(m);
+        bt.setPatterns(t);
+        bw.setPatterns(w);
+        bth.setPatterns(t);
+        bf.setPatterns(f);
+        bs.setPatterns(s);
+        bsu.setPatterns(s);
+        bm.setDisplayName(ChatColor.GREEN + "Monday");
+        bt.setDisplayName(ChatColor.GREEN + "Tuesday");
+        bw.setDisplayName(ChatColor.GREEN + "Wednesday");
+        bth.setDisplayName(ChatColor.GREEN + "Thursday");
+        bf.setDisplayName(ChatColor.GREEN + "Friday");
+        bs.setDisplayName(ChatColor.GREEN + "Saturday");
+        bsu.setDisplayName(ChatColor.GREEN + "Sunday");
+        this.m.setItemMeta(bm);
+        this.t.setItemMeta(bt);
+        this.w.setItemMeta(bw);
+        this.th.setItemMeta(bth);
+        this.f.setItemMeta(bf);
+        this.s.setItemMeta(bs);
+        this.su.setItemMeta(bsu);
     }
 
     public void openInventory(final Player player, InventoryType inv) {
@@ -296,6 +375,7 @@ public class InventoryUtil {
                 } else {
                     shows.setItem(4, noparty);
                 }
+                shows.setItem(8, times);
                 shows.setItem(9, fant);
                 shows.setItem(11, iroe);
                 shows.setItem(13, wishes);
@@ -501,6 +581,34 @@ public class InventoryUtil {
                 fp.setItem(11, yes);
                 fp.setItem(15, no);
                 player.openInventory(fp);
+                return;
+            case SHOWTIMES:
+                Inventory s = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Show Timetable");
+                s.setItem(1, m);
+                s.setItem(2, t);
+                s.setItem(3, w);
+                s.setItem(4, th);
+                s.setItem(5, f);
+                s.setItem(6, this.s);
+                s.setItem(7, su);
+                s.setItem(9, wishes);
+                s.setItem(10, dark49);
+                s.setItem(11, dark11);
+                s.setItem(12, dark49);
+                s.setItem(13, dark11);
+                s.setItem(14, dark49);
+                s.setItem(15, assistance);
+                s.setItem(16, assistance);
+                s.setItem(18, iroe);
+                s.setItem(19, light11);
+                s.setItem(20, light49);
+                s.setItem(21, light11);
+                s.setItem(22, light49);
+                s.setItem(23, light11);
+                s.setItem(24, assistance);
+                s.setItem(25, assistance);
+                s.setItem(26, BandUtil.getBackItem());
+                player.openInventory(s);
         }
     }
 
@@ -693,10 +801,9 @@ public class InventoryUtil {
         Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wait Times");
         List<ItemStack> items = new ArrayList<>();
         for (QueueRide ride : MagicAssistant.queueManager.getRides()) {
-            List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + (ride.appxWaitTime() <= 0 ? "No Wait" :
-                    ride.appxWaitTime() + " Minutes"), ChatColor.YELLOW + "Players in Queue: " + (ride.getQueueSize()
-                    <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW + "Warp: " + ChatColor.GREEN + "/warp " +
-                    ride.getWarp());
+            List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + ride.appxWaitTime(), ChatColor.YELLOW +
+                    "Players in Queue: " + (ride.getQueueSize() <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW +
+                    "Warp: " + ChatColor.GREEN + "/warp " + ride.getWarp());
             items.add(new ItemCreator(Material.SIGN, 1, ride.getName(), lore));
         }
         int i = 10;

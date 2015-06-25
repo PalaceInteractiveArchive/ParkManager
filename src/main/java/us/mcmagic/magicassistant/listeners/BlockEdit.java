@@ -14,6 +14,8 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
+import java.io.IOException;
+
 public class BlockEdit implements Listener {
 
     @EventHandler
@@ -26,7 +28,8 @@ public class BlockEdit implements Listener {
         }
         if (event.getBlock().getType() == Material.SIGN_POST || event.getBlock().getType() == Material.WALL_SIGN) {
             Sign s = (Sign) event.getBlock().getState();
-            if (ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase("[hotel]")) {
+            String l1 = ChatColor.stripColor(s.getLine(0));
+            if (l1.equalsIgnoreCase("[hotel]")) {
                 if (!player.getItemInHand().getType().equals(Material.STICK)) {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.RED + "Please break " + ChatColor.BLUE + "[Hotel] " + ChatColor.RED +
@@ -40,6 +43,21 @@ public class BlockEdit implements Listener {
                     manager.removeRoom(manager.getRoom(fullRoomName));
                     manager.refreshRooms();
                     manager.updateRooms();
+                }
+                return;
+            }
+            if (l1.equalsIgnoreCase("[queue]")) {
+                try {
+                    MagicAssistant.queueManager.deleteSign(s.getLocation());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (l1.equalsIgnoreCase("[fastpass]")) {
+                try {
+                    MagicAssistant.queueManager.deleteFPSign(s.getLocation());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }

@@ -8,12 +8,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.DateUtil;
 
-import java.math.RoundingMode;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Marc on 6/24/15
@@ -22,13 +20,16 @@ public class QueueRide {
     private List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
     private final String name;
-    private final Location station;
-    private final Location spawner;
+    private Location station;
+    private Location spawner;
     private final int delay;
     private final int amountOfRiders;
     private String warp;
     private long lastSpawn = 0;
     private List<Location> signs = new ArrayList<>();
+    private List<Location> fpsigns = new ArrayList<>();
+    private boolean frozen;
+    private List<UUID> FPQueue;
 
     public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp) {
         this.name = name;
@@ -64,7 +65,11 @@ public class QueueRide {
     }
 
     public int getPosition(UUID uuid) {
-        return queue.indexOf(uuid);
+        if (fpqueue.contains(uuid)) {
+            return fpqueue.indexOf(uuid);
+        } else {
+            return queue.indexOf(uuid);
+        }
     }
 
     public void joinQueue(Player player) {
@@ -95,20 +100,27 @@ public class QueueRide {
     }
 
     public void moveToStation() {
-        if (queue.size() >= amountOfRiders) {
+        List<UUID> fullList = new ArrayList<>(queue);
+        int place = 1;
+        for (UUID uuid : getFPQueue()) {
+            fullList.add(place, uuid);
+            place += 2;
+        }
+        if (fullList.size() >= amountOfRiders) {
             for (int i = 0; i < amountOfRiders; i++) {
-                Player tp = Bukkit.getPlayer(queue.get(0));
+                Player tp = Bukkit.getPlayer(fullList.get(0));
                 if (tp == null) {
                     i--;
                     continue;
                 }
                 tp.teleport(getStation());
                 leaveQueueSilent(tp);
+                fullList.remove(tp.getUniqueId());
             }
             updateSigns();
             return;
         }
-        for (UUID uuid : new ArrayList<>(queue)) {
+        for (UUID uuid : new ArrayList<>(fullList)) {
             Player tp = Bukkit.getPlayer(uuid);
             if (tp == null) {
                 continue;
@@ -123,14 +135,13 @@ public class QueueRide {
         return queue.size();
     }
 
-    public double appxWaitTime() {
-        int groups = (int) Math.floor((float) queue.size() / amountOfRiders);
-        double wait = (delay * (groups)) / (float) 60;
-        NumberFormat format = NumberFormat.getInstance();
-        format.setRoundingMode(RoundingMode.DOWN);
-        format.setMaximumFractionDigits(2);
-        double waitt = Double.parseDouble(format.format(wait));
-        return waitt < 0 ? 0 : waitt;
+    public String appxWaitTime() {
+        int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
+        double seconds = delay * (groups);
+        Calendar to = new GregorianCalendar();
+        to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
+        String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
+        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
     }
 
     public void updateSigns() {
@@ -155,6 +166,10 @@ public class QueueRide {
                 b.setType(Material.AIR);
             }
         }, 10L);
+    }
+
+    public List<Location> getSigns() {
+        return new ArrayList<>(signs);
     }
 
     public void leaveQueueSilent(Player player) {
@@ -191,11 +206,102 @@ public class QueueRide {
         updateSigns();
     }
 
-    public void addSign(Location loc) {
-        signs.add(loc);
+    public void addSign(Location loc, boolean setFile) {
+        try {
+            if (setFile) {
+                MagicAssistant.queueManager.addSign(this, loc);
+            }
+            signs.add(loc);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addFPSign(Location loc, boolean setFile) {
+        try {
+            if (setFile) {
+                MagicAssistant.queueManager.addFPSign(this, loc);
+            }
+            fpsigns.add(loc);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeSign(Location loc) {
         signs.remove(loc);
+    }
+
+    public void removeFPSign(Location loc) {
+        fpsigns.remove(loc);
+    }
+
+    public void setStation(Location loc) throws IOException {
+        station = loc;
+        MagicAssistant.queueManager.setStation(this, loc);
+    }
+
+    public void setSpawner(Location loc) throws IOException {
+        spawner = loc;
+        MagicAssistant.queueManager.setSpawner(this, loc);
+    }
+
+    public boolean isFrozen() {
+        return frozen;
+    }
+
+    public boolean toggleFreeze() {
+        frozen = !frozen;
+        for (UUID uuid : getQueue()) {
+            Player tp = Bukkit.getPlayer(uuid);
+            if (tp == null) {
+                continue;
+            }
+            tp.sendMessage(getName() + ChatColor.GREEN + "'s Queue has been " + (frozen ? "frozen" : "unfrozen") + "!");
+            if (frozen) {
+                tp.sendMessage(ChatColor.YELLOW + "Players can no longer join the Queue. You may stay until the Queue " +
+                        "is unfrozen, but if you leave your place in line will be lost.");
+            }
+        }
+        return frozen;
+    }
+
+    public int getFastpassSize() {
+        return fpqueue.size();
+    }
+
+    public boolean isFPQueued(UUID uuid) {
+        return fpqueue.contains(uuid);
+    }
+
+    public void joinFPQueue(Player player) {
+        MagicAssistant.queueManager.leaveAllQueues(player);
+        if (queue.isEmpty() && canSpawn()) {
+            player.sendMessage(ChatColor.GREEN + "The Queue was empty, so you're able to ride now!");
+            player.teleport(station);
+            spawn();
+            return;
+        }
+        fpqueue.add(player.getUniqueId());
+        updateFPSigns();
+        player.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.AQUA + "FastPass Queue" +
+                ChatColor.GREEN + " for " + ChatColor.BLUE + name + ChatColor.GREEN + "\nYou are in position #" +
+                (getPosition(player.getUniqueId()) + 1));
+    }
+
+    public void updateFPSigns() {
+        for (Location loc : new ArrayList<>(fpsigns)) {
+            Block b = loc.getBlock();
+            if (!MagicAssistant.rideManager.isSign(loc)) {
+                continue;
+            }
+            Sign s = (Sign) b.getState();
+            s.setLine(3, getQueueSize() + " Players");
+            s.update();
+        }
+    }
+
+    public List<UUID> getFPQueue() {
+        return new ArrayList<>(fpqueue);
     }
 }

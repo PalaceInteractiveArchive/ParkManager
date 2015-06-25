@@ -36,6 +36,7 @@ import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -521,14 +522,14 @@ public class Commandmagic implements Listener, CommandExecutor {
                         return true;
                     }
                     if (args[2].equalsIgnoreCase("info")) {
-                        String wait = "Wait Time: " + ride.appxWaitTime() + " Minutes";
+                        String wait = "Wait Time: " + ride.appxWaitTime();
                         sender.sendMessage(ChatColor.GREEN + ride.getName() + ChatColor.YELLOW + "\n" + (ride.getQueueSize()
                                 <= 0 ? "Wait Time: No Wait" : wait) + "\nIn Queue: " + ride.getQueueSize() +
                                 "\nRiders per Group: " + ride.getAmountOfRiders() + "\nDelay between rides: " +
                                 ride.getDelay());
                         return true;
                     }
-                    if (args[2].equalsIgnoreCase("reset")) {
+                    if (args[2].equalsIgnoreCase("next")) {
                         if (ride.getQueueSize() <= 0) {
                             sender.sendMessage(ChatColor.GREEN + "No one in Queue");
                             return true;
@@ -540,14 +541,68 @@ public class Commandmagic implements Listener, CommandExecutor {
                         ride.moveToStation();
                         ride.spawn();
                         sender.sendMessage(ChatColor.GREEN + "Spawned!");
+                        return true;
                     }
                     if (args[2].equalsIgnoreCase("eject")) {
                         ride.ejectQueue();
+                        sender.sendMessage(ride.getName() + ChatColor.GREEN + "'s Queue has been ejected!");
+                        return true;
                     }
+                    if (args[2].equalsIgnoreCase("freeze")) {
+                        if (ride.toggleFreeze()) {
+                            //Now turned on
+                            sender.sendMessage(ChatColor.GREEN + "Queue frozen!");
+                        } else {
+                            //Now turned off
+                            sender.sendMessage(ChatColor.GREEN + "Queue unfrozen!");
+                        }
+                        return true;
+                    }
+                    if (args[2].equalsIgnoreCase("list")) {
+                        List<UUID> users = ride.getQueue();
+                        String s = ChatColor.GREEN + "Currently in Queue for " + ride.getName() + ChatColor.GREEN +
+                                ": (" + users.size() + ")\n" + ChatColor.YELLOW;
+                        for (int i = 0; i < users.size(); i++) {
+                            Player tp = Bukkit.getPlayer(users.get(i));
+                            if (tp == null) {
+                                continue;
+                            }
+                            if (i == users.size() - 1) {
+                                s += tp.getName();
+                            } else {
+                                s += tp.getName() + ", ";
+                            }
+                        }
+                        if (users.size() == 0) {
+                            s += "None";
+                        }
+                        sender.sendMessage(s);
+                        return true;
+                    }
+                    helpMenu("queue", sender);
                     return true;
                 }
                 if (args.length == 4) {
-                    if (args[1].equalsIgnoreCase("set")) {
+                    QueueRide ride = MagicAssistant.queueManager.getRide(args[1]);
+                    if (args[2].equalsIgnoreCase("set")) {
+                        if (args[3].equalsIgnoreCase("station")) {
+                            try {
+                                ride.setStation(((Player) sender).getLocation());
+                                sender.sendMessage(ChatColor.GREEN + "Station set!");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                sender.sendMessage(ChatColor.RED + "There was an error!");
+                            }
+                        }
+                        if (args[3].equalsIgnoreCase("spawner")) {
+                            try {
+                                ride.setSpawner(((Player) sender).getLocation());
+                                sender.sendMessage(ChatColor.GREEN + "Station set!");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                sender.sendMessage(ChatColor.RED + "There was an error!");
+                            }
+                        }
                     }
                     return true;
                 }
@@ -637,10 +692,15 @@ public class Commandmagic implements Listener, CommandExecutor {
                 break;
             case "queue":
                 sender.sendMessage(ChatColor.GREEN + "Queue Commands:");
-                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] eject " + ChatColor.AQUA + "- Eject all from Queue");
-                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] info" + ChatColor.AQUA + "- Queue Info");
-                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] reset" + ChatColor.AQUA +
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] info " + ChatColor.AQUA + "- Queue Info");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] eject " + ChatColor.AQUA +
+                        "- Eject all from Queue");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] freeze " + ChatColor.AQUA +
+                        "- Freeze/unfreeze the Queue");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] next " + ChatColor.AQUA +
                         "- Next group of Guests can ride");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] list " + ChatColor.AQUA +
+                        "- List players in Queue");
         }
         if (containsCommandBlockOnly.contains(menu)) {
             sender.sendMessage(ChatColor.RED + "* Only Command Blocks can do this");

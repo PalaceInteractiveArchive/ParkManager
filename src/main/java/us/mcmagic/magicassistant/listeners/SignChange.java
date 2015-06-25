@@ -66,7 +66,7 @@ public class SignChange implements Listener {
                 return;
             }
             if (event.getLine(0).equalsIgnoreCase("[queue]")) {
-                MagicAssistant.queueManager.createSign((Sign) event.getBlock().getState());
+                MagicAssistant.queueManager.createSign(event);
                 return;
             }
             if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
