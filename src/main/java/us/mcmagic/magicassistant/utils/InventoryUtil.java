@@ -125,6 +125,7 @@ public class InventoryUtil {
     private ItemStack fant = new ItemCreator(Material.DIAMOND_HELMET, ChatColor.BLUE + "Fantasmic!");
     private ItemStack iroe = new ItemCreator(Material.MONSTER_EGG, ChatColor.GREEN + "IROE");
     private ItemStack wishes = new ItemCreator(Material.BLAZE_ROD, ChatColor.AQUA + "Wishes!");
+    private ItemStack tfant = new ItemCreator(Material.DIAMOND_HELMET, ChatColor.AQUA + "Taste of Fantasmic!");
     private ItemStack msep = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.YELLOW +
             "Main Street Electrical Parade");
     private ItemStack fofp = new ItemCreator(Material.INK_SACK, 1, (byte) 12, ChatColor.DARK_AQUA +
@@ -153,6 +154,7 @@ public class InventoryUtil {
     private ItemStack light11 = new ItemCreator(Material.WOOL, 1, (byte) 3, "11am EST", new ArrayList<String>());
     private ItemStack assistance = new ItemCreator(Material.REDSTONE_BLOCK, 1, "Ask a Staff Member for assistance",
             new ArrayList<String>());
+    private ItemStack na = new ItemCreator(Material.BARRIER, 1, "N/A", new ArrayList<String>());
     private ItemStack m = new ItemStack(Material.BANNER);
     private ItemStack t = new ItemStack(Material.BANNER);
     private ItemStack w = new ItemStack(Material.BANNER);
@@ -583,7 +585,7 @@ public class InventoryUtil {
                 player.openInventory(fp);
                 return;
             case SHOWTIMES:
-                Inventory s = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Show Timetable");
+                Inventory s = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Show Timetable");
                 s.setItem(1, m);
                 s.setItem(2, t);
                 s.setItem(3, w);
@@ -607,7 +609,15 @@ public class InventoryUtil {
                 s.setItem(23, light11);
                 s.setItem(24, assistance);
                 s.setItem(25, assistance);
-                s.setItem(26, BandUtil.getBackItem());
+                s.setItem(27, tfant);
+                s.setItem(28, na);
+                s.setItem(29, na);
+                s.setItem(30, na);
+                s.setItem(31, na);
+                s.setItem(32, na);
+                s.setItem(33, assistance);
+                s.setItem(34, assistance);
+                s.setItem(49, BandUtil.getBackItem());
                 player.openInventory(s);
         }
     }
