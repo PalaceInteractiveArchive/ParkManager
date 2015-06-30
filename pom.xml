@@ -50,7 +50,7 @@
         <dependency>
             <groupId>us.mcmagic</groupId>
             <artifactId>mcmagiccore</artifactId>
-            <version>2.3.6-SNAPSHOT</version>
+            <version>2.3.7-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

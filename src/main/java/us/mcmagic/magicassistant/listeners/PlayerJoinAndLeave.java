@@ -1,8 +1,11 @@
 package us.mcmagic.magicassistant.listeners;
 
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -82,7 +85,7 @@ public class PlayerJoinAndLeave implements Listener {
                     storedEnd.put(uuid, stuff.get(2));
                 }
             }
-            PlayerData data = MagicAssistant.bandUtil.setupPlayerData(uuid);
+            MagicAssistant.bandUtil.setupPlayerData(uuid);
             if (MagicAssistant.getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
@@ -106,7 +109,7 @@ public class PlayerJoinAndLeave implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         try {
             final Player player = event.getPlayer();
@@ -130,7 +133,7 @@ public class PlayerJoinAndLeave implements Listener {
             if (MagicAssistant.spawnOnJoin || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");
             } else {
-                //warpToNearestWarp(player);
+                warpToNearestWarp(Bukkit.getPlayer(player.getUniqueId()));
             }
             for (String msg : MagicAssistant.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
@@ -240,23 +243,42 @@ public class PlayerJoinAndLeave implements Listener {
     }
 
     private void warpToNearestWarp(Player player) {
-        Location loc = player.getLocation();
+        Location loc = getLoc(player);
+        loc.setWorld(Bukkit.getWorlds().get(0));
         Warp w = null;
         double distance = -1;
         for (Warp warp : new ArrayList<>(MagicAssistant.warps)) {
-            if (distance == -1) {
-                w = warp;
-                distance = loc.distance(warp.getLocation());
+            if (!warp.getServer().equals(MCMagicCore.getMCMagicConfig().serverName)) {
                 continue;
             }
-            if (loc.distance(warp.getLocation()) < distance) {
+            if (warp.getLocation() == null) {
+                continue;
+            }
+            if (distance == -1) {
                 w = warp;
+                distance = warp.getLocation().distance(loc);
+                continue;
+            }
+            double d = warp.getLocation().distance(loc);
+            if (d < distance) {
+                w = warp;
+                distance = d;
             }
         }
         if (w == null) {
+            player.teleport(MagicAssistant.spawn);
             return;
         }
         player.teleport(w.getLocation());
+    }
+
+    private Location getLoc(Player player) {
+        EntityPlayer ep = ((CraftPlayer) player).getHandle();
+        if (ep == null) {
+            Bukkit.broadcastMessage("Null!");
+            return new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+        }
+        return new Location(Bukkit.getWorlds().get(0), ep.locX, ep.locY, ep.locZ);
     }
 
     @EventHandler

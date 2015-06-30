@@ -618,6 +618,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                 ma.setupRides();
                 MagicAssistant.stitch.initialize();
                 MagicAssistant.hotelManager.refreshRooms();
+                try {
+                    MagicAssistant.blockChanger.reload();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
                 MagicAssistant.packManager.initialize();
                 MagicAssistant.shopManager.initialize();
                 MagicAssistant.queueManager.initialize();

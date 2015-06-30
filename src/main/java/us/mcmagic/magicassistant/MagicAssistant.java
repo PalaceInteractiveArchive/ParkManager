@@ -138,6 +138,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
         DesignStation.initialize();
+        for (World world : Bukkit.getWorlds()) {
+            world.setTime(0);
+        }
     }
 
     private void log(String s) {
