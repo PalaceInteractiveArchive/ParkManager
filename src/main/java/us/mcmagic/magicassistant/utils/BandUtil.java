@@ -177,16 +177,21 @@ public class BandUtil {
         }
     }
 
-    public void setSetting(UUID uuid, String name, boolean value) {
-        try (Connection connection = SqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
-            sql.setInt(1, value ? 1 : 0);
-            sql.setString(2, uuid + "");
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void setSetting(final UUID uuid, final String name, final boolean value) {
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = SqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
+                    sql.setInt(1, value ? 1 : 0);
+                    sql.setString(2, uuid + "");
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void removePlayerData(Player player) {
