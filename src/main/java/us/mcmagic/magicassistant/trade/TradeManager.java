@@ -2,13 +2,18 @@ package us.mcmagic.magicassistant.trade;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -29,6 +34,21 @@ public class TradeManager {
     private HashMap<UUID, UUID> active = new HashMap<>();
     private ItemStack finalize = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "Confirm Trade",
             new ArrayList<String>());
+    private ItemStack arrow;
+
+    public TradeManager() {
+        arrow = new ItemStack(Material.BANNER);
+        BannerMeta bm = (BannerMeta) arrow.getItemMeta();
+        DyeColor b = DyeColor.BLACK;
+        DyeColor w = DyeColor.WHITE;
+        bm.setBaseColor(w);
+        bm.addPattern(new Pattern(w, PatternType.STRIPE_MIDDLE));
+        bm.addPattern(new Pattern(w, PatternType.STRIPE_DOWNLEFT));
+        bm.addPattern(new Pattern(b, PatternType.STRIPE_TOP));
+        bm.addPattern(new Pattern(b, PatternType.STRIPE_BOTTOM));
+        bm.addPattern(new Pattern(b, PatternType.CURLY_BORDER));
+        arrow.setItemMeta(bm);
+    }
 
     public void logout(Player player) {
         if (map.containsKey(player.getUniqueId())) {
@@ -137,10 +157,13 @@ public class TradeManager {
         p2hs.setDisplayName(MCMagicCore.getUser(tp.getUniqueId()).getRank().getTagColor() + tp.getName());
         p2head.setItemMeta(p2hs);
         ItemStack waiting = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 4, ChatColor.GOLD + "Waiting...", new ArrayList<String>());
+        ItemStack cont = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "Finalize Trade",
+                Arrays.asList(ChatColor.RED + "This cannot be undone!"));
+        ItemStack canc = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14, ChatColor.RED + "Cancel Trade", new ArrayList<String>());
         ItemStack[] a1 = new ItemStack[]{drag, drag, p1head, drag, drag, drag, p2head, drag, drag, drag, null, null, null,
-                drag, waiting, waiting, waiting, drag, drag, drag, drag, drag, drag, drag, drag, drag, drag};
+                drag, waiting, waiting, waiting, drag, drag, drag, drag, canc, drag, cont, drag, drag, drag};
         ItemStack[] a2 = new ItemStack[]{drag, drag, p1head, drag, drag, drag, p2head, drag, drag, drag, waiting, waiting,
-                waiting, drag, null, null, null, drag, drag, drag, drag, drag, drag, drag, drag, drag, drag};
+                waiting, drag, null, null, null, drag, drag, drag, drag, canc, drag, cont, drag, drag, drag};
         pinv.setContents(a1);
         tinv.setContents(a2);
         player.openInventory(pinv);
@@ -293,7 +316,7 @@ public class TradeManager {
         }
         if (!event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
             if (slot > least && slot < most) {
-                if (action.name().startsWith("PLACE_")) {
+                if (action.name().startsWith("PLACE_") || action.equals(InventoryAction.COLLECT_TO_CURSOR)) {
                     event.setCancelled(false);
                     updateInventory(player, tp.getOpenInventory().getTopInventory(), least + 1, most - 1);
                     return;
@@ -306,18 +329,28 @@ public class TradeManager {
                     return;
                 }
             } else {
+                if (slot == 21) {
+                    closeMenu(player, tp);
+                    player.closeInventory();
+                }
+                if (slot == 23) {
+                    finalize(player);
+                }
                 return;
             }
         } else {
-            event.setCancelled(false);
+            if (slot == 7) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "You can't trade your Autograph Book!");
+                return;
+            }
             if (slot == 8) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You can't trade your MagicBand!");
                 return;
             }
-            if (!action.equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-                return;
-            }
+            event.setCancelled(action.equals(InventoryAction.MOVE_TO_OTHER_INVENTORY));
+            return;
         }
         if (!event.isCancelled()) {
             Inventory inv = tp.getOpenInventory().getTopInventory();
@@ -333,6 +366,73 @@ public class TradeManager {
         }
         Inventory inv = player.getOpenInventory().getTopInventory();
         Inventory tpinv = tp.getOpenInventory().getTopInventory();
+        if (isFinalized(player)) {
+            return;
+        }
+        boolean starter = active.containsKey(player.getUniqueId());
+        ItemStack item;
+        if (starter) {
+            item = inv.getItem(2);
+        } else {
+            item = inv.getItem(6);
+        }
+        item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+        if (starter) {
+            inv.setItem(2, item);
+            tpinv.setItem(2, item);
+        } else {
+            inv.setItem(6, item);
+            tpinv.setItem(6, item);
+        }
+        tp.sendMessage(ChatColor.GREEN + player.getName() + " has finalized their Trade!");
+        //Both Finalized
+        if (isFinalized(tp)) {
+            openAccept(starter ? player : tp, starter ? tp : player);
+        }
+    }
+
+    private void openAccept(Player player, Player tp) {
+        Inventory inv = player.getOpenInventory().getTopInventory();
+        Inventory tpinv = tp.getOpenInventory().getTopInventory();
+        Inventory acc = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Accept Trade");
+        Inventory tpacc = Bukkit.createInventory(tp, 27, ChatColor.GREEN + "Accept Trade");
+        ItemStack yes = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "Accept Trade",
+                Arrays.asList(ChatColor.RED + "This cannot be undone!"));
+        ItemStack no = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14, ChatColor.RED + "Cancel Trade",
+                new ArrayList<String>());
+        int least = 13;
+        int most = 17;
+        int tpleast = 9;
+        int tpmost = 13;
+        for (int i = 0; i < 27; i++) {
+            if (i > 9 && i < 13) {
+                acc.setItem(i, inv.getItem(i));
+                tpacc.setItem(i, inv.getItem(i));
+            }
+            if (i > 13 && i < 17) {
+                acc.setItem(i, inv.getItem(i));
+                tpacc.setItem(i, inv.getItem(i));
+            }
+        }
+        acc.setItem(21, no);
+        acc.setItem(23, yes);
+        //TODO
+        tpacc.setItem(21, yes);
+        tpacc.setItem(23, no);
+        player.openInventory(acc);
+        tp.openInventory(tpacc);
+    }
+
+    private boolean isFinalized(Player player) {
+        Inventory inv = player.getOpenInventory().getTopInventory();
+        boolean starter = active.containsKey(player.getUniqueId());
+        ItemStack item;
+        if (starter) {
+            item = inv.getItem(2);
+        } else {
+            item = inv.getItem(6);
+        }
+        return item.containsEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL);
     }
 
     private void updateInventory(final Player p, final Inventory tinv, final int least, final int most) {

@@ -2,7 +2,6 @@ package us.mcmagic.magicassistant.commands;
 
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -63,34 +62,6 @@ public class Commandmagic implements Listener, CommandExecutor {
             }
         }
         switch (args[0]) {
-            case "loop":
-                if (args.length != 8) {
-                    helpMenu("loop", sender);
-                    return true;
-                }
-                try {
-                    String sound = args[1];
-                    Player tp = PlayerUtil.findPlayer(args[2]);
-                    if (tp == null) {
-                        sender.sendMessage(ChatColor.RED + "Player not found!");
-                        return true;
-                    }
-                    PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
-                    if (!data.getLoop()) {
-                        return true;
-                    }
-                    double x = Double.parseDouble(args[3]);
-                    double y = Double.parseDouble(args[4]);
-                    double z = Double.parseDouble(args[5]);
-                    float volume = Float.parseFloat(args[6]);
-                    float pitch = Float.parseFloat(args[7]);
-                    PacketPlayOutNamedSoundEffect packet = new PacketPlayOutNamedSoundEffect(sound, x, y, z, volume, pitch);
-                    ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(packet);
-                    return true;
-                } catch (Exception e) {
-                    sender.sendMessage(ChatColor.RED + "Number Error!");
-                }
-                return true;
             case "effect":
                 if (args.length == 1) {
                     helpMenu("effect", sender);
@@ -648,7 +619,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Magic Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic changer " + ChatColor.AQUA + "- Change blocks for rides!");
                 sender.sendMessage(ChatColor.GREEN + "/magic effect " + ChatColor.AQUA + "- Cool effects for shows!");
-                sender.sendMessage(ChatColor.GREEN + "/magic loop " + ChatColor.AQUA + "- Play Park-Loop Music");
                 sender.sendMessage(ChatColor.GREEN + "/magic reload " + ChatColor.AQUA + "- Reload plugin");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
@@ -664,11 +634,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "UOE Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe move BlockID(:Data) [speed] x1,y1,z1 x2,y2,z2 addX addY addZ radius");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe eject x,y,z radius");
-                break;
-            case "loop":
-                sender.sendMessage(ChatColor.GREEN + "Loop Commands:");
-                sender.sendMessage(ChatColor.GREEN + "/magic loop [Sound] [Player] x y z volume pitch " + ChatColor.AQUA
-                        + "- Modified");
                 break;
             case "sge":
                 sender.sendMessage(ChatColor.GREEN + "Stitch Commands:");

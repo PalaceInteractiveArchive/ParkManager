@@ -95,8 +95,6 @@ public class DesignStationClick {
             vehicle.color = ChatColor.BLUE;
         } else if (itemEquals(clickedItem, DesignStation.cyanButton)) {
             vehicle.color = ChatColor.DARK_AQUA;
-        } else {
-            Bukkit.broadcastMessage("Nothing changed!");
         }
 
         event.getInventory().setItem(31, DesignStation.getPlayerVehicleItem(player.getUniqueId()));
@@ -142,22 +140,9 @@ public class DesignStationClick {
     }
 
     private static boolean itemEquals(ItemStack a, ItemStack b) {
-        if (a == null || b == null) {
-            return false;
-        }
-        if (a.getType() != b.getType()) {
-            return false;
-        }
-        if (a.getDurability() != b.getDurability()) {
-            return false;
-        }
-        if (a.getItemMeta().hasDisplayName() != b.getItemMeta().hasDisplayName()) {
-            return false;
-        }
-        if (!a.getItemMeta().getDisplayName().equals(b.getItemMeta().getDisplayName())) {
-            return false;
-        }
-        return true;
+        return a != null && b != null && a.getType() == b.getType() && a.getDurability() == b.getDurability() &&
+                a.getItemMeta().hasDisplayName() == b.getItemMeta().hasDisplayName() &&
+                a.getItemMeta().getDisplayName().equals(b.getItemMeta().getDisplayName());
     }
 
 }

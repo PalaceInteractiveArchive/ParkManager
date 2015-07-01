@@ -78,7 +78,7 @@ public class BandUtil {
                     inv.setItem(15, pinfo);
                 }
             }
-        }, 0L, 20L);
+        }, 0L, 10L);
         /*
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
                 PacketType.Play.Server.SET_SLOT) {
@@ -165,7 +165,7 @@ public class BandUtil {
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
-                    result.getInt("loop") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"));
+                    result.getInt("fountain") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"));
             result.close();
             sql.close();
             MagicAssistant.playerData.put(uuid, data);
@@ -179,7 +179,7 @@ public class BandUtil {
 
     public void setSetting(UUID uuid, String name, boolean value) {
         try (Connection connection = SqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET `" + name + "`=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
             sql.setInt(1, value ? 1 : 0);
             sql.setString(2, uuid + "");
             sql.execute();

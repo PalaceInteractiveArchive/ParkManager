@@ -9,10 +9,12 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_8_R3.block.CraftSkull;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -25,6 +27,8 @@ import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.List;
 import java.util.UUID;
@@ -188,6 +192,16 @@ public class PlayerInteract implements Listener {
             event.setCancelled(true);
             MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
+    }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        if (!event.getRightClicked().getType().equals(EntityType.ITEM_FRAME)) {
+            return;
+        }
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        event.setCancelled(user.getRank().getRankId() < Rank.CASTMEMBER.getRankId());
     }
 
     private boolean isInt(String s) {

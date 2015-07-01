@@ -1,17 +1,14 @@
 package us.mcmagic.magicassistant.utils;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
@@ -251,374 +248,368 @@ public class InventoryUtil {
     }
 
     public void openInventory(final Player player, InventoryType inv) {
-        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
-        switch (inv) {
-            case MAINMENU:
-                final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
-                        + player.getName() + "'s MagicBand");
-                ItemStack playerInfo = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-                SkullMeta sm = (SkullMeta) playerInfo.getItemMeta();
-                sm.setOwner(player.getName());
-                sm.setDisplayName(ChatColor.GREEN + "My Profile");
-                sm.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
-                playerInfo.setItemMeta(sm);
-                net.minecraft.server.v1_8_R3.ItemStack i = CraftItemStack.asNMSCopy(playerInfo);
-                NBTTagCompound tag = i.getTag();
-                NBTTagCompound skull = tag.getCompound("SkullOwner");
-                skull.setString("Name", player.getName());
-                skull.setString("Id", player.getUniqueId().toString());
-                //skull.set("Properties", prop);
-                tag.set("SkullOwner", skull);
-                i.setTag(tag);
-                ItemStack done = CraftItemStack.asBukkitCopy(i);
-                ItemStack time = new ItemCreator(Material.WATCH);
-                ItemMeta tm = time.getItemMeta();
-                tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Collections.singletonList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
-                time.setItemMeta(tm);
-                main.setItem(0, rna);
-                main.setItem(9, sne);
-                main.setItem(18, hnr);
-                if (VisibleUtil.isInHideAll(player.getUniqueId())) {
-                    main.setItem(2, toggleon);
-                } else {
-                    main.setItem(2, toggleoff);
-                }
-                main.setItem(11, shop);
-                main.setItem(20, food);
-                main.setItem(4, time);
-                main.setItem(13, hub);
-                main.setItem(22, parks);
-                main.setItem(6, packs);
-                main.setItem(15, playerInfo);
-                main.setItem(24, custom);
-                main.setItem(8, arcade);
-                main.setItem(17, creative);
-                main.setItem(26, fastpass);
-                player.openInventory(main);
-                MagicAssistant.bandUtil.loadPlayerData(player);
-                return;
-            case PARK:
-                Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
-                park.setItem(10, mk);
-                park.setItem(11, epcot);
-                park.setItem(12, hws);
-                park.setItem(14, ak);
-                park.setItem(15, tl);
-                park.setItem(16, dcl);
-                park.setItem(22, BandUtil.getBackItem());
-                player.openInventory(park);
-                return;
-            case FOOD:
-                Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
-                List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
-                // If odd amount of items
-                int place = 13;
-                if (foodLocations.size() % 2 == 1) {
-                    int amount = 1;
-                    for (FoodLocation loc : foodLocations) {
-                        if (place > 16) {
+        try {
+            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+            Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
+            switch (inv) {
+                case MAINMENU:
+                    final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
+                            + player.getName() + "'s MagicBand");
+                    ItemStack playerInfo = HeadUtil.getPlayerHead(MCMagicCore.getUser(player.getUniqueId())
+                            .getTextureHash(), ChatColor.GREEN + "My Profile");
+                    ItemMeta im = playerInfo.getItemMeta();
+                    im.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
+                    playerInfo.setItemMeta(im);
+                    ItemStack time = new ItemCreator(Material.WATCH);
+                    ItemMeta tm = time.getItemMeta();
+                    tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
+                    tm.setLore(Collections.singletonList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
+                    time.setItemMeta(tm);
+                    main.setItem(0, rna);
+                    main.setItem(9, sne);
+                    main.setItem(18, hnr);
+                    if (VisibleUtil.isInHideAll(player.getUniqueId())) {
+                        main.setItem(2, toggleon);
+                    } else {
+                        main.setItem(2, toggleoff);
+                    }
+                    main.setItem(11, shop);
+                    main.setItem(20, food);
+                    main.setItem(4, time);
+                    main.setItem(13, hub);
+                    main.setItem(22, parks);
+                    main.setItem(6, packs);
+                    main.setItem(15, playerInfo);
+                    main.setItem(24, custom);
+                    main.setItem(8, arcade);
+                    main.setItem(17, creative);
+                    main.setItem(26, fastpass);
+                    player.openInventory(main);
+                    MagicAssistant.bandUtil.loadPlayerData(player);
+                    return;
+                case PARK:
+                    Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
+                    park.setItem(10, mk);
+                    park.setItem(11, epcot);
+                    park.setItem(12, hws);
+                    park.setItem(14, ak);
+                    park.setItem(15, tl);
+                    park.setItem(16, dcl);
+                    park.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(park);
+                    return;
+                case FOOD:
+                    Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
+                    List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
+                    // If odd amount of items
+                    int place = 13;
+                    if (foodLocations.size() % 2 == 1) {
+                        int amount = 1;
+                        for (FoodLocation loc : foodLocations) {
+                            if (place > 16) {
+                                break;
+                            }
+                            @SuppressWarnings("deprecation")
+                            ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
+                                    ChatColor.translateAlternateColorCodes('&', loc.getName()),
+                                    Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp()));
+                            foodMenu.setItem(place, f);
+                            if (amount % 2 == 1) {
+                                place -= amount;
+                            } else {
+                                place += amount;
+                            }
+                            amount++;
+                        }
+                        foodMenu.setItem(22, BandUtil.getBackItem());
+                        player.openInventory(foodMenu);
+                        // If even amount of items
+                    } else {
+                        place++;
+                        int amount = 1;
+                        for (FoodLocation loc : foodLocations) {
+                            if (place > 16) {
+                                break;
+                            }
+                            @SuppressWarnings("deprecation")
+                            ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
+                                    ChatColor.translateAlternateColorCodes('&', loc.getName()),
+                                    Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp()));
+                            foodMenu.setItem(place, f);
+                            if (amount % 2 == 0) {
+                                place -= amount;
+                            } else {
+                                place += amount;
+                            }
+                            amount++;
+                        }
+                        foodMenu.setItem(22, BandUtil.getBackItem());
+                        player.openInventory(foodMenu);
+                    }
+                    return;
+                case MYPROFILE:
+                    Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
+                    pmenu.setItem(10, web);
+                    pmenu.setItem(11, dvc);
+                    pmenu.setItem(12, locker);
+                    pmenu.setItem(14, ach);
+                    pmenu.setItem(15, prefs);
+                    pmenu.setItem(16, mumble);
+                    pmenu.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(pmenu);
+                    return;
+                case SHOWSANDEVENTS:
+                    Inventory shows = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Shows and Events");
+                    if (MagicAssistant.party) {
+                        shows.setItem(4, party);
+                    } else {
+                        shows.setItem(4, noparty);
+                    }
+                    shows.setItem(8, times);
+                    shows.setItem(9, fant);
+                    shows.setItem(11, iroe);
+                    shows.setItem(13, wishes);
+                    shows.setItem(15, msep);
+                    shows.setItem(17, fofp);
+                    shows.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(shows);
+                    return;
+                case CUSTOMIZE:
+                    Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
+                    ItemStack band;
+                    if (data.getSpecial()) {
+                        band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()));
+                        ItemMeta bm = band.getItemMeta();
+                        bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
+                        band.setItemMeta(bm);
+                    } else {
+                        band = new ItemCreator(Material.FIREWORK_CHARGE);
+                        FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
+                        bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil.getBandColor(data.getBandColor())).build());
+                        bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
+                        band.setItemMeta(bm);
+                    }
+                    custom.setItem(11, band);
+                    custom.setItem(15, nameChange);
+                    custom.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(custom);
+                    return;
+                case CUSTOMNAME:
+                    Inventory cname = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Name Color");
+                    cname.setItem(10, red);
+                    cname.setItem(11, orange);
+                    cname.setItem(12, yellow);
+                    cname.setItem(13, green);
+                    cname.setItem(14, darkGreen);
+                    cname.setItem(15, blue);
+                    cname.setItem(16, purple);
+                    cname.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(cname);
+                    return;
+                case CUSTOMCOLOR:
+                    Inventory ccolor = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Band Color");
+                    ccolor.setItem(10, redBand);
+                    ccolor.setItem(11, orangeBand);
+                    ccolor.setItem(12, yellowBand);
+                    ccolor.setItem(13, greenBand);
+                    ccolor.setItem(14, blueBand);
+                    ccolor.setItem(15, purpleBand);
+                    ccolor.setItem(16, pinkBand);
+                    ccolor.setItem(22, BandUtil.getBackItem());
+                    ccolor.setItem(23, nextPage);
+                    player.openInventory(ccolor);
+                    return;
+                case SPECIALCOLOR:
+                    Inventory special = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Special Edition MagicBands");
+                    if (rank.equals(Rank.GUEST)) {
+                        special.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "DVC Members only!"
+                                , Arrays.asList(ChatColor.RED + "Sorry, but you have", ChatColor.RED + "to be a DVC Member",
+                                ChatColor.RED + "to use Special Edition", ChatColor.RED + "MagicBand Designs!")));
+                    } else {
+                        special.setItem(11, s1Band);
+                        special.setItem(12, s2Band);
+                        special.setItem(13, s3Band);
+                        special.setItem(14, s4Band);
+                        special.setItem(15, s5Band);
+                    }
+                    special.setItem(21, lastPage);
+                    special.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(special);
+                    return;
+                case RIDESANDATTRACTIONS:
+                    Inventory rna = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides and Attractions");
+                    rna.setItem(20, ride);
+                    rna.setItem(22, wait);
+                    rna.setItem(24, attraction);
+                    rna.setItem(49, BandUtil.getBackItem());
+                    player.openInventory(rna);
+                    return;
+                case HOTELSANDRESORTS:
+                    Inventory hotelsAndResorts = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels and Resorts");
+                    hotelsAndResorts.setItem(11, joinHotelsAndResorts);
+                    hotelsAndResorts.setItem(13, viewMyRooms);
+                    hotelsAndResorts.setItem(15, viewHotels);
+                    hotelsAndResorts.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(hotelsAndResorts);
+                    return;
+                case MYHOTELROOMS:
+                    Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
+                    List<HotelRoom> rooms = new ArrayList<>();
+                    for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
+                        if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                            rooms.add(room);
+                        }
+                    }
+                    int roomItemPlacement = 13 - ((rooms.size() - 1) / 2);
+                    for (HotelRoom room : rooms) {
+                        ItemStack roomItem = new ItemCreator(Material.BED, 1);
+                        ItemMeta rim = roomItem.getItemMeta();
+                        rim.setDisplayName(ChatColor.GREEN + room.getName());
+                        if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+                            MagicAssistant.hotelManager.checkout(room, true);
+                            return;
+                        }
+                        String times = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);
+                        List<String> himl = Arrays.asList(ChatColor.DARK_GREEN + "You have " + times, ChatColor.DARK_GREEN
+                                + "left for this reservation.");
+                        rim.setLore(himl);
+                        roomItem.setItemMeta(rim);
+                        viewMyHotelRooms.setItem(roomItemPlacement, roomItem);
+                        if (roomItemPlacement == 17) {
                             break;
-                        }
-                        @SuppressWarnings("deprecation")
-                        ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
-                                ChatColor.translateAlternateColorCodes('&', loc.getName()),
-                                Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp()));
-                        foodMenu.setItem(place, f);
-                        if (amount % 2 == 1) {
-                            place -= amount;
                         } else {
-                            place += amount;
+                            roomItemPlacement++;
                         }
-                        amount++;
                     }
-                    foodMenu.setItem(22, BandUtil.getBackItem());
-                    player.openInventory(foodMenu);
-                    // If even amount of items
-                } else {
-                    place++;
-                    int amount = 1;
-                    for (FoodLocation loc : foodLocations) {
-                        if (place > 16) {
+                    viewMyHotelRooms.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(viewMyHotelRooms);
+                    return;
+                case HOTELS:
+                    Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
+                    List<String> availableHotels = new ArrayList<>();
+                    for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
+                        if (!availableHotels.contains(room.getHotelName())) {
+                            availableHotels.add(room.getHotelName());
+                        }
+                    }
+                    int hotelItemPlacement = 10;
+                    for (String hotel : availableHotels) {
+                        ItemStack hotelItem = new ItemCreator(Material.BED, 1);
+                        ItemMeta him = hotelItem.getItemMeta();
+                        him.setDisplayName(ChatColor.GREEN + hotel);
+                        List<String> himl = Collections.singletonList(ChatColor.GREEN + "Click to view rooms in this hotel.");
+                        him.setLore(himl);
+                        hotelItem.setItemMeta(him);
+                        viewAvailableHotels.setItem(hotelItemPlacement, hotelItem);
+                        if (hotelItemPlacement == 17) {
                             break;
-                        }
-                        @SuppressWarnings("deprecation")
-                        ItemStack f = new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
-                                ChatColor.translateAlternateColorCodes('&', loc.getName()),
-                                Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp()));
-                        foodMenu.setItem(place, f);
-                        if (amount % 2 == 0) {
-                            place -= amount;
                         } else {
-                            place += amount;
+                            hotelItemPlacement++;
                         }
-                        amount++;
                     }
-                    foodMenu.setItem(22, BandUtil.getBackItem());
-                    player.openInventory(foodMenu);
-                }
-                return;
-            case MYPROFILE:
-                Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
-                pmenu.setItem(10, web);
-                pmenu.setItem(11, dvc);
-                pmenu.setItem(12, locker);
-                pmenu.setItem(14, ach);
-                pmenu.setItem(15, prefs);
-                pmenu.setItem(16, mumble);
-                pmenu.setItem(22, BandUtil.getBackItem());
-                player.openInventory(pmenu);
-                return;
-            case SHOWSANDEVENTS:
-                Inventory shows = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Shows and Events");
-                if (MagicAssistant.party) {
-                    shows.setItem(4, party);
-                } else {
-                    shows.setItem(4, noparty);
-                }
-                shows.setItem(8, times);
-                shows.setItem(9, fant);
-                shows.setItem(11, iroe);
-                shows.setItem(13, wishes);
-                shows.setItem(15, msep);
-                shows.setItem(17, fofp);
-                shows.setItem(22, BandUtil.getBackItem());
-                player.openInventory(shows);
-                return;
-            case CUSTOMIZE:
-                Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
-                ItemStack band;
-                if (data.getSpecial()) {
-                    band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()));
-                    ItemMeta bm = band.getItemMeta();
-                    bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
-                    band.setItemMeta(bm);
-                } else {
-                    band = new ItemCreator(Material.FIREWORK_CHARGE);
-                    FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
-                    bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil.getBandColor(data.getBandColor())).build());
-                    bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
-                    band.setItemMeta(bm);
-                }
-                custom.setItem(11, band);
-                custom.setItem(15, nameChange);
-                custom.setItem(22, BandUtil.getBackItem());
-                player.openInventory(custom);
-                return;
-            case CUSTOMNAME:
-                Inventory cname = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Name Color");
-                cname.setItem(10, red);
-                cname.setItem(11, orange);
-                cname.setItem(12, yellow);
-                cname.setItem(13, green);
-                cname.setItem(14, darkGreen);
-                cname.setItem(15, blue);
-                cname.setItem(16, purple);
-                cname.setItem(22, BandUtil.getBackItem());
-                player.openInventory(cname);
-                return;
-            case CUSTOMCOLOR:
-                Inventory ccolor = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Band Color");
-                ccolor.setItem(10, redBand);
-                ccolor.setItem(11, orangeBand);
-                ccolor.setItem(12, yellowBand);
-                ccolor.setItem(13, greenBand);
-                ccolor.setItem(14, blueBand);
-                ccolor.setItem(15, purpleBand);
-                ccolor.setItem(16, pinkBand);
-                ccolor.setItem(22, BandUtil.getBackItem());
-                ccolor.setItem(23, nextPage);
-                player.openInventory(ccolor);
-                return;
-            case SPECIALCOLOR:
-                Inventory special = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Special Edition MagicBands");
-                if (rank.equals(Rank.GUEST)) {
-                    special.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "DVC Members only!"
-                            , Arrays.asList(ChatColor.RED + "Sorry, but you have", ChatColor.RED + "to be a DVC Member",
-                            ChatColor.RED + "to use Special Edition", ChatColor.RED + "MagicBand Designs!")));
-                } else {
-                    special.setItem(11, s1Band);
-                    special.setItem(12, s2Band);
-                    special.setItem(13, s3Band);
-                    special.setItem(14, s4Band);
-                    special.setItem(15, s5Band);
-                }
-                special.setItem(21, lastPage);
-                special.setItem(22, BandUtil.getBackItem());
-                player.openInventory(special);
-                return;
-            case RIDESANDATTRACTIONS:
-                Inventory rna = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides and Attractions");
-                rna.setItem(20, ride);
-                rna.setItem(22, wait);
-                rna.setItem(24, attraction);
-                rna.setItem(49, BandUtil.getBackItem());
-                player.openInventory(rna);
-                return;
-            case HOTELSANDRESORTS:
-                Inventory hotelsAndResorts = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels and Resorts");
-                hotelsAndResorts.setItem(11, joinHotelsAndResorts);
-                hotelsAndResorts.setItem(13, viewMyRooms);
-                hotelsAndResorts.setItem(15, viewHotels);
-                hotelsAndResorts.setItem(22, BandUtil.getBackItem());
-                player.openInventory(hotelsAndResorts);
-                return;
-            case MYHOTELROOMS:
-                Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
-                List<HotelRoom> rooms = new ArrayList<>();
-                for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
-                    if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                        rooms.add(room);
+                    viewAvailableHotels.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(viewAvailableHotels);
+                    return;
+                case PLAYERSETTINGS:
+                    Inventory settings = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Player Settings");
+                    List<String> enab = Arrays.asList(ChatColor.GREEN + "Enabled");
+                    List<String> disab = Arrays.asList(ChatColor.RED + "Disabled");
+                    ItemStack flash;
+                    ItemStack visibility;
+                    ItemStack loop;
+                    ItemStack hotel;
+                    if (data.getFlash()) {
+                        flash = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Flash Effects", enab);
+                    } else {
+                        flash = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Flash Effects", disab);
                     }
-                }
-                int roomItemPlacement = 13 - ((rooms.size() - 1) / 2);
-                for (HotelRoom room : rooms) {
-                    ItemStack roomItem = new ItemCreator(Material.BED, 1);
-                    ItemMeta rim = roomItem.getItemMeta();
-                    rim.setDisplayName(ChatColor.GREEN + room.getName());
-                    if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                        MagicAssistant.hotelManager.checkout(room, true);
+                    if (data.getVisibility()) {
+                        visibility = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Player Visibility", enab);
+                    } else {
+                        visibility = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Player Visibility", disab);
+                    }
+                    if (data.getFountain()) {
+                        loop = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Fountains", enab);
+                    } else {
+                        loop = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Fountains", disab);
+                    }
+                    if (data.getHotel()) {
+                        hotel = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Friends Access Hotel Room", enab);
+                    } else {
+                        hotel = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Friends Access Hotel Room", disab);
+                    }
+                    settings.setItem(10, flash);
+                    settings.setItem(12, visibility);
+                    settings.setItem(14, loop);
+                    settings.setItem(16, hotel);
+                    settings.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(settings);
+                    return;
+                case DESIGNSTATION:
+                    DesignStation.openPickModelInventory(player);
+                    return;
+                case FASTPASS:
+                    Inventory fp = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Purchase FastPass");
+                    fp.setItem(22, BandUtil.getBackItem());
+                    int current = data.getFastpass();
+                    if (current >= 3) {
+                        ItemStack max = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
+                                "You can only have up to 3 FastPasses at one time!");
+                        fp.setItem(13, max);
+                        player.openInventory(fp);
                         return;
                     }
-                    String times = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);
-                    List<String> himl = Arrays.asList(ChatColor.DARK_GREEN + "You have " + times, ChatColor.DARK_GREEN
-                            + "left for this reservation.");
-                    rim.setLore(himl);
-                    roomItem.setItemMeta(rim);
-                    viewMyHotelRooms.setItem(roomItemPlacement, roomItem);
-                    if (roomItemPlacement == 17) {
-                        break;
-                    } else {
-                        roomItemPlacement++;
-                    }
-                }
-                viewMyHotelRooms.setItem(22, BandUtil.getBackItem());
-                player.openInventory(viewMyHotelRooms);
-                return;
-            case HOTELS:
-                Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
-                List<String> availableHotels = new ArrayList<>();
-                for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
-                    if (!availableHotels.contains(room.getHotelName())) {
-                        availableHotels.add(room.getHotelName());
-                    }
-                }
-                int hotelItemPlacement = 10;
-                for (String hotel : availableHotels) {
-                    ItemStack hotelItem = new ItemCreator(Material.BED, 1);
-                    ItemMeta him = hotelItem.getItemMeta();
-                    him.setDisplayName(ChatColor.GREEN + hotel);
-                    List<String> himl = Collections.singletonList(ChatColor.GREEN + "Click to view rooms in this hotel.");
-                    him.setLore(himl);
-                    hotelItem.setItemMeta(him);
-                    viewAvailableHotels.setItem(hotelItemPlacement, hotelItem);
-                    if (hotelItemPlacement == 17) {
-                        break;
-                    } else {
-                        hotelItemPlacement++;
-                    }
-                }
-                viewAvailableHotels.setItem(22, BandUtil.getBackItem());
-                player.openInventory(viewAvailableHotels);
-                return;
-            case PLAYERSETTINGS:
-                Inventory settings = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Player Settings");
-                List<String> enab = Arrays.asList(ChatColor.GREEN + "Enabled");
-                List<String> disab = Arrays.asList(ChatColor.RED + "Disabled");
-                ItemStack flash;
-                ItemStack visibility;
-                ItemStack loop;
-                ItemStack hotel;
-                if (data.getFlash()) {
-                    flash = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Flash Effects", enab);
-                } else {
-                    flash = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Flash Effects", disab);
-                }
-                if (data.getVisibility()) {
-                    visibility = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Player Visibility", enab);
-                } else {
-                    visibility = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Player Visibility", disab);
-                }
-                if (data.getLoop()) {
-                    loop = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Park Entrance Loops", enab);
-                } else {
-                    loop = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Park Entrance Loops", disab);
-                }
-                if (data.getHotel()) {
-                    hotel = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Friends Access Hotel Room", enab);
-                } else {
-                    hotel = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Friends Access Hotel Room", disab);
-                }
-                settings.setItem(10, flash);
-                settings.setItem(12, visibility);
-                settings.setItem(14, loop);
-                settings.setItem(16, hotel);
-                settings.setItem(22, BandUtil.getBackItem());
-                player.openInventory(settings);
-                return;
-            case DESIGNSTATION:
-                DesignStation.openPickModelInventory(player);
-                return;
-            case FASTPASS:
-                Inventory fp = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Purchase FastPass");
-                fp.setItem(22, BandUtil.getBackItem());
-                int current = data.getFastpass();
-                if (current >= 3) {
-                    ItemStack max = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
-                            "You can only have up to 3 FastPasses at one time!");
-                    fp.setItem(13, max);
+                    ItemStack info = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "You currently have " +
+                            ChatColor.AQUA + current + ChatColor.GREEN + " Fastpass" + (current == 1 ? "" : "es"),
+                            new ArrayList<String>());
+                    ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes",
+                            Arrays.asList(ChatColor.DARK_AQUA + "Click to purchase a", ChatColor.DARK_AQUA +
+                                    "FastPass for 50 Coins.", ChatColor.DARK_AQUA + "This cannot be undone!"));
+                    ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
+                            Arrays.asList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
+                    fp.setItem(4, info);
+                    fp.setItem(11, yes);
+                    fp.setItem(15, no);
                     player.openInventory(fp);
                     return;
-                }
-                ItemStack info = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "You currently have " +
-                        ChatColor.AQUA + current + ChatColor.GREEN + " Fastpass" + (current == 1 ? "" : "es"),
-                        new ArrayList<String>());
-                ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes",
-                        Arrays.asList(ChatColor.DARK_AQUA + "Click to purchase a", ChatColor.DARK_AQUA +
-                                "FastPass for 50 Coins.", ChatColor.DARK_AQUA + "This cannot be undone!"));
-                ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
-                        Arrays.asList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
-                fp.setItem(4, info);
-                fp.setItem(11, yes);
-                fp.setItem(15, no);
-                player.openInventory(fp);
-                return;
-            case SHOWTIMES:
-                Inventory s = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Show Timetable");
-                s.setItem(1, m);
-                s.setItem(2, t);
-                s.setItem(3, w);
-                s.setItem(4, th);
-                s.setItem(5, f);
-                s.setItem(6, this.s);
-                s.setItem(7, su);
-                s.setItem(9, wishes);
-                s.setItem(10, dark49);
-                s.setItem(11, dark11);
-                s.setItem(12, dark49);
-                s.setItem(13, dark11);
-                s.setItem(14, dark49);
-                s.setItem(15, assistance);
-                s.setItem(16, assistance);
-                s.setItem(18, iroe);
-                s.setItem(19, light11);
-                s.setItem(20, light49);
-                s.setItem(21, light11);
-                s.setItem(22, light49);
-                s.setItem(23, light11);
-                s.setItem(24, assistance);
-                s.setItem(25, assistance);
-                s.setItem(27, tfant);
-                s.setItem(28, na);
-                s.setItem(29, na);
-                s.setItem(30, na);
-                s.setItem(31, na);
-                s.setItem(32, na);
-                s.setItem(33, assistance);
-                s.setItem(34, assistance);
-                s.setItem(49, BandUtil.getBackItem());
-                player.openInventory(s);
+                case SHOWTIMES:
+                    Inventory s = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Show Timetable");
+                    s.setItem(1, m);
+                    s.setItem(2, t);
+                    s.setItem(3, w);
+                    s.setItem(4, th);
+                    s.setItem(5, f);
+                    s.setItem(6, this.s);
+                    s.setItem(7, su);
+                    s.setItem(9, wishes);
+                    s.setItem(10, dark49);
+                    s.setItem(11, dark11);
+                    s.setItem(12, dark49);
+                    s.setItem(13, dark11);
+                    s.setItem(14, dark49);
+                    s.setItem(15, assistance);
+                    s.setItem(16, assistance);
+                    s.setItem(18, iroe);
+                    s.setItem(19, light11);
+                    s.setItem(20, light49);
+                    s.setItem(21, light11);
+                    s.setItem(22, light49);
+                    s.setItem(23, light11);
+                    s.setItem(24, assistance);
+                    s.setItem(25, assistance);
+                    s.setItem(27, tfant);
+                    s.setItem(28, na);
+                    s.setItem(29, na);
+                    s.setItem(30, na);
+                    s.setItem(31, na);
+                    s.setItem(32, na);
+                    s.setItem(33, assistance);
+                    s.setItem(34, assistance);
+                    s.setItem(49, BandUtil.getBackItem());
+                    player.openInventory(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

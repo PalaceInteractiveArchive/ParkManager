@@ -27,13 +27,10 @@ public class Commandvanish implements CommandExecutor {
                 for (Player tp : Bukkit.getOnlinePlayers()) {
                     tp.showPlayer(player);
                 }
-                player.sendMessage(ChatColor.DARK_AQUA
-                        + "You have become visible.");
+                player.sendMessage(ChatColor.DARK_AQUA + "You have become visible.");
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.hasPermission("vanish.standard")
-                            && !tp.equals(player)) {
-                        tp.sendMessage(ChatColor.YELLOW + player.getName()
-                                + " has become visible.");
+                    if (tp.hasPermission("vanish.standard") && !tp.equals(player)) {
+                        tp.sendMessage(ChatColor.YELLOW + player.getName() + " has become visible.");
                     }
                 }
             } else {
@@ -43,13 +40,10 @@ public class Commandvanish implements CommandExecutor {
                         tp.hidePlayer(player);
                     }
                 }
-                player.sendMessage(ChatColor.DARK_AQUA
-                        + "You have vanished. Poof.");
+                player.sendMessage(ChatColor.DARK_AQUA + "You have vanished. Poof.");
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.hasPermission("vanish.standard")
-                            && !tp.equals(player)) {
-                        tp.sendMessage(ChatColor.YELLOW + player.getName()
-                                + " has vanished. Poof.");
+                    if (tp.hasPermission("vanish.standard") && !tp.equals(player)) {
+                        tp.sendMessage(ChatColor.YELLOW + player.getName() + " has vanished. Poof.");
                     }
                 }
             }
@@ -75,11 +69,9 @@ public class Commandvanish implements CommandExecutor {
             }
             if (args[0].equalsIgnoreCase("check")) {
                 if (hidden.contains(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.DARK_AQUA
-                            + "You are vanished.");
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are vanished.");
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA
-                            + "You are not vanished.");
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are not vanished.");
                 }
             }
         }

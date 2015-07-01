@@ -2,6 +2,7 @@ package us.mcmagic.magicassistant.shooter;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -20,6 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -31,24 +33,23 @@ public class Shooter implements Listener {
     private static HashMap<UUID, ItemStack> itemMap = new HashMap<>();
     private static HashMap<Long, Block> locations = new HashMap<>();
     public static List<UUID> ingame = new ArrayList<>();
-    public MagicAssistant pl;
     public static String game;
 
 
     public Shooter(MagicAssistant instance) {
-        pl = instance;
-        if (pl.getConfig().getString("shooter").equalsIgnoreCase("buzz")) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+        if (config.getString("shooter").equalsIgnoreCase("buzz")) {
             stack = new ItemCreator(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun", Arrays.asList(ChatColor.GREEN +
                     "Click to shoot!"));
-            game = pl.getConfig().getString("shooter");
-        } else if (pl.getConfig().getString("shooter").equalsIgnoreCase("tsm")) {
+            game = config.getString("shooter");
+        } else if (config.getString("shooter").equalsIgnoreCase("tsm")) {
             stack = new ItemCreator(Material.STONE_HOE, ChatColor.GOLD + "Blaster", Arrays.asList(ChatColor.GREEN +
                     "Click to shoot!"));
-            game = pl.getConfig().getString("shooter");
-        } else if (pl.getConfig().getString("shooter").equalsIgnoreCase("mm")) {
+            game = config.getString("shooter");
+        } else if (config.getString("shooter").equalsIgnoreCase("mm")) {
             stack = new ItemCreator(Material.GOLD_HOE, ChatColor.RED + "Boo Blaster", Arrays.asList(ChatColor.GREEN +
                     "Click to shoot!"));
-            game = pl.getConfig().getString("shooter");
+            game = config.getString("shooter");
         } else {
             stack = null;
         }
@@ -84,9 +85,6 @@ public class Shooter implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        //Bukkit.getLogger().info("Item: " + stack);
-        //Bukkit.getLogger().info("Held: " + event.getPlayer().getItemInHand());
-        //Bukkit.getLogger().info("Event: " + event.getAction());
         ItemStack inHand = event.getPlayer().getItemInHand();
         ItemMeta meta = inHand.getItemMeta();
         if (inHand == null) return;
@@ -101,18 +99,14 @@ public class Shooter implements Listener {
             meta.getDisplayName().equals(stack.getItemMeta().getDisplayName());
             event.getPlayer().launchProjectile(Snowball.class);
             event.setCancelled(true);
-            //  Bukkit.getLogger().info("THROWING PROJECTILE");
         }
         Player player = event.getPlayer();
         if (locations.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             Block block = locations.get(player.getUniqueId());
             player.sendBlockChange(block.getLocation(), block.getType(), (byte) 0);
-            return;
         }
-
     }
-
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
@@ -132,11 +126,12 @@ public class Shooter implements Listener {
             if (amount > 0) {
                 final long time = System.currentTimeMillis();
                 player.playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
-                player.setMetadata("shooter", new FixedMetadataValue(pl, player.getMetadata("shooter").get(0).asInt() + amount));
+                player.setMetadata("shooter", new FixedMetadataValue(MagicAssistant.getInstance(),
+                        player.getMetadata("shooter").get(0).asInt() + amount));
                 sendMessage(player, "+" + amount);
                 player.sendBlockChange(loc, Material.REDSTONE_BLOCK, (byte) 0);
                 locations.put(time, block);
-                Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+                Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                     public void run() {
                         locations.remove(time);
                         player.sendBlockChange(loc, getMaterial(amount), (byte) 0);
@@ -182,8 +177,6 @@ public class Shooter implements Listener {
                 return 100;
             default:
                 return 0;
-
-
         }
     }
 
@@ -232,27 +225,6 @@ public class Shooter implements Listener {
     public static ItemStack getItem() {
         return stack;
     }
-
-    /*
-    else if ((player.getLevel() >= 21) && (player.getLevel() <= 40)) {
-        player.sendMessage(ChatColor.GREEN + "✹ Level 3 Planetary Pilot: 21 – 40 ✹");
-    }
-    else if ((player.getLevel() >= 41) && (player.getLevel() <= 60)) {
-        player.sendMessage(ChatColor.GREEN + "✹ Level 4 Space Scout:  41 – 60 ✹");
-    }
-    else if ((player.getLevel() >= 61) && (player.getLevel() <= 80)) {
-        player.sendMessage(ChatColor.GREEN + "✹ Level 5 Ranger 1st Class: 61 – 80 ✹");
-    }
-    else if ((player.getLevel() >= 81) && (player.getLevel() <= 100)) {
-        player.sendMessage(ChatColor.GREEN + "✹ Level 6 Cosmic Commando: 81 – 100 ✹");
-    }
-    else if ((player.getLevel() >= 100) && (player.getLevel() <= 1970)) {
-        player.sendMessage(ChatColor.GREEN + "✹ Level 7 Galactic Hero: 100+ ✹");
-    }
-    else if (player.getLevel() == 1971) {
-        player.sendMessage(ChatColor.BLUE + "✹ On Friday October 1, 1971 - after seven years of planning - about 10,000 visitors converged near Orlando, Florida, to witness the grand opening of Walt Disney World. ✹");
-    }
-    */
 
     public static String getRank(int score) {
         if (score < 11) {

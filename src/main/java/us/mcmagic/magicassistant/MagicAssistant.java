@@ -460,7 +460,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
         pm.registerEvents(new VisibleUtil(this), this);
-        pm.registerEvents(new FountainUtil(this), this);
+        pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {

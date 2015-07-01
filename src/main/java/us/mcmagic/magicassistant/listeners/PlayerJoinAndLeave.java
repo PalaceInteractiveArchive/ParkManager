@@ -102,10 +102,12 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-            event.setKickMessage("This server will be available soon!");
+        /*
+        if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() && !player.getName().equals("sportsboy511")) {
+            event.setKickMessage("This server will be available soon! " + user.getRank().getNameWithBrackets());
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
+        */
     }
 
     @SuppressWarnings("deprecation")
@@ -140,6 +142,14 @@ public class PlayerJoinAndLeave implements Listener {
             }
             if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 VisibleUtil.hideForHideAll(player);
+            }
+            if (user.getRank().getRankId() > Rank.CASTMEMBER.getRankId()) {
+                Commandvanish.hidden.add(player.getUniqueId());
+                for (Player tp : Bukkit.getOnlinePlayers()) {
+                    if (!tp.hasPermission("vanish.standard")) {
+                        tp.hidePlayer(player);
+                    }
+                }
             }
             if (MagicAssistant.hubServer) {
                 if (!player.hasPlayedBefore()) {
@@ -266,7 +276,7 @@ public class PlayerJoinAndLeave implements Listener {
             }
         }
         if (w == null) {
-            player.teleport(MagicAssistant.spawn);
+            player.performCommand("spawn");
             return;
         }
         player.teleport(w.getLocation());

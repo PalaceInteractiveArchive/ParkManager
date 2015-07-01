@@ -19,12 +19,12 @@ public class PlayerData {
     private boolean special;
     private boolean flash;
     private boolean visibility;
-    private boolean loop;
+    private boolean fountain;
     private boolean hotel;
     private int fastpass;
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends,
-                      boolean special, boolean flash, boolean visibility, boolean loop, boolean hotel, int fastpass) {
+                      boolean special, boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -33,7 +33,7 @@ public class PlayerData {
         this.special = special;
         this.flash = flash;
         this.visibility = visibility;
-        this.loop = loop;
+        this.fountain = fountain;
         this.hotel = hotel;
         this.fastpass = fastpass;
     }
@@ -70,12 +70,12 @@ public class PlayerData {
         this.flash = flash;
     }
 
-    public boolean getLoop() {
-        return loop;
+    public boolean getFountain() {
+        return fountain;
     }
 
-    public void setLoop(boolean loop) {
-        this.loop = loop;
+    public void setFountain(boolean fountain) {
+        this.fountain = fountain;
     }
 
     public void setBandColor(Material color) {
