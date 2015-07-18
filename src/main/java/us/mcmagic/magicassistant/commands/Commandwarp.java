@@ -215,7 +215,7 @@ public class Commandwarp implements CommandExecutor {
             nlist.add(w.getName());
         }
         Collections.sort(nlist);
-        if (nlist.size() < (page - 1) * 20) {
+        if (nlist.size() < (page - 1) * 20 && page != 1) {
             listWarps(player, 1);
             return;
         }

@@ -37,9 +37,10 @@ public class PowerFireworkAction extends ShowAction {
         }
         fw.setFireworkMeta(meta);
         EntityFireworks f = ((CraftFirework) fw).getHandle();
-        f.expectedLifespan = 0;
         f.motX = motion.getX();
         f.motY = motion.getY();
         f.motZ = motion.getZ();
+        FireworkExplodeAction action = new FireworkExplodeAction(show, time + 50, fw);
+        show.actions.add(action);
     }
 }

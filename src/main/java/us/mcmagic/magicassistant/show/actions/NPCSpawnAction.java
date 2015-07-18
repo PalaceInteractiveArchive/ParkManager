@@ -38,7 +38,7 @@ public class NPCSpawnAction extends ShowAction {
     @Override
     public void play() {
         // Remove Old
-        ShowNPC npc = Show.getNPCMap().remove(Name);
+        ShowNPC npc = show.getNPCMap().remove(Name);
         if (npc != null)
             npc.clean();
 
@@ -67,7 +67,7 @@ public class NPCSpawnAction extends ShowAction {
 
         Vegetate(ent);
 
-        Show.getNPCMap().put(Name, new ShowNPC(ent));
+        show.getNPCMap().put(Name, new ShowNPC(ent));
 
         System.out.println("Spawned NPC: " + Name);
     }

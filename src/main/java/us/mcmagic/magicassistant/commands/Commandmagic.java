@@ -501,7 +501,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                         return true;
                     }
                     if (args[2].equalsIgnoreCase("next")) {
-                        if (ride.getQueueSize() <= 0) {
+                        if (ride.getQueueSize() <= 0 && ride.getFastpassSize() <= 0) {
                             sender.sendMessage(ChatColor.GREEN + "No one in Queue");
                             return true;
                         }
@@ -519,12 +519,28 @@ public class Commandmagic implements Listener, CommandExecutor {
                         sender.sendMessage(ride.getName() + ChatColor.GREEN + "'s Queue has been ejected!");
                         return true;
                     }
+                    if (args[2].equalsIgnoreCase("fp")) {
+                        if (ride.toggleFastpass()) {
+                            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been closed!");
+                        } else {
+                            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been opened!");
+                        }
+                        return true;
+                    }
+                    if (args[2].equalsIgnoreCase("pause")) {
+                        ride.setPaused(true);
+                        sender.sendMessage(ChatColor.GREEN + "Paused!");
+                        return true;
+                    }
+                    if (args[2].equalsIgnoreCase("unpause")) {
+                        ride.setPaused(false);
+                        sender.sendMessage(ChatColor.GREEN + "Un-Paused!");
+                        return true;
+                    }
                     if (args[2].equalsIgnoreCase("freeze")) {
                         if (ride.toggleFreeze()) {
-                            //Now turned on
                             sender.sendMessage(ChatColor.GREEN + "Queue frozen!");
                         } else {
-                            //Now turned off
                             sender.sendMessage(ChatColor.GREEN + "Queue unfrozen!");
                         }
                         return true;
@@ -568,7 +584,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                         if (args[3].equalsIgnoreCase("spawner")) {
                             try {
                                 ride.setSpawner(((Player) sender).getLocation());
-                                sender.sendMessage(ChatColor.GREEN + "Station set!");
+                                sender.sendMessage(ChatColor.GREEN + "Spawner set!");
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 sender.sendMessage(ChatColor.RED + "There was an error!");
@@ -671,6 +687,12 @@ public class Commandmagic implements Listener, CommandExecutor {
                         "- Next group of Guests can ride");
                 sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] list " + ChatColor.AQUA +
                         "- List players in Queue");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] fp " + ChatColor.AQUA +
+                        "- Close/Open the FastPass queue");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] pause " + ChatColor.AQUA +
+                        "- Pause station teleport");
+                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] unpause " + ChatColor.AQUA +
+                        "- Un-Pause station teleport");
         }
         if (containsCommandBlockOnly.contains(menu)) {
             sender.sendMessage(ChatColor.RED + "* Only Command Blocks can do this");

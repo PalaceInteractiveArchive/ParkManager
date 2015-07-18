@@ -22,6 +22,10 @@ public class Commandtrade implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
+        if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+            player.sendMessage(ChatColor.RED + "You can't use this yet!");
+            return true;
+        }
         if (args.length != 1) {
             helpMenu(player);
             return true;

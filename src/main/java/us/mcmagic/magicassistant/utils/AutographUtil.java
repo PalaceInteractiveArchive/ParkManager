@@ -3,13 +3,11 @@ package us.mcmagic.magicassistant.utils;
 
 //import net.minecraft.server.v1_8_R3.*;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.sql.Connection;
@@ -21,25 +19,17 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AutographUtil {
-    HashMap<UUID, String> nameMap = new HashMap<>();
+    private HashMap<UUID, String> nameMap = new HashMap<>();
+    private HashMap<UUID, ItemStack> books = new HashMap<>();
 
-    public void join(final Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                setBook(player);
-            }
-        });
-    }
-
-    public void setBook(Player player) {
+    public void setBook(UUID uuid) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bm = (BookMeta) book.getItemMeta();
         bm.addPage("This is your Autograph Book! Find Characters and they will sign it for you!");
         HashMap<UUID, String> map = new HashMap<>();
         try (Connection connection = SqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM autographs WHERE user=?");
-            sql.setString(1, player.getUniqueId().toString());
+            sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             while (result.next()) {
                 map.put(UUID.fromString(result.getString("sender")), result.getString("message"));
@@ -75,8 +65,18 @@ public class AutographUtil {
                         + name);
             }
         }
-        bm.setAuthor(player.getName());
         bm.setTitle(ChatColor.DARK_AQUA + "Autograph Book");
+        book.setItemMeta(bm);
+        books.put(uuid, book);
+    }
+
+    public void giveBook(Player player) {
+        ItemStack book = books.remove(player.getUniqueId());
+        if (book == null) {
+            return;
+        }
+        BookMeta bm = (BookMeta) book.getItemMeta();
+        bm.setAuthor(player.getName());
         book.setItemMeta(bm);
         player.getInventory().setItem(7, book);
     }

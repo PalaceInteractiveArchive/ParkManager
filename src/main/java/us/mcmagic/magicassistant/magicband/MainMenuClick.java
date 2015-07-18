@@ -16,6 +16,7 @@ import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,8 +107,9 @@ public class MainMenuClick {
                 MagicAssistant.getInstance().sendToServer(player, "Creative");
                 return;
             case CLAY_BRICK:
-                player.closeInventory();
-                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FASTPASS);
+                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FASTPASS);
+                }
         }
     }
 }

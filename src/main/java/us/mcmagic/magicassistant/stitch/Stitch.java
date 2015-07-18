@@ -63,8 +63,6 @@ public class Stitch implements Listener {
             Location to = event.getTo();
             if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
                 int i = getSeatNumber(player.getUniqueId());
-                if (i == 0) {
-                }
                 StitchSeat seat = seats.get(i);
                 player.teleport(seat.getLocation());
                 if (!msgTimeout.contains(player.getUniqueId())) {

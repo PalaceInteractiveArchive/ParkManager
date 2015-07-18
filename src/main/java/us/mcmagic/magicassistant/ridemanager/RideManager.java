@@ -121,8 +121,8 @@ public class RideManager implements Listener {
                             s.update();
                             return;
                         }
-                        if (power > 1) {
-                            s.setLine(2, ChatColor.RED + "Power > 1");
+                        if (power > 5) {
+                            s.setLine(2, ChatColor.RED + "Power > 5");
                             s.update();
                             return;
                         }

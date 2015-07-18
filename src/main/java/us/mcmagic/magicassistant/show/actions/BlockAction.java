@@ -1,7 +1,6 @@
 package us.mcmagic.magicassistant.show.actions;
 
 import org.bukkit.Location;
-
 import org.bukkit.block.Block;
 import us.mcmagic.magicassistant.show.Show;
 

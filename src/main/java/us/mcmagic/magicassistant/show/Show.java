@@ -14,21 +14,20 @@ import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.title.TitleObject;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 public class Show {
     private World world;
     private Location loc;
     private int radius = 75;
     private long startTime;
-    private HashSet<ShowAction> actions;
+    public HashSet<ShowAction> actions;
     private HashMap<String, FireworkEffect> effectMap;
     private HashMap<String, String> invalidLines;
     private HashMap<String, ShowNPC> npcMap;
     private int npcTick = 0;
+    private long lastPlayerListUpdate = System.currentTimeMillis();
+    private List<Player> nearbyPlayers = new ArrayList<>();
 
     public Show(JavaPlugin plugin, File file) {
         world = Bukkit.getWorlds().get(0);
@@ -37,6 +36,11 @@ public class Show {
         npcMap = new HashMap<>();
         loadActions(file);
         startTime = System.currentTimeMillis();
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (tp.getLocation().distance(loc) <= radius) {
+                nearbyPlayers.add(tp);
+            }
+        }
     }
 
     private void loadActions(File file) {
@@ -62,6 +66,21 @@ public class Show {
                         continue;
                     }
                     this.loc = loc;
+                    continue;
+                }
+                //Load other show
+                if (tokens[1].equals("LoadShow")) {
+                    String showName = tokens[2];
+                    File f = new File("plugins/MagicAssistant/shows/" + showName);
+                    if (!f.exists()) {
+                        invalidLines.put(strLine, "Show does not exist!");
+                        continue;
+                    }
+                    if (f.equals(file)) {
+                        invalidLines.put(strLine, "You cannot load a file that's already being loaded");
+                        continue;
+                    }
+                    loadActions(f);
                     continue;
                 }
                 // Set Text Radius
@@ -200,6 +219,37 @@ public class Show {
                         actions.add(new NPCMoveAction(this, time, name, loc, speed));
                     }
                 }
+                // Fake Block
+                else if (tokens[1].contains("FakeBlock")) {
+                    Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
+                    if (loc == null) {
+                        invalidLines.put(strLine, "Invalid Location");
+                        continue;
+                    }
+                    String[] list;
+                    if (tokens[2].contains(":")) {
+                        list = tokens[2].split(":");
+                    } else {
+                        list = null;
+                    }
+                    try {
+                        int id;
+                        byte data;
+                        if (list != null) {
+                            id = Integer.parseInt(list[0]);
+                            data = Byte.parseByte(list[1]);
+                        } else {
+                            id = Integer.parseInt(tokens[2]);
+                            data = (byte) 0;
+                        }
+                        actions.add(new FakeBlockAction(this, time, loc, id, data));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        invalidLines.put(strLine,
+                                "Invalid Block ID or Block data");
+                        continue;
+                    }
+                }
                 // Block
                 else if (tokens[1].contains("Block")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
@@ -232,12 +282,13 @@ public class Show {
                 }
                 // Firework
                 else if (tokens[1].contains("PowerFirework")) {
-                    if (tokens.length != 6) {
+                    if (tokens.length != 5) {
                         invalidLines.put(strLine, "Invalid PowerFirework Line Length");
                     }
-                    Location loc = WorldUtil.strToLoc(tokens[2]);
-                    Vector motion = new Vector(Double.parseDouble(tokens[4]), Double.parseDouble(tokens[5]),
-                            Double.parseDouble(tokens[6]));
+                    Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + tokens[2]);
+                    String[] l = tokens[4].split(",");
+                    Vector motion = new Vector(Double.parseDouble(l[0]), Double.parseDouble(l[1]),
+                            Double.parseDouble(l[2]));
                     ArrayList<FireworkEffect> effectList = new ArrayList<>();
                     String[] effects = tokens[3].split(",");
                     for (String effect : effects) {
@@ -390,11 +441,25 @@ public class Show {
         }
 
         for (String cur : invalidLines.keySet()) {
-            System.out.print(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE +
-                    cur.replaceAll("\t", " "));
-            Bukkit.broadcast(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE +
-                    cur.replaceAll("\t", " "), "arcade.bypass");
+            System.out.print(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "));
+            Bukkit.broadcast(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "),
+                    "arcade.bypass");
         }
+    }
+
+    public List<Player> getNearPlayers() {
+        if (System.currentTimeMillis() - lastPlayerListUpdate < 10000) {
+            return new ArrayList<>(nearbyPlayers);
+        }
+        List<Player> list = new ArrayList<>();
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (tp.getLocation().distance(loc) <= radius) {
+                list.add(tp);
+            }
+        }
+        lastPlayerListUpdate = System.currentTimeMillis();
+        nearbyPlayers = list;
+        return list;
     }
 
     public boolean isInt(String s) {
@@ -417,20 +482,19 @@ public class Show {
             }
         }
         // Show Action
-        Iterator<ShowAction> actionIterator = actions.iterator();
-        while (actionIterator.hasNext()) {
-            ShowAction action = actionIterator.next();
-            if (System.currentTimeMillis() - startTime < action.time) {
+        HashSet<ShowAction> list = new HashSet<>(actions);
+        for (ShowAction action : list) {
+            if (System.currentTimeMillis() - startTime <= action.time) {
                 continue;
             }
             action.play();
-            actionIterator.remove();
+            actions.remove(action);
         }
         return actions.isEmpty();
     }
 
     public void displayText(String text) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : getNearPlayers()) {
             if (MathUtil.offset(player.getLocation(), loc) < radius) {
                 player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', text));
             }
@@ -438,7 +502,7 @@ public class Show {
     }
 
     public void displayTitle(TitleObject title) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : getNearPlayers()) {
             if (MathUtil.offset(player.getLocation(), loc) < radius) {
                 title.send(player);
             }
@@ -447,7 +511,7 @@ public class Show {
 
     @SuppressWarnings("deprecation")
     public void playMusic(int record) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : getNearPlayers()) {
             player.playEffect(loc, Effect.RECORD_PLAY, record);
         }
     }

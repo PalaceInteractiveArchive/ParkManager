@@ -4,11 +4,11 @@ package us.mcmagic.magicassistant.show.actions;
 import us.mcmagic.magicassistant.show.Show;
 
 public abstract class ShowAction {
-    public Show Show;
+    public Show show;
     public long time;
 
     public ShowAction(Show show, long time) {
-        Show = show;
+        this.show = show;
         this.time = time;
     }
 

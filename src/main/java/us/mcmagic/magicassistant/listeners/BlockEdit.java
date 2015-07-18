@@ -15,16 +15,21 @@ import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class BlockEdit implements Listener {
+    private List<String> ships = Arrays.asList("CaptainSoleil", "CharlesGoldburn", "CraftyHazzer", "kristjanpaeva");
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !ships.contains(player.getName())) {
             event.setCancelled(true);
             return;
+        } else {
+            event.setCancelled(false);
         }
         if (event.getBlock().getType() == Material.SIGN_POST || event.getBlock().getType() == Material.WALL_SIGN) {
             Sign s = (Sign) event.getBlock().getState();
@@ -68,8 +73,10 @@ public class BlockEdit implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !ships.contains(player.getName())) {
             event.setCancelled(true);
+            return;
         }
+        event.setCancelled(false);
     }
 }

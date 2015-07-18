@@ -173,3 +173,7 @@ commands:
       description: Give/take infinite Night Vision
       permission: arcade.bypass
       permission-message: §4Only Cast Members can use this command!
+   fun:
+      description: FUN!
+      permission: you.cant.do.this
+      permission-message: §4You can't do this!

@@ -58,23 +58,20 @@ public class WorldUtil {
     }
 
     public static Location strToLoc(String string) {
-        if (string.length() == 0)
+        if (string.length() == 0) {
             return null;
-
+        }
         String[] tokens = string.split(",");
-
         try {
             for (World cur : Bukkit.getWorlds()) {
                 if (cur.getName().equalsIgnoreCase(tokens[0])) {
-                    return new Location(cur, Double.parseDouble(tokens[1]),
-                            Double.parseDouble(tokens[2]),
+                    return new Location(cur, Double.parseDouble(tokens[1]), Double.parseDouble(tokens[2]),
                             Double.parseDouble(tokens[3]));
                 }
             }
         } catch (Exception e) {
             return null;
         }
-
         return null;
     }
 

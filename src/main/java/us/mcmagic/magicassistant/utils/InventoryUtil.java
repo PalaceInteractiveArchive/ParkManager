@@ -56,13 +56,13 @@ public class InventoryUtil {
             Arrays.asList(ChatColor.GREEN + "/join MK"));
     private ItemStack epcot = new ItemCreator(Material.SNOW_BALL, ChatColor.AQUA + "Epcot",
             Arrays.asList(ChatColor.GREEN + "/join Epcot"));
-    private ItemStack hws = new ItemCreator(Material.JUKEBOX, ChatColor.AQUA + "HWS",
+    private ItemStack hws = new ItemCreator(Material.JUKEBOX, ChatColor.AQUA + "Hollywood Studios",
             Arrays.asList(ChatColor.GREEN + "/join HWS"));
     private ItemStack ak = new ItemCreator(Material.SAPLING, 1, (byte) 5, ChatColor.AQUA + "Animal Kingdom",
             Arrays.asList(ChatColor.GREEN + "/join AK"));
-    private ItemStack tl = new ItemCreator(Material.WATER_BUCKET, ChatColor.GREEN + "Typhoon Lagoon",
+    private ItemStack tl = new ItemCreator(Material.WATER_BUCKET, ChatColor.AQUA + "Typhoon Lagoon",
             Arrays.asList(ChatColor.GREEN + "/join Typhoon"));
-    private ItemStack dcl = new ItemCreator(Material.BOAT, ChatColor.GREEN + "Disney Cruise Line",
+    private ItemStack dcl = new ItemCreator(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line",
             Arrays.asList(ChatColor.GREEN + "/join DCL"));
     //My Profile
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
@@ -559,12 +559,30 @@ public class InventoryUtil {
                         player.openInventory(fp);
                         return;
                     }
+                    int daily = data.getDailyfp();
+                    int day = data.getDay();
+                    long timestamp = new Date().getTime();
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(timestamp);
+                    int curday = cal.get(Calendar.DAY_OF_YEAR);
+                    if (curday > day) {
+                        data.setDailyfp(0);
+                        daily = 0;
+                    }
+                    if (daily >= 3) {
+                        ItemStack max = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
+                                "You can purchase 3 FastPasses each day!");
+                        fp.setItem(13, max);
+                        player.openInventory(fp);
+                        return;
+                    }
                     ItemStack info = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "You currently have " +
                             ChatColor.AQUA + current + ChatColor.GREEN + " Fastpass" + (current == 1 ? "" : "es"),
                             new ArrayList<String>());
                     ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes",
                             Arrays.asList(ChatColor.DARK_AQUA + "Click to purchase a", ChatColor.DARK_AQUA +
-                                    "FastPass for 50 Coins.", ChatColor.DARK_AQUA + "This cannot be undone!"));
+                                            "FastPass for " + ChatColor.GREEN + "$50.",
+                                    ChatColor.DARK_AQUA + "This cannot be undone!"));
                     ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
                             Arrays.asList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
                     fp.setItem(4, info);
@@ -697,7 +715,8 @@ public class InventoryUtil {
             ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta itemMeta = empty.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
-            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no attraction setup", ChatColor.RED + "on this server!"));
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no attraction setup",
+                    ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             alist.setItem(22, empty);
             alist.setItem(49, BandUtil.getBackItem());
@@ -751,7 +770,8 @@ public class InventoryUtil {
             ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta itemMeta = empty.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
-            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup", ChatColor.RED + "on this server!"));
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup",
+                    ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             rlist.setItem(22, empty);
             rlist.setItem(49, BandUtil.getBackItem());

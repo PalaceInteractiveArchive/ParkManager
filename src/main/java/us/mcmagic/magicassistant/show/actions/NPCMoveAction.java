@@ -19,7 +19,7 @@ public class NPCMoveAction extends ShowAction {
 
     @Override
     public void play() {
-        ShowNPC npc = Show.getNPCMap().get(Name);
+        ShowNPC npc = show.getNPCMap().get(Name);
         if (npc != null) {
             npc.SetTarget(Location, Speed);
         }

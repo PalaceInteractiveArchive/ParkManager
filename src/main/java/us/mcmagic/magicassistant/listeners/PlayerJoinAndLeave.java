@@ -86,6 +86,7 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             MagicAssistant.bandUtil.setupPlayerData(uuid);
+            MagicAssistant.autographUtil.setBook(uuid);
             if (MagicAssistant.getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
@@ -102,9 +103,18 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
+        if (user == null) {
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+        if (Bukkit.getOnlinePlayers().size() >= 100 && user.getRank().getRankId() < Rank.INTERN.getRankId()) {
+            event.setKickMessage("This park is at capacity, sorry!");
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
         /*
         if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() && !player.getName().equals("sportsboy511")) {
-            event.setKickMessage("This server will be available soon! " + user.getRank().getNameWithBrackets());
+            event.setKickMessage("This server will be available soon!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
         */
@@ -146,7 +156,7 @@ public class PlayerJoinAndLeave implements Listener {
             if (user.getRank().getRankId() > Rank.CASTMEMBER.getRankId()) {
                 Commandvanish.hidden.add(player.getUniqueId());
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (!tp.hasPermission("vanish.standard")) {
+                    if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                         tp.hidePlayer(player);
                     }
                 }
@@ -206,7 +216,7 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
-                MagicAssistant.autographUtil.join(player);
+                MagicAssistant.autographUtil.giveBook(player);
                 player.sendMessage(ChatColor.GREEN + "Inventory updated!");
             } else {
                 ItemStack helm = player.getInventory().getHelmet();
@@ -219,7 +229,7 @@ public class PlayerJoinAndLeave implements Listener {
                     player.getInventory().remove(Shooter.getItem().getType());
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
-                MagicAssistant.autographUtil.join(player);
+                MagicAssistant.autographUtil.giveBook(player);
             }
             if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
                 Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {

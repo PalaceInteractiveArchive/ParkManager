@@ -224,12 +224,12 @@ public class BlockChanger implements Listener {
             return;
         }
         for (Changer changer : blocks.values()) {
-            /**
-             * What does canSend() do?
-             *   [] <-- Player head (I know, it's ugly)
-             *   /\ <-- Player feet
-             * [][] <-- Check to see if this block
-             * [][] <-- or this block equal changer.getSender()
+            /*
+              What does canSend() do?
+                [] <-- Player head (I know, it's ugly)
+                /\ <-- Player feet
+              [][] <-- Check to see if this block
+              [][] <-- or this block equal changer.getSender()
              */
             if (!canSend(changer.getSender(), to.getBlock()) || !isClose(player, changer.getFirstLocation(),
                     changer.getSecondLocation())) {

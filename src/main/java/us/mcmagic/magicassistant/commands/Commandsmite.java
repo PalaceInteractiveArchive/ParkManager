@@ -21,8 +21,8 @@ public class Commandsmite implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return true;
                 }
-                tp.getWorld().strikeLightning(tp.getLocation());
-                tp.sendMessage(ChatColor.GRAY + "Thou hast been smitten!");
+                strike(tp);
+                return true;
             }
             sender.sendMessage(ChatColor.RED + "/smite [Username]");
             return true;
@@ -32,13 +32,18 @@ public class Commandsmite implements CommandExecutor {
             Player tp = PlayerUtil.findPlayer(args[0]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
+                return true;
             }
             player.sendMessage(ChatColor.GRAY + "Smiting " + tp.getName());
-            tp.getWorld().strikeLightning(tp.getLocation());
-            tp.sendMessage(ChatColor.GRAY + "Thou hast been smitted!");
+            strike(tp);
             return true;
         }
         player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<Byte>(), 50).getLocation());
         return true;
+    }
+
+    private void strike(Player tp) {
+        tp.getWorld().strikeLightning(tp.getLocation());
+        tp.sendMessage(ChatColor.GRAY + "Thou hast been smitted!");
     }
 }

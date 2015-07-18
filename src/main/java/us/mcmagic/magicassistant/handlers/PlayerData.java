@@ -3,9 +3,7 @@ package us.mcmagic.magicassistant.handlers;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Marc on 12/13/14
@@ -22,9 +20,11 @@ public class PlayerData {
     private boolean fountain;
     private boolean hotel;
     private int fastpass;
+    private int dailyfp;
+    private int fpday;
 
-    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends,
-                      boolean special, boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass) {
+    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
+                      boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp, int fpday) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -36,6 +36,8 @@ public class PlayerData {
         this.fountain = fountain;
         this.hotel = hotel;
         this.fastpass = fastpass;
+        this.dailyfp = dailyfp;
+        this.fpday = fpday;
     }
 
     public UUID getUniqueId() {
@@ -129,5 +131,21 @@ public class PlayerData {
 
     public void setFastpass(int fastpass) {
         this.fastpass = fastpass;
+    }
+
+    public int getDailyfp() {
+        return dailyfp;
+    }
+
+    public void setDailyfp(int dailyfp) {
+        this.dailyfp = dailyfp;
+    }
+
+    public int getDay() {
+        return fpday;
+    }
+
+    public void setDay(int fpday) {
+        this.fpday = fpday;
     }
 }

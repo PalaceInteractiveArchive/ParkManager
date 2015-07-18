@@ -1,24 +1,19 @@
 package us.mcmagic.magicassistant.listeners;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStationClick;
 import us.mcmagic.magicassistant.magicband.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
-
-import java.util.Arrays;
 
 public class InventoryClick implements Listener {
 
@@ -188,29 +183,6 @@ public class InventoryClick implements Listener {
                         event.setResult(Event.Result.DENY);
                     }
                 }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onInventoryCreative(InventoryCreativeEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        ItemStack clicked = event.getCurrentItem();
-        if (clicked != null && clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null &&
-                clicked.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
-            event.setCancelled(true);
-            event.setResult(Event.Result.DENY);
-            return;
-        }
-        if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-            ItemStack mb = new ItemStack(Material.PAPER);
-            ItemMeta mbm = mb.getItemMeta();
-            mbm.setDisplayName(ChatColor.GOLD + "MagicBand");
-            mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
-                    ChatColor.GREEN + "the MagicBand menu!"));
-            mb.setItemMeta(mbm);
-            if (clicked.equals(mb)) {
-                event.setCancelled(true);
             }
         }
     }

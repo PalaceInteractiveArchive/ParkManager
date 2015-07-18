@@ -9,8 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.listeners.PlayerInteract;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,12 +83,18 @@ public class QueueManager {
         QueueRide ride = MagicAssistant.queueManager.getRide(event.getLine(1));
         if (ride != null) {
             boolean fp = event.getLine(2).equalsIgnoreCase("fp");
+            boolean wait = event.getLine(2).equalsIgnoreCase("wait");
             if (fp) {
                 event.setLine(0, PlayerInteract.fastpass);
                 event.setLine(1, ChatColor.BLUE + "Use 1 Fastpass");
                 event.setLine(2, ride.getName());
                 event.setLine(3, ride.getFastpassSize() + " Players");
                 ride.addFPSign(event.getBlock().getLocation(), true);
+            } else if (wait) {
+                event.setLine(0, PlayerInteract.wait);
+                event.setLine(1, ChatColor.DARK_AQUA + "Click for the");
+                event.setLine(2, ChatColor.DARK_AQUA + "wait times for");
+                event.setLine(3, ride.getName());
             } else {
                 event.setLine(0, PlayerInteract.queue);
                 event.setLine(1, ChatColor.BLUE + "Join Queue For");
@@ -150,8 +159,8 @@ public class QueueManager {
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
         int amount = config.getInt("fpsign-amount");
-        config.set("queue." + sn + ".sign", null);
-        List<Location> signs = ride.getSigns();
+        config.set("queue." + sn + ".fpsign", null);
+        List<Location> signs = ride.getFPsigns();
         for (int i = 1; i <= signs.size(); i++) {
             Location l = signs.get(i - 1);
             config.set("queue." + sn + ".fpsign." + i + ".x", l.getBlockX());
@@ -160,7 +169,6 @@ public class QueueManager {
         }
         config.set("queue." + sn + ".fpsign-amount", signs.size());
         config.save(new File("plugins/MagicAssistant/queue.yml"));
-
     }
 
     public QueueRide getRide(String line) {
@@ -179,13 +187,24 @@ public class QueueManager {
     public void handle(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Sign s = (Sign) event.getClickedBlock().getState();
+        if (s.getLine(0).equals(PlayerInteract.wait)) {
+            QueueRide ride = getRide2(s.getLine(3));
+            if (ride == null) {
+                return;
+            }
+            String wait = ride.appxWaitTime();
+            particle(player, s.getLocation());
+            player.sendMessage(ChatColor.GREEN + "The approximate Wait Time for " + ride.getName() + ChatColor.GREEN +
+                    " is:\n" + ChatColor.AQUA + wait);
+            return;
+        }
         String rideName = s.getLine(2);
         QueueRide ride = getRide2(rideName);
         if (ride == null) {
             return;
         }
         if (ride.isFPQueued(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You can't leave a Fastpass queue!");
+            ride.leaveFPQueue(player);
             return;
         }
         if (ride.isQueued(player.getUniqueId())) {
@@ -193,14 +212,20 @@ public class QueueManager {
             return;
         }
         if (ride.isFrozen()) {
-            player.sendMessage(ride.getName() + ChatColor.GREEN +
-                    "'s Queue is frozen right now, check back in a few moments!");
+            player.sendMessage(ride.getName() + ChatColor.GREEN + "'s Queue is frozen right now, check back soon!");
             return;
         }
         if (s.getLine(0).equals(PlayerInteract.fastpass)) {
+            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+            if (data.getFastpass() <= 0) {
+                player.sendMessage(ChatColor.RED + "You do not have any FastPasses! Purchase them in your MagicBand.");
+                return;
+            }
             ride.joinFPQueue(player);
+            particle(player, s.getLocation());
         } else {
             ride.joinQueue(player);
+            particle(player, s.getLocation());
         }
     }
 
@@ -302,5 +327,10 @@ public class QueueManager {
         config.set("queue." + sname + ".fpsign." + num + ".z", loc.getBlockZ());
         config.set("queue." + sname + ".fpsign-amount", num);
         config.save(new File("plugins/MagicAssistant/queue.yml"));
+    }
+
+    public void particle(Player player, Location loc) {
+        ParticleUtil.spawnParticleForPlayer(ParticleEffect.WITCH_MAGIC, loc.add(0.5, 0.5, 0.5), 0.2f, 0.2f, 0.2f, 1, 25,
+                player);
     }
 }

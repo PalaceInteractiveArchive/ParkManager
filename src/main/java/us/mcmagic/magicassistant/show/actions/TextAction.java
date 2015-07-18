@@ -14,6 +14,6 @@ public class TextAction extends ShowAction {
 
     @Override
     public void play() {
-        Show.displayText(Text);
+        show.displayText(Text);
     }
 }

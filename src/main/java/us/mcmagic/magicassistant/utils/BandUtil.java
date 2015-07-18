@@ -58,7 +58,10 @@ public class BandUtil {
                     if (inv == null) {
                         continue;
                     }
-                    ItemStack pinfo = inv.getItem(15);//new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+                    ItemStack pinfo = inv.getItem(15);
+                    if (pinfo == null) {
+                        continue;
+                    }
                     ItemMeta meta = pinfo.getItemMeta();
                     meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
                             ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
@@ -165,7 +168,8 @@ public class BandUtil {
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
-                    result.getInt("fountain") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"));
+                    result.getInt("fountain") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"),
+                    result.getInt("dailyfp"), result.getInt("fpday"));
             result.close();
             sql.close();
             MagicAssistant.playerData.put(uuid, data);
@@ -282,8 +286,9 @@ public class BandUtil {
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                dataResponses.put(uuid, new DataResponse(uuid, MCMagicCore.economy.getBalance(uuid),
-                        MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid.toString()))));
+                DataResponse response = new DataResponse(uuid, MCMagicCore.economy.getBalance(uuid),
+                        MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid.toString())));
+                dataResponses.put(uuid, response);
             }
         });
     }
@@ -447,9 +452,11 @@ public class BandUtil {
         String second = new SimpleDateFormat("ss").format(current);
         String hour;
         if (Integer.parseInt(h) > 12) {
-            hour = (Integer.parseInt(h) - 12) + ":" + minute + ":" + second;
+            hour = (Integer.parseInt(h) - 12) + ":" + minute + ":" + second + " PM";
+        } else if (Integer.parseInt(h) == 0) {
+            hour = 12 + ":" + minute + ":" + second + " AM";
         } else {
-            hour = h + ":" + minute + ":" + second;
+            hour = h + ":" + minute + ":" + second + " AM";
         }
         return hour;
     }

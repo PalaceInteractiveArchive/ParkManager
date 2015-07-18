@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.trade;
 
+import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -15,8 +16,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.HeadUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -32,6 +33,7 @@ public class TradeManager {
     private HashMap<UUID, Integer> map2 = new HashMap<>();
     private HashMap<UUID, Integer> map3 = new HashMap<>();
     private HashMap<UUID, UUID> active = new HashMap<>();
+    private HashMap<UUID, UUID> fin = new HashMap<>();
     private ItemStack finalize = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "Confirm Trade",
             new ArrayList<String>());
     private ItemStack arrow;
@@ -146,16 +148,17 @@ public class TradeManager {
         Inventory tinv = Bukkit.createInventory(tp, InventoryType.CHEST, t2.length() > 32 ? t2.substring(0, 32) : t2);
         ItemStack drag = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 9, ChatColor.GRAY + "Drag your item(s) under you head.",
                 new ArrayList<String>());
-        ItemStack p1head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta p1hs = (SkullMeta) p1head.getItemMeta();
-        p1hs.setOwner(player.getName());
-        p1hs.setDisplayName(MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName());
-        p1head.setItemMeta(p1hs);
-        ItemStack p2head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta p2hs = (SkullMeta) p1head.getItemMeta();
-        p2hs.setOwner(tp.getName());
-        p2hs.setDisplayName(MCMagicCore.getUser(tp.getUniqueId()).getRank().getTagColor() + tp.getName());
-        p2head.setItemMeta(p2hs);
+        ItemStack p1head = null;
+        ItemStack p2head = null;
+        try {
+            p1head = HeadUtil.getPlayerHead(MCMagicCore.getUser(player.getUniqueId()).getTextureHash(),
+                    MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName());
+            p2head = HeadUtil.getPlayerHead(MCMagicCore.getUser(tp.getUniqueId()).getTextureHash(),
+                    MCMagicCore.getUser(tp.getUniqueId()).getRank().getTagColor() + tp.getName());
+        } catch (MojangsonParseException e) {
+            p1head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+            p2head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        }
         ItemStack waiting = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 4, ChatColor.GOLD + "Waiting...", new ArrayList<String>());
         ItemStack cont = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "Finalize Trade",
                 Arrays.asList(ChatColor.RED + "This cannot be undone!"));
@@ -281,6 +284,7 @@ public class TradeManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void handle(InventoryClickEvent event) {
         ItemStack stack = event.getCursor();
         if (stack == null) {
@@ -291,6 +295,33 @@ public class TradeManager {
             }
         }
         Player player = (Player) event.getWhoClicked();
+        if (ChatColor.stripColor(player.getOpenInventory().getTopInventory().getTitle()).equalsIgnoreCase("accept trade")) {
+            if (!stack.getType().equals(Material.STAINED_CLAY)) {
+                return;
+            }
+            byte data = stack.getData().getData();
+            Player tp;
+            if (active.containsKey(player.getUniqueId())) {
+                tp = Bukkit.getPlayer(active.remove(player.getUniqueId()));
+            } else {
+                tp = player;
+                for (Map.Entry<UUID, UUID> entry : active.entrySet()) {
+                    if (entry.getValue().equals(player.getUniqueId())) {
+                        player = Bukkit.getPlayer(entry.getKey());
+                        break;
+                    }
+                }
+            }
+            if (player == null) {
+                return;
+            }
+            if (data == 5) {
+                tradeDone(player, tp);
+            } else {
+                closeMenu(player, tp);
+            }
+            return;
+        }
         Player tp = PlayerUtil.findPlayer(ChatColor.stripColor(player.getOpenInventory().getTopInventory().getTitle())
                 .replaceFirst("Trade with ", ""));
         if (tp == null) {
@@ -358,6 +389,9 @@ public class TradeManager {
         }
     }
 
+    private void tradeDone(Player player, Player tp) {
+    }
+
     private void finalize(Player player) {
         Player tp = PlayerUtil.findPlayer(ChatColor.stripColor(player.getOpenInventory().getTopInventory().getTitle())
                 .replaceFirst("Trade with ", ""));
@@ -406,17 +440,37 @@ public class TradeManager {
         int tpmost = 13;
         for (int i = 0; i < 27; i++) {
             if (i > 9 && i < 13) {
+                if (inv.getItem(i).getType().equals(Material.STAINED_CLAY)) {
+                    continue;
+                }
                 acc.setItem(i, inv.getItem(i));
                 tpacc.setItem(i, inv.getItem(i));
             }
             if (i > 13 && i < 17) {
+                if (inv.getItem(i).getType().equals(Material.STAINED_CLAY)) {
+                    continue;
+                }
                 acc.setItem(i, inv.getItem(i));
                 tpacc.setItem(i, inv.getItem(i));
             }
         }
+        ItemStack p1head = null;
+        ItemStack p2head = null;
+        try {
+            p1head = HeadUtil.getPlayerHead(MCMagicCore.getUser(player.getUniqueId()).getTextureHash(),
+                    MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName());
+            p2head = HeadUtil.getPlayerHead(MCMagicCore.getUser(tp.getUniqueId()).getTextureHash(),
+                    MCMagicCore.getUser(tp.getUniqueId()).getRank().getTagColor() + tp.getName());
+        } catch (MojangsonParseException e) {
+            p1head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+            p2head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        }
+        acc.setItem(2, p1head);
+        acc.setItem(6, p2head);
         acc.setItem(21, no);
         acc.setItem(23, yes);
-        //TODO
+        tpacc.setItem(2, p1head);
+        tpacc.setItem(6, p2head);
         tpacc.setItem(21, yes);
         tpacc.setItem(23, no);
         player.openInventory(acc);

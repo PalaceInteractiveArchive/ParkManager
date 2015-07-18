@@ -1,18 +1,18 @@
 package us.mcmagic.magicassistant.show.actions;
 
-import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.entity.Firework;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;
-import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.show.Show;
 
 import java.util.ArrayList;
 
 public class FireworkAction extends ShowAction implements Listener {
+    private Show show;
+    private long time;
     public Location loc;
     public ArrayList<FireworkEffect> effects;
     public int power;
@@ -22,6 +22,8 @@ public class FireworkAction extends ShowAction implements Listener {
     public FireworkAction(Show show, long time, Location loc, ArrayList<FireworkEffect> effectList, int power, Vector dir,
                           double dirPow) {
         super(show, time);
+        this.show = show;
+        this.time = time;
         this.loc = loc;
         effects = effectList;
         this.power = power;
@@ -61,12 +63,8 @@ public class FireworkAction extends ShowAction implements Listener {
             fw.setVelocity(direction.normalize().multiply(dirPower * 0.05));
         }
         if (instaburst) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(MagicAssistant.getInstance(),
-                    new Runnable() {
-                        public void run() {
-                            fw.detonate();
-                        }
-                    }, 1L);
+            FireworkExplodeAction explode = new FireworkExplodeAction(show, time + 50, fw);
+            show.actions.add(explode);
         }
     }
 }

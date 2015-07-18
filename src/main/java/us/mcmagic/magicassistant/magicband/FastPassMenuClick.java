@@ -15,6 +15,8 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -43,24 +45,35 @@ public class FastPassMenuClick {
         switch (name) {
             case "Yes":
                 PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+                long timestamp = new Date().getTime();
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(timestamp);
+                data.setDailyfp(data.getDailyfp() + 1);
+                data.setDay(cal.get(Calendar.DAY_OF_YEAR));
                 data.setFastpass(data.getFastpass() + 1);
                 player.closeInventory();
                 MCMagicCore.economy.addBalance(player.getUniqueId(), -50);
                 player.sendMessage(ChatColor.GREEN + "You purchased one FastPass!");
-                setFastpassValue(player.getUniqueId(), data.getFastpass());
+                setFastpassValue(player.getUniqueId(), data.getFastpass(), data.getDailyfp(), data.getDay());
                 return;
             case "No":
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
         }
     }
 
-    private static void setFastpassValue(UUID uuid, int value) {
+    public static void setFastpassValue(UUID uuid, int value, int daily, int day) {
         try (Connection connection = SqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET fastpass=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET fastpass=?,dailyfp=?,fpday=? WHERE uuid=?");
             sql.setInt(1, value);
-            sql.setString(2, uuid.toString());
+            sql.setInt(2, daily);
+            sql.setInt(3, day);
+            sql.setString(4, uuid.toString());
             sql.execute();
             sql.close();
+            long timestamp = new Date().getTime();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(timestamp);
+            cal.get(Calendar.DAY_OF_YEAR);
         } catch (SQLException e) {
             e.printStackTrace();
         }

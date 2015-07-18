@@ -15,7 +15,7 @@ public class NPCRemoveAction extends ShowAction {
     @Override
     public void play() {
         //Remove Old
-        ShowNPC npc = Show.getNPCMap().remove(Name);
+        ShowNPC npc = show.getNPCMap().remove(Name);
         if (npc != null)
             npc.clean();
 

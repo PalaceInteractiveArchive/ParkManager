@@ -8,9 +8,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.DateUtil;
+import us.mcmagic.magicassistant.utils.SqlUtil;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -28,8 +33,11 @@ public class QueueRide {
     private long lastSpawn = 0;
     private List<Location> signs = new ArrayList<>();
     private List<Location> fpsigns = new ArrayList<>();
-    private boolean frozen;
+    private boolean frozen = false;
+    private boolean fpoff = false;
+    private boolean paused = false;
     private List<UUID> FPQueue;
+    private Integer timerID;
 
     public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp) {
         this.name = name;
@@ -72,12 +80,33 @@ public class QueueRide {
         }
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
     public void joinQueue(Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
         if (queue.isEmpty() && canSpawn()) {
-            player.sendMessage(ChatColor.GREEN + "The Queue was empty, so you're able to ride now!");
-            player.teleport(station);
-            spawn();
+            player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
+                    ChatColor.BOLD + "10" + ChatColor.GREEN + " seconds for anyone else to join the Queue.");
+            queue.add(player.getUniqueId());
+            updateSigns();
+            if (timerID == null) {
+                timerID = Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!queue.isEmpty() || !fpqueue.isEmpty()) {
+                            moveToStation();
+                            spawn();
+                        }
+                        timerID = null;
+                    }
+                }, 200L).getTaskId();
+            }
             return;
         }
         queue.add(player.getUniqueId());
@@ -86,12 +115,34 @@ public class QueueRide {
                 + "\nYou are in position #" + (getPosition(player.getUniqueId()) + 1));
     }
 
+    public void joinFPQueue(Player player) {
+        if (fpoff) {
+            player.sendMessage(ChatColor.RED + "The FastPass line for " + name + ChatColor.RED + " is closed, right now!");
+            return;
+        }
+        if (queue.isEmpty() && fpqueue.isEmpty() && canSpawn()) {
+            player.sendMessage(ChatColor.GREEN + "The queue is empty, don't use a FastPass!");
+            return;
+        }
+        MagicAssistant.queueManager.leaveAllQueues(player);
+        fpqueue.add(player.getUniqueId());
+        updateSigns();
+        player.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.AQUA + "FastPass Queue" +
+                ChatColor.GREEN + " for " + ChatColor.BLUE + name + ChatColor.GREEN + "\nYou are in position #" +
+                (getPosition(player.getUniqueId()) + 1) + ". You will be charged one FastPass when you board the ride.");
+    }
+
     public boolean canSpawn() {
-        return ((System.currentTimeMillis() / 1000) - delay) > lastSpawn;
+        return ((System.currentTimeMillis() / 1000) - delay) > lastSpawn && !paused;
     }
 
     public void leaveQueue(Player player) {
         player.sendMessage(ChatColor.GREEN + "You have left the Queue for " + ChatColor.BLUE + name);
+        leaveQueueSilent(player);
+    }
+
+    public void leaveFPQueue(Player player) {
+        player.sendMessage(ChatColor.GREEN + "You have left the FastPass Queue for " + ChatColor.BLUE + name);
         leaveQueueSilent(player);
     }
 
@@ -101,10 +152,27 @@ public class QueueRide {
 
     public void moveToStation() {
         List<UUID> fullList = new ArrayList<>(queue);
-        int place = 1;
-        for (UUID uuid : getFPQueue()) {
-            fullList.add(place, uuid);
-            place += 2;
+        List<UUID> fps = getFPQueue();
+        if (fps.size() > fullList.size()) {
+            int place = 1;
+            for (int i = 0; i < fullList.size(); i++) {
+                fullList.add(place, fps.get(i));
+                fps.remove(fps.get(i));
+                place += 2;
+            }
+            for (UUID uuid : fps) {
+                fullList.add(uuid);
+            }
+        } else {
+            int place = 1;
+            if (fullList.isEmpty()) {
+                fullList = fps;
+            } else {
+                for (UUID uuid : fps) {
+                    fullList.add(place, uuid);
+                    place += 2;
+                }
+            }
         }
         if (fullList.size() >= amountOfRiders) {
             for (int i = 0; i < amountOfRiders; i++) {
@@ -113,7 +181,11 @@ public class QueueRide {
                     i--;
                     continue;
                 }
+                if (fps.contains(tp.getUniqueId())) {
+                    chargeFastpass(MagicAssistant.getPlayerData(tp.getUniqueId()));
+                }
                 tp.teleport(getStation());
+                tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
                 leaveQueueSilent(tp);
                 fullList.remove(tp.getUniqueId());
             }
@@ -125,10 +197,33 @@ public class QueueRide {
             if (tp == null) {
                 continue;
             }
+            if (fps.contains(tp.getUniqueId())) {
+                chargeFastpass(MagicAssistant.getPlayerData(tp.getUniqueId()));
+            }
             tp.teleport(getStation());
             tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
             leaveQueueSilent(tp);
+            fullList.remove(tp.getUniqueId());
         }
+        updateSigns();
+    }
+
+    private void chargeFastpass(final PlayerData data) {
+        data.setFastpass(data.getFastpass() - 1);
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = SqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET fastpass=? WHERE uuid=?");
+                    sql.setInt(1, data.getFastpass());
+                    sql.setString(2, data.getUniqueId().toString());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public int getQueueSize() {
@@ -154,6 +249,15 @@ public class QueueRide {
             s.setLine(3, getQueueSize() + " Players");
             s.update();
         }
+        for (Location loc : new ArrayList<>(fpsigns)) {
+            Block b = loc.getBlock();
+            if (!MagicAssistant.rideManager.isSign(loc)) {
+                continue;
+            }
+            Sign s = (Sign) b.getState();
+            s.setLine(3, getFastpassSize() + " Players");
+            s.update();
+        }
     }
 
     public void spawn() {
@@ -172,21 +276,46 @@ public class QueueRide {
         return new ArrayList<>(signs);
     }
 
+    public List<Location> getFPsigns() {
+        return new ArrayList<>(fpsigns);
+    }
+
     public void leaveQueueSilent(Player player) {
         int pos = getPosition(player.getUniqueId());
-        if (pos < queue.size() - 1) {
-            for (UUID uuid : new ArrayList<>(queue.subList(pos + 1, queue.size()))) {
-                Player tp = Bukkit.getPlayer(uuid);
-                if (tp == null) {
-                    queue.remove(uuid);
-                    continue;
+        if (fpqueue.contains(player.getUniqueId())) {
+            if (pos < fpqueue.size() - 1) {
+                for (UUID uuid : new ArrayList<>(fpqueue.subList(pos + 1, fpqueue.size()))) {
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp == null) {
+                        fpqueue.remove(uuid);
+                        continue;
+                    }
+                    int tppos = getPosition(uuid);
+                    tp.sendMessage(ChatColor.GREEN + "You have moved in the " + ChatColor.AQUA + "FastPass " +
+                            ChatColor.GREEN + "queue from #" + (tppos + 1) + " to #" + (tppos));
                 }
-                int tppos = getPosition(uuid);
-                tp.sendMessage(ChatColor.GREEN + "You have moved in the queue from #" + (tppos + 1) + " to #" + (tppos));
             }
+            fpqueue.remove(player.getUniqueId());
+            updateSigns();
+        } else {
+            if (pos < queue.size() - 1) {
+                for (UUID uuid : new ArrayList<>(queue.subList(pos + 1, queue.size()))) {
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp == null) {
+                        queue.remove(uuid);
+                        continue;
+                    }
+                    int tppos = getPosition(uuid);
+                    tp.sendMessage(ChatColor.GREEN + "You have moved in the queue from #" + (tppos + 1) + " to #" + (tppos));
+                }
+            }
+            queue.remove(player.getUniqueId());
+            updateSigns();
         }
-        queue.remove(player.getUniqueId());
-        updateSigns();
+        if (timerID != null && queue.isEmpty() && fpqueue.isEmpty()) {
+            Bukkit.getScheduler().cancelTask(timerID);
+            timerID = null;
+        }
     }
 
     public List<UUID> getQueue() {
@@ -201,6 +330,15 @@ public class QueueRide {
                 //tp.performCommand("warp " + warp);
                 tp.sendMessage(ChatColor.GREEN + "You have been ejected from " + getName() +
                         ChatColor.GREEN + "'s Queue!");
+            }
+        }
+        for (UUID uuid : getFPQueue()) {
+            fpqueue.remove(uuid);
+            Player tp = Bukkit.getPlayer(uuid);
+            if (tp != null) {
+                //tp.performCommand("warp " + warp);
+                tp.sendMessage(ChatColor.GREEN + "You have been ejected from " + getName() +
+                        ChatColor.GREEN + "'s FastPass Queue! You still have your FastPasses.");
             }
         }
         updateSigns();
@@ -250,6 +388,10 @@ public class QueueRide {
         return frozen;
     }
 
+    public boolean isFastpassOff() {
+        return fpoff;
+    }
+
     public boolean toggleFreeze() {
         frozen = !frozen;
         for (UUID uuid : getQueue()) {
@@ -263,7 +405,27 @@ public class QueueRide {
                         "is unfrozen, but if you leave your place in line will be lost.");
             }
         }
+        if (!queue.isEmpty() || !fpqueue.isEmpty() && canSpawn()) {
+            moveToStation();
+            spawn();
+        }
         return frozen;
+    }
+
+    public boolean toggleFastpass() {
+        fpoff = !fpoff;
+        if (fpoff) {
+            for (UUID uuid : getFPQueue()) {
+                Player tp = Bukkit.getPlayer(uuid);
+                if (tp == null) {
+                    continue;
+                }
+                tp.sendMessage(getName() + ChatColor.GREEN +
+                        "'s FastPass Queue has been closed. You may stay in line until you reach the ride, " +
+                        "but if you leave your place in line will be lost.");
+            }
+        }
+        return fpoff;
     }
 
     public int getFastpassSize() {
@@ -272,33 +434,6 @@ public class QueueRide {
 
     public boolean isFPQueued(UUID uuid) {
         return fpqueue.contains(uuid);
-    }
-
-    public void joinFPQueue(Player player) {
-        MagicAssistant.queueManager.leaveAllQueues(player);
-        if (queue.isEmpty() && canSpawn()) {
-            player.sendMessage(ChatColor.GREEN + "The Queue was empty, so you're able to ride now!");
-            player.teleport(station);
-            spawn();
-            return;
-        }
-        fpqueue.add(player.getUniqueId());
-        updateFPSigns();
-        player.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.AQUA + "FastPass Queue" +
-                ChatColor.GREEN + " for " + ChatColor.BLUE + name + ChatColor.GREEN + "\nYou are in position #" +
-                (getPosition(player.getUniqueId()) + 1));
-    }
-
-    public void updateFPSigns() {
-        for (Location loc : new ArrayList<>(fpsigns)) {
-            Block b = loc.getBlock();
-            if (!MagicAssistant.rideManager.isSign(loc)) {
-                continue;
-            }
-            Sign s = (Sign) b.getState();
-            s.setLine(3, getQueueSize() + " Players");
-            s.update();
-        }
     }
 
     public List<UUID> getFPQueue() {

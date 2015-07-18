@@ -9,7 +9,6 @@ public class LightningAction extends ShowAction {
 
     public LightningAction(Show show, long time, Location location) {
         super(show, time);
-
         Location = location;
     }
 

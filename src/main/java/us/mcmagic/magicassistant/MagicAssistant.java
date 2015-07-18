@@ -408,6 +408,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("delwarp").setExecutor(new Commanddelwarp());
         getCommand("enderchest").setExecutor(new Commandenderchest());
         getCommand("fly").setExecutor(new Commandfly());
+        getCommand("fun").setExecutor(new Commandfun());
         getCommand("give").setExecutor(new Commandgive());
         getCommand("gwts").setExecutor(new Commandgwts());
         getCommand("head").setExecutor(new Commandhead());
@@ -459,6 +460,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
+        pm.registerEvents(new VehicleExit(), this);
         pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
