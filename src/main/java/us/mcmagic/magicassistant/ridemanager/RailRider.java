@@ -7,6 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 
 /**
  * Created by Marc on 7/16/15
@@ -28,8 +30,10 @@ public class RailRider {
         Block b = null;
         Bukkit.broadcastMessage(loc.toString() + " " + ChatColor.RED + pos.name());
         if (pos.equals(BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH) && !MagicAssistant.rideManager.isRail(loc)) {
-            pos = cart.getTrackType(loc.clone().add(0, -1, 0).getBlock().getData());
+            pos = cart.getTrackType(loc.add(0, -1, 0).getBlock().getData());
+            Bukkit.broadcastMessage("FUN " + pos.name());
         }
+        ParticleUtil.spawnParticle(ParticleEffect.DRIP_WATER, loc, 0f, 0f, 0f, 0f, 1);
         switch (pos) {
             case NORTH_SOUTH:
                 if (lastdir.equals(BlockFace.NORTH)) {
