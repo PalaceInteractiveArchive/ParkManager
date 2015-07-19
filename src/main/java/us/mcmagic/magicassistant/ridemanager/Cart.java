@@ -47,6 +47,7 @@ public class Cart extends EntityMinecartRideable {
         Bukkit.broadcastMessage(ChatColor.GREEN + "START" + locY);
         Location from = getLoc();
         Location to = railRider.next();
+        ParticleUtil.spawnParticle(ParticleEffect.DRIP_LAVA, to, 0f, 0f, 0f, 0f, 1);
         CartMoveEvent event = new CartMoveEvent(this, from.clone(), to.clone());
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {

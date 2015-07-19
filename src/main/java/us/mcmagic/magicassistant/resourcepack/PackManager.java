@@ -13,11 +13,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.mcmagiccore.resource.CurrentPackReceivedEvent;
 import us.mcmagic.mcmagiccore.resource.ResourceManager;
@@ -176,11 +175,6 @@ public class PackManager implements Listener {
 
     public void openMenu(Player player) {
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !user.getRank().equals(Rank.MCPROHOSTING)) {
-            player.closeInventory();
-            player.sendMessage(ChatColor.RED + "This feature isn't done yet!");
-            return;
-        }
         List<ResourcePack> packs = getPacks(packItems.keySet());
         Inventory menu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Resource Pack Menu");
         int place = 13;

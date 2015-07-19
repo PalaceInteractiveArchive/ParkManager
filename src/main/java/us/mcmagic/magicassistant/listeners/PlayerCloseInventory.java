@@ -24,6 +24,9 @@ public class PlayerCloseInventory implements Listener {
         }
         if (title.endsWith("resource pack menu")) {
             User user = MCMagicCore.getUser(player.getUniqueId());
+            if (user == null) {
+                return;
+            }
             if (user.getPreferredPack().equals("none")) {
                 player.sendMessage(ChatColor.RED + "You haven't chosen any Resource Pack Setting!");
             }

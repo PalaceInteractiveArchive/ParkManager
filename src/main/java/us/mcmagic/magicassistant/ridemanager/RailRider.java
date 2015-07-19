@@ -33,7 +33,7 @@ public class RailRider {
             pos = cart.getTrackType(loc.add(0, -1, 0).getBlock().getData());
             Bukkit.broadcastMessage("FUN " + pos.name());
         }
-        ParticleUtil.spawnParticle(ParticleEffect.DRIP_WATER, loc, 0f, 0f, 0f, 0f, 1);
+        ParticleUtil.spawnParticle(ParticleEffect.DRIP_WATER, loc.clone().add(0, 0.1, 0), 0f, 0f, 0f, 0f, 1);
         switch (pos) {
             case NORTH_SOUTH:
                 if (lastdir.equals(BlockFace.NORTH)) {
@@ -92,7 +92,16 @@ public class RailRider {
         if (!MagicAssistant.rideManager.isRail(b.getLocation())) {
             return original;
         } else {
+            Bukkit.broadcastMessage(ChatColor.YELLOW + pos.name());
+            if (isAscending(pos)) {
+                Bukkit.broadcastMessage("ASC");
+                return loc.add(0, 1, 0);
+            }
             return loc;
         }
+    }
+
+    private boolean isAscending(BlockMinecartTrackAbstract.EnumTrackPosition pos) {
+        return pos.name().toLowerCase().contains("ascending");
     }
 }

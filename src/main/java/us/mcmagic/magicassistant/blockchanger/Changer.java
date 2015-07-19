@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant.blockchanger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -80,8 +81,16 @@ public class Changer {
 
     @SuppressWarnings("deprecation")
     public void send(final Player player) {
-        loc1.getChunk().load();
-        loc2.getChunk().load();
+        for (int x = loc1.getBlockX(); x <= loc2.getBlockX(); x++) {
+            for (int y = loc1.getBlockY(); y <= loc2.getBlockY(); y++) {
+                for (int z = loc1.getBlockZ(); z <= loc2.getBlockZ(); z++) {
+                    Chunk c = loc1.getWorld().getBlockAt(new Location(loc1.getWorld(), x, y, z)).getChunk();
+                    if (!c.isLoaded()) {
+                        c.load();
+                    }
+                }
+            }
+        }
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {

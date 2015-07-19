@@ -47,6 +47,9 @@ public class HotelRoomMenuClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         HotelRoom room = manager.getRoom(name);
+        if (room == null) {
+            return;
+        }
         if (MCMagicCore.economy.getBalance(player.getUniqueId()) >= room.getCost()) {
             MCMagicCore.economy.addBalance(player.getUniqueId(), -room.getCost());
             manager.rentRoom(room, player);

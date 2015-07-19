@@ -5,10 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 /**
  * Created by Marc on 5/29/15
@@ -22,10 +18,9 @@ public class Commandtrade implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-            player.sendMessage(ChatColor.RED + "You can't use this yet!");
-            return true;
-        }
+        player.sendMessage(ChatColor.RED + "You can't use this yet!");
+        return true;
+        /*
         if (args.length != 1) {
             helpMenu(player);
             return true;
@@ -62,5 +57,6 @@ public class Commandtrade implements CommandExecutor {
         player.sendMessage(ChatColor.GREEN + "/trade [Username] " + ChatColor.YELLOW + "- Ask a player to Trade with you.");
         player.sendMessage(ChatColor.GREEN + "/trade accept " + ChatColor.YELLOW + "- Accept a pending Trade Request");
         player.sendMessage(ChatColor.GREEN + "/trade deny " + ChatColor.YELLOW + "- Deny a pending Trade Request");
+        */
     }
 }

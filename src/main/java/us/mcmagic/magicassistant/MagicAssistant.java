@@ -49,6 +49,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean crossServerInv;
     public static boolean resortsServer;
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+    public static PlayerJoinAndLeave playerJoinAndLeave;
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
@@ -402,13 +403,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         Commandmagic magic = new Commandmagic();
         getCommand("autograph").setExecutor(new Commandautograph());
         getCommand("autograph").setAliases(Arrays.asList("a", "auto"));
+        getCommand("balfix").setExecutor(new Commandbalfix());
         getCommand("bc").setExecutor(new Commandbc());
         getCommand("day").setExecutor(new Commandday());
         getCommand("delay").setExecutor(new Commanddelay());
         getCommand("delwarp").setExecutor(new Commanddelwarp());
         getCommand("enderchest").setExecutor(new Commandenderchest());
         getCommand("fly").setExecutor(new Commandfly());
-        getCommand("fun").setExecutor(new Commandfun());
         getCommand("give").setExecutor(new Commandgive());
         getCommand("gwts").setExecutor(new Commandgwts());
         getCommand("head").setExecutor(new Commandhead());
@@ -434,6 +435,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("sethub").setExecutor(new Commandsethub());
         getCommand("setspawn").setExecutor(new Commandsetspawn());
         getCommand("setwarp").setExecutor(new Commandsetwarp());
+        getCommand("signfix").setExecutor(new Commandsignfix());
         getCommand("smite").setExecutor(new Commandsmite());
         getCommand("spawn").setExecutor(new Commandspawn());
         getCommand("top").setExecutor(new Commandtop());
@@ -451,7 +453,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(this, this);
         pm.registerEvents(new ChatListener(), this);
-        pm.registerEvents(new PlayerJoinAndLeave(), this);
+        playerJoinAndLeave = new PlayerJoinAndLeave();
+        pm.registerEvents(playerJoinAndLeave, this);
         pm.registerEvents(new SignChange(), this);
         pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new InventoryClick(), this);
@@ -460,11 +463,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
-        pm.registerEvents(new VehicleExit(), this);
         pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
-        pm.registerEvents(rideManager, this);
+        //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             MessageTimer.start(this);
             pm.registerEvents(new Shooter(this), this);

@@ -47,7 +47,6 @@ public class PlayerJoinAndLeave implements Listener {
     private static HashMap<UUID, ItemStack[]> invData = new HashMap<>();
     private static HashMap<UUID, ItemStack[]> armorData = new HashMap<>();
     private static HashMap<UUID, ItemStack[]> endData = new HashMap<>();
-    public UUID lego = UUID.fromString("9ab3b4c4-71d8-47c9-9e7d-adf040c53d2b");
     private static HashMap<UUID, byte[]> storedInv = new HashMap<>();
     private static HashMap<UUID, byte[]> storedArmor = new HashMap<>();
     private static HashMap<UUID, byte[]> storedEnd = new HashMap<>();
@@ -56,7 +55,7 @@ public class PlayerJoinAndLeave implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         try {
             UUID uuid = event.getUniqueId();
-            if (MagicAssistant.crossServerInv || uuid.equals(lego)) {
+            if (MagicAssistant.crossServerInv) {
                 List<byte[]> stuff = invContents(uuid);
                 if (stuff != null) {
                     ItemStack[] inv = deserial(stuff.get(0));
@@ -110,7 +109,6 @@ public class PlayerJoinAndLeave implements Listener {
         if (Bukkit.getOnlinePlayers().size() >= 100 && user.getRank().getRankId() < Rank.INTERN.getRankId()) {
             event.setKickMessage("This park is at capacity, sorry!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
         }
         /*
         if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() && !player.getName().equals("sportsboy511")) {
@@ -177,7 +175,7 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
             }
-            if (MagicAssistant.crossServerInv || player.getUniqueId().equals(lego)) {
+            if (MagicAssistant.crossServerInv) {
                 PlayerInventory pi = player.getInventory();
                 if (invData.containsKey(player.getUniqueId())) {
                     ItemStack[] inv = invData.remove(player.getUniqueId());

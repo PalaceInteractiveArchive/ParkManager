@@ -46,7 +46,7 @@ public class PluginMessage implements PluginMessageListener {
             String server = in.readUTF();
             UUID uuid = UUID.fromString(in.readUTF());
             Boolean response = in.readBoolean();
-            PlayerJoinAndLeave.updateInventory(uuid, server, response);
+            MagicAssistant.playerJoinAndLeave.updateInventory(uuid, server, response);
         }
         if (subchannel.equals("AddParty")) {
             MagicAssistant.party = true;

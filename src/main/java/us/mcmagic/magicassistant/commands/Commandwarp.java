@@ -131,12 +131,12 @@ public class Commandwarp implements CommandExecutor {
                 if (warp.getName().equalsIgnoreCase("sge")) {
                     if (MagicAssistant.stitch.isWatching(player.getUniqueId())) {
                         MagicAssistant.stitch.leaveShow(player);
+                        return true;
                     }
-                } else {
-                    player.sendMessage(ChatColor.BLUE + "You have arrived at "
-                            + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                            + ChatColor.WHITE + "]");
                 }
+                player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                        + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                        + ChatColor.WHITE + "]");
                 return true;
             } else {
                 WarpUtil.crossServerWarp(player.getUniqueId(), warp.getName(), targetServer);
