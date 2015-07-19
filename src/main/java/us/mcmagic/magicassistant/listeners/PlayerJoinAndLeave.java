@@ -23,7 +23,6 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.shooter.Shooter;
-import us.mcmagic.magicassistant.utils.InventorySql;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -50,6 +49,99 @@ public class PlayerJoinAndLeave implements Listener {
     private static HashMap<UUID, byte[]> storedInv = new HashMap<>();
     private static HashMap<UUID, byte[]> storedArmor = new HashMap<>();
     private static HashMap<UUID, byte[]> storedEnd = new HashMap<>();
+    private List<UUID> firstJoins = new ArrayList<>();
+
+    public PlayerJoinAndLeave() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (Player tp : Bukkit.getOnlinePlayers()) {
+                    update(tp.getUniqueId());
+                }
+            }
+        }, 0L, 6000L);
+    }
+
+    private void update(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) {
+            return;
+        }
+        byte[] invcont = serial(player.getInventory().getContents());
+        byte[] armcont = serial(player.getInventory().getArmorContents());
+        byte[] endcont = serial(player.getEnderChest().getContents());
+        boolean inv = true;
+        boolean armor = true;
+        boolean end = true;
+        if (storedInv.containsKey(uuid)) {
+            if (invcont.equals(storedInv.get(uuid))) {
+                inv = false;
+            } else {
+                storedInv.remove(uuid);
+                storedInv.put(uuid, invcont);
+            }
+        }
+        if (storedArmor.containsKey(uuid)) {
+            if (armcont.equals(storedArmor.get(uuid))) {
+                armor = false;
+            } else {
+                storedInv.remove(uuid);
+                storedInv.put(uuid, armcont);
+            }
+        }
+        if (storedEnd.containsKey(uuid)) {
+            if (endcont.equals(storedEnd.get(uuid))) {
+                end = false;
+            } else {
+                storedInv.remove(uuid);
+                storedInv.put(uuid, endcont);
+            }
+        }
+        if (!inv && !armor && !end) {
+            return;
+        }
+        final boolean finalInv = inv;
+        final boolean finalArmor = armor;
+        final boolean finalEnd = end;
+        try (Connection connection = SqlUtil.getConnection()) {
+            PreparedStatement contains = connection.prepareStatement("SELECT uuid FROM inventory WHERE uuid=?");
+            contains.setString(1, player.getUniqueId().toString());
+            ResultSet result = contains.executeQuery();
+            if (!result.next()) {
+                result.close();
+                contains.close();
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO inventory values(0,?,?,?,?)");
+                insert.setString(1, player.getUniqueId().toString());
+                insert.setBytes(2, invcont);
+                insert.setBytes(3, armcont);
+                insert.setBytes(4, endcont);
+                insert.execute();
+                insert.close();
+            } else {
+                result.close();
+                contains.close();
+            }
+            PreparedStatement sql = connection.prepareStatement(getQuery(finalInv, finalArmor, finalEnd));
+            int num = 1;
+            if (finalInv) {
+                sql.setBytes(num, invcont);
+                num++;
+            }
+            if (finalArmor) {
+                sql.setBytes(num, armcont);
+                num++;
+            }
+            if (finalEnd) {
+                sql.setBytes(num, endcont);
+                num++;
+            }
+            sql.setString(num, player.getUniqueId().toString());
+            sql.execute();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
@@ -82,6 +174,8 @@ public class PlayerJoinAndLeave implements Listener {
                     storedInv.put(uuid, stuff.get(0));
                     storedArmor.put(uuid, stuff.get(1));
                     storedEnd.put(uuid, stuff.get(2));
+                } else {
+                    firstJoins.add(uuid);
                 }
             }
             MagicAssistant.bandUtil.setupPlayerData(uuid);
@@ -160,14 +254,8 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             if (MagicAssistant.hubServer) {
-                if (!player.hasPlayedBefore()) {
-                    /*
-                    int total = Bukkit.getOfflinePlayers().length + 100000;
-                    for (String msg : MagicAssistant.newJoinMessage) {
-                        String nmsg = msg.replaceAll("%pl%", player.getName());
-                        Bukkit.broadcastMessage(nmsg.replaceAll("%total%", "" + (total)));
-                    }
-                    */
+                if (firstJoins.contains(player.getUniqueId())) {
+                    firstJoins.remove(player.getUniqueId());
                     PlayerInventory pi = player.getInventory();
                     for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {
                         ItemStack i = new ItemStack(item.getKey(), item.getValue());
@@ -302,15 +390,6 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        if (MagicAssistant.crossServerInv) {
-            Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    InventorySql.updateInventory(player);
-                    InventorySql.updateEndInventory(player);
-                }
-            });
-        }
         if (player.getVehicle() != null) {
             player.getVehicle().eject();
         }
