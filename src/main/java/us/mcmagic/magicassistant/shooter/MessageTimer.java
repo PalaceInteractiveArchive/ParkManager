@@ -29,7 +29,7 @@ public class MessageTimer {
                         ActionBarManager.sendMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: "
                                 + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
                     }
-                } else {
+                } else if (Shooter.game == "mm") {
                     for (UUID uuid : Shooter.ingame) {
                         Player player = Bukkit.getPlayer(uuid);
                         ActionBarManager.sendMessage(player, ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: "

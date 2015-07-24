@@ -504,10 +504,10 @@ public class TradeManager {
                         tinv.setItem(i, item);
                     }
                     i++;
-                }
-            }
+}
+}
         }, 10L);
-    }
+        }
 
     private String getTimerMessage(int i) {
         switch (i) {

@@ -404,6 +404,7 @@ public class PlayerJoinAndLeave implements Listener {
         }
         MagicAssistant.queueManager.silentLeaveAllQueues(player);
         MagicAssistant.tradeManager.logout(player);
+        MagicAssistant.autographManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
         VisibleUtil.logout(player.getUniqueId());

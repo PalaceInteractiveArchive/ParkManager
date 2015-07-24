@@ -641,6 +641,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
                 break;
+            case "shooter":
+                sender.sendMessage(ChatColor.GREEN + "Show Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic shooter add [Name] " + ChatColor.AQUA + "- Adds player to Shooter Game");
+                sender.sendMessage(ChatColor.GREEN + "/magic show remove [Name] " + ChatColor.AQUA + "- Removes player from Shooter Game");
+                break;
             case "show":
                 sender.sendMessage(ChatColor.GREEN + "Show Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic show start [Show Name] " + ChatColor.AQUA + "- Start a Show");
