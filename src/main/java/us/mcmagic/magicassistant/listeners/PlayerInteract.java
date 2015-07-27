@@ -1,14 +1,9 @@
 package us.mcmagic.magicassistant.listeners;
 
-import net.minecraft.server.v1_8_R3.ItemSkull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
-import org.bukkit.craftbukkit.v1_8_R3.block.CraftSkull;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStation;
@@ -172,17 +166,6 @@ public class PlayerInteract implements Listener {
                     }
                 }
                 return;
-            } else if (type.equals(Material.SKULL)) {
-                Skull skull = (Skull) event.getClickedBlock().getState();
-                if (skull.getSkullType().equals(SkullType.PLAYER)) {
-                    CraftSkull s = (CraftSkull) skull;
-                    net.minecraft.server.v1_8_R3.ItemStack item = CraftItemStack.asNMSCopy(new ItemStack(Material.SKULL_ITEM, 1, (byte) 3));
-                    ItemSkull sk = new ItemSkull();
-                    s.getTileEntity().getUpdatePacket();
-                    if (skull.getOwner() != null) {
-                        Bukkit.broadcastMessage("Test: " + skull.getOwner());
-                    }
-                }
             }
         }
         PlayerInventory pi = player.getInventory();

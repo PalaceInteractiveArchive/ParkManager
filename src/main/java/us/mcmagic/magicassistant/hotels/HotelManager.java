@@ -14,7 +14,6 @@ import us.mcmagic.mcmagiccore.title.TitleObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -263,7 +262,7 @@ public class HotelManager {
             out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
             PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord",
                     b.toByteArray());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Bukkit.getServer()
                     .getLogger()
                     .severe("There was an error contacting the Bungee server to update Hotel Rooms!");

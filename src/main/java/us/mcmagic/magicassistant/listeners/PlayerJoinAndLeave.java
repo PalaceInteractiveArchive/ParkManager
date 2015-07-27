@@ -200,7 +200,7 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        if (Bukkit.getOnlinePlayers().size() >= 100 && user.getRank().getRankId() < Rank.INTERN.getRankId()) {
+        if (Bukkit.getOnlinePlayers().size() >= 150 && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
             event.setKickMessage("This park is at capacity, sorry!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
@@ -445,6 +445,15 @@ public class PlayerJoinAndLeave implements Listener {
     }
 
     public static byte[] serial(ItemStack[] stacks) {
+        for (int i = 0; i < stacks.length; i++) {
+            ItemStack s = stacks[i];
+            if (s == null) {
+                continue;
+            }
+            if (s.getType().equals(Material.SKULL_ITEM)) {
+                stacks[i] = new ItemStack(Material.AIR);
+            }
+        }
         return compress(serializeItemStacks(stacks));
     }
 
