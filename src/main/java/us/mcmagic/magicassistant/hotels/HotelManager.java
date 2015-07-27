@@ -384,12 +384,14 @@ public class HotelManager {
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
         }
-        Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
-        Material type = b.getType();
-        if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
-            Sign s = (Sign) b.getState();
-            s.setLine(3, "" + ChatColor.GREEN + room.getCost());
-            s.update();
+        if (!lapsed) {
+            Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
+            Material type = b.getType();
+            if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
+                Sign s = (Sign) b.getState();
+                s.setLine(3, "" + ChatColor.GREEN + room.getCost());
+                s.update();
+            }
         }
         room.setCurrentOccupant(null);
         room.setOccupantName(null);

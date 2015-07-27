@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.mcmagic.magicassistant.autograph.AutographManager;
+import us.mcmagic.magicassistant.autograph.Autographs;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.designstation.DesignStation;
@@ -70,7 +70,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static HotelManager hotelManager;
     public static AutographUtil autographUtil;
     public static QueueManager queueManager;
-    public static AutographManager autographManager;
+    public static Autographs autographManager;
 
     public void onEnable() {
         instance = this;
@@ -85,7 +85,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         autographUtil = new AutographUtil();
         universeEnergyRide = new UniverseEnergyRide();
         tradeManager = new TradeManager();
-        autographManager = new AutographManager();
+        autographManager = new Autographs();
         log("Initializing Queue Manager...");
         queueManager = new QueueManager();
         log("Queue Manager Initialized!");
