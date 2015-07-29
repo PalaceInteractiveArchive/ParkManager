@@ -17,24 +17,28 @@ public class MessageTimer {
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                if (MagicAssistant.shooter.game == "buzz") {
-                    for (UUID uuid : MagicAssistant.shooter.ingame) {
-                        Player player = Bukkit.getPlayer(uuid);
-                        ActionBarManager.sendMessage(player, ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: "
-                                + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
-                    }
-                } else if (MagicAssistant.shooter.game == "tsm") {
-                    for (UUID uuid : MagicAssistant.shooter.ingame) {
-                        Player player = Bukkit.getPlayer(uuid);
-                        ActionBarManager.sendMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: "
-                                + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
-                    }
-                } else if (MagicAssistant.shooter.game == "mm") {
-                    for (UUID uuid : MagicAssistant.shooter.ingame) {
-                        Player player = Bukkit.getPlayer(uuid);
-                        ActionBarManager.sendMessage(player, ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: "
-                                + ChatColor.YELLOW + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
-                    }
+                switch (MagicAssistant.shooter.game) {
+                    case "buzz":
+                        for (UUID uuid : MagicAssistant.shooter.ingame) {
+                            Player player = Bukkit.getPlayer(uuid);
+                            ActionBarManager.sendMessage(player, ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: "
+                                    + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
+                        }
+                        break;
+                    case "tsm":
+                        for (UUID uuid : MagicAssistant.shooter.ingame) {
+                            Player player = Bukkit.getPlayer(uuid);
+                            ActionBarManager.sendMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: "
+                                    + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
+                        }
+                        break;
+                    case "mm":
+                        for (UUID uuid : MagicAssistant.shooter.ingame) {
+                            Player player = Bukkit.getPlayer(uuid);
+                            ActionBarManager.sendMessage(player, ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: "
+                                    + ChatColor.YELLOW + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
+                        }
+                        break;
                 }
             }
         }, 0, 20L);

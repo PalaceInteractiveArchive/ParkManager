@@ -71,7 +71,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static AutographUtil autographUtil;
     public static QueueManager queueManager;
     public static Autographs autographManager;
-    public static Shooter shooter;
+    public static Shooter shooter = null;
 
     public void onEnable() {
         instance = this;
