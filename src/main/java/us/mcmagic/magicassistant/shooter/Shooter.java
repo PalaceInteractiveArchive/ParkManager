@@ -286,4 +286,11 @@ public class Shooter implements Listener {
 
         }
     }
+
+    public void warp(Player tp) {
+        if (!ingame.contains(tp.getUniqueId())) {
+            return;
+        }
+        done(tp);
+    }
 }
