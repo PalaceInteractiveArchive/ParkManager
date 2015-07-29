@@ -71,6 +71,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static AutographUtil autographUtil;
     public static QueueManager queueManager;
     public static Autographs autographManager;
+    public static Shooter shooter;
 
     public void onEnable() {
         instance = this;
@@ -471,8 +472,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerCloseInventory(), this);
         //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
-            MessageTimer.start(this);
-            pm.registerEvents(new Shooter(this), this);
+            shooter = new Shooter(this);
+            pm.registerEvents(shooter, this);
+            MessageTimer.start();
         }
     }
 }

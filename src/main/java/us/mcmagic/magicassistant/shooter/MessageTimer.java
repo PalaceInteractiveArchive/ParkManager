@@ -13,24 +13,24 @@ import java.util.UUID;
  */
 public class MessageTimer {
 
-    public static void start(MagicAssistant pl) {
-        Bukkit.getScheduler().runTaskTimer(pl, new Runnable() {
+    public static void start() {
+        Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                if (Shooter.game == "buzz") {
-                    for (UUID uuid : Shooter.ingame) {
+                if (MagicAssistant.shooter.game == "buzz") {
+                    for (UUID uuid : MagicAssistant.shooter.ingame) {
                         Player player = Bukkit.getPlayer(uuid);
                         ActionBarManager.sendMessage(player, ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: "
                                 + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
                     }
-                } else if (Shooter.game == "tsm") {
-                    for (UUID uuid : Shooter.ingame) {
+                } else if (MagicAssistant.shooter.game == "tsm") {
+                    for (UUID uuid : MagicAssistant.shooter.ingame) {
                         Player player = Bukkit.getPlayer(uuid);
                         ActionBarManager.sendMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: "
                                 + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
                     }
-                } else if (Shooter.game == "mm") {
-                    for (UUID uuid : Shooter.ingame) {
+                } else if (MagicAssistant.shooter.game == "mm") {
+                    for (UUID uuid : MagicAssistant.shooter.ingame) {
                         Player player = Bukkit.getPlayer(uuid);
                         ActionBarManager.sendMessage(player, ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: "
                                 + ChatColor.YELLOW + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());

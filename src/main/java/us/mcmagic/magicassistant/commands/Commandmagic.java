@@ -20,7 +20,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.blockchanger.Changer;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.queue.QueueRide;
-import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.ticker.TickEvent;
 import us.mcmagic.magicassistant.utils.SqlUtil;
@@ -290,13 +289,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                             }
                             PlayerInventory inv = player.getInventory();
                             if (inv.getItem(4) != null && !inv.getItem(4).getType().equals(Material.AIR)) {
-                                Shooter.addToHashMap(player.getUniqueId(), player.getInventory().getItem(4));
+                                MagicAssistant.shooter.addToHashMap(player.getUniqueId(), player.getInventory().getItem(4));
                             }
                             player.setMetadata("shooter", new FixedMetadataValue(MagicAssistant.getInstance(), 0));
-                            inv.setItem(4, Shooter.getItem());
+                            inv.setItem(4, MagicAssistant.shooter.getItem());
                             inv.setHeldItemSlot(4);
-                            Shooter.sendGameMessage(player);
-                            Shooter.ingame.add(player.getUniqueId());
+                            MagicAssistant.shooter.sendGameMessage(player);
+                            MagicAssistant.shooter.ingame.add(player.getUniqueId());
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
@@ -306,10 +305,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 return true;
                             }
                             PlayerInventory inv = player.getInventory();
-                            if (!inv.contains(Shooter.getItem())) {
+                            if (!inv.contains(MagicAssistant.shooter.getItem())) {
                                 return true;
                             }
-                            Shooter.done(player);
+                            MagicAssistant.shooter.done(player);
                         }
                 }
                 break;

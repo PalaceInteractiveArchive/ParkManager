@@ -29,11 +29,11 @@ import java.util.*;
  */
 @SuppressWarnings("deprecation")
 public class Shooter implements Listener {
-    private static ItemStack stack;
-    private static HashMap<UUID, ItemStack> itemMap = new HashMap<>();
-    private static HashMap<Long, Block> locations = new HashMap<>();
-    public static List<UUID> ingame = new ArrayList<>();
-    public static String game;
+    private ItemStack stack;
+    private HashMap<UUID, ItemStack> itemMap = new HashMap<>();
+    private HashMap<Long, Block> locations = new HashMap<>();
+    public List<UUID> ingame = new ArrayList<>();
+    public String game;
 
 
     public Shooter(MagicAssistant instance) {
@@ -142,7 +142,7 @@ public class Shooter implements Listener {
         }
     }
 
-    public static void sendGameMessage(Player player) {
+    public void sendGameMessage(Player player) {
         switch (game) {
             case "buzz":
                 player.sendMessage(ChatColor.AQUA + "----------------------------------------------------");
@@ -193,7 +193,7 @@ public class Shooter implements Listener {
         }
     }
 
-    public static void done(Player player) {
+    public void done(Player player) {
         ingame.remove(player.getUniqueId());
         player.getInventory().remove(stack.getType());
         switch (game) {
@@ -222,11 +222,11 @@ public class Shooter implements Listener {
         }
     }
 
-    public static ItemStack getItem() {
+    public ItemStack getItem() {
         return stack;
     }
 
-    public static String getRank(int score) {
+    public String getRank(int score) {
         if (score < 11) {
             return "✹ Level 1 Star Cadet: 0 - 10 ✹";
         }
@@ -255,14 +255,14 @@ public class Shooter implements Listener {
         return "";
     }
 
-    public static void addToHashMap(UUID uuid, ItemStack stack) {
+    public void addToHashMap(UUID uuid, ItemStack stack) {
         if (itemMap.containsKey(uuid)) {
             itemMap.remove(uuid);
         }
         itemMap.put(uuid, stack);
     }
 
-    public static ItemStack removeFromHashMap(UUID uuid) {
+    public ItemStack removeFromHashMap(UUID uuid) {
         try {
             return itemMap.remove(uuid);
         } catch (Exception ignored) {

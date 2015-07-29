@@ -187,7 +187,7 @@ public class HotelManager {
             return;
         }
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms values(0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
             sql.setInt(2, room.getRoomNumber());
             sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");
@@ -211,7 +211,7 @@ public class HotelManager {
 
     public void updateHotelRoom(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE `hotelrooms` SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=? WHERE name=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE hotelrooms SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=? WHERE name=?");
             sql.setString(1, room.getCurrentOccupant() == null ? "" : room.getCurrentOccupant().toString());
             sql.setString(2, room.getOccupantName() == null ? "" : room.getOccupantName());
             sql.setLong(3, room.getCheckoutTime());
@@ -226,7 +226,7 @@ public class HotelManager {
 
     public void addRoomWithoutCheckingExistance(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO `hotelrooms` values(0,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms values(0,?,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
             sql.setInt(2, room.getRoomNumber());
             sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");
@@ -245,7 +245,7 @@ public class HotelManager {
 
     public void removeRoom(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("DELETE FROM `hotelrooms` WHERE name=?");
+            PreparedStatement sql = connection.prepareStatement("DELETE FROM hotelrooms WHERE name=?");
             sql.setString(1, room.getName());
             sql.execute();
             sql.close();

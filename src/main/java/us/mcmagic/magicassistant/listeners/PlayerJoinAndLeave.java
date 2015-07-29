@@ -22,7 +22,6 @@ import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
-import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -200,7 +199,7 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        if (Bukkit.getOnlinePlayers().size() >= 150 && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+        if (Bukkit.getOnlinePlayers().size() >= 150 && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() && !MagicAssistant.hubServer) {
             event.setKickMessage("This park is at capacity, sorry!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
@@ -222,6 +221,7 @@ public class PlayerJoinAndLeave implements Listener {
                 MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
             } else {
                 if (!MagicAssistant.userCache.get(player.getUniqueId()).equals(player.getName())) {
+                    MagicAssistant.userCache.remove(player.getUniqueId());
                     MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
                 }
             }
@@ -237,7 +237,7 @@ public class PlayerJoinAndLeave implements Listener {
             if (MagicAssistant.spawnOnJoin || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");
             } else {
-                warpToNearestWarp(Bukkit.getPlayer(player.getUniqueId()));
+                warpToNearestWarp(player);
             }
             for (String msg : MagicAssistant.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
@@ -292,8 +292,8 @@ public class PlayerJoinAndLeave implements Listener {
                         player.getEnderChest().setContents(end);
                     }
                 }
-                if (Shooter.game != null) {
-                    pi.remove(Shooter.getItem().getType());
+                if (MagicAssistant.shooter.game != null) {
+                    pi.remove(MagicAssistant.shooter.getItem().getType());
                 }
                 ItemStack helm = player.getInventory().getHelmet();
                 if (helm != null && helm.getItemMeta() != null) {
@@ -311,8 +311,8 @@ public class PlayerJoinAndLeave implements Listener {
                         player.getInventory().setHelmet(new ItemStack(Material.AIR));
                     }
                 }
-                if (Shooter.game != null) {
-                    player.getInventory().remove(Shooter.getItem().getType());
+                if (MagicAssistant.shooter.game != null) {
+                    player.getInventory().remove(MagicAssistant.shooter.getItem().getType());
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
                 MagicAssistant.autographUtil.giveBook(player);
@@ -410,9 +410,9 @@ public class PlayerJoinAndLeave implements Listener {
         VisibleUtil.logout(player.getUniqueId());
         Commandvanish.hidden.remove(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
-        if (Shooter.getItem() != null) {
-            if (player.getInventory().contains(Shooter.getItem())) {
-                player.getInventory().remove(Shooter.getItem());
+        if (MagicAssistant.shooter.getItem() != null) {
+            if (player.getInventory().contains(MagicAssistant.shooter.getItem())) {
+                player.getInventory().remove(MagicAssistant.shooter.getItem());
             }
         }
         DesignStation.removePlayerVehicle(player.getUniqueId());
