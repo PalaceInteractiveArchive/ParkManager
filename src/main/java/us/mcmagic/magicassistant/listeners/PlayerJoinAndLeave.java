@@ -292,7 +292,7 @@ public class PlayerJoinAndLeave implements Listener {
                         player.getEnderChest().setContents(end);
                     }
                 }
-                if (MagicAssistant.shooter.game != null) {
+                if (MagicAssistant.shooter != null) {
                     pi.remove(MagicAssistant.shooter.getItem().getType());
                 }
                 ItemStack helm = player.getInventory().getHelmet();
@@ -410,7 +410,7 @@ public class PlayerJoinAndLeave implements Listener {
         VisibleUtil.logout(player.getUniqueId());
         Commandvanish.hidden.remove(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
-        if (MagicAssistant.shooter.getItem() != null) {
+        if (MagicAssistant.shooter != null) {
             if (player.getInventory().contains(MagicAssistant.shooter.getItem())) {
                 player.getInventory().remove(MagicAssistant.shooter.getItem());
             }

@@ -275,7 +275,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                         return true;
                 }
             case "shooter":
-                if (!MagicAssistant.getInstance().getConfig().getBoolean("shooter-enabled")) {
+                if (MagicAssistant.shooter == null) {
                     sender.sendMessage(ChatColor.RED + "Shooter is Disabled!");
                     return true;
                 }
