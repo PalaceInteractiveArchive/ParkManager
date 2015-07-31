@@ -35,8 +35,6 @@ public class Commandautograph implements CommandExecutor {
             return true;
         }
         switch (args[0].toLowerCase()) {
-            case "request":
-                return true;
             case "deny":
                 MagicAssistant.autographManager.acceptTrade(player);
                 return true;
@@ -50,7 +48,7 @@ public class Commandautograph implements CommandExecutor {
             return true;
         }
         if (tp.getUniqueId().equals(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You can't trade with yourself!");
+            player.sendMessage(ChatColor.RED + "You can't sign your own book!");
             return true;
 
         }
@@ -61,10 +59,10 @@ public class Commandautograph implements CommandExecutor {
 
     private void helpMenu(Player player) {
         player.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
-        player.sendMessage(ChatColor.GREEN + "/autograph request <user> " + ChatColor.AQUA + "- Requests signature from Guest");
+        player.sendMessage(ChatColor.GREEN + "/autograph <user> " + ChatColor.AQUA + "- Requests signature from Guest");
         player.sendMessage(ChatColor.GREEN + "/autograph accept " + ChatColor.AQUA + "- Accepts Autograph Book from Guest");
         player.sendMessage(ChatColor.GREEN + "/autograph deny " + ChatColor.AQUA + "- Denies Autograph Book from Guest");
-        player.sendMessage(ChatColor.GREEN + "/autograph remove <pg number>" + ChatColor.AQUA + "- Removes specific signature from book");
+        player.sendMessage(ChatColor.GREEN + "/autograph remove <user>" + ChatColor.AQUA + "- Removes users signature from your book");
 
     }
 }
