@@ -46,7 +46,7 @@ public class Autographs {
         map.put(sender.getUniqueId(), target.getUniqueId());
         final String name = MCMagicCore.getUser(sender.getUniqueId()).getRank().getTagColor() + sender.getName();
         final String name2 = MCMagicCore.getUser(target.getUniqueId()).getRank().getTagColor() + target.getName();
-        sender.sendMessage(ChatColor.GREEN + "Trade Request sent to " + name2);
+        sender.sendMessage(ChatColor.GREEN + "Autograph Request sent to " + name2);
         target.sendMessage(name + ChatColor.GREEN + " has sent you an Autograph Request. Type /autograph accept to accept, and /autograph deny to deny.");
         map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
