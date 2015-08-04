@@ -49,6 +49,9 @@ public class Stitch implements Listener {
 
     public int getSeatNumber(UUID uuid) {
         for (StitchSeat seat : seats.values()) {
+            if (seat.getOccupant() == null) {
+                continue;
+            }
             if (seat.getOccupant().equals(uuid)) {
                 return seat.getId();
             }
