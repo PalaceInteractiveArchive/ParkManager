@@ -99,6 +99,7 @@ public class Stitch implements Listener {
             if (!seat.inUse()) {
                 continue;
             }
+            watching.remove(seat.getOccupant());
             Bukkit.getPlayer(seat.getOccupant()).sendMessage(prefix + ChatColor.BLUE +
                     "The show has ended, we hope you enjoyed it!");
             seat.clearOccupant();
