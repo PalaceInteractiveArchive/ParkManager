@@ -243,7 +243,19 @@ public class Commandmagic implements Listener, CommandExecutor {
                     case 2:
                         if (args[1].equalsIgnoreCase("lock")) {
                             MagicAssistant.stitch.toggleLock(sender);
-                            return true;
+                        } else if (args[1].equalsIgnoreCase("eject")) {
+                            MagicAssistant.stitch.ejectAll(sender);
+                        } else if (args[1].equalsIgnoreCase("add")) {
+                            if (!(sender instanceof Player)) {
+                                return true;
+                            }
+                            Player player = (Player) sender;
+                            try {
+                                MagicAssistant.stitch.addSeat(player);
+                            } catch (IOException e) {
+                                player.sendMessage(ChatColor.RED + "There was an error doing this command!");
+                                e.printStackTrace();
+                            }
                         }
                         return true;
                     case 3:
@@ -311,6 +323,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                             MagicAssistant.shooter.done(player);
                         }
                 }
+                helpMenu("shooter", sender);
                 break;
             case "changer":
                 switch (args.length) {
@@ -641,7 +654,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
                 break;
             case "shooter":
-                sender.sendMessage(ChatColor.GREEN + "Show Commands:");
+                sender.sendMessage(ChatColor.GREEN + "Shooter Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter add [Name] " + ChatColor.AQUA + "- Adds player to Shooter Game");
                 sender.sendMessage(ChatColor.GREEN + "/magic show remove [Name] " + ChatColor.AQUA + "- Removes player from Shooter Game");
                 break;
@@ -660,6 +673,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic sge lock " + ChatColor.AQUA + "- Locks/Unlocks Show Room");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge eject " + ChatColor.AQUA + "- Ejects all players from their seats");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge join [Player name] " + ChatColor.AQUA + "- Adds a player to the Show" + ChatColor.RED + "*");
+                sender.sendMessage(ChatColor.GREEN + "/magic sge add " + ChatColor.AQUA + "- Add a seat to the show where you're standing");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge effect burp x,y,z" + ChatColor.AQUA + "- Displays the Burp effect at a given location");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge effect spit x,y,z" + ChatColor.AQUA + "- Displays the Spit effect at a given location");
                 break;

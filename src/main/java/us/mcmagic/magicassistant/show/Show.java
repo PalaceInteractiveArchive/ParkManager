@@ -118,17 +118,16 @@ public class Show {
                     actions.add(new TextAction(this, time, text));
                 }
                 // Music
-                else if (tokens[1].contains("Music")) {
+                if (tokens[1].contains("Music")) {
                     try {
                         int id = Integer.parseInt(tokens[2]);
                         actions.add(new MusicAction(this, time, id));
                     } catch (Exception e) {
                         invalidLines.put(strLine, "Invalid Material");
-                        continue;
                     }
                 }
                 // Pulse
-                else if (tokens[1].contains("Pulse")) {
+                if (tokens[1].contains("Pulse")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[2]);
                     if (loc == null) {
                         invalidLines.put(strLine, "Invalid Location");
@@ -137,7 +136,7 @@ public class Show {
                     actions.add(new PulseAction(this, time, loc));
                 }
                 // Lightning
-                else if (tokens[1].contains("Lightning")) {
+                if (tokens[1].contains("Lightning")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[2]);
                     if (loc == null) {
                         invalidLines.put(strLine, "Invalid Location");
@@ -146,7 +145,7 @@ public class Show {
                     actions.add(new LightningAction(this, time, loc));
                 }
                 // NPC Spawn
-                else if (tokens[1].contains("NPC")) {
+                if (tokens[1].contains("NPC")) {
                     // 0 NPC Spawn Name x,y,z Type MaterialInHand
                     if (tokens.length < 4) {
                         invalidLines.put(strLine, "Invalid NPC Line");
@@ -191,11 +190,11 @@ public class Show {
                         actions.add(new NPCSpawnAction(this, time, name, loc, type, holding));
                     }
                     // Remove
-                    else if (tokens[2].contains("Remove")) {
+                    if (tokens[2].contains("Remove")) {
                         actions.add(new NPCRemoveAction(this, time, name));
                     }
                     // move
-                    else if (tokens[2].contains("Move")) {
+                    if (tokens[2].contains("Move")) {
                         if (tokens.length < 5) {
                             invalidLines.put(strLine, "Invalid NPC Line");
                             continue;
@@ -220,7 +219,7 @@ public class Show {
                     }
                 }
                 // Fake Block
-                else if (tokens[1].contains("FakeBlock")) {
+                if (tokens[1].contains("FakeBlock")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
                     if (loc == null) {
                         invalidLines.put(strLine, "Invalid Location");
@@ -247,11 +246,10 @@ public class Show {
                         e.printStackTrace();
                         invalidLines.put(strLine,
                                 "Invalid Block ID or Block data");
-                        continue;
                     }
                 }
                 // Block
-                else if (tokens[1].contains("Block")) {
+                if (tokens[1].contains("Block")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
                     if (loc == null) {
                         invalidLines.put(strLine, "Invalid Location");
@@ -275,13 +273,11 @@ public class Show {
                         }
                         actions.add(new BlockAction(this, time, loc, id, data));
                     } catch (Exception e) {
-                        invalidLines.put(strLine,
-                                "Invalid Block ID or Block data");
-                        continue;
+                        invalidLines.put(strLine, "Invalid Block ID or Block data");
                     }
                 }
                 // Firework
-                else if (tokens[1].contains("PowerFirework")) {
+                if (tokens[1].contains("PowerFirework")) {
                     if (tokens.length != 5) {
                         invalidLines.put(strLine, "Invalid PowerFirework Line Length");
                     }
@@ -301,8 +297,8 @@ public class Show {
                         continue;
                     }
                     actions.add(new PowerFireworkAction(this, time, loc, motion, effectList));
-                    continue;
-                } else if (tokens[1].contains("Firework")) {
+                }
+                if (tokens[1].contains("Firework")) {
                     if (tokens.length != 7) {
                         invalidLines.put(strLine, "Invalid Firework Line Length");
                         continue;
@@ -363,8 +359,7 @@ public class Show {
                     actions.add(new FireworkAction(this, time, loc, effectList, power, dir, dirPower));
                 }
                 // Schematic
-                else if (tokens[1].contains("Schematic")) {
-                    // http://goo.gl/SAzALY
+                if (tokens[1].contains("Schematic")) {
                     if (isInt(tokens[3]) && isInt(tokens[4]) && isInt(tokens[5])) {
                         int x = Integer.parseInt(tokens[3]);
                         int y = Integer.parseInt(tokens[4]);
@@ -377,9 +372,8 @@ public class Show {
                         noAir = !tokens[7].toLowerCase().contains("false");
                         actions.add(new SchematicAction(this, time, pasteloc, schemfile, noAir));
                     }
-                    // 0 Schematic filename x y z world true/false
-                    continue;
-                } else if (tokens[1].contains("Fountain")) {
+                }
+                if (tokens[1].contains("Fountain")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
                     Double[] values = WorldUtil.strToDoubleList(world.getName() + "," + tokens[5]);
                     double duration = Double.parseDouble(tokens[3]);
@@ -405,7 +399,8 @@ public class Show {
                         invalidLines.put(strLine, "Invalid Fountain Type");
                         e.printStackTrace();
                     }
-                } else if (tokens[1].contains("Title")) {
+                }
+                if (tokens[1].contains("Title")) {
                     // 0 Title title fadeIn fadeOut stay title...
                     TitleObject.TitleType type = TitleObject.TitleType.valueOf(tokens[2].toUpperCase());
                     int fadeIn = Integer.parseInt(tokens[3]);
@@ -417,7 +412,8 @@ public class Show {
                     if (text.length() > 1)
                         text = text.substring(0, text.length() - 1);
                     actions.add(new TitleAction(this, time, type, text, fadeIn, fadeOut, stay));
-                } else if (tokens[1].contains("Particle")) {
+                }
+                if (tokens[1].contains("Particle")) {
                     // 0 Particle type x,y,z oX oY oZ speed amount
                     ParticleEffect effect = ParticleEffect.fromString(tokens[2]);
                     Location location = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);

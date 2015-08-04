@@ -152,6 +152,8 @@ public class Commandwarp implements CommandExecutor {
         if (args.length == 2) {
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
+                player.performCommand("warp " + args[0]);
+                return true;
             }
             if (PlayerUtil.findPlayer(args[1]) == null) {
                 player.sendMessage(ChatColor.RED + "Player not found.");

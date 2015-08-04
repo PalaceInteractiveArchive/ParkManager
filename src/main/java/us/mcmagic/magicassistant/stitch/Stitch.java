@@ -13,6 +13,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.StitchSeat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class Stitch implements Listener {
     private List<UUID> msgTimeout = new ArrayList<>();
     private HashMap<Integer, StitchSeat> seats = new HashMap<>();
     private boolean showLocked = false;
-    private String prefix = ChatColor.WHITE + "[" + ChatColor.BLUE + "SGE" + ChatColor.WHITE + "] ";
+    public String prefix = ChatColor.WHITE + "[" + ChatColor.BLUE + "SGE" + ChatColor.WHITE + "] ";
 
     public Stitch() {
         initialize();
@@ -90,7 +91,7 @@ public class Stitch implements Listener {
         }
     }
 
-    public void ejectAll() {
+    public void ejectAll(CommandSender sender) {
         for (StitchSeat seat : seats.values()) {
             if (!seat.inUse()) {
                 continue;
@@ -99,6 +100,7 @@ public class Stitch implements Listener {
                     "The show has ended, we hope you enjoyed it!");
             seat.clearOccupant();
         }
+        sender.sendMessage(prefix + ChatColor.BLUE + "All Guests have been ejected.");
     }
 
     public void joinShow(Player player) {
@@ -126,5 +128,20 @@ public class Stitch implements Listener {
 
     public boolean isWatching(UUID uuid) {
         return watching.contains(uuid);
+    }
+
+    public void addSeat(Player player) throws IOException {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+        Location loc = player.getLocation();
+        int i = seats.size() + 1;
+        config.set("stitch." + i + ".x", loc.getX());
+        config.set("stitch." + i + ".y", loc.getY());
+        config.set("stitch." + i + ".z", loc.getZ());
+        config.set("stitch." + i + ".yaw", loc.getYaw());
+        config.set("stitch." + i + ".pitch", loc.getPitch());
+        seats.put(i, new StitchSeat(i, loc));
+        config.set("stitch.amount", seats.size());
+        config.save(new File("plugins/MagicAssistant/config.yml"));
+        player.sendMessage(prefix + ChatColor.BLUE + "Added seat " + ChatColor.GREEN + "#" + i);
     }
 }

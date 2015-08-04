@@ -28,14 +28,14 @@ public class Commandtp implements CommandExecutor {
                 try {
                     Player tp = PlayerUtil.findPlayer(args[0]);
                     double x = args[1].startsWith("~") ? tp.getLocation().getX()
-                            + Double.parseDouble(args[1].substring(1)) : Integer
-                            .parseInt(args[1]);
+                            + num(args[1].substring(1)) :
+                            num(args[1]);
                     double y = args[2].startsWith("~") ? tp.getLocation().getY()
-                            + Double.parseDouble(args[2].substring(1)) : Integer
-                            .parseInt(args[2]);
+                            + num(args[2].substring(1)) :
+                            num(args[2]);
                     double z = args[3].startsWith("~") ? tp.getLocation().getZ()
-                            + Double.parseDouble(args[3].substring(1)) : Integer
-                            .parseInt(args[3]);
+                            + num(args[3].substring(1)) :
+                            num(args[3]);
                     Location loc = new Location(tp.getWorld(), x, y, z, tp
                             .getLocation().getYaw(), tp.getLocation().getPitch());
                     tp.teleport(loc);
@@ -76,11 +76,11 @@ public class Commandtp implements CommandExecutor {
         if (args.length == 3) {
             try {
                 double x = args[0].startsWith("~") ? player.getLocation().getX()
-                        + Double.parseDouble(args[0].substring(1)) : Double.parseDouble(args[0]);
+                        + num(args[0].substring(1)) : num(args[0]);
                 double y = args[1].startsWith("~") ? player.getLocation().getY()
-                        + Double.parseDouble(args[1].substring(1)) : Double.parseDouble(args[1]);
+                        + num(args[1].substring(1)) : num(args[1]);
                 double z = args[2].startsWith("~") ? player.getLocation().getZ()
-                        + Double.parseDouble(args[2].substring(1)) : Double.parseDouble(args[2]);
+                        + num(args[2].substring(1)) : num(args[2]);
                 Location loc = new Location(player.getWorld(), x, y, z, player
                         .getLocation().getYaw(), player.getLocation().getPitch());
                 player.teleport(loc);
@@ -95,14 +95,11 @@ public class Commandtp implements CommandExecutor {
             try {
                 Player tp = PlayerUtil.findPlayer(args[0]);
                 double x = args[0].startsWith("~") ? player.getLocation().getX()
-                        + Double.parseDouble(args[0].substring(1)) : Integer
-                        .parseInt(args[0]);
+                        + num(args[0].substring(1)) : num(args[1]);
                 double y = args[1].startsWith("~") ? player.getLocation().getY()
-                        + Double.parseDouble(args[1].substring(1)) : Integer
-                        .parseInt(args[1]);
+                        + num(args[1].substring(1)) : num(args[2]);
                 double z = args[2].startsWith("~") ? player.getLocation().getZ()
-                        + Double.parseDouble(args[2].substring(1)) : Integer
-                        .parseInt(args[2]);
+                        + num(args[2].substring(1)) : num(args[3]);
                 Location loc = new Location(tp.getWorld(), x, y, z, tp
                         .getLocation().getYaw(), tp.getLocation().getPitch());
                 tp.teleport(loc);
@@ -113,7 +110,26 @@ public class Commandtp implements CommandExecutor {
                 return true;
             }
         }
-        player.sendMessage(ChatColor.RED + "/tp [Player] <Target> or <x> <y> <z>");
+        player.sendMessage(ChatColor.RED + "/tp [Player] <Target> or /tp <x> <y> <z> or /tp [Player] <x> <y> <z>");
         return true;
+    }
+
+    private boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private double num(String s) {
+        if (s == null) {
+            return 0;
+        }
+        if (isDouble(s)) {
+            return Double.parseDouble(s);
+        }
+        return Integer.parseInt(s);
     }
 }
