@@ -99,6 +99,9 @@ public class Stitch implements Listener {
             if (!seat.inUse()) {
                 continue;
             }
+            if (seat.getOccupant() == null) {
+                continue;
+            }
             watching.remove(seat.getOccupant());
             Bukkit.getPlayer(seat.getOccupant()).sendMessage(prefix + ChatColor.BLUE +
                     "The show has ended, we hope you enjoyed it!");
@@ -126,8 +129,28 @@ public class Stitch implements Listener {
     }
 
     public void leaveShow(Player player) {
-        watching.remove(player.getUniqueId());
+        for (StitchSeat seat : new ArrayList<>(seats.values())) {
+            if (seat.getOccupant() == null) {
+                continue;
+            }
+            if (seat.getOccupant().equals(player.getUniqueId())) {
+                seat.setOccupant(null);
+                watching.remove(player.getUniqueId());
+            }
+        }
         player.sendMessage(prefix + ChatColor.RED + "You are no longer watching Stitch's Great Escape");
+    }
+
+    private StitchSeat getSeat(Player player) {
+        for (StitchSeat s : seats.values()) {
+            if (s.getOccupant() == null) {
+                continue;
+            }
+            if (s.getOccupant().equals(player.getUniqueId())) {
+                return s;
+            }
+        }
+        return null;
     }
 
     public boolean isWatching(UUID uuid) {
@@ -147,5 +170,9 @@ public class Stitch implements Listener {
         config.set("stitch.amount", seats.size());
         config.save(new File("plugins/MagicAssistant/config.yml"));
         player.sendMessage(prefix + ChatColor.BLUE + "Added seat " + ChatColor.GREEN + "#" + i);
+    }
+
+    public void logout(Player player) {
+        leaveShow(player);
     }
 }

@@ -1,6 +1,6 @@
 name: MagicAssistant
 author: MCMagicDev
-version: 1.6.3-SNAPSHOT
+version: 1.6.4-SNAPSHOT
 description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib]
@@ -147,7 +147,7 @@ commands:
       aliases: [tell, t, w, whisper, m]
    autograph:
       description: Update the player's inventory
-      permission: mcmagic.warp
+      permission: mcmagic.autograph
       permission-message: §4§4Please notify a Cast Member that you can’t do this.
    hrl:
       description: Reload hotel rooms

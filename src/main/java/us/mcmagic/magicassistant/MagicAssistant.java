@@ -234,8 +234,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     public static YamlConfiguration config() {
-        return YamlConfiguration.loadConfiguration(new File(
-                "plugins/magicassistant/config.yml"));
+        return YamlConfiguration.loadConfiguration(new File("plugins/magicassistant/config.yml"));
     }
 
     public static boolean isInPermGroup(Player player, String group) {

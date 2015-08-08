@@ -199,13 +199,10 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        if (Bukkit.getOnlinePlayers().size() >= 150 && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() && !MagicAssistant.hubServer) {
-            event.setKickMessage("This park is at capacity, sorry!");
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-        }
         /*
-        if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() && !player.getName().equals("sportsboy511")) {
-            event.setKickMessage("This server will be available soon!");
+        if (Bukkit.getOnlinePlayers().size() >= 150 && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() &&
+                !MagicAssistant.hubServer) {
+            event.setKickMessage("This park is at capacity, sorry!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
         */
@@ -407,6 +404,7 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.autographManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
+        MagicAssistant.stitch.logout(player);
         VisibleUtil.logout(player.getUniqueId());
         Commandvanish.hidden.remove(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
