@@ -298,7 +298,7 @@ public class Show {
                     }
                     actions.add(new PowerFireworkAction(this, time, loc, motion, effectList));
                 }
-                if (tokens[1].contains("Firework")) {
+                if (tokens[1].startsWith("Firework")) {
                     if (tokens.length != 7) {
                         invalidLines.put(strLine, "Invalid Firework Line Length");
                         continue;
