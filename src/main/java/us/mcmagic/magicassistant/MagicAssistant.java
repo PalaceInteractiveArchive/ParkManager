@@ -68,7 +68,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static ShopManager shopManager;
     public static TradeManager tradeManager;
     public static HotelManager hotelManager;
-    public static AutographUtil autographUtil;
     public static QueueManager queueManager;
     public static Autographs autographManager;
     public static Shooter shooter = null;
@@ -83,7 +82,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         log("Initializing Pack Manager...");
         packManager = new PackManager();
         log("Pack Manager Initialized!");
-        autographUtil = new AutographUtil();
         universeEnergyRide = new UniverseEnergyRide();
         tradeManager = new TradeManager();
         autographManager = new Autographs();

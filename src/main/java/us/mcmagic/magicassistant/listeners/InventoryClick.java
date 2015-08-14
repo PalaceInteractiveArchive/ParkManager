@@ -184,11 +184,9 @@ public class InventoryClick implements Listener {
                         event.setCancelled(true);
                         event.setResult(Event.Result.DENY);
                     }
-                    {
-                        if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("Autograph Book")) {
-                            event.setCancelled(true);
-                            event.setResult(Event.Result.DENY);
-                        }
+                    if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("Autograph Book")) {
+                        event.setCancelled(true);
+                        event.setResult(Event.Result.DENY);
                     }
                 }
             }

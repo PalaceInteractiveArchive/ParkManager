@@ -2,11 +2,21 @@ package us.mcmagic.magicassistant.autograph;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
+import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -17,6 +27,67 @@ public class Autographs {
     private HashMap<UUID, Integer> map2 = new HashMap<>();
     private HashMap<UUID, Integer> map3 = new HashMap<>();
     private HashMap<UUID, UUID> active = new HashMap<>();
+    private HashMap<UUID, String> nameMap = new HashMap<>();
+    private HashMap<UUID, ItemStack> books = new HashMap<>();
+
+    public void setBook(UUID uuid) {
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+        BookMeta bm = (BookMeta) book.getItemMeta();
+        bm.addPage("This is your Autograph Book! Find Characters and they will sign it for you!");
+        HashMap<UUID, String> map = new HashMap<>();
+        try (Connection connection = SqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM autographs WHERE user=?");
+            sql.setString(1, uuid.toString());
+            ResultSet result = sql.executeQuery();
+            while (result.next()) {
+                map.put(UUID.fromString(result.getString("sender")), result.getString("message"));
+            }
+            result.close();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (!map.isEmpty()) {
+            for (Map.Entry<UUID, String> entry : map.entrySet()) {
+                String name = "Unknown";
+                if (nameMap.containsKey(entry.getKey())) {
+                    name = nameMap.get(entry.getKey());
+                } else {
+                    try (Connection connection = SqlUtil.getConnection()) {
+                        PreparedStatement n = connection.prepareStatement("SELECT * FROM player_data WHERE uuid=?");
+                        n.setString(1, entry.getKey().toString());
+                        ResultSet r = n.executeQuery();
+                        if (!r.next()) {
+                            continue;
+                        }
+                        Rank rank = Rank.fromString(r.getString("rank"));
+                        name = rank.getChatColor() + r.getString("username");
+                        nameMap.put(entry.getKey(), name);
+                        r.close();
+                        n.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                bm.addPage(ChatColor.translateAlternateColorCodes('&', entry.getValue()) + ChatColor.DARK_GREEN + "\n- "
+                        + name);
+            }
+        }
+        bm.setTitle(ChatColor.DARK_AQUA + "Autograph Book");
+        book.setItemMeta(bm);
+        books.put(uuid, book);
+    }
+
+    public void giveBook(Player player) {
+        ItemStack book = books.remove(player.getUniqueId());
+        if (book == null) {
+            return;
+        }
+        BookMeta bm = (BookMeta) book.getItemMeta();
+        bm.setAuthor(player.getName());
+        book.setItemMeta(bm);
+        player.getInventory().setItem(7, book);
+    }
 
     public void logout(Player player) {
         if (map.containsKey(player.getUniqueId())) {
@@ -38,7 +109,37 @@ public class Autographs {
         }
     }
 
-    public void addAutograph(final Player sender, final Player target) {
+    public void sign(Player player, String message) {
+        Player tp = null;
+        for (Map.Entry<UUID, UUID> entry : map.entrySet()) {
+            if (entry.getValue().equals(player.getUniqueId())) {
+                tp = Bukkit.getPlayer(entry.getKey());
+                break;
+            }
+        }
+        if (tp == null) {
+            player.sendMessage(ChatColor.RED + "You're not signing anyone's book right now!");
+            return;
+        }
+        try (Connection connection = SqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs ('user','sender','message') VALUES ('"
+                    + player.getUniqueId().toString() + "','" + tp.getUniqueId().toString() + "','" + message + "')");
+            sql.execute();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            player.sendMessage(ChatColor.RED + "There was an error signing this book!");
+            return;
+        }
+        setBook(tp.getUniqueId());
+        giveBook(tp);
+        tp.sendMessage(MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName() +
+                ChatColor.GREEN + " has signed your Autograph Book!");
+        player.sendMessage(ChatColor.GREEN + "You signed " + tp.getName() + "'s Autograph Book!");
+        active.remove(player.getUniqueId());
+    }
+
+    public void requestToSign(final Player sender, final Player target) {
         if (map.containsValue(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "That player already has an autograph request!");
             return;
@@ -47,7 +148,12 @@ public class Autographs {
         final String name = MCMagicCore.getUser(sender.getUniqueId()).getRank().getTagColor() + sender.getName();
         final String name2 = MCMagicCore.getUser(target.getUniqueId()).getRank().getTagColor() + target.getName();
         sender.sendMessage(ChatColor.GREEN + "Autograph Request sent to " + name2);
-        target.sendMessage(name + ChatColor.GREEN + " has sent you an Autograph Request. Type /autograph accept to accept, and /autograph deny to deny.");
+        FormattedMessage msg = new FormattedMessage(sender.getName()).color(MCMagicCore.getUser(sender.getUniqueId())
+                .getRank().getTagColor()).then(" has sent you an ").color(ChatColor.GREEN).then("Autograph Request. ")
+                .color(ChatColor.DARK_AQUA).style(ChatColor.BOLD).then("Click here to Accept").color(ChatColor.YELLOW)
+                .command("/autograph accept").then(" - ").color(ChatColor.GREEN).then("Click here to Deny")
+                .color(ChatColor.RED).command("/autograph deny");
+        msg.send(target);
         map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -66,15 +172,17 @@ public class Autographs {
             @Override
             public void run() {
                 if (i <= 0) {
-                    ActionBarManager.sendMessage(target, ChatColor.RED + sender.getName() + "'s Autograph Request Expired!");
-                    ActionBarManager.sendMessage(sender, ChatColor.RED + "Your Autograph Request to " + target.getName() + " Expired!");
+                    ActionBarManager.sendMessage(target, ChatColor.RED + sender.getName() +
+                            "'s Autograph Request Expired!");
+                    ActionBarManager.sendMessage(sender, ChatColor.RED + "Your Autograph Request to " + target.getName()
+                            + " Expired!");
                     cancelTimer(sender.getUniqueId());
                     return;
                 }
-                ActionBarManager.sendMessage(target, ChatColor.AQUA + sender.getName() + "'s Autograph Request: " + getTimerMessage(i)
-                        + " " + ChatColor.AQUA + i + "s");
-                ActionBarManager.sendMessage(sender, ChatColor.GREEN + "Your Autograph Request to " + ChatColor.AQUA + target.getName()
-                        + ": " + getTimerMessage(i) + " " + ChatColor.AQUA + i + "s");
+                ActionBarManager.sendMessage(target, ChatColor.AQUA + sender.getName() + "'s Autograph Request: " +
+                        getTimerMessage(i) + " " + ChatColor.AQUA + i + "s");
+                ActionBarManager.sendMessage(sender, ChatColor.GREEN + "Your Autograph Request to " + ChatColor.AQUA +
+                        target.getName() + ": " + getTimerMessage(i) + " " + ChatColor.AQUA + i + "s");
                 i--;
             }
         }, 0, 20L).getTaskId());
@@ -130,9 +238,9 @@ public class Autographs {
         }
     }
 
-    public void acceptTrade(Player player) {
+    public void acceptRequest(Player player) {
         if (!map.containsValue(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You don't have any pending Trade Requests!");
+            player.sendMessage(ChatColor.RED + "You don't have any pending Autograph Requests!");
             return;
         }
         Player tp = null;
@@ -143,7 +251,7 @@ public class Autographs {
             }
         }
         if (tp == null) {
-            player.sendMessage(ChatColor.RED + "You don't have any pending Trade Requests!");
+            player.sendMessage(ChatColor.RED + "You don't have any pending Autograph Requests!");
             return;
         }
         map.remove(tp.getUniqueId());
@@ -156,9 +264,10 @@ public class Autographs {
         player.sendMessage(ChatColor.GREEN + "You accepted " + name + "'s " + ChatColor.GREEN + "Autograph Request!");
         tp.sendMessage(name2 + ChatColor.GREEN + " accepted your Autograph Request!");
         active.put(tp.getUniqueId(), player.getUniqueId());
+        player.getInventory().setItem(7, new ItemStack(Material.AIR));
     }
 
-    public void denyTrade(Player player) {
+    public void denyRequest(Player player) {
         if (!map.containsValue(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You don't have any pending Autograph Requests!");
             return;
@@ -195,5 +304,8 @@ public class Autographs {
             Bukkit.getScheduler().cancelTask(taskID2);
         }
 
+    }
+
+    public void removeAutograph(Player player, Integer pageNum) {
     }
 }

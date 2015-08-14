@@ -178,7 +178,7 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             MagicAssistant.bandUtil.setupPlayerData(uuid);
-            MagicAssistant.autographUtil.setBook(uuid);
+            MagicAssistant.autographManager.setBook(uuid);
             if (MagicAssistant.getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
@@ -197,7 +197,6 @@ public class PlayerJoinAndLeave implements Listener {
         User user = MCMagicCore.getUser(player.getUniqueId());
         if (user == null) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
         }
         /*
         if (Bukkit.getOnlinePlayers().size() >= 150 && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() &&
@@ -299,7 +298,7 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
-                MagicAssistant.autographUtil.giveBook(player);
+                MagicAssistant.autographManager.giveBook(player);
                 player.sendMessage(ChatColor.GREEN + "Inventory updated!");
             } else {
                 ItemStack helm = player.getInventory().getHelmet();
@@ -312,7 +311,7 @@ public class PlayerJoinAndLeave implements Listener {
                     player.getInventory().remove(MagicAssistant.shooter.getItem().getType());
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
-                MagicAssistant.autographUtil.giveBook(player);
+                MagicAssistant.autographManager.giveBook(player);
             }
             if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
                 Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
