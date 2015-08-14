@@ -146,9 +146,15 @@ commands:
       permission-message: §4Only Cast Members can use this command!
       aliases: [tell, t, w, whisper, m]
    autograph:
-      description: Update the player's inventory
+      description: Default Autograph Command
       permission: mcmagic.autograph
       permission-message: §4§4Please notify a Cast Member that you can’t do this.
+      aliases: [auto, a]
+   sign:
+      description: Sign a player's book
+      permission: mcmagic.autograph
+      permission-message: §4§4Please notify a Cast Member that you can’t do this.
+      aliases: [s]
    hrl:
       description: Reload hotel rooms
       permission: mcmagic.hotel.reload

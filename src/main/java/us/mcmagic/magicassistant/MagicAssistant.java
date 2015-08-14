@@ -436,6 +436,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("sethub").setExecutor(new Commandsethub());
         getCommand("setspawn").setExecutor(new Commandsetspawn());
         getCommand("setwarp").setExecutor(new Commandsetwarp());
+        getCommand("sign").setExecutor(new Commandsign());
+        getCommand("sign").setAliases(Collections.singletonList("s"));
         getCommand("signfix").setExecutor(new Commandsignfix());
         getCommand("smite").setExecutor(new Commandsmite());
         getCommand("spawn").setExecutor(new Commandspawn());
