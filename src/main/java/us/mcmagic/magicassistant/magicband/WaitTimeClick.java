@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.magicassistant.utils.BandUtil;
 
 /**
@@ -31,10 +32,12 @@ public class WaitTimeClick {
         if (meta.getDisplayName() == null) {
             return;
         }
-        String name = ChatColor.stripColor(meta.getDisplayName());
-        if (meta.getDisplayName().equals(ChatColor.RED + "Uh oh!")) {
+        String name = meta.getDisplayName();
+        if (name.equals(ChatColor.RED + "Uh oh!")) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "Sorry, but there are no rides setup on this server!");
         }
+        QueueRide ride = MagicAssistant.queueManager.getRide2(name);
+        player.performCommand("warp " + ride.getWarp());
     }
 }

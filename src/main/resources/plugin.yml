@@ -1,6 +1,6 @@
 name: MagicAssistant
 author: MCMagicDev
-version: 1.6.5-SNAPSHOT
+version: 1.6.6
 description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib]
@@ -165,10 +165,6 @@ commands:
       permission-message: §4Please notify a Cast Member that you can’t do this.
    pack:
       description: Perform various hotel-related actions
-      permission: mcmagic.warp
-      permission-message: §4Please notify a Cast Member that you can’t do this.
-   autograph:
-      description: Autograph Command
       permission: mcmagic.warp
       permission-message: §4Please notify a Cast Member that you can’t do this.
    trade:

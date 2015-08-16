@@ -55,7 +55,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static Map<UUID, String> userCache = new HashMap<>();
-    public static List<String> newJoinMessage = new ArrayList<>();
     public static boolean party = false;
     public static List<String> partyServer = new ArrayList<>();
     public static boolean hubServer;
@@ -459,6 +458,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         playerJoinAndLeave = new PlayerJoinAndLeave();
         pm.registerEvents(playerJoinAndLeave, this);
         pm.registerEvents(new SignChange(), this);
+        pm.registerEvents(new ChunkUnload(), this);
         pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new InventoryClick(), this);
         pm.registerEvents(new PlayerDropItem(), this);

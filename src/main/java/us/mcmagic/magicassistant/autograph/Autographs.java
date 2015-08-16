@@ -34,19 +34,7 @@ public class Autographs {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bm = (BookMeta) book.getItemMeta();
         bm.addPage("This is your Autograph Book! Find Characters and they will sign it for you!");
-        List<Signature> list = new ArrayList<>();
-        try (Connection connection = SqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM autographs WHERE user=?");
-            sql.setString(1, uuid.toString());
-            ResultSet result = sql.executeQuery();
-            while (result.next()) {
-                list.add(new Signature(UUID.fromString(result.getString("sender")), result.getString("message")));
-            }
-            result.close();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        List<Signature> list = getSignatures(uuid);
         for (Signature sign : list) {
             String name = "Unknown";
             if (nameMap.containsKey(sign.getSigner())) {
@@ -76,6 +64,24 @@ public class Autographs {
         bm.setTitle(ChatColor.DARK_AQUA + "Autograph Book");
         book.setItemMeta(bm);
         books.put(uuid, book);
+    }
+
+    private List<Signature> getSignatures(UUID uuid) {
+        List<Signature> list = new ArrayList<>();
+        try (Connection connection = SqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM autographs WHERE user=?");
+            sql.setString(1, uuid.toString());
+            ResultSet result = sql.executeQuery();
+            while (result.next()) {
+                list.add(new Signature(result.getInt("id"), UUID.fromString(result.getString("sender")),
+                        result.getString("message")));
+            }
+            result.close();
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public void giveBook(Player player) {
@@ -153,8 +159,9 @@ public class Autographs {
         FormattedMessage msg = new FormattedMessage(sender.getName()).color(MCMagicCore.getUser(sender.getUniqueId())
                 .getRank().getTagColor()).then(" has sent you an ").color(ChatColor.GREEN).then("Autograph Request. ")
                 .color(ChatColor.DARK_AQUA).style(ChatColor.BOLD).then("Click here to Accept").color(ChatColor.YELLOW)
-                .command("/autograph accept").then(" - ").color(ChatColor.GREEN).then("Click here to Deny")
-                .color(ChatColor.RED).command("/autograph deny");
+                .command("/autograph accept").tooltip(ChatColor.GREEN + "Click to Accept!").then(" - ")
+                .color(ChatColor.GREEN).then("Click here to Deny").color(ChatColor.RED).command("/autograph deny")
+                .tooltip(ChatColor.RED + "Click to Deny!");
         msg.send(target);
         map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
@@ -308,6 +315,33 @@ public class Autographs {
 
     }
 
-    public void removeAutograph(Player player, Integer pageNum) {
+    public void removeAutograph(final Player player, final Integer num) {
+        if (num < 2) {
+            player.sendMessage(ChatColor.RED + "You can't remove this page!");
+            return;
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                List<Signature> autos = getSignatures(player.getUniqueId());
+                if (autos.size() < num - 1) {
+                    player.sendMessage(ChatColor.RED + "You do not have a " + ChatColor.YELLOW + "Page #" + num +
+                            ChatColor.RED + " in your Autograph Book!");
+                    return;
+                }
+                Signature remove = autos.get(num - 2);
+                try (Connection connection = SqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("DELETE FROM autographs WHERE id=?");
+                    sql.setInt(1, remove.getId());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                setBook(player.getUniqueId());
+                giveBook(player);
+                player.sendMessage(ChatColor.GREEN + "You removed the Autograph on " + ChatColor.YELLOW + "Page #" + num);
+            }
+        });
     }
 }

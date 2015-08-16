@@ -78,8 +78,8 @@ public class Commandautograph implements CommandExecutor {
                 "- Accepts signing request from player");
         player.sendMessage(ChatColor.GREEN + "/autograph deny " + ChatColor.AQUA +
                 "- Denies signing request from player");
-        player.sendMessage(ChatColor.GREEN + "/autograph remove [Page Number]" + ChatColor.AQUA +
-                "- Remove a player's signature from your book");
+        player.sendMessage(ChatColor.GREEN + "/autograph remove [Page Number] " + ChatColor.AQUA +
+                "- Remove a signature from your book");
 
     }
 }
