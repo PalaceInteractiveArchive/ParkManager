@@ -34,44 +34,44 @@ public class Autographs {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bm = (BookMeta) book.getItemMeta();
         bm.addPage("This is your Autograph Book! Find Characters and they will sign it for you!");
-        HashMap<UUID, String> map = new HashMap<>();
+        List<Signature> list = new ArrayList<>();
         try (Connection connection = SqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM autographs WHERE user=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             while (result.next()) {
-                map.put(UUID.fromString(result.getString("sender")), result.getString("message"));
+                list.add(new Signature(UUID.fromString(result.getString("sender")), result.getString("message")));
             }
             result.close();
             sql.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if (!map.isEmpty()) {
-            for (Map.Entry<UUID, String> entry : map.entrySet()) {
-                String name = "Unknown";
-                if (nameMap.containsKey(entry.getKey())) {
-                    name = nameMap.get(entry.getKey());
-                } else {
-                    try (Connection connection = SqlUtil.getConnection()) {
-                        PreparedStatement n = connection.prepareStatement("SELECT * FROM player_data WHERE uuid=?");
-                        n.setString(1, entry.getKey().toString());
-                        ResultSet r = n.executeQuery();
-                        if (!r.next()) {
-                            continue;
-                        }
-                        Rank rank = Rank.fromString(r.getString("rank"));
-                        name = rank.getChatColor() + r.getString("username");
-                        nameMap.put(entry.getKey(), name);
+        for (Signature sign : list) {
+            String name = "Unknown";
+            if (nameMap.containsKey(sign.getSigner())) {
+                name = nameMap.get(sign.getSigner());
+            } else {
+                try (Connection connection = SqlUtil.getConnection()) {
+                    PreparedStatement n = connection.prepareStatement("SELECT * FROM player_data WHERE uuid=?");
+                    n.setString(1, sign.getSigner().toString());
+                    ResultSet r = n.executeQuery();
+                    if (!r.next()) {
                         r.close();
                         n.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                        continue;
                     }
+                    Rank rank = Rank.fromString(r.getString("rank"));
+                    name = rank.getTagColor() + r.getString("username");
+                    nameMap.put(sign.getSigner(), name);
+                    r.close();
+                    n.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-                bm.addPage(ChatColor.translateAlternateColorCodes('&', entry.getValue()) + ChatColor.DARK_GREEN + "\n- "
-                        + name);
             }
+            bm.addPage(ChatColor.translateAlternateColorCodes('&', sign.getMessage()) + ChatColor.DARK_GREEN + "\n- "
+                    + name);
         }
         bm.setTitle(ChatColor.DARK_AQUA + "Autograph Book");
         book.setItemMeta(bm);
@@ -111,9 +111,9 @@ public class Autographs {
 
     public void sign(Player player, String message) {
         Player tp = null;
-        for (Map.Entry<UUID, UUID> entry : map.entrySet()) {
-            if (entry.getValue().equals(player.getUniqueId())) {
-                tp = Bukkit.getPlayer(entry.getKey());
+        for (Map.Entry<UUID, UUID> entry : active.entrySet()) {
+            if (entry.getKey().equals(player.getUniqueId())) {
+                tp = Bukkit.getPlayer(entry.getValue());
                 break;
             }
         }
@@ -122,8 +122,10 @@ public class Autographs {
             return;
         }
         try (Connection connection = SqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs ('user','sender','message') VALUES ('"
-                    + player.getUniqueId().toString() + "','" + tp.getUniqueId().toString() + "','" + message + "')");
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs (user, sender, message) VALUES (?,?,?)");
+            sql.setString(1, tp.getUniqueId().toString());
+            sql.setString(2, player.getUniqueId().toString());
+            sql.setString(3, message);
             sql.execute();
             sql.close();
         } catch (SQLException e) {
