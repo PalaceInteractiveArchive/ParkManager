@@ -27,7 +27,7 @@ public class Show {
     private HashMap<String, ShowNPC> npcMap;
     private int npcTick = 0;
     private long lastPlayerListUpdate = System.currentTimeMillis();
-    private List<Player> nearbyPlayers = new ArrayList<>();
+    private List<UUID> nearbyPlayers = new ArrayList<>();
 
     public Show(JavaPlugin plugin, File file) {
         world = Bukkit.getWorlds().get(0);
@@ -38,7 +38,7 @@ public class Show {
         startTime = System.currentTimeMillis();
         for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getLocation().distance(loc) <= radius) {
-                nearbyPlayers.add(tp);
+                nearbyPlayers.add(tp.getUniqueId());
             }
         }
     }
@@ -443,14 +443,14 @@ public class Show {
         }
     }
 
-    public List<Player> getNearPlayers() {
+    public List<UUID> getNearPlayers() {
         if (System.currentTimeMillis() - lastPlayerListUpdate < 10000) {
             return new ArrayList<>(nearbyPlayers);
         }
-        List<Player> list = new ArrayList<>();
+        List<UUID> list = new ArrayList<>();
         for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getLocation().distance(loc) <= radius) {
-                list.add(tp);
+                list.add(tp.getUniqueId());
             }
         }
         lastPlayerListUpdate = System.currentTimeMillis();
@@ -490,7 +490,11 @@ public class Show {
     }
 
     public void displayText(String text) {
-        for (Player player : getNearPlayers()) {
+        for (UUID uuid : getNearPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) {
+                continue;
+            }
             if (MathUtil.offset(player.getLocation(), loc) < radius) {
                 player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', text));
             }
@@ -498,7 +502,11 @@ public class Show {
     }
 
     public void displayTitle(TitleObject title) {
-        for (Player player : getNearPlayers()) {
+        for (UUID uuid : getNearPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) {
+                continue;
+            }
             if (MathUtil.offset(player.getLocation(), loc) < radius) {
                 title.send(player);
             }
@@ -507,7 +515,11 @@ public class Show {
 
     @SuppressWarnings("deprecation")
     public void playMusic(int record) {
-        for (Player player : getNearPlayers()) {
+        for (UUID uuid : getNearPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) {
+                continue;
+            }
             player.playEffect(loc, Effect.RECORD_PLAY, record);
         }
     }

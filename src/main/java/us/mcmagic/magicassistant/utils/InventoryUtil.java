@@ -245,6 +245,7 @@ public class InventoryUtil {
         this.f.setItemMeta(bf);
         this.s.setItemMeta(bs);
         this.su.setItemMeta(bsu);
+        //Show Schedule System
     }
 
     public void openInventory(final Player player, InventoryType inv) {
