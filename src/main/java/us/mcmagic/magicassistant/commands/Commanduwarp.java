@@ -26,7 +26,7 @@ public class Commanduwarp implements CommandExecutor {
             final String w = args[0];
             if (!WarpUtil.warpExists(w)) {
                 player.sendMessage(ChatColor.RED
-                        + "A warp doesn'commands exist by that name! To add a warp, type /setwarp [Warp Name]");
+                        + "A warp doesn't exist by that name! To add a warp, type /setwarp [Warp Name]");
                 return true;
             }
             Location loc = player.getLocation();
