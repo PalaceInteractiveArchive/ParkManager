@@ -212,7 +212,11 @@ public class QueueManager {
             return;
         }
         if (ride.isFrozen()) {
-            player.sendMessage(ride.getName() + ChatColor.GREEN + "'s Queue is frozen right now, check back soon!");
+            if (ride.getName().substring(ride.getName().length() - 1).equalsIgnoreCase("s")) {
+                player.sendMessage(ride.getName() + "'s" + ChatColor.GREEN + " Queue is frozen right now, check back soon!");
+            } else {
+                player.sendMessage(ride.getName() + "'" + ChatColor.GREEN + " Queue is frozen right now, check back soon!");
+            }
             return;
         }
         if (s.getLine(0).equals(PlayerInteract.fastpass)) {
