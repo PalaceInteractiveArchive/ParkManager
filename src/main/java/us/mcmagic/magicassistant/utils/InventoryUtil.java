@@ -269,7 +269,7 @@ public class InventoryUtil {
                     main.setItem(0, rna);
                     main.setItem(9, sne);
                     main.setItem(18, hnr);
-                    if (VisibleUtil.isInHideAll(player.getUniqueId())) {
+                    if (MagicAssistant.vanishUtil.isInHideAll(player.getUniqueId())) {
                         main.setItem(2, toggleon);
                     } else {
                         main.setItem(2, toggleoff);

@@ -69,6 +69,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static HotelManager hotelManager;
     public static QueueManager queueManager;
     public static Autographs autographManager;
+    public static VisibleUtil vanishUtil;
     public static Shooter shooter = null;
 
     public void onEnable() {
@@ -90,6 +91,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         bandUtil = new BandUtil();
         bandUtil.askForParty();
         inventoryUtil = new InventoryUtil();
+        vanishUtil = new VisibleUtil();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -226,12 +228,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             player.sendPluginMessage(this, "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED
-                    + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
+                    + "Sorry, looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
         }
     }
 
     public static YamlConfiguration config() {
-        return YamlConfiguration.loadConfiguration(new File("plugins/magicassistant/config.yml"));
+        return YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
     }
 
     public static boolean isInPermGroup(Player player, String group) {
@@ -467,7 +469,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
-        pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         //pm.registerEvents(rideManager, this);

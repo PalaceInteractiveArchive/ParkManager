@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -27,12 +28,11 @@ import java.util.*;
 /**
  * Created by Jacob on 1/18/15.
  */
-@SuppressWarnings("deprecation")
 public class Shooter implements Listener {
     private ItemStack stack;
     private HashMap<UUID, ItemStack> itemMap = new HashMap<>();
     private HashMap<Long, Block> locations = new HashMap<>();
-    public List<UUID> ingame = new ArrayList<>();
+    private List<UUID> ingame = new ArrayList<>();
     public String game;
 
 
@@ -83,19 +83,25 @@ public class Shooter implements Listener {
         event.setCancelled(event.getPlayer().getInventory().contains(stack));
     }
 
-    @EventHandler
+    @SuppressWarnings("deprecation")
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         ItemStack inHand = event.getPlayer().getItemInHand();
         ItemMeta meta = inHand.getItemMeta();
-        if (inHand == null) return;
+        if (inHand == null) {
+            return;
+        }
         if (event.getAction().equals(Action.PHYSICAL)) {
             return;
         }
-
-        if (meta == null) return;
-        if (meta.getDisplayName() == null) return;
+        if (meta == null) {
+            return;
+        }
+        if (meta.getDisplayName() == null) {
+            return;
+        }
         String displayName = meta.getDisplayName();
-        if (inHand.getType() == stack.getType()) {
+        if (inHand.getType().equals(stack.getType())) {
             meta.getDisplayName().equals(stack.getItemMeta().getDisplayName());
             event.getPlayer().launchProjectile(Snowball.class);
             event.setCancelled(true);
@@ -108,6 +114,7 @@ public class Shooter implements Listener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
@@ -227,30 +234,30 @@ public class Shooter implements Listener {
     }
 
     public String getRank(int score) {
-        if (score < 11) {
-            return "✹ Level 1 Star Cadet: 0 - 10 ✹";
-        }
-        if (score < 21) {
-            return "✹ Level 2 Space Ace: 11 - 20 ✹";
-        }
-        if (score < 41) {
-            return "✹ Level 3 Planetary Pilot: 21 - 40 ✹";
-        }
-        if (score < 61) {
-            return "✹ Level 4 Space Scout: 41 - 60 ✹";
-        }
-        if (score < 81) {
-            return "✹ Level 5 Ranger 1st Class: 61 - 80 ✹";
-        }
-        if (score < 101) {
-            return "✹ Level 6 Cosmic Commando: 81 - 100 ✹";
-        }
-        if (score > 100 && score != 1971) {
-            return "✹ Level 7 Galactic Hero: 100+ ✹";
-        }
         if (score == 1971) {
             return "On Friday October 1, 1971 - after seven years of planning - about 10,000 visitors converged near " +
                     "Orlando, Florida, to witness the grand opening of Walt Disney World.";
+        }
+        if (score < 101) {
+            return "✹ Level 1 Star Cadet: 0 - 100 ✹";
+        }
+        if (score < 201) {
+            return "✹ Level 2 Space Ace: 101 - 200 ✹";
+        }
+        if (score < 401) {
+            return "✹ Level 3 Planetary Pilot: 201 - 400 ✹";
+        }
+        if (score < 601) {
+            return "✹ Level 4 Space Scout: 401 - 600 ✹";
+        }
+        if (score < 801) {
+            return "✹ Level 5 Ranger 1st Class: 601 - 800 ✹";
+        }
+        if (score < 1000) {
+            return "✹ Level 6 Cosmic Commando: 801 - 1000 ✹";
+        }
+        if (score > 1000) {
+            return "✹ Level 7 Galactic Hero: 1000+ ✹";
         }
         return "";
     }
@@ -287,10 +294,20 @@ public class Shooter implements Listener {
         }
     }
 
+    public void join(Player tp) {
+        if (!ingame.contains(tp.getUniqueId())) {
+            ingame.add(tp.getUniqueId());
+        }
+    }
+
     public void warp(Player tp) {
         if (!ingame.contains(tp.getUniqueId())) {
             return;
         }
         done(tp);
+    }
+
+    public List<UUID> getIngame() {
+        return new ArrayList<>(ingame);
     }
 }

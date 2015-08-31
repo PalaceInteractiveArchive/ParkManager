@@ -236,8 +236,7 @@ public class Commandwarp implements CommandExecutor {
         }
         Collections.sort(nlist);
         if (nlist.size() < (page - 1) * 20 && page != 1) {
-            listWarps(player, 1);
-            return;
+            page = 1;
         }
         int max = page * 20;
         List<String> names = nlist.subList(20 * (page - 1), nlist.size() < max ? nlist.size() : max);
@@ -273,8 +272,7 @@ public class Commandwarp implements CommandExecutor {
         }
         Collections.sort(nlist);
         if (nlist.size() < (page - 1) * 20 && page != 1) {
-            listWarps(player, 1);
-            return;
+            page = 1;
         }
         int max = page * 20;
         List<String> names = nlist.subList(20 * (page - 1), nlist.size() < max ? nlist.size() : max);

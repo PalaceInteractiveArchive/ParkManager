@@ -36,6 +36,7 @@ public class WaitTimeClick {
         if (name.equals(ChatColor.RED + "Uh oh!")) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "Sorry, but there are no rides setup on this server!");
+            return;
         }
         QueueRide ride = MagicAssistant.queueManager.getRide2(name);
         player.performCommand("warp " + ride.getWarp());

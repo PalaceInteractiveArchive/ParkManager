@@ -90,6 +90,12 @@ public class QueueRide {
 
     public void joinQueue(Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
+        if (amountOfRiders == 1 && queue.isEmpty() && fpqueue.isEmpty() && canSpawn()) {
+            queue.add(player.getUniqueId());
+            moveToStation();
+            spawn();
+            return;
+        }
         if (queue.isEmpty() && canSpawn()) {
             player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
                     ChatColor.BOLD + "10" + ChatColor.GREEN + " seconds for anyone else to join the Queue.");
@@ -151,6 +157,9 @@ public class QueueRide {
     }
 
     public void moveToStation() {
+        if (frozen) {
+            return;
+        }
         List<UUID> fullList = new ArrayList<>(queue);
         List<UUID> fps = getFPQueue();
         if (fps.size() > fullList.size()) {
@@ -261,6 +270,9 @@ public class QueueRide {
     }
 
     public void spawn() {
+        if (frozen) {
+            return;
+        }
         lastSpawn = System.currentTimeMillis() / 1000;
         final Block b = spawner.getBlock();
         b.setType(Material.REDSTONE_BLOCK);
@@ -405,7 +417,7 @@ public class QueueRide {
                         "is unfrozen, but if you leave your place in line will be lost.");
             }
         }
-        if (!queue.isEmpty() || !fpqueue.isEmpty() && canSpawn()) {
+        if ((!queue.isEmpty() || !fpqueue.isEmpty()) && canSpawn() && !frozen) {
             moveToStation();
             spawn();
         }

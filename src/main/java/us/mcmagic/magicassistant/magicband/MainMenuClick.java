@@ -13,7 +13,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
@@ -59,13 +58,13 @@ public class MainMenuClick {
                 if (data == 5) {
                     player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
                     player.closeInventory();
-                    VisibleUtil.addToHideAll(player);
+                    MagicAssistant.vanishUtil.addToHideAll(player);
                     pdata.setVisibility(false);
                     MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 } else {
                     player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
-                    VisibleUtil.removeFromHideAll(player);
+                    MagicAssistant.vanishUtil.removeFromHideAll(player);
                     pdata.setVisibility(true);
                     MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 }

@@ -307,7 +307,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                             inv.setItem(4, MagicAssistant.shooter.getItem());
                             inv.setHeldItemSlot(4);
                             MagicAssistant.shooter.sendGameMessage(player);
-                            MagicAssistant.shooter.ingame.add(player.getUniqueId());
+                            MagicAssistant.shooter.join(player);
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
