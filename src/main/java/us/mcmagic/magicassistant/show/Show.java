@@ -55,7 +55,7 @@ public class Show {
                 if (strLine.length() == 0 || strLine.startsWith("#"))
                     continue;
                 String[] tokens = strLine.split("\\s+");
-                if (tokens.length < 3) {
+                if (tokens.length < 2) {
                     System.out.println("Invalid Show Line [" + strLine + "]");
                 }
                 // Set Show Location
@@ -134,6 +134,31 @@ public class Show {
                         continue;
                     }
                     actions.add(new PulseAction(this, time, loc));
+                }
+                // Take away GWTS Hats
+                if (tokens[1].contains("GlowDone")) {
+                    actions.add(new GlowDoneAction(this, time));
+                    continue;
+                }
+                // Glow With The Show
+                if (tokens[1].contains("Glow")) {
+                    try {
+                        Color color;
+                        if (tokens[2].contains(",")) {
+                            String[] list = tokens[2].split(",");
+                            color = Color.fromRGB(getInt(list[0]), getInt(list[1]), getInt(list[2]));
+                        } else {
+                            color = colorFromString(tokens[2]);
+                        }
+                        if (color == null) {
+                            invalidLines.put(strLine, "Invalid Glow Color " + tokens[2]);
+                            continue;
+                        }
+                        Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
+                        actions.add(new GlowAction(this, time, color, loc, getInt(tokens[4])));
+                    } catch (Exception ignored) {
+                        invalidLines.put(strLine, "Invalid Glow Line");
+                    }
                 }
                 // Lightning
                 if (tokens[1].contains("Lightning")) {
@@ -443,6 +468,36 @@ public class Show {
         }
     }
 
+    private Color colorFromString(String s) {
+        switch (s.toLowerCase()) {
+            case "red":
+                return Color.fromRGB(170, 0, 0);
+            case "orange":
+                return Color.fromRGB(255, 102, 0);
+            case "yellow":
+                return Color.fromRGB(255, 222, 0);
+            case "green":
+                return Color.fromRGB(0, 153, 0);
+            case "aqua":
+                return Color.fromRGB(0, 255, 255);
+            case "blue":
+                return Color.fromRGB(51, 51, 255);
+            case "purple":
+                return Color.fromRGB(39, 31, 155);
+            case "pink":
+                return Color.fromRGB(255, 0, 255);
+            case "white":
+                return Color.fromRGB(255, 255, 255);
+            case "black":
+                return Color.fromRGB(0, 0, 0);
+        }
+        return null;
+    }
+
+    private int getInt(String s) {
+        return Integer.parseInt(s);
+    }
+
     public List<UUID> getNearPlayers() {
         if (System.currentTimeMillis() - lastPlayerListUpdate < 10000) {
             return new ArrayList<>(nearbyPlayers);
@@ -524,6 +579,10 @@ public class Show {
         }
     }
 
+    public Location getLocation() {
+        return loc.clone();
+    }
+
     public FireworkEffect parseEffect(String effect) {
         String[] tokens = effect.split(",");
 
@@ -537,7 +596,7 @@ public class Show {
         }
 
         // Color
-        ArrayList<Color> colors = new ArrayList<>();
+        List<Color> colors = new ArrayList<>();
         for (String color : tokens[1].split("&")) {
             if (color.equalsIgnoreCase("AQUA")) {
                 colors.add(Color.AQUA);
@@ -573,6 +632,9 @@ public class Show {
                 colors.add(Color.WHITE);
             } else if (color.equalsIgnoreCase("YELLOW")) {
                 colors.add(Color.YELLOW);
+            } else if (color.contains(";")) {
+                String[] list = color.split(";");
+                colors.add(Color.fromRGB(getInt(list[0]), getInt(list[1]), getInt(list[2])));
             } else {
                 invalidLines.put(effect, "Invalid Color [" + color + "]");
                 return null;
@@ -583,8 +645,8 @@ public class Show {
             return null;
         }
         // Fade
-        ArrayList<Color> fades = new ArrayList<>();
-        for (String color : tokens[1].split("&")) {
+        List<Color> fades = new ArrayList<>();
+        for (String color : tokens[2].split("&")) {
             if (color.equalsIgnoreCase("AQUA")) {
                 fades.add(Color.AQUA);
             } else if (color.equalsIgnoreCase("BLACK")) {
@@ -619,19 +681,18 @@ public class Show {
                 fades.add(Color.WHITE);
             } else if (color.equalsIgnoreCase("YELLOW")) {
                 fades.add(Color.YELLOW);
+            } else if (color.contains(";")) {
+                String[] list = color.split(";");
+                colors.add(Color.fromRGB(getInt(list[0]), getInt(list[1]), getInt(list[2])));
             } else {
                 invalidLines.put(effect, "Invalid Fade Color [" + color + "]");
                 return null;
             }
         }
-        if (fades.isEmpty()) {
-            invalidLines.put(effect, "No Valid Fade Colors");
-            return null;
-        }
         boolean flicker = effect.toUpperCase().contains("FLICKER");
         boolean trail = effect.toUpperCase().contains("TRAIL");
         // Firework
-        return FireworkEffect.builder().with(shape).withColor(colors).withFade(fades.get(0)).flicker(flicker).trail(trail).build();
+        return FireworkEffect.builder().with(shape).withColor(colors).withFade(fades).flicker(flicker).trail(trail).build();
     }
 
     public HashMap<String, ShowNPC> getNPCMap() {

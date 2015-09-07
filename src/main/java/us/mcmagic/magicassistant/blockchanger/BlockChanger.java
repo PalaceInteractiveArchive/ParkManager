@@ -164,7 +164,7 @@ public class BlockChanger implements Listener {
         return list;
     }
 
-    public boolean toggleDebug(Player player) {
+    public boolean toggleDebug(final Player player) {
         UUID uuid = player.getUniqueId();
         if (debug.contains(uuid)) {
             debug.remove(uuid);
@@ -174,11 +174,9 @@ public class BlockChanger implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    for (Changer changer : blocks.values()) {
-                        if (isClose(player, changer.getFirstLocation(), changer.getSecondLocation())) {
-                            changer.sendReverse(player);
-                        }
+                for (Changer changer : blocks.values()) {
+                    if (isClose(player, changer.getFirstLocation(), changer.getSecondLocation())) {
+                        changer.sendReverse(player);
                     }
                 }
             }

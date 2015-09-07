@@ -22,6 +22,7 @@ public class PlayerData {
     private int fastpass;
     private int dailyfp;
     private int fpday;
+    private HashMap<String, Integer> rideCounts = new HashMap<>();
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
                       boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp, int fpday) {
@@ -97,6 +98,10 @@ public class PlayerData {
         }
     }
 
+    public HashMap<String, Integer> getRideCounts() {
+        return new HashMap<>(rideCounts);
+    }
+
     public void setBandName(ChatColor color) {
         this.bandName = color;
     }
@@ -147,5 +152,9 @@ public class PlayerData {
 
     public void setDay(int fpday) {
         this.fpday = fpday;
+    }
+
+    public void setRideCounts(HashMap<String, Integer> rideCounts) {
+        this.rideCounts = rideCounts;
     }
 }

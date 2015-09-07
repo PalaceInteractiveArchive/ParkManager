@@ -33,7 +33,8 @@ public class QueueManager {
                 for (QueueRide ride : getRides()) {
                     for (UUID uuid : ride.getQueue()) {
                         ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
-                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName());
+                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
+                                ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
                     }
                 }
             }

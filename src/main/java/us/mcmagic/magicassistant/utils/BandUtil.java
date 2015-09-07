@@ -69,46 +69,10 @@ public class BandUtil {
                             ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
                             ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
                     pinfo.setItemMeta(meta);
-                    /*
-                    net.minecraft.server.v1_8_R2.ItemStack i = CraftItemStack.asNMSCopy(pinfo);
-                    NBTTagCompound tag = i.getTag();
-                    NBTTagCompound name = tag.getCompound("SkullOwner");
-                    name.setString("Id", player.getUniqueId().toString());
-                    tag.set("SkullOwner", name);
-                    i.setTag(tag);
-                    ItemStack done = CraftItemStack.asBukkitCopy(i);
-                    */
                     inv.setItem(15, pinfo);
                 }
             }
         }, 0L, 10L);
-        /*
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
-                PacketType.Play.Server.SET_SLOT) {
-
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                try {
-                    Player player = event.getPlayer();
-                    PacketContainer container = event.getPacket();
-                    StructureModifier<ItemStack> items = container.getItemModifier();
-                    List<ItemStack> list = items.getValues();
-                    Inventory inv = player.getOpenInventory().getTopInventory();
-                    if (!list.get(0).getType().equals(Material.SKULL_ITEM) || !ChatColor.stripColor(inv.getTitle()).equals(player.getName() + "'s MagicBand")) {
-                        return;
-                    }
-                    Field field = items.getField(2);
-                    field.setAccessible(true);
-                    net.minecraft.server.v1_8_R3.ItemStack i = (net.minecraft.server.v1_8_R3.ItemStack)
-                            field.get(items.getTarget());
-                    i.setTag(getHeadTag(player, i.getTag()));
-                    field.set(items.getTarget(), i);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        */
     }
 
     private NBTTagCompound getHeadTag(Player player) {
@@ -172,6 +136,17 @@ public class BandUtil {
                     result.getInt("dailyfp"), result.getInt("fpday"));
             result.close();
             sql.close();
+            HashMap<String, Integer> rides = new HashMap<>();
+            PreparedStatement counts = connection.prepareStatement("SELECT name,count from ridecounter WHERE uuid=? AND server=?");
+            counts.setString(1, uuid.toString());
+            counts.setString(2, MCMagicCore.getMCMagicConfig().serverName);
+            ResultSet results = counts.executeQuery();
+            while (results.next()) {
+                rides.put(results.getString("name"), results.getInt("count"));
+            }
+            results.close();
+            counts.close();
+            data.setRideCounts(rides);
             MagicAssistant.playerData.put(uuid, data);
             dataResponses.remove(uuid);
             return data;

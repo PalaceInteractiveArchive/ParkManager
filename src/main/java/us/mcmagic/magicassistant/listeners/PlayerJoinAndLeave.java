@@ -257,6 +257,14 @@ public class PlayerJoinAndLeave implements Listener {
                         pi.addItem(i);
                     }
                 }
+                if (player.getLocation().distance(MagicAssistant.spawn) <= 5) {
+                    for (Player tp : Bukkit.getOnlinePlayers()) {
+                        if (tp.getUniqueId().equals(player.getUniqueId())) {
+                            continue;
+                        }
+                        tp.hidePlayer(player);
+                    }
+                }
             }
             if (MagicAssistant.crossServerInv) {
                 PlayerInventory pi = player.getInventory();
@@ -398,7 +406,6 @@ public class PlayerJoinAndLeave implements Listener {
             }
         }
         MagicAssistant.queueManager.silentLeaveAllQueues(player);
-        MagicAssistant.tradeManager.logout(player);
         MagicAssistant.autographManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
