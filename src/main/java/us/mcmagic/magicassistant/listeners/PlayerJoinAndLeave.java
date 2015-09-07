@@ -363,6 +363,10 @@ public class PlayerJoinAndLeave implements Listener {
             if (warp.getLocation() == null) {
                 continue;
             }
+            if (warp.getName().startsWith("dvc") || warp.getName().startsWith("char") ||
+                    warp.getName().startsWith("staff")) {
+                continue;
+            }
             if (distance == -1) {
                 w = warp;
                 distance = warp.getLocation().distance(loc);
