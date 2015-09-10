@@ -17,32 +17,30 @@ import java.util.UUID;
 
 public class VisibleUtil {
     private List<UUID> hideall = new ArrayList<>();
-    private List<UUID> spawnHide = new ArrayList<>();
+    private ArrayList<UUID> spawnHide = new ArrayList<>();
     private boolean hub;
     private List<UUID> hide = new ArrayList<>();
     private List<UUID> show = new ArrayList<>();
 
     public VisibleUtil() {
         hub = MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("hub");
+        if (!hub) {
+            return;
+        }
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    for (UUID uuid : hide) {
+                    for (UUID uuid : new ArrayList<>(hide)) {
                         hide.remove(uuid);
                         if (tp.getUniqueId().equals(uuid)) {
                             continue;
                         }
                         tp.hidePlayer(Bukkit.getPlayer(uuid));
                     }
-                    for (UUID uuid : show) {
+                    for (UUID uuid : new ArrayList<>(show)) {
                         show.remove(uuid);
                         if (tp.getUniqueId().equals(uuid)) {
-                            continue;
-                        }
-                        if (Commandvanish.getHidden().contains(uuid) &&
-                                MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId()
-                                        < Rank.SPECIALGUEST.getRankId()) {
                             continue;
                         }
                         tp.showPlayer(Bukkit.getPlayer(uuid));
@@ -56,7 +54,16 @@ public class VisibleUtil {
         if (!hub) {
             return;
         }
+        if (event.getTo().getBlockX() == event.getFrom().getBlockX() &&
+                event.getTo().getBlockY() == event.getFrom().getBlockY() &&
+                event.getTo().getBlockZ() == event.getFrom().getBlockZ()) {
+            return;
+        }
         Player player = event.getPlayer();
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
+            return;
+        }
         Location to = event.getTo();
         boolean should = shouldBeHidden(to);
         if (!spawnHide.contains(player.getUniqueId()) && should) {

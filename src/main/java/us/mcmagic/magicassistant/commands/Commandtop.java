@@ -34,20 +34,20 @@ public class Commandtop implements CommandExecutor {
         int x = loc.getBlockX();
         int y = (int) Math.round(loc.getY());
         int z = loc.getBlockZ();
-        int origY = y;
+        final int origY = y;
         if (origY < 0) {
             return loc;
         }
-        while (isBlockAboveAir(world, x, y, z)) {
+        while (!isBlockAboveAir(world, x, y, z)) {
             y++;
             if (y < 0) {
                 y = origY;
             }
         }
-        return new Location(world, x + 0.5D, y, z + 0.5D, loc.getYaw(), loc.getPitch());
+        return new Location(world, x + 0.5D, y + 1, z + 0.5D, loc.getYaw(), loc.getPitch());
     }
 
     static boolean isBlockAboveAir(World world, int x, int y, int z) {
-        return y > world.getMaxHeight() || world.getBlockAt(x, y + 1, z).getType().equals(Material.AIR);
+        return y < 256 && world.getBlockAt(x, y + 1, z).getType().equals(Material.AIR);
     }
 }

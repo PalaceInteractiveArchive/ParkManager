@@ -79,7 +79,7 @@ public class Commandvanish implements CommandExecutor {
                 if (hidden.contains(player.getUniqueId())) {
                     player.sendMessage(ChatColor.DARK_AQUA + "You are vanished.");
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA + "You are not vanished.");
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are visible.");
                 }
             }
         }
