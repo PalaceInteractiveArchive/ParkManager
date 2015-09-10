@@ -26,7 +26,12 @@ public class Commandhub implements CommandExecutor {
             }
             return true;
         }
-        ((Player) sender).teleport(MagicAssistant.hub);
+        Player player = (Player) sender;
+        MagicAssistant.queueManager.leaveAllQueues(player);
+        if (MagicAssistant.shooter != null) {
+            MagicAssistant.shooter.warp(player);
+        }
+        player.teleport(MagicAssistant.hub);
         sender.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
         return true;
     }

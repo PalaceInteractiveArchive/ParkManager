@@ -561,6 +561,9 @@ public class PlayerJoinAndLeave implements Listener {
         if (player == null) {
             return;
         }
+        if (MagicAssistant.shooter != null) {
+            player.getInventory().remove(MagicAssistant.shooter.getItem().getType());
+        }
         boolean inv = true;
         boolean armor = true;
         boolean end = true;

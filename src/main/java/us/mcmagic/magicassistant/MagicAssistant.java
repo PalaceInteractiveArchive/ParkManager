@@ -58,7 +58,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<String> partyServer = new ArrayList<>();
     public static boolean hubServer;
     public static MagicAssistant instance;
-    public static BlockChanger blockChanger = new BlockChanger();
+    public static BlockChanger blockChanger;
     public static PackManager packManager;
     public static BandUtil bandUtil;
     public static RideManager rideManager;
@@ -89,6 +89,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         bandUtil.askForParty();
         inventoryUtil = new InventoryUtil();
         vanishUtil = new VisibleUtil();
+        blockChanger = new BlockChanger();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
