@@ -24,10 +24,11 @@ public class ParkTimerManager {
         Iterator i = rootSection.getKeys(false).iterator();
         while (i.hasNext()) {
             String name = (String) i.next();
-            ConfigurationSection soundSection = MagicAssistant.config.getConfigurationSection(name + ".sound");
+            ConfigurationSection nextSection = rootSection.getConfigurationSection(name);
+            ConfigurationSection soundSection = nextSection.getConfigurationSection("sound");
             Sound sound = ConfigUtil.getSound(soundSection.getString("name"));
-            Location origin = ConfigUtil.getLocation(rootSection.getString("location"));
-            int audibleRadius = rootSection.getInt("audible-radius");
+            Location origin = ConfigUtil.getLocation(nextSection.getString("location"));
+            int audibleRadius = nextSection.getInt("audible-radius");
             float volume = 10F;
             float pitch = 10F;
             try {

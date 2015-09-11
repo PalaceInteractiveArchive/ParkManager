@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import us.mcmagic.magicassistant.MagicAssistant;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class ParkTimer {
 
     private String name;
@@ -35,7 +39,7 @@ public class ParkTimer {
                     play(player);
                 }
             }
-        }, 0L, 3000L);
+        }, 0L, 60L);
         this.taskId = task.getTaskId();
     }
 
