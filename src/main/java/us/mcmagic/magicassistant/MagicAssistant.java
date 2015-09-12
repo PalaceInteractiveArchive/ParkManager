@@ -142,7 +142,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         resortsServer = MCMagicCore.getMCMagicConfig().serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
-        parkTimerManager.initParkTimers();
+        parkTimerManager.initialize();
         DesignStation.initialize();
         for (World world : Bukkit.getWorlds()) {
             world.setTime(0);

@@ -1,53 +1,38 @@
 package us.mcmagic.magicassistant.parktimer;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-import us.mcmagic.magicassistant.MagicAssistant;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ParkTimer {
 
+    private Map<UUID, Long> playersListeningToSong = new ConcurrentHashMap<>();
     private String name;
-    private Sound sound;
+    private String sound;
     private float volume;
     private float pitch;
     private Location origin;
-    private int radius;
-    private int taskId;
+    private int distance;
+    private int audioLength;
 
-    public ParkTimer(String name, Sound sound, float volume, float pitch, Location origin, int radius) {
+    protected ParkTimer(String name, String sound, float volume, float pitch, Location origin, int distance, int audioLength) {
         this.name = name;
         this.sound = sound;
         this.volume = volume;
         this.pitch = pitch;
         this.origin = origin;
-        this.radius = radius;
-    }
-
-    protected void startTimer() {
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    play(player);
-                }
-            }
-        }, 0L, 60L);
-        this.taskId = task.getTaskId();
-    }
-
-    public void stopTimer() {
-        Bukkit.getScheduler().cancelTask(taskId);
+        this.distance = distance;
+        this.audioLength = audioLength;
     }
 
     public String getName() {
         return name;
     }
 
-    public Sound getSound() {
+    public String getSound() {
         return sound;
     }
 
@@ -55,16 +40,31 @@ public class ParkTimer {
         return origin;
     }
 
-    public int getRadius() {
-        return radius;
+    public int getDistance() {
+        return distance;
     }
 
-    public boolean play(Player player) {
+    public int getLength() {
+        return audioLength;
+    }
+
+    protected Set<UUID> getPlayers() {
+        return playersListeningToSong.keySet();
+    }
+
+    protected void play(Player player) {
         Validate.notNull(player, "Player cannot be null!");
-        if (player.getLocation().distance(origin) <= radius) {
-            player.playSound(origin, sound, volume, pitch);
-            return true;
+        if (player.getLocation().distance(origin) <= distance) {
+            if (playersListeningToSong.containsKey(player.getUniqueId())) {
+                int elapsed = (int) (System.currentTimeMillis() - playersListeningToSong.get(player.getUniqueId())) / 1000;
+                System.out.println(elapsed);
+                if (elapsed >= audioLength) {
+                    playersListeningToSong.remove(player.getUniqueId());
+                }
+            } else {
+                player.playSound(origin, sound, volume, pitch);
+                playersListeningToSong.put(player.getUniqueId(), System.currentTimeMillis());
+            }
         }
-        return false;
     }
 }
