@@ -45,7 +45,7 @@ public class ParkTimerManager {
             int distance = nextSection.getInt("distance");
             Location origin = ParkTimerManager.getLocation(nextSection.getString("location"));
 
-            String sound = soundSection.getString(name);
+            String sound = soundSection.getString("name");
             float volume = 10F;
             float pitch = 10F;
 

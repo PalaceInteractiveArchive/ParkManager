@@ -57,7 +57,6 @@ public class ParkTimer {
         if (player.getLocation().distance(origin) <= distance) {
             if (playersListeningToSong.containsKey(player.getUniqueId())) {
                 int elapsed = (int) (System.currentTimeMillis() - playersListeningToSong.get(player.getUniqueId())) / 1000;
-                System.out.println(elapsed);
                 if (elapsed >= audioLength) {
                     playersListeningToSong.remove(player.getUniqueId());
                 }
