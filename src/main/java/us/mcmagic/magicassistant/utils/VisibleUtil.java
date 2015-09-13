@@ -60,22 +60,8 @@ public class VisibleUtil {
         }
     }
 
-        /*
-        for (UUID id : new ArrayList<>(hidden)) {
-            Player eachPlayer = Bukkit.getPlayer(id);
-            if (!show) {
-                if (eachPlayer != null && !player.getUniqueId().equals(eachPlayer.getUniqueId()) && !hidden.get(id)) {
-                    player.hidePlayer(Bukkit.getPlayer(id));
-                }
-            } else {
-                if (eachPlayer != null) {
-                    player.showPlayer(Bukkit.getPlayer(id));
-                }
-            }
-        }
-        */
-
     public void logout(Player player) {
+        hideall.remove(player.getUniqueId());
         hidden.remove(player.getUniqueId());
     }
 

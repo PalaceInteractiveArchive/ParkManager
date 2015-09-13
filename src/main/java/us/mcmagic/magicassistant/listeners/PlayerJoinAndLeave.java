@@ -257,12 +257,14 @@ public class PlayerJoinAndLeave implements Listener {
                         pi.addItem(i);
                     }
                 }
-                if (player.getLocation().distance(MagicAssistant.spawn) <= 5) {
-                    for (Player tp : Bukkit.getOnlinePlayers()) {
-                        if (tp.getUniqueId().equals(player.getUniqueId())) {
-                            continue;
+                if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                    if (player.getLocation().distance(MagicAssistant.spawn) <= 5) {
+                        for (Player tp : Bukkit.getOnlinePlayers()) {
+                            if (tp.getUniqueId().equals(player.getUniqueId())) {
+                                continue;
+                            }
+                            tp.hidePlayer(player);
                         }
-                        tp.hidePlayer(player);
                     }
                 }
             }
