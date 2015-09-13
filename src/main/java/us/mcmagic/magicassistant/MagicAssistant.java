@@ -473,9 +473,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         //pm.registerEvents(rideManager, this);
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("hub")) {
-            pm.registerEvents(new PlayerMove(), this);
-        }
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);
             pm.registerEvents(shooter, this);

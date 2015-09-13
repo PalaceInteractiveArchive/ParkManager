@@ -414,7 +414,7 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
         MagicAssistant.stitch.logout(player);
-        MagicAssistant.vanishUtil.logout(player.getUniqueId());
+        MagicAssistant.vanishUtil.logout(player);
         Commandvanish.unvanish(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
         if (MagicAssistant.shooter != null) {
