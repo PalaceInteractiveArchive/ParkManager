@@ -237,9 +237,7 @@ public class PlayerJoinAndLeave implements Listener {
             for (String msg : MagicAssistant.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
-            if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                MagicAssistant.vanishUtil.login(player);
-            }
+            MagicAssistant.vanishUtil.login(player);
             if (user.getRank().getRankId() > Rank.CASTMEMBER.getRankId()) {
                 Commandvanish.vanish(player.getUniqueId());
                 for (Player tp : Bukkit.getOnlinePlayers()) {
