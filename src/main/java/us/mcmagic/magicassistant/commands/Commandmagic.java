@@ -244,9 +244,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     "--------------------------------------" + ChatColor.MAGIC + "------" +
                                     ChatColor.RESET + ChatColor.GOLD + "-\n  " + ChatColor.MAGIC + "||" + ChatColor.YELLOW +
                                     "Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW + " is now at " +
-                                    ChatColor.GREEN + counts + "\n" + ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" +
-                                    ChatColor.RESET + ChatColor.GOLD + "--------------------------------------" +
-                                    ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD + "-");
+                                    ChatColor.GREEN + data.getRideCounts().get(finalRideName) + "\n" + ChatColor.GOLD +
+                                    "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD +
+                                    "--------------------------------------" + ChatColor.MAGIC + "------" +
+                                    ChatColor.RESET + ChatColor.GOLD + "-");
                             tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
                             Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                                 @Override

@@ -9,12 +9,13 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class VisibleUtil {
     private List<UUID> hideall = new ArrayList<>();
-    private Map<UUID, Boolean> hidden = new ConcurrentHashMap<>();
+    private List<UUID> hidden = new ArrayList<>();
 
     public VisibleUtil() {
         if (!MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("hub")) {
@@ -24,31 +25,43 @@ public class VisibleUtil {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (!hidden.get(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) <= 5) {
+                    if (!hidden.contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) <= 5) {
                         User user = MCMagicCore.getUser(player.getUniqueId());
                         if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                            hidden.put(player.getUniqueId(), true);
-                            vanish(player, false);
-                        } else {
-                            hidden.put(player.getUniqueId(), false);
-                            vanish(player, false);
+                            hidden.add(player.getUniqueId());
+                            vanish(player);
                         }
-                    } else if (hidden.get(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) <= 5) {
-                        vanish(player, false);
-                    } else if (hidden.get(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) > 5) {
+                        return;
+                    }
+                    if (hidden.contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) > 5) {
                         hidden.remove(player.getUniqueId());
-                        vanish(player, true);
+                        show(player);
                     }
                 }
             }
         }, 0L, 20L);
     }
 
-    private void vanish(Player player, boolean show) {
-        if (!this.hidden.get(player.getUniqueId())) {
-            return;
+    private void vanish(Player player) {
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (tp.getUniqueId().equals(player.getUniqueId())) {
+                continue;
+            }
+            tp.hidePlayer(player);
         }
-        for (UUID id : hidden.keySet()) {
+    }
+
+    private void show(Player player) {
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            if (tp.getUniqueId().equals(player.getUniqueId())) {
+                continue;
+            }
+            tp.showPlayer(player);
+        }
+    }
+
+        /*
+        for (UUID id : new ArrayList<>(hidden)) {
             Player eachPlayer = Bukkit.getPlayer(id);
             if (!show) {
                 if (eachPlayer != null && !player.getUniqueId().equals(eachPlayer.getUniqueId()) && !hidden.get(id)) {
@@ -60,7 +73,7 @@ public class VisibleUtil {
                 }
             }
         }
-    }
+        */
 
     public void logout(Player player) {
         hidden.remove(player.getUniqueId());
