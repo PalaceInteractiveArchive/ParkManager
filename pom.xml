@@ -6,7 +6,7 @@
 
     <groupId>us.mcmagic</groupId>
     <artifactId>MagicAssistant</artifactId>
-    <version>1.6.6</version>
+    <version>1.6.7</version>
     <repositories>
         <repository>
             <id>mcmagic</id>
@@ -25,6 +25,20 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>minecraft-server</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
