@@ -49,7 +49,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
     public static boolean resortsServer;
-    public static FileConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+    public static FileConfiguration config = FileUtil.configurationYaml();
     public static PlayerJoinAndLeave playerJoinAndLeave;
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config.getStringList("join-messages");
@@ -99,11 +99,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
         saveConfig();
         FileUtil.setupConfig();
-        FileUtil.setupMenuFile();
         try {
             blockChanger.initialize();
         } catch (FileNotFoundException ignored) {
-            File file = new File("plugins/MagicAssistant/blockchanger.yml");
+            File file = FileUtil.blockchangerFile();
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -202,7 +201,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         config.set("hub.pitch", loc.getPitch());
         config.set("hub.world", loc.getWorld().getName());
         try {
-            config.save(new File("plugins/MagicAssistant/config.yml"));
+            config.save(FileUtil.configurationFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -234,10 +233,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
     }
 
-    public static YamlConfiguration config() {
-        return YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
-    }
-
     public static boolean isInPermGroup(Player player, String group) {
         String[] groups = WorldGuardPlugin.inst().getGroups(player);
         for (String group1 : groups) {
@@ -254,8 +249,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
     public void setupFoodLocations() {
         foodLocations.clear();
-        File file = new File("plugins/MagicAssistant/menus.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration config = FileUtil.menusYaml();
         List<String> locations = config.getStringList("food-names");
         for (String location : locations) {
             String name = config
@@ -277,8 +271,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
     public void setupRides() {
         ridePages.clear();
-        File file = new File("plugins/MagicAssistant/menus.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration config = FileUtil.menusYaml();
         List<String> locations = config.getStringList("ride-names");
         List<Ride> rides = new ArrayList<>();
         for (String location : locations) {
@@ -325,8 +318,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     }
 
     private void setupAttractions() {
-        File file = new File("plugins/MagicAssistant/menus.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration config = FileUtil.menusYaml();
         List<String> locations = config.getStringList("attraction-names");
         List<Attraction> attractions = new ArrayList<>();
         for (String location : locations) {

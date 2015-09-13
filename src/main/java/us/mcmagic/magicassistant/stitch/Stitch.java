@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.StitchSeat;
+import us.mcmagic.magicassistant.utils.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class Stitch implements Listener {
         seats.clear();
         watching.clear();
         msgTimeout.clear();
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+        YamlConfiguration config = FileUtil.configurationYaml();
         int amount = config.getInt("stitch.amount");
         for (int i = 1; i <= amount; i++) {
             double x = config.getDouble("stitch." + i + ".x");
@@ -158,7 +159,7 @@ public class Stitch implements Listener {
     }
 
     public void addSeat(Player player) throws IOException {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+        YamlConfiguration config = FileUtil.configurationYaml();
         Location loc = player.getLocation();
         int i = seats.size() + 1;
         config.set("stitch." + i + ".x", loc.getX());
@@ -168,7 +169,7 @@ public class Stitch implements Listener {
         config.set("stitch." + i + ".pitch", loc.getPitch());
         seats.put(i, new StitchSeat(i, loc));
         config.set("stitch.amount", seats.size());
-        config.save(new File("plugins/MagicAssistant/config.yml"));
+        config.save(FileUtil.configurationFile());
         player.sendMessage(prefix + ChatColor.BLUE + "Added seat " + ChatColor.GREEN + "#" + i);
     }
 

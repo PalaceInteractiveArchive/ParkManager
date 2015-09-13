@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.FileUtil;
 
 import java.io.*;
 import java.util.*;
@@ -43,7 +44,7 @@ public class BlockChanger implements Listener {
 
     @SuppressWarnings("deprecation")
     public void initialize() throws FileNotFoundException {
-        Scanner scanner = new Scanner(new FileReader("plugins/MagicAssistant/blockchanger.yml"));
+        Scanner scanner = new Scanner(new FileReader(FileUtil.blockchangerFile()));
         while (scanner.hasNextLine()) {
             String[] args = scanner.nextLine().split(";");
             try {
@@ -268,7 +269,7 @@ public class BlockChanger implements Listener {
     }
 
     public void updateFile() throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter("plugins/MagicAssistant/blockchanger.yml", false));
+        BufferedWriter bw = new BufferedWriter(new FileWriter(FileUtil.blockchangerFile(), false));
         for (Changer ch : changers.values()) {
             bw.write(ch.toString());
             bw.newLine();

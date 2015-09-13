@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.FileUtil;
 
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ParkSoundManager {
 
     public void initialize() {
         timers = new CopyOnWriteArrayList<>();
-        ConfigurationSection rootSection = MagicAssistant.config.getConfigurationSection("parktimers");
+        ConfigurationSection rootSection = FileUtil.configurationYaml().getConfigurationSection("parktimers");
         if (rootSection == null) {
             return;
         }

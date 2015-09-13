@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.io.File;
@@ -37,7 +38,7 @@ public class Shooter implements Listener {
 
 
     public Shooter(MagicAssistant instance) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
+        YamlConfiguration config = FileUtil.configurationYaml();
         if (config.getString("shooter").equalsIgnoreCase("buzz")) {
             stack = new ItemCreator(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun", Arrays.asList(ChatColor.GREEN +
                     "Click to shoot!"));

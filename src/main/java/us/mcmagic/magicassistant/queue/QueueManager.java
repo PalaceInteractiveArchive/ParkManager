@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.listeners.PlayerInteract;
+import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
@@ -46,7 +47,7 @@ public class QueueManager {
             ride.ejectQueue();
         }
         rides.clear();
-        File file = new File("plugins/MagicAssistant/queue.yml");
+        File file = FileUtil.queueFile();
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -54,7 +55,7 @@ public class QueueManager {
                 e.printStackTrace();
             }
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration config = FileUtil.queueYaml();
         List<String> qs = config.getStringList("queues");
         Collections.sort(qs);
         for (String s : qs) {
@@ -125,7 +126,7 @@ public class QueueManager {
         if (sn == null) {
             return;
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = FileUtil.queueYaml();
         int amount = config.getInt("sign-amount");
         config.set("queue." + sn + ".sign", null);
         List<Location> signs = ride.getSigns();
@@ -136,7 +137,7 @@ public class QueueManager {
             config.set("queue." + sn + ".sign." + i + ".z", l.getBlockZ());
         }
         config.set("queue." + sn + ".sign-amount", signs.size());
-        config.save(new File("plugins/MagicAssistant/queue.yml"));
+        config.save(FileUtil.queueFile());
     }
 
     public void deleteFPSign(Location loc) throws IOException {
@@ -158,7 +159,7 @@ public class QueueManager {
         if (sn == null) {
             return;
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = FileUtil.queueYaml();
         int amount = config.getInt("fpsign-amount");
         config.set("queue." + sn + ".fpsign", null);
         List<Location> signs = ride.getFPsigns();
@@ -169,7 +170,7 @@ public class QueueManager {
             config.set("queue." + sn + ".fpsign." + i + ".z", l.getBlockZ());
         }
         config.set("queue." + sn + ".fpsign-amount", signs.size());
-        config.save(new File("plugins/MagicAssistant/queue.yml"));
+        config.save(FileUtil.queueFile());
     }
 
     public QueueRide getRide(String line) {
@@ -265,13 +266,13 @@ public class QueueManager {
         if (sname == null) {
             return;
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = FileUtil.queueYaml();
         config.set("queue." + sname + ".station.x", loc.getX());
         config.set("queue." + sname + ".station.y", loc.getY());
         config.set("queue." + sname + ".station.z", loc.getZ());
         config.set("queue." + sname + ".station.yaw", loc.getYaw());
         config.set("queue." + sname + ".station.pitch", loc.getPitch());
-        config.save(new File("plugins/MagicAssistant/queue.yml"));
+        config.save(FileUtil.queueFile());
     }
 
     public void setSpawner(QueueRide ride, Location loc) throws IOException {
@@ -285,11 +286,11 @@ public class QueueManager {
         if (sname == null) {
             return;
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = FileUtil.queueYaml();
         config.set("queue." + sname + ".spawner.x", loc.getBlockX());
         config.set("queue." + sname + ".spawner.y", loc.getBlockY());
         config.set("queue." + sname + ".spawner.z", loc.getBlockZ());
-        config.save(new File("plugins/MagicAssistant/queue.yml"));
+        config.save(FileUtil.queueFile());
     }
 
     public void addSign(QueueRide ride, Location loc) throws IOException {
@@ -303,14 +304,14 @@ public class QueueManager {
         if (sname == null) {
             return;
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = FileUtil.queueYaml();
         int amount = config.getInt("queue." + sname + ".sign-amount");
         int num = amount + 1;
         config.set("queue." + sname + ".sign." + num + ".x", loc.getBlockX());
         config.set("queue." + sname + ".sign." + num + ".y", loc.getBlockY());
         config.set("queue." + sname + ".sign." + num + ".z", loc.getBlockZ());
         config.set("queue." + sname + ".sign-amount", num);
-        config.save(new File("plugins/MagicAssistant/queue.yml"));
+        config.save(FileUtil.queueFile());
     }
 
     public void addFPSign(QueueRide ride, Location loc) throws IOException {
@@ -324,14 +325,14 @@ public class QueueManager {
         if (sname == null) {
             return;
         }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = FileUtil.queueYaml();
         int amount = config.getInt("queue." + sname + ".fpsign-amount");
         int num = amount + 1;
         config.set("queue." + sname + ".fpsign." + num + ".x", loc.getBlockX());
         config.set("queue." + sname + ".fpsign." + num + ".y", loc.getBlockY());
         config.set("queue." + sname + ".fpsign." + num + ".z", loc.getBlockZ());
         config.set("queue." + sname + ".fpsign-amount", num);
-        config.save(new File("plugins/MagicAssistant/queue.yml"));
+        config.save(FileUtil.queueFile());
     }
 
     public void particle(Player player, Location loc) {

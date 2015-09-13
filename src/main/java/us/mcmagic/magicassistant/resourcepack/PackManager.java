@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.player.User;
@@ -35,7 +36,7 @@ public class PackManager implements Listener {
     @SuppressWarnings("deprecation")
     public void initialize() {
         packItems.clear();
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/packs.yml"));
+        YamlConfiguration config = FileUtil.packsYaml();
         for (String s : config.getStringList("pack-list")) {
             String name = config.getString("packs." + s + ".name");
             packItems.put(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', name)),

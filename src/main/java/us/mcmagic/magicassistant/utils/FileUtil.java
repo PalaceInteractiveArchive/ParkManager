@@ -2,6 +2,8 @@ package us.mcmagic.magicassistant.utils;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.yaml.snakeyaml.Yaml;
+import us.mcmagic.magicassistant.MagicAssistant;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,15 +12,71 @@ import java.util.List;
 
 public class FileUtil {
 
+    private FileUtil() { }
+
+    private static File blockchanger = new File("plugins/MagicAssistant/blockchanger.yml");
+    private static File configuration = new File("plugins/MagicAssistant/config.yml");
+    private static File menus = new File("plugins/MagicAssistant/menus.yml");
+    private static File packs = new File("plugins/MagicAssistant/packs.yml");
+    private static File queue = new File("plugins/MagicAssistant/queue.yml");
+    private static File shops = new File("plugins/MagicAssistant/shops.yml");
+
+    public static File blockchangerFile() {
+        return blockchanger;
+    }
+
+    public static File configurationFile() {
+        return configuration;
+    }
+
+    public static File menusFile() {
+        return menus;
+    }
+
+    public static File packsFile() {
+        return packs;
+    }
+
+    public static File queueFile() {
+        return queue;
+    }
+
+    public static File shopsFile() {
+        return shops;
+    }
+
+    public static YamlConfiguration blockchangerYaml() {
+        return YamlConfiguration.loadConfiguration(blockchangerFile());
+    }
+
+    public static YamlConfiguration configurationYaml() {
+        return YamlConfiguration.loadConfiguration(configurationFile());
+    }
+
+    public static YamlConfiguration menusYaml() {
+        return YamlConfiguration.loadConfiguration(menusFile());
+    }
+
+    public static YamlConfiguration packsYaml() {
+        return YamlConfiguration.loadConfiguration(packsFile());
+    }
+
+    public static YamlConfiguration queueYaml() {
+        return YamlConfiguration.loadConfiguration(queueFile());
+    }
+
+    public static YamlConfiguration shopsYaml() {
+        return YamlConfiguration.loadConfiguration(shopsFile());
+    }
+
     public static void setupConfig() {
         try {
-            File file = new File("plugins/MagicAssistant/config.yml");
+            File file = FileUtil.configurationFile();
             if (file.exists()) {
                 return;
             }
             file.createNewFile();
-            YamlConfiguration config = YamlConfiguration
-                    .loadConfiguration(file);
+            YamlConfiguration config = configurationYaml();
             config.set("server-name", "Hub");
             config.set("transfer-inventories", "false");
         } catch (IOException e) {
@@ -26,25 +84,9 @@ public class FileUtil {
         }
     }
 
-    public static void setupMenuFile() {
-        try {
-            File file = new File("plugins/MagicAssistant/menu.yml");
-            if (file.exists()) {
-                return;
-            }
-            file.createNewFile();
-            YamlConfiguration config = YamlConfiguration
-                    .loadConfiguration(file);
-            config.set("food-names", Arrays.asList(""));
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void setSpawn(Location loc) {
-        File file = new File("plugins/MagicAssistant/config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        File file = FileUtil.configurationFile();
+        YamlConfiguration config = configurationYaml();
         config.set("spawn.world", loc.getWorld().getName());
         config.set("spawn.x", loc.getX());
         config.set("spawn.y", loc.getY());
@@ -63,8 +105,8 @@ public class FileUtil {
     }
 
     public static void setHub(Location loc) {
-        File file = new File("plugins/MagicAssistant/config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        File file = FileUtil.configurationFile();
+        YamlConfiguration config = configurationYaml();
         config.set("hub.world", loc.getWorld().getName());
         config.set("hub.x", loc.getX());
         config.set("hub.y", loc.getY());
@@ -75,8 +117,8 @@ public class FileUtil {
     }
 
     public static void setFirstJoinMessages() {
-        File file = new File("plugins/MagicAssistant/config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        File file = FileUtil.configurationFile();
+        YamlConfiguration config = configurationYaml();
         List<String> msgs = Arrays.asList(
                 "&fHey everyone, it’s &d%pl% &ffirst visit to McMagic!",
                 "&d%total% Guests have visited McMagic since 2012!");

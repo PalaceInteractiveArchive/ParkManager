@@ -14,6 +14,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
@@ -34,7 +35,7 @@ public class ShopManager {
 
     @SuppressWarnings("deprecation")
     public void initialize() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/shops.yml"));
+        YamlConfiguration config = FileUtil.shopsYaml();
         shops.clear();
         for (String s : config.getStringList("shops")) {
             List<String> lore = new ArrayList<>();
