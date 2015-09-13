@@ -30,11 +30,11 @@ public class InventoryUtil {
     private ItemStack hnr = new ItemCreator(Material.BED, ChatColor.GREEN + "Hotels and Resorts " + ChatColor.BLUE + "*New*",
             Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
     private ItemStack toggleon = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.AQUA + "Player Visibility " +
-            ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden", Arrays.asList(""));
+            ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden", Collections.singletonList(""));
     private ItemStack toggleoff = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.AQUA + "Player Visibility " +
-            ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible", Arrays.asList(""));
+            ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible", Collections.singletonList(""));
     private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop " + ChatColor.BLUE + "*New*",
-            Arrays.asList(ChatColor.GREEN + "Purchase Items!"));
+            Collections.singletonList(ChatColor.GREEN + "Purchase Items!"));
     private ItemStack food = new ItemCreator(Material.POTATO_ITEM, ChatColor.GREEN + "Find Food", Arrays.asList(
             ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
     private ItemStack hub = new ItemCreator(Material.ENDER_PEARL, ChatColor.GREEN + "Return to Hub", Arrays.asList(
@@ -53,17 +53,17 @@ public class InventoryUtil {
             "the line on most rides!"));
     //Park Menu Items
     private ItemStack mk = new ItemCreator(Material.DIAMOND_HOE, ChatColor.AQUA + "Magic Kingdom",
-            Arrays.asList(ChatColor.GREEN + "/join MK"));
+            Collections.singletonList(ChatColor.GREEN + "/join MK"));
     private ItemStack epcot = new ItemCreator(Material.SNOW_BALL, ChatColor.AQUA + "Epcot",
-            Arrays.asList(ChatColor.GREEN + "/join Epcot"));
+            Collections.singletonList(ChatColor.GREEN + "/join Epcot"));
     private ItemStack hws = new ItemCreator(Material.JUKEBOX, ChatColor.AQUA + "Hollywood Studios",
-            Arrays.asList(ChatColor.GREEN + "/join HWS"));
+            Collections.singletonList(ChatColor.GREEN + "/join HWS"));
     private ItemStack ak = new ItemCreator(Material.SAPLING, 1, (byte) 5, ChatColor.AQUA + "Animal Kingdom",
-            Arrays.asList(ChatColor.GREEN + "/join AK"));
+            Collections.singletonList(ChatColor.GREEN + "/join AK"));
     private ItemStack tl = new ItemCreator(Material.WATER_BUCKET, ChatColor.AQUA + "Typhoon Lagoon",
-            Arrays.asList(ChatColor.GREEN + "/join Typhoon"));
+            Collections.singletonList(ChatColor.GREEN + "/join Typhoon"));
     private ItemStack dcl = new ItemCreator(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line",
-            Arrays.asList(ChatColor.GREEN + "/join DCL"));
+            Collections.singletonList(ChatColor.GREEN + "/join DCL"));
     //My Profile
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
     private ItemStack web = new ItemCreator(Material.REDSTONE, ChatColor.GREEN + "Website");
@@ -126,11 +126,11 @@ public class InventoryUtil {
     private ItemStack msep = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.YELLOW +
             "Main Street Electrical Parade");
     private ItemStack fofp = new ItemCreator(Material.INK_SACK, 1, (byte) 12, ChatColor.DARK_AQUA +
-            "Festival of Fantasy Parade", Arrays.asList(""));
+            "Festival of Fantasy Parade", Collections.singletonList(""));
     private ItemStack party = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN +
-            "Click to join the Party!", Arrays.asList(""));
+            "Click to join the Party!", Collections.singletonList(""));
     private ItemStack noparty = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED +
-            "There is no Party right now!", Arrays.asList(""));
+            "There is no Party right now!", Collections.singletonList(""));
     private ItemStack times = new ItemCreator(Material.BOOK, ChatColor.GREEN + "Show Timetable");
     //Rides and Attractions
     private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
@@ -259,7 +259,7 @@ public class InventoryUtil {
                     ItemStack playerInfo = HeadUtil.getPlayerHead(MCMagicCore.getUser(player.getUniqueId())
                             .getTextureHash(), ChatColor.GREEN + "My Profile");
                     ItemMeta im = playerInfo.getItemMeta();
-                    im.setLore(Arrays.asList(ChatColor.GRAY + "Loading..."));
+                    im.setLore(Collections.singletonList(ChatColor.GRAY + "Loading..."));
                     playerInfo.setItemMeta(im);
                     ItemStack time = new ItemCreator(Material.WATCH);
                     ItemMeta tm = time.getItemMeta();
@@ -513,8 +513,8 @@ public class InventoryUtil {
                     return;
                 case PLAYERSETTINGS:
                     Inventory settings = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Player Settings");
-                    List<String> enab = Arrays.asList(ChatColor.GREEN + "Enabled");
-                    List<String> disab = Arrays.asList(ChatColor.RED + "Disabled");
+                    List<String> enab = Collections.singletonList(ChatColor.GREEN + "Enabled");
+                    List<String> disab = Collections.singletonList(ChatColor.RED + "Disabled");
                     ItemStack flash;
                     ItemStack visibility;
                     ItemStack loop;
@@ -585,7 +585,7 @@ public class InventoryUtil {
                                             "FastPass for " + ChatColor.GREEN + "$50.",
                                     ChatColor.DARK_AQUA + "This cannot be undone!"));
                     ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
-                            Arrays.asList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
+                            Collections.singletonList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
                     fp.setItem(4, info);
                     fp.setItem(11, yes);
                     fp.setItem(15, no);

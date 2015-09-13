@@ -2,8 +2,6 @@ package us.mcmagic.magicassistant.utils;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.yaml.snakeyaml.Yaml;
-import us.mcmagic.magicassistant.MagicAssistant;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,10 +43,6 @@ public class FileUtil {
         return shops;
     }
 
-    public static YamlConfiguration blockchangerYaml() {
-        return YamlConfiguration.loadConfiguration(blockchangerFile());
-    }
-
     public static YamlConfiguration configurationYaml() {
         return YamlConfiguration.loadConfiguration(configurationFile());
     }
@@ -75,7 +69,9 @@ public class FileUtil {
             if (file.exists()) {
                 return;
             }
-            file.createNewFile();
+            if(file.createNewFile()) {
+                return;
+            }
             YamlConfiguration config = configurationYaml();
             config.set("server-name", "Hub");
             config.set("transfer-inventories", "false");

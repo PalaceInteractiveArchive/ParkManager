@@ -23,7 +23,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
-import java.io.File;
 import java.util.*;
 
 /**
@@ -40,15 +39,15 @@ public class Shooter implements Listener {
     public Shooter(MagicAssistant instance) {
         YamlConfiguration config = FileUtil.configurationYaml();
         if (config.getString("shooter").equalsIgnoreCase("buzz")) {
-            stack = new ItemCreator(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun", Arrays.asList(ChatColor.GREEN +
+            stack = new ItemCreator(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun", Collections.singletonList(ChatColor.GREEN +
                     "Click to shoot!"));
             game = config.getString("shooter");
         } else if (config.getString("shooter").equalsIgnoreCase("tsm")) {
-            stack = new ItemCreator(Material.STONE_HOE, ChatColor.GOLD + "Blaster", Arrays.asList(ChatColor.GREEN +
+            stack = new ItemCreator(Material.STONE_HOE, ChatColor.GOLD + "Blaster", Collections.singletonList(ChatColor.GREEN +
                     "Click to shoot!"));
             game = config.getString("shooter");
         } else if (config.getString("shooter").equalsIgnoreCase("mm")) {
-            stack = new ItemCreator(Material.GOLD_HOE, ChatColor.RED + "Boo Blaster", Arrays.asList(ChatColor.GREEN +
+            stack = new ItemCreator(Material.GOLD_HOE, ChatColor.RED + "Boo Blaster", Collections.singletonList(ChatColor.GREEN +
                     "Click to shoot!"));
             game = config.getString("shooter");
         } else {

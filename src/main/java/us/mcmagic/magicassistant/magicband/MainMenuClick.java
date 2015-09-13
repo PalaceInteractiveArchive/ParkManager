@@ -17,7 +17,7 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Marc on 12/13/14
@@ -73,7 +73,7 @@ public class MainMenuClick {
                 ItemStack time = new ItemStack(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();
                 tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Arrays.asList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
+                tm.setLore(Collections.singletonList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
                 time.setItemMeta(tm);
                 inv.setItem(4, time);
                 return;

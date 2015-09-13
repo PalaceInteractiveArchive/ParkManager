@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import us.mcmagic.magicassistant.show.Show;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Marc on 9/6/15
@@ -22,7 +22,7 @@ public class GlowAction extends ShowAction {
         LeatherArmorMeta meta = (LeatherArmorMeta) helm.getItemMeta();
         meta.setColor(color);
         meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Glow With The Show Ears");
-        meta.setLore(Arrays.asList(ChatColor.LIGHT_PURPLE + "This is part of the Show, don't move it!"));
+        meta.setLore(Collections.singletonList(ChatColor.LIGHT_PURPLE + "This is part of the Show, don't move it!"));
         helm.setItemMeta(meta);
         this.loc = loc;
         this.radius = radius;

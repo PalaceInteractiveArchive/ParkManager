@@ -24,7 +24,6 @@ import us.mcmagic.mcmagiccore.resource.ResourceManager;
 import us.mcmagic.mcmagiccore.resource.ResourcePack;
 import us.mcmagic.mcmagiccore.resource.ResourceStatusEvent;
 
-import java.io.File;
 import java.util.*;
 
 /**

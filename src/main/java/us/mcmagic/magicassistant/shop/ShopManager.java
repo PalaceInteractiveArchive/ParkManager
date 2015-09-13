@@ -19,7 +19,6 @@ import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
-import java.io.File;
 import java.util.*;
 
 /**
@@ -316,7 +315,7 @@ public class ShopManager {
                 Arrays.asList(ChatColor.GREEN + "You are about to purchase", item.getDisplayName(), ChatColor.GREEN +
                         "for " + ChatColor.YELLOW + "$" + item.getCost() + ChatColor.GREEN + "."));
         ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
-                Arrays.asList(ChatColor.GRAY + "This cannot be undone!"));
+                Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
         ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",
                 new ArrayList<String>());
         inv.setItem(4, name);

@@ -32,7 +32,6 @@ public class DesignStation {
         }
     }
 
-
     public static ItemStack createCar = new ItemStack(Material.MINECART, 1);
     public static ItemStack createTruck = new ItemStack(Material.MINECART, 1);
     public static ItemStack createSmartcar = new ItemStack(Material.MINECART, 1);
@@ -74,12 +73,12 @@ public class DesignStation {
     public static void initialize() {
         ItemMeta nbm = nextButton.getItemMeta();
         nbm.setDisplayName(ChatColor.GREEN + "Continue");
-        nbm.setLore(Arrays.asList(ChatColor.WHITE + "Click to continue to the next step."));
+        nbm.setLore(Collections.singletonList(ChatColor.WHITE + "Click to continue to the next step."));
         nextButton.setItemMeta(nbm);
 
         ItemMeta bbm = backButton.getItemMeta();
         bbm.setDisplayName(ChatColor.DARK_RED + "Back");
-        bbm.setLore(Arrays.asList(ChatColor.WHITE + "Click to return to the previous step."));
+        bbm.setLore(Collections.singletonList(ChatColor.WHITE + "Click to return to the previous step."));
         backButton.setItemMeta(bbm);
 
 
@@ -101,83 +100,83 @@ public class DesignStation {
 
         ItemMeta tbm = tallerButton.getItemMeta();
         tbm.setDisplayName(ChatColor.WHITE + "Taller (Vertical)");
-        tbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to make your vehicle taller."));
+        tbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to make your vehicle taller."));
         tallerButton.setItemMeta(tbm);
 
         ItemMeta sbm = shorterButton.getItemMeta();
         sbm.setDisplayName(ChatColor.WHITE + "Shorter (Vertical)");
-        sbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to make your vehicle less tall."));
+        sbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to make your vehicle less tall."));
         shorterButton.setItemMeta(sbm);
 
         ItemMeta wbm = widerButton.getItemMeta();
         wbm.setDisplayName(ChatColor.WHITE + "Longer (Horizontal)");
-        wbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to make your vehicle longer."));
+        wbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to make your vehicle longer."));
         widerButton.setItemMeta(wbm);
 
         ItemMeta thbm = thinnerButton.getItemMeta();
         thbm.setDisplayName(ChatColor.WHITE + "Shorter (Horizontal)");
-        thbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to make your vehicle shorter."));
+        thbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to make your vehicle shorter."));
         thinnerButton.setItemMeta(thbm);
 
 
         ItemMeta crbm = redButton.getItemMeta();
         crbm.setDisplayName(ChatColor.DARK_RED + "Red");
-        crbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle red."));
+        crbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle red."));
         redButton.setItemMeta(crbm);
 
         ItemMeta cdgbm = darkGreenButton.getItemMeta();
         cdgbm.setDisplayName(ChatColor.DARK_GREEN + "Dark Green");
-        cdgbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle dark green."));
+        cdgbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle dark green."));
         darkGreenButton.setItemMeta(cdgbm);
 
         ItemMeta clgbm = lightGreenButton.getItemMeta();
         clgbm.setDisplayName(ChatColor.GREEN + "Light Green");
-        clgbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle light green."));
+        clgbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle light green."));
         lightGreenButton.setItemMeta(clgbm);
 
         ItemMeta cybm = yellowButton.getItemMeta();
         cybm.setDisplayName(ChatColor.YELLOW + "Yellow");
-        cybm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle yellow."));
+        cybm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle yellow."));
         yellowButton.setItemMeta(cybm);
 
         ItemMeta cpbm = purpleButton.getItemMeta();
         cpbm.setDisplayName(ChatColor.DARK_PURPLE + "Purple");
-        cpbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle purple."));
+        cpbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle purple."));
         purpleButton.setItemMeta(cpbm);
 
         ItemMeta cmbm = magentaButton.getItemMeta();
         cmbm.setDisplayName(ChatColor.LIGHT_PURPLE + "Magenta");
-        cmbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle magenta."));
+        cmbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle magenta."));
         magentaButton.setItemMeta(cmbm);
 
         ItemMeta cdgrbm = darkGreyButton.getItemMeta();
         cdgrbm.setDisplayName(ChatColor.DARK_GRAY + "Dark Grey");
-        cdgrbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle dark grey."));
+        cdgrbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle dark grey."));
         darkGreyButton.setItemMeta(cdgrbm);
 
         ItemMeta clgrbm = lightGreyButton.getItemMeta();
         clgrbm.setDisplayName(ChatColor.GRAY + "Light Grey");
-        clgrbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle light grey."));
+        clgrbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle light grey."));
         lightGreyButton.setItemMeta(clgrbm);
 
         ItemMeta cwbm = whiteButton.getItemMeta();
         cwbm.setDisplayName(ChatColor.WHITE + "White");
-        cwbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle white."));
+        cwbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle white."));
         whiteButton.setItemMeta(cwbm);
 
         ItemMeta cdbbm = darkBlueButton.getItemMeta();
         cdbbm.setDisplayName(ChatColor.DARK_BLUE + "Dark Blue");
-        cdbbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle dark blue."));
+        cdbbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle dark blue."));
         darkBlueButton.setItemMeta(cdbbm);
 
         ItemMeta ccbm = cyanButton.getItemMeta();
         ccbm.setDisplayName(ChatColor.DARK_AQUA + "Aqua");
-        ccbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle aqua."));
+        ccbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle aqua."));
         cyanButton.setItemMeta(ccbm);
 
         ItemMeta clbbm = lightBlueButton.getItemMeta();
         clbbm.setDisplayName(ChatColor.BLUE + "Light Blue");
-        clbbm.setLore(Arrays.asList(ChatColor.GRAY + "Click to color your vehicle light blue."));
+        clbbm.setLore(Collections.singletonList(ChatColor.GRAY + "Click to color your vehicle light blue."));
         lightBlueButton.setItemMeta(clbbm);
 
 
