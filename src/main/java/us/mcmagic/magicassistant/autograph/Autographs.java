@@ -23,6 +23,8 @@ import java.util.*;
  * Created by Jacob on 7/19/15.
  */
 public class Autographs {
+
+    public static final String BOOK_TITLE = ChatColor.DARK_AQUA + "Autograph Book";
     private HashMap<UUID, UUID> map = new HashMap<>();
     private HashMap<UUID, Integer> map2 = new HashMap<>();
     private HashMap<UUID, Integer> map3 = new HashMap<>();
@@ -61,7 +63,7 @@ public class Autographs {
             bm.addPage(ChatColor.translateAlternateColorCodes('&', sign.getMessage()) + ChatColor.DARK_GREEN + "\n- "
                     + name);
         }
-        bm.setTitle(ChatColor.DARK_AQUA + "Autograph Book");
+        bm.setTitle(BOOK_TITLE);
         book.setItemMeta(bm);
         books.put(uuid, book);
     }
