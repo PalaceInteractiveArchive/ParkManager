@@ -82,6 +82,10 @@ public class Commandwarp implements CommandExecutor {
                 listWarps(player, Integer.parseInt(args[0]));
                 return true;
             }
+            if (args[0].equalsIgnoreCase("-s")) {
+                listWarpsServer(player, 1);
+                return true;
+            }
             final String w = args[0];
             Warp warp;
             if (WarpUtil.findWarp(w) == null) {
@@ -150,6 +154,14 @@ public class Commandwarp implements CommandExecutor {
             }
         }
         if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("-s")) {
+                if (isInt(args[1])) {
+                    listWarpsServer(player, Integer.parseInt(args[1]));
+                    return true;
+                }
+                listWarpsServer(player, 1);
+                return true;
+            }
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
                 player.performCommand("warp " + args[0]);
@@ -209,6 +221,39 @@ public class Commandwarp implements CommandExecutor {
         return true;
     }
 
+    private void listWarpsServer(Player player, int page) {
+        List<Warp> warps = MagicAssistant.getWarps();
+        List<Warp> list = new ArrayList<>();
+        String server = MCMagicCore.getMCMagicConfig().serverName;
+        for (Warp w : warps) {
+            if (w.getServer().equalsIgnoreCase(server)) {
+                list.add(w);
+            }
+        }
+        List<String> nlist = new ArrayList<>();
+        for (Warp w : list) {
+            nlist.add(w.getName());
+        }
+        Collections.sort(nlist);
+        if (nlist.size() < (page - 1) * 20 && page != 1) {
+            page = 1;
+        }
+        int max = page * 20;
+        List<String> names = nlist.subList(20 * (page - 1), nlist.size() < max ? nlist.size() : max);
+        FormattedMessage msg = new FormattedMessage("Server Warps (Page " + page + "):\n").color(ChatColor.GOLD);
+        for (int i = 0; i < names.size(); i++) {
+            String warp = names.get(i);
+            if (i == (names.size() - 1)) {
+                msg.then(warp).color(ChatColor.GRAY).command("/warp " + warp).tooltip(ChatColor.GREEN +
+                        "Click to warp to " + ChatColor.BLUE + warp + ChatColor.GREEN + "!");
+                continue;
+            }
+            msg.then(warp + ", ").color(ChatColor.GRAY).command("/warp " + warp).tooltip(ChatColor.GREEN +
+                    "Click to warp to " + ChatColor.BLUE + warp + ChatColor.GREEN + "!");
+        }
+        msg.send(player);
+    }
+
     private boolean isInt(String s) {
         try {
             Integer.parseInt(s);
@@ -227,8 +272,7 @@ public class Commandwarp implements CommandExecutor {
         }
         Collections.sort(nlist);
         if (nlist.size() < (page - 1) * 20 && page != 1) {
-            listWarps(player, 1);
-            return;
+            page = 1;
         }
         int max = page * 20;
         List<String> names = nlist.subList(20 * (page - 1), nlist.size() < max ? nlist.size() : max);

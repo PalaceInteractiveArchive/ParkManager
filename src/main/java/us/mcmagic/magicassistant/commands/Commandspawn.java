@@ -31,11 +31,17 @@ public class Commandspawn implements CommandExecutor {
                 if (tp == null) {
                     player.sendMessage(ChatColor.RED + "Player not found!");
                 }
+                MagicAssistant.queueManager.leaveAllQueues(tp);
+                if (MagicAssistant.shooter != null) {
+                    MagicAssistant.shooter.warp(tp);
+                }
                 tp.teleport(MagicAssistant.spawn);
-            } else {
-                player.teleport(MagicAssistant.spawn);
+                return true;
             }
-            return true;
+        }
+        MagicAssistant.queueManager.leaveAllQueues(player);
+        if (MagicAssistant.shooter != null) {
+            MagicAssistant.shooter.warp(player);
         }
         player.teleport(MagicAssistant.spawn);
         return true;

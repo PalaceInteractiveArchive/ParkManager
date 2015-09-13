@@ -35,6 +35,9 @@ import us.mcmagic.mcmagiccore.player.User;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -68,7 +71,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 if (args[1].equalsIgnoreCase("particle")) {
                     if (args.length == 11) {
-                        // magic effect(0) Particle(1) type(2) x(3) y(4) z(5) oX(6) oY(7) oZ(8) speed(9) amount(10)
                         ParticleEffect effect = ParticleEffect.fromString(args[2]);
                         Location loc = locFromArray(args[3], args[4], args[5]);
                         try {
@@ -189,6 +191,57 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 helpMenu("show", sender);
                 return true;
+            case "rc":
+                if (args.length > 3 && args[1].equalsIgnoreCase("add")) {
+                    final Player tp = PlayerUtil.findPlayer(args[2]);
+                    if (tp == null) {
+                        sender.sendMessage(ChatColor.RED + "Player not found!");
+                        return true;
+                    }
+                    Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                        @Override
+                        public void run() {
+                            PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
+                            HashMap<String, Integer> counts = data.getRideCounts();
+                            String rideName = "";
+                            for (int i = 3; i < args.length; i++) {
+                                rideName += args[i];
+                            }
+                            if (!counts.containsKey(rideName)) {
+                                counts.put(rideName, 1);
+                                try (Connection connection = SqlUtil.getConnection()) {
+                                    PreparedStatement sql = connection.prepareStatement("INSERT INTO ridecounter (uuid," +
+                                            " name, server) VALUES (?,?,?)");
+                                    sql.setString(1, tp.getUniqueId().toString());
+                                    sql.setString(2, rideName);
+                                    sql.setString(3, MCMagicCore.getMCMagicConfig().serverName);
+                                    sql.execute();
+                                    sql.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                counts.put(rideName, counts.remove(rideName) + 1);
+                                try (Connection connection = SqlUtil.getConnection()) {
+                                    PreparedStatement sql = connection.prepareStatement("UPDATE ridecounter SET " +
+                                            "count=count+1 WHERE uuid=? AND name=?");
+                                    sql.setString(1, tp.getUniqueId().toString());
+                                    sql.setString(2, rideName);
+                                    sql.execute();
+                                    sql.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            data.setRideCounts(counts);
+                            sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " +
+                                    rideName);
+                        }
+                    });
+                    return true;
+                }
+                helpMenu("ride", sender);
+                return true;
             case "uoe":
                 if (args.length == 4) {
                     if (args[1].equalsIgnoreCase("eject")) {
@@ -307,7 +360,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                             inv.setItem(4, MagicAssistant.shooter.getItem());
                             inv.setHeldItemSlot(4);
                             MagicAssistant.shooter.sendGameMessage(player);
-                            MagicAssistant.shooter.ingame.add(player.getUniqueId());
+                            MagicAssistant.shooter.join(player);
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
@@ -614,6 +667,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant.bandUtil.askForParty();
                 ma.setupFirstJoinItems();
                 ma.setupFoodLocations();
+                MagicAssistant.parkSoundManager.initialize();
                 ma.setupRides();
                 MagicAssistant.stitch.initialize();
                 MagicAssistant.hotelManager.refreshRooms();
@@ -651,6 +705,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
+                sender.sendMessage(ChatColor.GREEN + "/magic rc " + ChatColor.AQUA + "- Ride Counters");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
                 break;
             case "shooter":
@@ -711,6 +766,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                         "- Pause station teleport");
                 sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] unpause " + ChatColor.AQUA +
                         "- Un-Pause station teleport");
+                break;
+            case "ride":
+                sender.sendMessage(ChatColor.GREEN + "Ride Counter Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic rc add [Player] [Ride Name] " + ChatColor.AQUA +
+                        "- Increment a player's Ride Count value.");
         }
         if (containsCommandBlockOnly.contains(menu)) {
             sender.sendMessage(ChatColor.RED + "* Only Command Blocks can do this");

@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.show.actions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -7,6 +8,8 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
+
+import java.util.UUID;
 
 /**
  * Created by Marc on 1/10/15
@@ -36,7 +39,11 @@ public class ParticleAction extends ShowAction {
 
     @Override
     public void play() {
-        for (Player tp : show.getNearPlayers()) {
+        for (UUID uuid : show.getNearPlayers()) {
+            Player tp = Bukkit.getPlayer(uuid);
+            if (tp == null) {
+                continue;
+            }
             if (tp.getLocation().distance(loc) > 50) {
                 continue;
             }

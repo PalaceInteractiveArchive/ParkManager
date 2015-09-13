@@ -10,7 +10,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.handlers.InventoryType;
-import us.mcmagic.magicassistant.utils.VisibleUtil;
 
 /**
  * Created by Marc on 4/21/15
@@ -47,9 +46,9 @@ public class PlayerSettingsClick {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 data.setVisibility(!data.getVisibility());
                 if (data.getVisibility()) {
-                    VisibleUtil.removeFromHideAll(player);
+                    MagicAssistant.vanishUtil.removeFromHideAll(player);
                 } else {
-                    VisibleUtil.addToHideAll(player);
+                    MagicAssistant.vanishUtil.addToHideAll(player);
                 }
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
                 MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", data.getVisibility());

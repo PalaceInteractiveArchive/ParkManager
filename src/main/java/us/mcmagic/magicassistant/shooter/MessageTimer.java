@@ -17,28 +17,24 @@ public class MessageTimer {
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
+                String msg = "";
                 switch (MagicAssistant.shooter.game) {
                     case "buzz":
-                        for (UUID uuid : MagicAssistant.shooter.ingame) {
-                            Player player = Bukkit.getPlayer(uuid);
-                            ActionBarManager.sendMessage(player, ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: "
-                                    + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
-                        }
+                        msg = ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: " + ChatColor.GREEN + "" +
+                                ChatColor.BOLD;
                         break;
                     case "tsm":
-                        for (UUID uuid : MagicAssistant.shooter.ingame) {
-                            Player player = Bukkit.getPlayer(uuid);
-                            ActionBarManager.sendMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: "
-                                    + ChatColor.GREEN + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
-                        }
+                        msg = ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania Points: " + ChatColor.GREEN + ""
+                                + ChatColor.BOLD;
                         break;
                     case "mm":
-                        for (UUID uuid : MagicAssistant.shooter.ingame) {
-                            Player player = Bukkit.getPlayer(uuid);
-                            ActionBarManager.sendMessage(player, ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: "
-                                    + ChatColor.YELLOW + "" + ChatColor.BOLD + player.getMetadata("shooter").get(0).asInt());
-                        }
+                        msg = ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: " + ChatColor.YELLOW +
+                                "" + ChatColor.BOLD;
                         break;
+                }
+                for (UUID uuid : MagicAssistant.shooter.getIngame()) {
+                    Player player = Bukkit.getPlayer(uuid);
+                    ActionBarManager.sendMessage(player, msg + player.getMetadata("shooter").get(0).asInt());
                 }
             }
         }, 0, 20L);

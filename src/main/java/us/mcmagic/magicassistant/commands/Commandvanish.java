@@ -6,13 +6,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Commandvanish implements CommandExecutor {
-    public static List<UUID> hidden = new ArrayList<>();
+    private static List<UUID> hidden = new ArrayList<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -29,20 +32,25 @@ public class Commandvanish implements CommandExecutor {
                 }
                 player.sendMessage(ChatColor.DARK_AQUA + "You have become visible.");
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.hasPermission("vanish.standard") && !tp.equals(player)) {
+                    User user = MCMagicCore.getUser(tp.getUniqueId());
+                    if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() &&
+                            tp.getUniqueId().equals(player.getUniqueId())) {
                         tp.sendMessage(ChatColor.YELLOW + player.getName() + " has become visible.");
                     }
                 }
             } else {
                 hidden.add(player.getUniqueId());
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (!tp.hasPermission("vanish.standard")) {
+                    User user = MCMagicCore.getUser(tp.getUniqueId());
+                    if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                         tp.hidePlayer(player);
                     }
                 }
                 player.sendMessage(ChatColor.DARK_AQUA + "You have vanished. Poof.");
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (tp.hasPermission("vanish.standard") && !tp.equals(player)) {
+                    User user = MCMagicCore.getUser(tp.getUniqueId());
+                    if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() &&
+                            tp.getUniqueId().equals(player.getUniqueId())) {
                         tp.sendMessage(ChatColor.YELLOW + player.getName() + " has vanished. Poof.");
                     }
                 }
@@ -71,10 +79,24 @@ public class Commandvanish implements CommandExecutor {
                 if (hidden.contains(player.getUniqueId())) {
                     player.sendMessage(ChatColor.DARK_AQUA + "You are vanished.");
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA + "You are not vanished.");
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are visible.");
                 }
             }
         }
         return true;
+    }
+
+    public static void vanish(UUID uuid) {
+        if (!hidden.contains(uuid)) {
+            hidden.add(uuid);
+        }
+    }
+
+    public static List<UUID> getHidden() {
+        return new ArrayList<>(hidden);
+    }
+
+    public static void unvanish(UUID uuid) {
+        hidden.remove(uuid);
     }
 }

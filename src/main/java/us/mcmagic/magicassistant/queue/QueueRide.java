@@ -75,9 +75,10 @@ public class QueueRide {
     public int getPosition(UUID uuid) {
         if (fpqueue.contains(uuid)) {
             return fpqueue.indexOf(uuid);
-        } else {
+        } else if (queue.contains(uuid)) {
             return queue.indexOf(uuid);
         }
+        return 0;
     }
 
     public boolean isPaused() {
@@ -90,6 +91,12 @@ public class QueueRide {
 
     public void joinQueue(Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
+        if (amountOfRiders == 1 && queue.isEmpty() && fpqueue.isEmpty() && canSpawn()) {
+            queue.add(player.getUniqueId());
+            moveToStation();
+            spawn();
+            return;
+        }
         if (queue.isEmpty() && canSpawn()) {
             player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
                     ChatColor.BOLD + "10" + ChatColor.GREEN + " seconds for anyone else to join the Queue.");
@@ -151,13 +158,15 @@ public class QueueRide {
     }
 
     public void moveToStation() {
-        List<UUID> fullList = new ArrayList<>(queue);
+        if (frozen) {
+            return;
+        }
+        List<UUID> fullList = getQueue();
         List<UUID> fps = getFPQueue();
         if (fps.size() > fullList.size()) {
             int place = 1;
             for (int i = 0; i < fullList.size(); i++) {
                 fullList.add(place, fps.get(i));
-                fps.remove(fps.get(i));
                 place += 2;
             }
             for (UUID uuid : fps) {
@@ -167,6 +176,7 @@ public class QueueRide {
             int place = 1;
             if (fullList.isEmpty()) {
                 fullList = fps;
+                fps.clear();
             } else {
                 for (UUID uuid : fps) {
                     fullList.add(place, uuid);
@@ -230,15 +240,6 @@ public class QueueRide {
         return queue.size();
     }
 
-    public String appxWaitTime() {
-        int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
-        double seconds = delay * (groups);
-        Calendar to = new GregorianCalendar();
-        to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
-        String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
-        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
-    }
-
     public void updateSigns() {
         for (Location loc : new ArrayList<>(signs)) {
             Block b = loc.getBlock();
@@ -261,6 +262,9 @@ public class QueueRide {
     }
 
     public void spawn() {
+        if (frozen) {
+            return;
+        }
         lastSpawn = System.currentTimeMillis() / 1000;
         final Block b = spawner.getBlock();
         b.setType(Material.REDSTONE_BLOCK);
@@ -405,7 +409,7 @@ public class QueueRide {
                         "is unfrozen, but if you leave your place in line will be lost.");
             }
         }
-        if (!queue.isEmpty() || !fpqueue.isEmpty() && canSpawn()) {
+        if ((!queue.isEmpty() || !fpqueue.isEmpty()) && canSpawn() && !frozen) {
             moveToStation();
             spawn();
         }
@@ -438,5 +442,24 @@ public class QueueRide {
 
     public List<UUID> getFPQueue() {
         return new ArrayList<>(fpqueue);
+    }
+
+    public String appxWaitTime() {
+        int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
+        double seconds = delay * (groups);
+        Calendar to = new GregorianCalendar();
+        to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
+        String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
+        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
+    }
+
+    public String getWaitFor(UUID uuid) {
+        int pos = getPosition(uuid) + 1;
+        int groups = (int) Math.ceil((float) pos / amountOfRiders);
+        double seconds = delay * (groups);
+        Calendar to = new GregorianCalendar();
+        to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
+        String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
+        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
     }
 }

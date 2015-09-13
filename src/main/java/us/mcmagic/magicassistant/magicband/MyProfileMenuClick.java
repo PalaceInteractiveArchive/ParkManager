@@ -59,8 +59,8 @@ public class MyProfileMenuClick {
             case "Locker":
                 player.openInventory(player.getEnderChest());
                 return;
-            case "Achievements":
-                MagicAssistant.inventoryUtil.featureComingSoon(player);
+            case "Ride Counter":
+                MagicAssistant.inventoryUtil.openRideCounter(player);
                 return;
             case "Mumble":
                 player.closeInventory();

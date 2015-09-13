@@ -26,7 +26,6 @@ public class PowerFireworkAction extends ShowAction {
         this.motion = motion;
         this.effects = effects;
     }
-    //LifeTime:0,Motion:[2.0,7.5,-0.4],FireworksItem:{id:401,Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:0,Trail:1,Colors:[16776960],FadeColors:[10586448]}]}}}
 
     @Override
     public void play() {
