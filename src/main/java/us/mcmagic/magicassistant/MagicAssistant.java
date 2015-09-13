@@ -19,7 +19,7 @@ import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
-import us.mcmagic.magicassistant.parktimer.ParkTimerManager;
+import us.mcmagic.magicassistant.parksounds.ParkSoundManager;
 import us.mcmagic.magicassistant.queue.QueueManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
@@ -60,7 +60,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean hubServer;
     public static MagicAssistant instance;
     public static BlockChanger blockChanger;
-    public static ParkTimerManager parkTimerManager;
+    public static ParkSoundManager parkSoundManager;
     public static PackManager packManager;
     public static BandUtil bandUtil;
     public static RideManager rideManager;
@@ -92,7 +92,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         inventoryUtil = new InventoryUtil();
         vanishUtil = new VisibleUtil();
         blockChanger = new BlockChanger();
-        parkTimerManager = new ParkTimerManager();
+        parkSoundManager = new ParkSoundManager();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -142,7 +142,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         resortsServer = MCMagicCore.getMCMagicConfig().serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
-        parkTimerManager.initialize();
+        parkSoundManager.initialize();
         DesignStation.initialize();
         for (World world : Bukkit.getWorlds()) {
             world.setTime(0);
@@ -415,7 +415,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("enderchest").setExecutor(new Commandenderchest());
         getCommand("fly").setExecutor(new Commandfly());
         getCommand("give").setExecutor(new Commandgive());
-        getCommand("gwts").setExecutor(new Commandgwts());
         getCommand("head").setExecutor(new Commandhead());
         getCommand("heal").setExecutor(new Commandheal());
         getCommand("helpop").setExecutor(new Commandhelpop());

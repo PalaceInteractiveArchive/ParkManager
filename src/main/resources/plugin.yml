@@ -5,10 +5,6 @@ description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib]
 commands:
-   gwts:
-      description: Glow With The Show!
-      permission: magicassistant.gwts
-      permission-message: §4Only Cast Members can use this command!
    magic:
       description: New Command :O
       permission: arcade.bypass

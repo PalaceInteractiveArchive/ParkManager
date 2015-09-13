@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.parktimer;
+package us.mcmagic.magicassistant.parksounds;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ParkTimer {
+public class ParkSound {
 
     private Map<UUID, Long> playersListeningToSong = new ConcurrentHashMap<>();
     private String name;
@@ -18,7 +18,7 @@ public class ParkTimer {
     private int distance;
     private int audioLength;
 
-    protected ParkTimer(String name, String sound, float volume, float pitch, Location origin, int distance, int audioLength) {
+    protected ParkSound(String name, String sound, float volume, float pitch, Location origin, int distance, int audioLength) {
         this.name = name;
         this.sound = sound;
         this.volume = volume;
