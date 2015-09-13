@@ -646,51 +646,55 @@ public class Show {
         }
         // Fade
         List<Color> fades = new ArrayList<>();
-        for (String color : tokens[2].split("&")) {
-            if (color.equalsIgnoreCase("AQUA")) {
-                fades.add(Color.AQUA);
-            } else if (color.equalsIgnoreCase("BLACK")) {
-                fades.add(Color.BLACK);
-            } else if (color.equalsIgnoreCase("BLUE")) {
-                fades.add(Color.BLUE);
-            } else if (color.equalsIgnoreCase("FUCHSIA")) {
-                fades.add(Color.FUCHSIA);
-            } else if (color.equalsIgnoreCase("GRAY")) {
-                fades.add(Color.GRAY);
-            } else if (color.equalsIgnoreCase("GREEN")) {
-                fades.add(Color.GREEN);
-            } else if (color.equalsIgnoreCase("LIME")) {
-                fades.add(Color.LIME);
-            } else if (color.equalsIgnoreCase("MAROON")) {
-                fades.add(Color.MAROON);
-            } else if (color.equalsIgnoreCase("NAVY")) {
-                fades.add(Color.NAVY);
-            } else if (color.equalsIgnoreCase("OLIVE")) {
-                fades.add(Color.OLIVE);
-            } else if (color.equalsIgnoreCase("ORANGE")) {
-                fades.add(Color.ORANGE);
-            } else if (color.equalsIgnoreCase("PURPLE")) {
-                fades.add(Color.PURPLE);
-            } else if (color.equalsIgnoreCase("RED")) {
-                fades.add(Color.RED);
-            } else if (color.equalsIgnoreCase("SILVER")) {
-                fades.add(Color.SILVER);
-            } else if (color.equalsIgnoreCase("TEAL")) {
-                fades.add(Color.TEAL);
-            } else if (color.equalsIgnoreCase("WHITE")) {
-                fades.add(Color.WHITE);
-            } else if (color.equalsIgnoreCase("YELLOW")) {
-                fades.add(Color.YELLOW);
-            } else if (color.contains(";")) {
-                String[] list = color.split(";");
-                colors.add(Color.fromRGB(getInt(list[0]), getInt(list[1]), getInt(list[2])));
-            } else {
-                invalidLines.put(effect, "Invalid Fade Color [" + color + "]");
-                return null;
+        if (tokens.length > 2) {
+            for (String color : tokens[2].split("&")) {
+                if (color.equalsIgnoreCase("AQUA")) {
+                    fades.add(Color.AQUA);
+                } else if (color.equalsIgnoreCase("BLACK")) {
+                    fades.add(Color.BLACK);
+                } else if (color.equalsIgnoreCase("BLUE")) {
+                    fades.add(Color.BLUE);
+                } else if (color.equalsIgnoreCase("FUCHSIA")) {
+                    fades.add(Color.FUCHSIA);
+                } else if (color.equalsIgnoreCase("GRAY")) {
+                    fades.add(Color.GRAY);
+                } else if (color.equalsIgnoreCase("GREEN")) {
+                    fades.add(Color.GREEN);
+                } else if (color.equalsIgnoreCase("LIME")) {
+                    fades.add(Color.LIME);
+                } else if (color.equalsIgnoreCase("MAROON")) {
+                    fades.add(Color.MAROON);
+                } else if (color.equalsIgnoreCase("NAVY")) {
+                    fades.add(Color.NAVY);
+                } else if (color.equalsIgnoreCase("OLIVE")) {
+                    fades.add(Color.OLIVE);
+                } else if (color.equalsIgnoreCase("ORANGE")) {
+                    fades.add(Color.ORANGE);
+                } else if (color.equalsIgnoreCase("PURPLE")) {
+                    fades.add(Color.PURPLE);
+                } else if (color.equalsIgnoreCase("RED")) {
+                    fades.add(Color.RED);
+                } else if (color.equalsIgnoreCase("SILVER")) {
+                    fades.add(Color.SILVER);
+                } else if (color.equalsIgnoreCase("TEAL")) {
+                    fades.add(Color.TEAL);
+                } else if (color.equalsIgnoreCase("WHITE")) {
+                    fades.add(Color.WHITE);
+                } else if (color.equalsIgnoreCase("YELLOW")) {
+                    fades.add(Color.YELLOW);
+                } else if (color.contains(";")) {
+                    String[] list = color.split(";");
+                    colors.add(Color.fromRGB(getInt(list[0]), getInt(list[1]), getInt(list[2])));
+                } else if (color.equalsIgnoreCase("FLICKER") || color.equalsIgnoreCase("TRAIL")) {
+                    break;
+                } else {
+                    invalidLines.put(effect, "Invalid Fade Color [" + color + "]");
+                    return null;
+                }
             }
         }
-        boolean flicker = effect.toUpperCase().contains("FLICKER");
-        boolean trail = effect.toUpperCase().contains("TRAIL");
+        boolean flicker = effect.toLowerCase().contains("flicker");
+        boolean trail = effect.toLowerCase().contains("trail");
         // Firework
         return FireworkEffect.builder().with(shape).withColor(colors).withFade(fades).flicker(flicker).trail(trail).build();
     }
