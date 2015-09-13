@@ -3,11 +3,14 @@ package us.mcmagic.magicassistant.show.actions;
 import net.minecraft.server.v1_8_R3.Block;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.show.Show;
+
+import java.util.UUID;
 
 /**
  * Created by Marc on 7/1/15
@@ -26,7 +29,11 @@ public class FakeBlockAction extends ShowAction {
 
     @Override
     public void play() {
-        for (Player tp : show.getNearPlayers()) {
+        for (UUID uuid : show.getNearPlayers()) {
+            Player tp = Bukkit.getPlayer(uuid);
+            if (tp == null) {
+                continue;
+            }
             ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(packet);
         }
     }

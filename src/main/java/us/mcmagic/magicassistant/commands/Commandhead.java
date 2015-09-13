@@ -1,8 +1,5 @@
 package us.mcmagic.magicassistant.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,6 +25,10 @@ public class Commandhead implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Only players can do this!");
             return true;
         }
+        sender.sendMessage(ChatColor.RED + "This command has been disabled. Visit " + ChatColor.AQUA +
+                "heads.freshcoal.com " + ChatColor.RED + "to get Player Heads.");
+        return true;
+        /*
         try {
             Player player = (Player) sender;
             if (args.length == 1) {
@@ -128,6 +129,7 @@ public class Commandhead implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Error getting that head!");
             return true;
         }
+        */
     }
 
     private String readUrl(String urlString) throws Exception {

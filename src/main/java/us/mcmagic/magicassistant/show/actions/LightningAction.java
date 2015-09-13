@@ -1,19 +1,19 @@
 package us.mcmagic.magicassistant.show.actions;
 
 
-import us.mcmagic.magicassistant.show.Show;
 import org.bukkit.Location;
+import us.mcmagic.magicassistant.show.Show;
 
 public class LightningAction extends ShowAction {
-    public Location Location;
+    public Location loc;
 
-    public LightningAction(Show show, long time, Location location) {
+    public LightningAction(Show show, long time, Location loc) {
         super(show, time);
-        Location = location;
+        this.loc = loc;
     }
 
     @Override
     public void play() {
-        Location.getWorld().strikeLightningEffect(Location);
+        loc.getWorld().strikeLightningEffect(loc);
     }
 }

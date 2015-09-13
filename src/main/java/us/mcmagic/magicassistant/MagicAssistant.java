@@ -19,6 +19,7 @@ import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
+import us.mcmagic.magicassistant.parksounds.ParkSoundManager;
 import us.mcmagic.magicassistant.queue.QueueManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
@@ -28,7 +29,6 @@ import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.shop.ShopManager;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
-import us.mcmagic.magicassistant.trade.TradeManager;
 import us.mcmagic.magicassistant.uoe.UniverseEnergyRide;
 import us.mcmagic.magicassistant.utils.*;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -59,16 +59,17 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<String> partyServer = new ArrayList<>();
     public static boolean hubServer;
     public static MagicAssistant instance;
-    public static BlockChanger blockChanger = new BlockChanger();
+    public static BlockChanger blockChanger;
+    public static ParkSoundManager parkSoundManager;
     public static PackManager packManager;
     public static BandUtil bandUtil;
     public static RideManager rideManager;
     public static InventoryUtil inventoryUtil;
     public static ShopManager shopManager;
-    public static TradeManager tradeManager;
     public static HotelManager hotelManager;
     public static QueueManager queueManager;
     public static Autographs autographManager;
+    public static VisibleUtil vanishUtil;
     public static Shooter shooter = null;
 
     public void onEnable() {
@@ -82,7 +83,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         packManager = new PackManager();
         log("Pack Manager Initialized!");
         universeEnergyRide = new UniverseEnergyRide();
-        tradeManager = new TradeManager();
         autographManager = new Autographs();
         log("Initializing Queue Manager...");
         queueManager = new QueueManager();
@@ -90,6 +90,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         bandUtil = new BandUtil();
         bandUtil.askForParty();
         inventoryUtil = new InventoryUtil();
+        vanishUtil = new VisibleUtil();
+        blockChanger = new BlockChanger();
+        parkSoundManager = new ParkSoundManager();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -139,6 +142,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         resortsServer = MCMagicCore.getMCMagicConfig().serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
+        parkSoundManager.initialize();
         DesignStation.initialize();
         for (World world : Bukkit.getWorlds()) {
             world.setTime(0);
@@ -226,12 +230,12 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             player.sendPluginMessage(this, "BungeeCord", b.toByteArray());
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED
-                    + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
+                    + "Sorry, looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
         }
     }
 
     public static YamlConfiguration config() {
-        return YamlConfiguration.loadConfiguration(new File("plugins/magicassistant/config.yml"));
+        return YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/config.yml"));
     }
 
     public static boolean isInPermGroup(Player player, String group) {
@@ -411,7 +415,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("enderchest").setExecutor(new Commandenderchest());
         getCommand("fly").setExecutor(new Commandfly());
         getCommand("give").setExecutor(new Commandgive());
-        getCommand("gwts").setExecutor(new Commandgwts());
         getCommand("head").setExecutor(new Commandhead());
         getCommand("heal").setExecutor(new Commandheal());
         getCommand("helpop").setExecutor(new Commandhelpop());
@@ -442,7 +445,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("spawn").setExecutor(new Commandspawn());
         getCommand("top").setExecutor(new Commandtop());
         getCommand("tp").setExecutor(new Commandtp());
-        getCommand("trade").setExecutor(new Commandtrade());
         getCommand("uwarp").setExecutor(new Commanduwarp());
         getCommand("vanish").setExecutor(new Commandvanish());
         getCommand("vanish").setAliases(Collections.singletonList("v"));
@@ -461,16 +463,19 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new ChunkUnload(), this);
         pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new InventoryClick(), this);
+        pm.registerEvents(new FoodLevel(), this);
         pm.registerEvents(new PlayerDropItem(), this);
         pm.registerEvents(stitch, this);
         pm.registerEvents(new PlayerInteract(), this);
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
-        pm.registerEvents(new VisibleUtil(this), this);
         pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         //pm.registerEvents(rideManager, this);
+        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("hub")) {
+            pm.registerEvents(new PlayerMove(), this);
+        }
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);
             pm.registerEvents(shooter, this);

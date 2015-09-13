@@ -7,38 +7,27 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
-import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.magicassistant.utils.BandUtil;
 
 /**
- * Created by Marc on 6/24/15
+ * Created by Marc on 9/1/15
  */
-public class WaitTimeClick {
+public class RideCounterClick {
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
-        if (item == null) {
+        if (item == null || item.getItemMeta() == null) {
             return;
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
-            return;
-        }
-        if (item.getItemMeta() == null) {
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
         if (meta.getDisplayName() == null) {
             return;
         }
-        String name = meta.getDisplayName();
-        if (name.equals(ChatColor.RED + "Uh oh!")) {
-            player.closeInventory();
-            player.sendMessage(ChatColor.RED + "Sorry, but there are no rides setup on this server!");
-            return;
-        }
-        QueueRide ride = MagicAssistant.queueManager.getRide2(name);
-        player.performCommand("warp " + ride.getWarp());
+        String name = ChatColor.stripColor(meta.getDisplayName());
     }
 }

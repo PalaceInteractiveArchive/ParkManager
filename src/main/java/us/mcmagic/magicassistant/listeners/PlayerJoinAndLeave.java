@@ -23,7 +23,6 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.utils.SqlUtil;
-import us.mcmagic.magicassistant.utils.VisibleUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -223,7 +222,7 @@ public class PlayerJoinAndLeave implements Listener {
             }
             PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             if (!data.getVisibility()) {
-                VisibleUtil.addToHideAll(player);
+                MagicAssistant.vanishUtil.addToHideAll(player);
             }
             if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
                 player.setGameMode(GameMode.CREATIVE);
@@ -239,10 +238,10 @@ public class PlayerJoinAndLeave implements Listener {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
             if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                VisibleUtil.hideForHideAll(player);
+                MagicAssistant.vanishUtil.login(player);
             }
             if (user.getRank().getRankId() > Rank.CASTMEMBER.getRankId()) {
-                Commandvanish.hidden.add(player.getUniqueId());
+                Commandvanish.vanish(player.getUniqueId());
                 for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                         tp.hidePlayer(player);
@@ -256,6 +255,14 @@ public class PlayerJoinAndLeave implements Listener {
                     for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {
                         ItemStack i = new ItemStack(item.getKey(), item.getValue());
                         pi.addItem(i);
+                    }
+                }
+                if (player.getLocation().distance(MagicAssistant.spawn) <= 5) {
+                    for (Player tp : Bukkit.getOnlinePlayers()) {
+                        if (tp.getUniqueId().equals(player.getUniqueId())) {
+                            continue;
+                        }
+                        tp.hidePlayer(player);
                     }
                 }
             }
@@ -356,6 +363,10 @@ public class PlayerJoinAndLeave implements Listener {
             if (warp.getLocation() == null) {
                 continue;
             }
+            if (warp.getName().startsWith("dvc") || warp.getName().startsWith("char") ||
+                    warp.getName().startsWith("staff")) {
+                continue;
+            }
             if (distance == -1) {
                 w = warp;
                 distance = warp.getLocation().distance(loc);
@@ -399,13 +410,12 @@ public class PlayerJoinAndLeave implements Listener {
             }
         }
         MagicAssistant.queueManager.silentLeaveAllQueues(player);
-        MagicAssistant.tradeManager.logout(player);
         MagicAssistant.autographManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.bandUtil.removePlayerData(player);
         MagicAssistant.stitch.logout(player);
-        VisibleUtil.logout(player.getUniqueId());
-        Commandvanish.hidden.remove(player.getUniqueId());
+        MagicAssistant.vanishUtil.logout(player.getUniqueId());
+        Commandvanish.unvanish(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
         if (MagicAssistant.shooter != null) {
             if (player.getInventory().contains(MagicAssistant.shooter.getItem())) {
@@ -550,6 +560,9 @@ public class PlayerJoinAndLeave implements Listener {
         final Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             return;
+        }
+        if (MagicAssistant.shooter != null) {
+            player.getInventory().remove(MagicAssistant.shooter.getItem().getType());
         }
         boolean inv = true;
         boolean armor = true;

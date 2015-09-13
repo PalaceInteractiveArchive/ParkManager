@@ -61,14 +61,11 @@ public class InventoryClick implements Listener {
             MagicAssistant.shopManager.handleClick(event, shop);
             return;
         }
-        /*
-        if (name.startsWith("Trade with ")) {
-            event.setCancelled(true);
-            MagicAssistant.tradeManager.handle(event);
-            return;
-        }
-        */
         switch (name) {
+            case "Ride Counter":
+                event.setCancelled(true);
+                RideCounterClick.handle(event);
+                return;
             case "Player Settings":
                 event.setCancelled(true);
                 PlayerSettingsClick.handle(event);

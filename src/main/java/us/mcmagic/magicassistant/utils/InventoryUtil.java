@@ -68,7 +68,7 @@ public class InventoryUtil {
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
     private ItemStack web = new ItemCreator(Material.REDSTONE, ChatColor.GREEN + "Website");
     private ItemStack locker = new ItemCreator(Material.ENDER_CHEST, ChatColor.GREEN + "Locker");
-    private ItemStack ach = new ItemCreator(Material.EMERALD, ChatColor.GREEN + "Achievements");
+    private ItemStack rc = new ItemCreator(Material.EMERALD, ChatColor.GREEN + "Ride Counter");
     private ItemStack mumble = new ItemCreator(Material.COMPASS, ChatColor.GREEN + "Mumble");
     private ItemStack packs = new ItemCreator(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs " +
             ChatColor.BLUE + "*New*");
@@ -245,6 +245,7 @@ public class InventoryUtil {
         this.f.setItemMeta(bf);
         this.s.setItemMeta(bs);
         this.su.setItemMeta(bsu);
+        //Show Schedule System
     }
 
     public void openInventory(final Player player, InventoryType inv) {
@@ -268,7 +269,7 @@ public class InventoryUtil {
                     main.setItem(0, rna);
                     main.setItem(9, sne);
                     main.setItem(18, hnr);
-                    if (VisibleUtil.isInHideAll(player.getUniqueId())) {
+                    if (MagicAssistant.vanishUtil.isInHideAll(player.getUniqueId())) {
                         main.setItem(2, toggleon);
                     } else {
                         main.setItem(2, toggleoff);
@@ -352,7 +353,7 @@ public class InventoryUtil {
                     pmenu.setItem(10, web);
                     pmenu.setItem(11, dvc);
                     pmenu.setItem(12, locker);
-                    pmenu.setItem(14, ach);
+                    pmenu.setItem(14, rc);
                     pmenu.setItem(15, prefs);
                     pmenu.setItem(16, mumble);
                     pmenu.setItem(22, BandUtil.getBackItem());
@@ -849,6 +850,34 @@ public class InventoryUtil {
             inv.setItem(22, empty);
             inv.setItem(49, BandUtil.getBackItem());
             player.openInventory(inv);
+        }
+        inv.setItem(49, BandUtil.getBackItem());
+        player.openInventory(inv);
+    }
+
+    public void openRideCounter(Player player) {
+        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride Counter");
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        int i = 10;
+        HashMap<String, Integer> counts = data.getRideCounts();
+        if (counts.isEmpty()) {
+            ItemStack empty = new ItemCreator(Material.WOOL, 1, (byte) 4, ChatColor.RED + "Uh oh!",
+                    Arrays.asList(ChatColor.RED + "Looks like you haven't", ChatColor.RED + "gone on any rides recently."));
+            inv.setItem(22, empty);
+            inv.setItem(49, BandUtil.getBackItem());
+            player.openInventory(inv);
+            return;
+        }
+        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+            ItemStack stack = new ItemCreator(Material.MINECART, ChatColor.GREEN + entry.getKey(),
+                    Arrays.asList(ChatColor.YELLOW + "Rides: " + entry.getValue(), ChatColor.YELLOW + "Park: " +
+                            MCMagicCore.getMCMagicConfig().serverName));
+            inv.setItem(i, stack);
+            if (i == 16 || i == 25 || i == 34 || i == 43) {
+                i += 3;
+            } else {
+                i++;
+            }
         }
         inv.setItem(49, BandUtil.getBackItem());
         player.openInventory(inv);

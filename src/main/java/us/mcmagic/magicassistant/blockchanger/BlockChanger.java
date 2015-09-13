@@ -16,9 +16,30 @@ import java.util.*;
  */
 public class BlockChanger implements Listener {
     private List<UUID> debug = new ArrayList<>();
-    private HashMap<String, Changer> blocks = new HashMap<>();
+    private HashMap<String, Changer> changers = new HashMap<>();
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
+
+    public BlockChanger() {
+        /*
+        PatcherAPI api = new PatcherAPI();
+        ConversionCache cache = new ConversionCache(api);
+        EventScheduler scheduler = new EventScheduler(Bukkit.getPluginManager());
+        final ChangeCalculations calculations = new ChangeCalculations(cache, scheduler);
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
+                PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer e = event.getPacket();
+                if (e.getType().equals(PacketType.Play.Server.MAP_CHUNK)) {
+                    calculations.translateMapChunk(e, event.getPlayer());
+                } else if (e.getType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) {
+                    calculations.translateMapChunkBulk(e, event.getPlayer());
+                }
+            }
+        });
+        */
+    }
 
     @SuppressWarnings("deprecation")
     public void initialize() throws FileNotFoundException {
@@ -53,7 +74,7 @@ public class BlockChanger implements Listener {
                     toData = Byte.valueOf(l2[1]);
                 }
                 Material sender = Material.getMaterial(Integer.parseInt(args[9]));
-                blocks.put(name, new Changer(name, loc1, loc2, from, to, toData, sender));
+                changers.put(name, new Changer(name, loc1, loc2, from, to, toData, sender));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -63,7 +84,7 @@ public class BlockChanger implements Listener {
          * What does this do? Changes all stone,grass,dirt between loc1 and loc2
          * to black wool, only when a player is standing over a piece of bedrock.
          */
-        Bukkit.getLogger().info("Loaded " + blocks.size() + " Changers!");
+        Bukkit.getLogger().info("Loaded " + changers.size() + " Changers!");
     }
 
     public void setSelection(int number, Player player, Location loc) {
@@ -134,13 +155,13 @@ public class BlockChanger implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    for (Changer changer : blocks.values()) {
+                    for (Changer changer : changers.values()) {
                         if (changer.getFirstLocation().distance(player.getLocation()) < 75) {
                             changer.sendReverse(player);
                         }
                     }
                 }
-                blocks.clear();
+                changers.clear();
                 try {
                     initialize();
                 } catch (FileNotFoundException e) {
@@ -151,20 +172,20 @@ public class BlockChanger implements Listener {
     }
 
     public List<Changer> getChangers() {
-        return new ArrayList<>(blocks.values());
+        return new ArrayList<>(changers.values());
     }
 
     public List<String> changerList() {
         List<String> list = new ArrayList<>();
         int i = 0;
-        for (Map.Entry<String, Changer> entry : blocks.entrySet()) {
+        for (Map.Entry<String, Changer> entry : changers.entrySet()) {
             list.add(i + ": " + entry.getKey());
             i++;
         }
         return list;
     }
 
-    public boolean toggleDebug(Player player) {
+    public boolean toggleDebug(final Player player) {
         UUID uuid = player.getUniqueId();
         if (debug.contains(uuid)) {
             debug.remove(uuid);
@@ -174,11 +195,9 @@ public class BlockChanger implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    for (Changer changer : blocks.values()) {
-                        if (isClose(player, changer.getFirstLocation(), changer.getSecondLocation())) {
-                            changer.sendReverse(player);
-                        }
+                for (Changer changer : changers.values()) {
+                    if (isClose(player, changer.getFirstLocation(), changer.getSecondLocation())) {
+                        changer.sendReverse(player);
                     }
                 }
             }
@@ -197,11 +216,11 @@ public class BlockChanger implements Listener {
     }
 
     public Changer getChanger(String name) {
-        return blocks.get(name);
+        return changers.get(name);
     }
 
     public void removeChanger(String name) {
-        blocks.remove(name);
+        changers.remove(name);
         try {
             updateFile();
         } catch (IOException e) {
@@ -220,10 +239,10 @@ public class BlockChanger implements Listener {
         if (debug.contains(player.getUniqueId())) {
             return;
         }
-        if (blocks.isEmpty()) {
+        if (changers.isEmpty()) {
             return;
         }
-        for (Changer changer : blocks.values()) {
+        for (Changer changer : changers.values()) {
             /*
               What does canSend() do?
                 [] <-- Player head (I know, it's ugly)
@@ -244,13 +263,13 @@ public class BlockChanger implements Listener {
     }
 
     public void addChanger(Changer changer) throws IOException {
-        blocks.put(changer.getName(), changer);
+        changers.put(changer.getName(), changer);
         updateFile();
     }
 
     public void updateFile() throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter("plugins/MagicAssistant/blockchanger.yml", false));
-        for (Changer ch : blocks.values()) {
+        for (Changer ch : changers.values()) {
             bw.write(ch.toString());
             bw.newLine();
         }
