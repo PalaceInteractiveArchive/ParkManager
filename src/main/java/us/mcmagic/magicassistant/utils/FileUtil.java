@@ -18,6 +18,7 @@ public class FileUtil {
     private static File packs = new File("plugins/MagicAssistant/packs.yml");
     private static File queue = new File("plugins/MagicAssistant/queue.yml");
     private static File shops = new File("plugins/MagicAssistant/shops.yml");
+    public static File SERVICE_ACCOUNT_PKCS12_FILE = new File("plugins/MagicAssistant/key.p12");
 
     public static File blockchangerFile() {
         return blockchanger;
