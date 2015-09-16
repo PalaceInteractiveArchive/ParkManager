@@ -45,10 +45,12 @@ public class PlayerInteract implements Listener {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         Action action = event.getAction();
         if (action.equals(Action.PHYSICAL)) {
-            if (event.getClickedBlock().getType() == Material.IRON_PLATE ||
-                    event.getClickedBlock().getType() == Material.GOLD_PLATE ||
-                    event.getClickedBlock().getType() == Material.STONE_PLATE ||
-                    event.getClickedBlock().getType() == Material.WOOD_PLATE) {
+            player.sendMessage("Physical event");
+            if (event.getClickedBlock().getType().equals(Material.IRON_PLATE) ||
+                    event.getClickedBlock().getType().equals(Material.GOLD_PLATE) ||
+                    event.getClickedBlock().getType().equals(Material.STONE_PLATE) ||
+                    event.getClickedBlock().getType().equals(Material.WOOD_PLATE)) {
+                player.sendMessage("Pressure plate physical event");
                 final Block base = event.getClickedBlock().getRelative(0, -1, 0);
                 List<Block> relatives = new ArrayList<Block>() {{
                     add(base.getRelative(0, 0, -1));
@@ -57,8 +59,10 @@ public class PlayerInteract implements Listener {
                     add(base.getRelative(1, 0, 0));
                 }};
                 for(Block b : relatives) {
+                    player.sendMessage("Relative block iteration");
                     Material type = b.getType();
                     if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
+                        player.sendMessage("One relative block is a sign");
                         Sign s = (Sign) event.getClickedBlock().getState();
                         if (s.getLine(0).equals(disposal)) {
                             player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
