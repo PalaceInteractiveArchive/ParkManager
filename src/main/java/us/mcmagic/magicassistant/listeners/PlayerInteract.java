@@ -57,7 +57,7 @@ public class PlayerInteract implements Listener {
                     add(base.getRelative(1, 0, 0));
                 }};
                 for(Block b : relatives) {
-                    Material type = event.getClickedBlock().getType();
+                    Material type = b.getType();
                     if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                         Sign s = (Sign) event.getClickedBlock().getState();
                         if (s.getLine(0).equals(disposal)) {
