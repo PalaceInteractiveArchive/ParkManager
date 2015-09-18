@@ -41,6 +41,6 @@ public class Commandsignfix implements CommandExecutor {
     }
 
     private boolean correct(String s) {
-        return s.equals("+train") || s.equals("train") || s.equals("+cart") || s.equals("cart") || s.equals("!train") || s.equals("!cart");
+        return s.equals("+train") || s.equals("train") || s.equals("+cart") || s.equals("cart") || s.equals("!train") || s.equals("!cart") || s.equals("Queue");
     }
 }
