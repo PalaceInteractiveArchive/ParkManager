@@ -532,14 +532,14 @@ public class Show {
                 npc.move();
             }
         }
-        // Show Action
-        HashSet<ShowAction> list = new HashSet<>(actions);
-        for (ShowAction action : list) {
+        Iterator<ShowAction> iterator = this.actions.iterator();
+        while (iterator.hasNext()) {
+            ShowAction action = iterator.next();
             if (System.currentTimeMillis() - startTime <= action.time) {
                 continue;
             }
             action.play();
-            actions.remove(action);
+            iterator.remove();
         }
         return actions.isEmpty();
     }
