@@ -45,14 +45,15 @@ public class QueueManager {
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                Iterator<QueueTask> iter = tasks.iterator();
-                while (iter.hasNext()) {
-                    QueueTask task = iter.next();
+                int i = 0;
+                for (QueueTask task : new ArrayList<>(tasks)) {
                     if (System.currentTimeMillis() <= task.getTime()) {
+                        i++;
                         continue;
                     }
                     task.execute();
-                    iter.remove();
+                    tasks.remove(i);
+                    i++;
                 }
             }
         }, 0L, 1L);
