@@ -31,7 +31,7 @@ public class VisibleUtil {
                             spawnHide.add(player.getUniqueId());
                             vanish(player);
                         }
-                        return;
+                        continue;
                     }
                     if (spawnHide.contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) > 5) {
                         spawnHide.remove(player.getUniqueId());

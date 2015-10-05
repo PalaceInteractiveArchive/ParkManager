@@ -3,6 +3,7 @@ package us.mcmagic.magicassistant.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +45,28 @@ public class PlayerInteract implements Listener {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         Action action = event.getAction();
         if (action.equals(Action.PHYSICAL)) {
+//            if (event.getClickedBlock().getType().equals(Material.IRON_PLATE) ||
+//                    event.getClickedBlock().getType().equals(Material.GOLD_PLATE) ||
+//                    event.getClickedBlock().getType().equals(Material.STONE_PLATE) ||
+//                    event.getClickedBlock().getType().equals(Material.WOOD_PLATE)) {
+//                final Block base = event.getClickedBlock().getRelative(0, -1, 0);
+//                List<Block> relatives = new ArrayList<Block>() {{
+//                    add(base.getRelative(0, 0, -1));
+//                    add(base.getRelative(-1, 0, 0));
+//                    add(base.getRelative(0, 0, 1));
+//                    add(base.getRelative(1, 0, 0));
+//                }};
+//                for(Block b : relatives) {
+//                    Material type = b.getType();
+//                    if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
+//                        Sign s = (Sign) event.getClickedBlock().getState();
+//                        if (s.getLine(0).equals(disposal)) {
+//                            player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
+//                            return;
+//                        }
+//                    }
+//                }
+//            }
             return;
         }
         if (action.name().toLowerCase().contains("block")) {
