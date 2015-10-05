@@ -533,17 +533,17 @@ public class Show {
                 npc.move();
             }
         }
-        Iterator<ShowAction> iterator = this.actions.iterator();
-        while (iterator.hasNext()) {
-            ShowAction action = iterator.next();
+        HashSet<ShowAction> list = new HashSet<>(actions);
+        for (ShowAction action : list) {
             if (System.currentTimeMillis() - startTime <= action.time) {
                 continue;
             }
             action.play();
-            iterator.remove();
+            actions.remove(action);
         }
         return actions.isEmpty();
     }
+
 
     public void displayText(String text) {
         for (UUID uuid : getNearPlayers()) {
