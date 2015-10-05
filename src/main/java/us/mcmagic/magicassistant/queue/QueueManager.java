@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.listeners.PlayerInteract;
+import us.mcmagic.magicassistant.queue.tasks.QueueTask;
 import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
@@ -25,6 +26,7 @@ import java.util.*;
  */
 public class QueueManager {
     private Map<String, QueueRide> rides = new TreeMap<>();
+    private List<QueueTask> tasks = new ArrayList<>();
 
     public QueueManager() {
         initialize();
@@ -40,6 +42,24 @@ public class QueueManager {
                 }
             }
         }, 20L, 20L);
+        Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                Iterator<QueueTask> iter = tasks.iterator();
+                while (iter.hasNext()) {
+                    QueueTask task = iter.next();
+                    if (System.currentTimeMillis() <= task.getTime()) {
+                        continue;
+                    }
+                    task.execute();
+                    iter.remove();
+                }
+            }
+        }, 0L, 1L);
+    }
+
+    public void addTask(QueueTask task) {
+        tasks.add(task);
     }
 
     public void initialize() {

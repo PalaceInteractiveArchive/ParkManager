@@ -9,6 +9,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.queue.tasks.QueueTask;
+import us.mcmagic.magicassistant.queue.tasks.SpawnBlockSetTask;
+import us.mcmagic.magicassistant.queue.tasks.WaitDelayTask;
 import us.mcmagic.magicassistant.utils.DateUtil;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 
@@ -38,6 +41,7 @@ public class QueueRide {
     private boolean paused = false;
     private List<UUID> FPQueue;
     private Integer timerID;
+    private final Block spawnerBlock;
 
     public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp) {
         this.name = name;
@@ -46,6 +50,7 @@ public class QueueRide {
         this.delay = delay;
         this.amountOfRiders = amountOfRiders;
         this.warp = warp;
+        this.spawnerBlock = spawner.getBlock();
     }
 
     public String getName() {
@@ -89,7 +94,7 @@ public class QueueRide {
         this.paused = paused;
     }
 
-    public void joinQueue(Player player) {
+    public void joinQueue(final Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
         if (amountOfRiders == 1 && queue.isEmpty() && fpqueue.isEmpty() && canSpawn()) {
             queue.add(player.getUniqueId());
@@ -102,18 +107,7 @@ public class QueueRide {
                     ChatColor.BOLD + "10" + ChatColor.GREEN + " seconds for anyone else to join the Queue.");
             queue.add(player.getUniqueId());
             updateSigns();
-            if (timerID == null) {
-                timerID = Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!queue.isEmpty() || !fpqueue.isEmpty()) {
-                            moveToStation();
-                            spawn();
-                        }
-                        timerID = null;
-                    }
-                }, 200L).getTaskId();
-            }
+            addTask(new WaitDelayTask(this, System.currentTimeMillis() + 10000, player));
             return;
         }
         queue.add(player.getUniqueId());
@@ -140,7 +134,7 @@ public class QueueRide {
     }
 
     public boolean canSpawn() {
-        return ((System.currentTimeMillis() / 1000) - delay) > lastSpawn && !paused;
+        return (getTime() - delay) > lastSpawn && !paused;
     }
 
     public void leaveQueue(Player player) {
@@ -265,15 +259,17 @@ public class QueueRide {
         if (frozen) {
             return;
         }
-        lastSpawn = System.currentTimeMillis() / 1000;
-        final Block b = spawner.getBlock();
-        b.setType(Material.REDSTONE_BLOCK);
-        Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                b.setType(Material.AIR);
-            }
-        }, 10L);
+        lastSpawn = getTime();
+        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis(), Material.REDSTONE_BLOCK));
+        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
+    }
+
+    private void addTask(QueueTask task) {
+        MagicAssistant.queueManager.addTask(task);
+    }
+
+    private long getTime() {
+        return System.currentTimeMillis() / 1000;
     }
 
     public List<Location> getSigns() {
@@ -315,10 +311,6 @@ public class QueueRide {
             }
             queue.remove(player.getUniqueId());
             updateSigns();
-        }
-        if (timerID != null && queue.isEmpty() && fpqueue.isEmpty()) {
-            Bukkit.getScheduler().cancelTask(timerID);
-            timerID = null;
         }
     }
 
@@ -461,5 +453,9 @@ public class QueueRide {
         to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
         String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
         return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
+    }
+
+    public Block getSpawnerBlock() {
+        return spawnerBlock;
     }
 }
