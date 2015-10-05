@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ParkSound {
-
     private Map<UUID, Long> playersListeningToSong = new ConcurrentHashMap<>();
     private String name;
     private String sound;
@@ -52,6 +51,10 @@ public class ParkSound {
         return playersListeningToSong.keySet();
     }
 
+    public void logout(Player player) {
+        playersListeningToSong.remove(player.getUniqueId());
+    }
+
     protected void play(Player player) {
         Validate.notNull(player, "Player cannot be null!");
         if (player.getLocation().distance(origin) <= distance) {
@@ -59,11 +62,12 @@ public class ParkSound {
                 int elapsed = (int) (System.currentTimeMillis() - playersListeningToSong.get(player.getUniqueId())) / 1000;
                 if (elapsed >= audioLength) {
                     playersListeningToSong.remove(player.getUniqueId());
+                } else {
+                    return;
                 }
-            } else {
-                player.playSound(origin, sound, volume, pitch);
-                playersListeningToSong.put(player.getUniqueId(), System.currentTimeMillis());
             }
+            player.playSound(origin, sound, volume, pitch);
+            playersListeningToSong.put(player.getUniqueId(), System.currentTimeMillis());
         }
     }
 }

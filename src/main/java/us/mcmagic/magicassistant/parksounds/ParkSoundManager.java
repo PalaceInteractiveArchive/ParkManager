@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ParkSoundManager {
-    private List<ParkSound> timers;
+    private List<ParkSound> sounds;
 
     public ParkSoundManager() {
         MagicAssistant.getInstance().getLogger().info("(ParkSoundManager) Instantiated.");
@@ -20,7 +20,7 @@ public class ParkSoundManager {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    for (ParkSound timer : timers) {
+                    for (ParkSound timer : sounds) {
                         timer.play(player);
                     }
                 }
@@ -29,7 +29,7 @@ public class ParkSoundManager {
     }
 
     public void initialize() {
-        timers = new CopyOnWriteArrayList<>();
+        sounds = new CopyOnWriteArrayList<>();
         ConfigurationSection rootSection = FileUtil.configurationYaml().getConfigurationSection("parktimers");
         if (rootSection == null) {
             return;
@@ -55,11 +55,11 @@ public class ParkSoundManager {
             ParkSound timer = new ParkSound(name, sound, volume, pitch, origin, distance, length);
             addTimer(timer);
         }
-        MagicAssistant.getInstance().getLogger().info("(ParkTimerManager) Loaded " + timers.size() + " timers!");
+        MagicAssistant.getInstance().getLogger().info("(ParkTimerManager) Loaded " + sounds.size() + " timers!");
     }
 
-    public ParkSound getParkTimer(String uniqueName) {
-        Iterator i = timers.iterator();
+    public ParkSound getParkSound(String uniqueName) {
+        Iterator i = sounds.iterator();
         ParkSound timer;
         do {
             if (!i.hasNext()) {
@@ -71,11 +71,17 @@ public class ParkSoundManager {
     }
 
     public boolean addTimer(ParkSound p) {
-        return p != null && timers.add(p);
+        return p != null && sounds.add(p);
     }
 
-    public List<ParkSound> getTimers() {
-        return timers;
+    public List<ParkSound> getSounds() {
+        return sounds;
+    }
+
+    public void logout(Player player) {
+        for (ParkSound sound : sounds) {
+            sound.logout(player);
+        }
     }
 
     public static Location getLocation(String s) {
