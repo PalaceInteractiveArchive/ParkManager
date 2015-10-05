@@ -34,7 +34,7 @@ public class Show {
         effectMap = new HashMap<>();
         invalidLines = new HashMap<>();
         npcMap = new HashMap<>();
-        loadActions(file);
+        loadActions(file, 0);
         startTime = System.currentTimeMillis();
         for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getLocation().distance(loc) <= radius) {
@@ -43,7 +43,7 @@ public class Show {
         }
     }
 
-    private void loadActions(File file) {
+    private void loadActions(File file, long addTime) {
         actions = new HashSet<>();
         String strLine = "";
         try {
@@ -80,7 +80,8 @@ public class Show {
                         invalidLines.put(strLine, "You cannot load a file that's already being loaded");
                         continue;
                     }
-                    loadActions(f);
+                    int time = Integer.parseInt(tokens[3]);
+                    loadActions(f, time);
                     continue;
                 }
                 // Set Text Radius
@@ -104,7 +105,7 @@ public class Show {
                 }
                 // Get time
                 String[] timeToks = tokens[0].split("_");
-                long time = 0;
+                long time = addTime;
                 for (String timeStr : timeToks) {
                     time += (long) (Double.parseDouble(timeStr) * 1000);
                 }
@@ -274,7 +275,7 @@ public class Show {
                     }
                 }
                 // Block
-                if (tokens[1].contains("Block")) {
+                if (tokens[1].startsWith("Block")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[3]);
                     if (loc == null) {
                         invalidLines.put(strLine, "Invalid Location");

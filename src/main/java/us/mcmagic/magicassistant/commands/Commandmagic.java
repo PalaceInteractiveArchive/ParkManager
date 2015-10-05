@@ -44,7 +44,7 @@ import java.util.*;
  * Created by Marc on 1/7/15
  */
 public class Commandmagic implements Listener, CommandExecutor {
-    private static HashMap<String, Show> songs = new HashMap<>();
+    private static HashMap<String, Show> shows = new HashMap<>();
     public static List<String> containsCommandBlockOnly = new ArrayList<>();
     public ParticleEffect effect;
     public Location location;
@@ -156,12 +156,8 @@ public class Commandmagic implements Listener, CommandExecutor {
                 if (args.length == 3) {
                     switch (args[1]) {
                         case "start":
-                            if (songs.containsKey(args[2])) {
+                            if (shows.containsKey(args[2])) {
                                 sender.sendMessage(ChatColor.RED + "That show is already running!");
-                                return true;
-                            }
-                            if (!songs.isEmpty()) {
-                                sender.sendMessage(ChatColor.RED + "Cannot start show, perhaps there is already a show running?");
                                 return true;
                             }
                             File file = new File("plugins/MagicAssistant/shows/" + args[2] + ".show");
@@ -170,19 +166,18 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 sender.sendMessage(ChatColor.GOLD + args[2] + ChatColor.AQUA + " is not an existing show file.");
                                 sender.sendMessage(ChatColor.RED + "----------------------------------------------");
                             } else {
-                                songs.put(args[2], new Show(MagicAssistant.getInstance(), file));
+                                shows.put(args[2], new Show(MagicAssistant.getInstance(), file));
                                 sender.sendMessage(ChatColor.GOLD + args[2] + ChatColor.AQUA + " has started. Enjoy the show!");
                             }
                             return true;
                         case "stop":
-                            if (!songs.containsKey(args[2])) {
+                            if (!shows.containsKey(args[2])) {
                                 sender.sendMessage(ChatColor.RED + "----------------------------------------------");
-                                sender.sendMessage(
-                                        ChatColor.GOLD + args[2] + ChatColor.AQUA + " is not running!");
+                                sender.sendMessage(ChatColor.GOLD + args[2] + ChatColor.AQUA + " is not running!");
                                 sender.sendMessage(ChatColor.RED + "----------------------------------------------");
                             } else {
                                 sender.sendMessage(ChatColor.GOLD + args[2] + ChatColor.AQUA + " has been stopped!");
-                                songs.remove(args[2]);
+                                shows.remove(args[2]);
                             }
                             return true;
                         default:
@@ -798,12 +793,13 @@ public class Commandmagic implements Listener, CommandExecutor {
 
     @EventHandler
     public void onTick(TickEvent event) {
-        Iterator<Show> showIterator = songs.values().iterator();
-        while (showIterator.hasNext()) {
-            Show show = showIterator.next();
+        for (Map.Entry<String, Show> entry : new HashSet<>(shows.entrySet())) {
+            Show show = entry.getValue();
             if (show.update()) {
+                Bukkit.broadcast(ChatColor.GREEN + "Show " + ChatColor.BLUE + entry.getKey() + ChatColor.GREEN +
+                        " has ended.", "arcade.bypass");
                 System.out.print("Show Ended.");
-                showIterator.remove();
+                shows.remove(entry.getKey());
             }
         }
     }
@@ -847,7 +843,7 @@ public class Commandmagic implements Listener, CommandExecutor {
         if (!file.exists()) {
             System.out.print("");
         } else {
-            songs.put(name, new Show(MagicAssistant.getInstance(), file));
+            shows.put(name, new Show(MagicAssistant.getInstance(), file));
         }
     }
 }
