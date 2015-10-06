@@ -9,9 +9,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.queue.tasks.NextRidersTask;
 import us.mcmagic.magicassistant.queue.tasks.QueueTask;
 import us.mcmagic.magicassistant.queue.tasks.SpawnBlockSetTask;
-import us.mcmagic.magicassistant.queue.tasks.WaitDelayTask;
 import us.mcmagic.magicassistant.utils.DateUtil;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 
@@ -42,6 +42,7 @@ public class QueueRide {
     private List<UUID> FPQueue;
     private Integer timerID;
     private final Block spawnerBlock;
+    public int timeToNextRide;
 
     public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp) {
         this.name = name;
@@ -96,22 +97,7 @@ public class QueueRide {
 
     public void joinQueue(final Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
-        if (amountOfRiders == 1 && queue.isEmpty() && fpqueue.isEmpty() && canSpawn()) {
-            queue.add(player.getUniqueId());
-            moveToStation();
-            spawn();
-            return;
-        }
-        if (queue.isEmpty() && canSpawn()) {
-            player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
-                    ChatColor.BOLD + "10" + ChatColor.GREEN + " seconds for anyone else to join the Queue.");
-            queue.add(player.getUniqueId());
-            updateSigns();
-            addTask(new WaitDelayTask(this, System.currentTimeMillis() + 10000, player));
-            return;
-        }
         queue.add(player.getUniqueId());
-        updateSigns();
         player.sendMessage(ChatColor.GREEN + "You have joined the Queue for " + ChatColor.BLUE + name + ChatColor.GREEN
                 + "\nYou are in position #" + (getPosition(player.getUniqueId()) + 1));
     }
@@ -121,13 +107,12 @@ public class QueueRide {
             player.sendMessage(ChatColor.RED + "The FastPass line for " + name + ChatColor.RED + " is closed, right now!");
             return;
         }
-        if (queue.isEmpty() && fpqueue.isEmpty() && canSpawn()) {
+        if (queue.isEmpty()) {
             player.sendMessage(ChatColor.GREEN + "The queue is empty, don't use a FastPass!");
             return;
         }
         MagicAssistant.queueManager.leaveAllQueues(player);
         fpqueue.add(player.getUniqueId());
-        updateSigns();
         player.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.AQUA + "FastPass Queue" +
                 ChatColor.GREEN + " for " + ChatColor.BLUE + name + ChatColor.GREEN + "\nYou are in position #" +
                 (getPosition(player.getUniqueId()) + 1) + ". You will be charged one FastPass when you board the ride.");
@@ -209,7 +194,7 @@ public class QueueRide {
             leaveQueueSilent(tp);
             fullList.remove(tp.getUniqueId());
         }
-        updateSigns();
+        addTask(new NextRidersTask(this, System.currentTimeMillis() + (delay * 1000)));
     }
 
     private void chargeFastpass(final PlayerData data) {
@@ -260,6 +245,7 @@ public class QueueRide {
             return;
         }
         lastSpawn = getTime();
+        timeToNextRide = delay;
         addTask(new SpawnBlockSetTask(this, System.currentTimeMillis(), Material.REDSTONE_BLOCK));
         addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
     }
@@ -337,7 +323,6 @@ public class QueueRide {
                         ChatColor.GREEN + "'s FastPass Queue! You still have your FastPasses.");
             }
         }
-        updateSigns();
     }
 
     public void addSign(Location loc, boolean setFile) {
@@ -401,10 +386,6 @@ public class QueueRide {
                         "is unfrozen, but if you leave your place in line will be lost.");
             }
         }
-        if ((!queue.isEmpty() || !fpqueue.isEmpty()) && canSpawn() && !frozen) {
-            moveToStation();
-            spawn();
-        }
         return frozen;
     }
 
@@ -437,8 +418,11 @@ public class QueueRide {
     }
 
     public String appxWaitTime() {
+        if (queue.isEmpty() && fpqueue.isEmpty()) {
+            return "No Wait";
+        }
         int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
-        double seconds = delay * (groups);
+        double seconds = (delay * (groups - 1)) + timeToNextRide;
         Calendar to = new GregorianCalendar();
         to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
         String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
@@ -446,9 +430,15 @@ public class QueueRide {
     }
 
     public String getWaitFor(UUID uuid) {
-        int pos = getPosition(uuid) + 1;
-        int groups = (int) Math.ceil((float) pos / amountOfRiders);
-        double seconds = delay * (groups);
+        int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
+        int group = (int) Math.ceil((float) ((getPosition(uuid) + 1) / amountOfRiders));
+        if (groups < 2) {
+            Calendar to = new GregorianCalendar();
+            to.setTimeInMillis(System.currentTimeMillis() + (timeToNextRide * 1000));
+            String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
+            return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
+        }
+        double seconds = (delay * (group - 1)) + timeToNextRide;
         Calendar to = new GregorianCalendar();
         to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
         String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);

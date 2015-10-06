@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -223,6 +224,9 @@ public class PlayerJoinAndLeave implements Listener {
             PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             if (!data.getVisibility()) {
                 MagicAssistant.vanishUtil.addToHideAll(player);
+            }
+            for (PotionEffect type : player.getActivePotionEffects()) {
+                player.removePotionEffect(type.getType());
             }
             if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
                 player.setGameMode(GameMode.CREATIVE);

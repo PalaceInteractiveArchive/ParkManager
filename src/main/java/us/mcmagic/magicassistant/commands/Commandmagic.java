@@ -579,20 +579,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 ride.getDelay());
                         return true;
                     }
-                    if (args[2].equalsIgnoreCase("next")) {
-                        if (ride.getQueueSize() <= 0 && ride.getFastpassSize() <= 0) {
-                            sender.sendMessage(ChatColor.GREEN + "No one in Queue");
-                            return true;
-                        }
-                        if (!ride.canSpawn()) {
-                            sender.sendMessage(ChatColor.GREEN + "Cannot Spawn");
-                            return true;
-                        }
-                        ride.moveToStation();
-                        ride.spawn();
-                        sender.sendMessage(ChatColor.GREEN + "Spawned!");
-                        return true;
-                    }
                     if (args[2].equalsIgnoreCase("eject")) {
                         ride.ejectQueue();
                         sender.sendMessage(ride.getName() + ChatColor.GREEN + "'s Queue has been ejected!");
@@ -770,8 +756,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                         "- Eject all from Queue");
                 sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] freeze " + ChatColor.AQUA +
                         "- Freeze/unfreeze the Queue");
-                sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] next " + ChatColor.AQUA +
-                        "- Next group of Guests can ride");
                 sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] list " + ChatColor.AQUA +
                         "- List players in Queue");
                 sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] fp " + ChatColor.AQUA +

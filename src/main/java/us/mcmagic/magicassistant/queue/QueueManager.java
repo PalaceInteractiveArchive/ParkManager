@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.listeners.PlayerInteract;
+import us.mcmagic.magicassistant.queue.tasks.NextRidersTask;
 import us.mcmagic.magicassistant.queue.tasks.QueueTask;
 import us.mcmagic.magicassistant.utils.FileUtil;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
@@ -34,7 +35,20 @@ public class QueueManager {
             @Override
             public void run() {
                 for (QueueRide ride : getRides()) {
-                    for (UUID uuid : ride.getQueue()) {
+                    ride.updateSigns();
+                    List<UUID> q = ride.getQueue();
+                    List<UUID> fp = ride.getFPQueue();
+                    if (ride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
+                        addTask(new NextRidersTask(ride, System.currentTimeMillis()));
+                    } else {
+                        ride.timeToNextRide = ride.timeToNextRide - 1;
+                    }
+                    for (UUID uuid : q) {
+                        ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
+                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
+                                ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
+                    }
+                    for (UUID uuid : fp) {
                         ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
                                 (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
                                 ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));

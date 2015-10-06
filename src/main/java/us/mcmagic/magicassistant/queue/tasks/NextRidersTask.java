@@ -1,21 +1,14 @@
 package us.mcmagic.magicassistant.queue.tasks;
 
-import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.queue.QueueRide;
 
 /**
- * Created by Marc on 9/14/15
+ * Created by Marc on 10/6/15
  */
-public class WaitDelayTask extends QueueTask {
-    private Player player;
+public class NextRidersTask extends QueueTask {
 
-    public WaitDelayTask(QueueRide ride, long time, Player player) {
+    public NextRidersTask(QueueRide ride, long time) {
         super(ride, time);
-        this.player = player;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     @Override
