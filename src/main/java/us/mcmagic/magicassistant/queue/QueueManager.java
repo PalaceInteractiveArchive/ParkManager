@@ -287,6 +287,9 @@ public class QueueManager {
             if (ride.isQueued(player.getUniqueId())) {
                 ride.leaveQueueSilent(player);
             }
+            if (ride.isFPQueued(player.getUniqueId())) {
+                ride.leaveQueueSilent(player);
+            }
         }
     }
 
