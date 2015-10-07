@@ -318,7 +318,7 @@ public class PlayerJoinAndLeave implements Listener {
                         player.getInventory().setHelmet(new ItemStack(Material.AIR));
                     }
                 }
-                if (MagicAssistant.shooter.game != null) {
+                if (MagicAssistant.shooter != null) {
                     player.getInventory().remove(MagicAssistant.shooter.getItem().getType());
                 }
                 MagicAssistant.bandUtil.giveBandToPlayer(player);
