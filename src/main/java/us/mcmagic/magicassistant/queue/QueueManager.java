@@ -41,7 +41,9 @@ public class QueueManager {
                     if (ride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
                         addTask(new NextRidersTask(ride, System.currentTimeMillis()));
                     } else {
-                        ride.timeToNextRide = ride.timeToNextRide - 1;
+                        if (ride.timeToNextRide > 0) {
+                            ride.timeToNextRide -= 1;
+                        }
                     }
                     for (UUID uuid : q) {
                         ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +

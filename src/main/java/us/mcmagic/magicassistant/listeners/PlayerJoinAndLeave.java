@@ -66,6 +66,9 @@ public class PlayerJoinAndLeave implements Listener {
         if (player == null) {
             return;
         }
+        if (!MagicAssistant.crossServerInv) {
+            return;
+        }
         byte[] invcont = serial(player.getInventory().getContents());
         byte[] armcont = serial(player.getInventory().getArmorContents());
         byte[] endcont = serial(player.getEnderChest().getContents());
@@ -564,6 +567,12 @@ public class PlayerJoinAndLeave implements Listener {
     public static void updateInventory(UUID uuid, final String server, final boolean response) {
         final Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
+            return;
+        }
+        if (!MagicAssistant.crossServerInv) {
+            if (response) {
+                finishUpdate(player, server);
+            }
             return;
         }
         if (MagicAssistant.shooter != null) {
