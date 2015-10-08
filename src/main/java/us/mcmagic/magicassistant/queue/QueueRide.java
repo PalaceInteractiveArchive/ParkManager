@@ -145,7 +145,10 @@ public class QueueRide {
         if (fps.size() > fullList.size()) {
             int place = 1;
             for (int i = 0; i < fullList.size(); i++) {
-                fullList.add(place, fps.get(i));
+                if (place > i) {
+                    break;
+                }
+                fullList.add(place, fps.remove(i));
                 place += 2;
             }
             for (UUID uuid : fps) {

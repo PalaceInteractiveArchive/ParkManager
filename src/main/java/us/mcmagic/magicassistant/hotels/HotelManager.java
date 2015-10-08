@@ -363,10 +363,13 @@ public class HotelManager {
 
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        closeDoor(room);
+        boolean resorts = MCMagicCore.getMCMagicConfig().serverName.equals("Resorts");
+        if (resorts) {
+            closeDoor(room);
+        }
         room.setCheckoutTime(0);
         if (tp != null) {
-            if (room.getWarp() != null) {
+            if (room.getWarp() != null && resorts) {
                 Warp w = room.getWarp();
                 if (tp.getLocation().distance(w.getLocation()) < 25) {
                     tp.teleport(w.getLocation());
@@ -383,7 +386,7 @@ public class HotelManager {
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
         }
-        if (!lapsed) {
+        if (!lapsed && resorts) {
             Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
             Material type = b.getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
