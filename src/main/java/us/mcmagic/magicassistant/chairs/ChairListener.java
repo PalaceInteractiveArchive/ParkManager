@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.chairs;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -129,7 +130,7 @@ public class ChairListener implements Listener {
             return false;
         }
         if (player.getItemInHand().getType() != Material.AIR) {
-            return false;
+            return player.getGameMode() != GameMode.CREATIVE;
         }
         if (player.isSneaking()) {
             return false;
