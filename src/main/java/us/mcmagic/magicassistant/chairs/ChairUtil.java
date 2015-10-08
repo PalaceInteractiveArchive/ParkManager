@@ -38,10 +38,8 @@ public class ChairUtil {
         if (stairs != null) {
             if (DIRECTIONAL_YAW.containsKey(stairs.getDescendingDirection())) {
                 location.setYaw(DIRECTIONAL_YAW.get(stairs.getDescendingDirection()));
-                System.out.println("Block Yaw");
             }
         } else {
-            System.out.println("Player Yaw");
             location.setYaw(playerYaw);
         }
         return location;

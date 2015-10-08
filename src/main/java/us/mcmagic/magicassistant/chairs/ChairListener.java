@@ -145,13 +145,13 @@ public class ChairListener implements Listener {
             if (ChairUtil.isSuitableChair(block.getRelative(BlockFace.UP))) {
                 return false;
             }
-            if (block.getRelative(BlockFace.DOWN).isLiquid()) {
+            if (block.getRelative(BlockFace.DOWN).isLiquid() || block.getRelative(BlockFace.UP).isLiquid()) {
                 return false;
             }
-            if (block.getRelative(BlockFace.DOWN).isEmpty()) {
+            if (block.getRelative(BlockFace.DOWN).isEmpty() || !block.getRelative(BlockFace.UP).isEmpty()) {
                 return false;
             }
-            if (!block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+            if (!block.getRelative(BlockFace.DOWN).getType().isSolid() || block.getRelative(BlockFace.UP).getType().isSolid()) {
                 return false;
             }
             if (stair.isInverted()) {
