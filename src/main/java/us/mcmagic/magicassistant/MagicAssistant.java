@@ -431,6 +431,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("more").setExecutor(new Commandmore());
         getCommand("msg").setExecutor(new Commandmsg());
         getCommand("msg").setAliases(Arrays.asList("tell", "t", "w", "whisper", "m"));
+        getCommand("nearby").setExecutor(new Commandnearby());
         getCommand("night").setExecutor(new Commandnight());
         getCommand("noon").setExecutor(new Commandnoon());
         getCommand("nv").setExecutor(new Commandnv());
