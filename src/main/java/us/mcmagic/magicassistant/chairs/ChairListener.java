@@ -126,36 +126,33 @@ public class ChairListener implements Listener {
     }
 
     private boolean canSit(Player player, Block block) {
-        if (manager.isSitting(player)) {
-            return false;
-        }
-        if (player.getItemInHand().getType() != Material.AIR) {
-            return player.getGameMode() != GameMode.CREATIVE;
-        }
-        if (player.isSneaking()) {
-            return false;
-        }
-        if (player.isInsideVehicle()) {
-            return false;
-        }
-        if (manager.isChairOccupied(block)) {
-            return false;
-        }
         if (ChairUtil.isSuitableChair(block)) {
+            if (manager.isSitting(player)) {
+                return false;
+            }
+            if (player.getItemInHand().getType() != Material.AIR) {
+                return player.getGameMode() != GameMode.CREATIVE;
+            }
+            if (player.isSneaking()) {
+                return false;
+            }
+            if (player.isInsideVehicle()) {
+                return false;
+            }
+            if (manager.isChairOccupied(block)) {
+                return false;
+            }
+            if (block.getRelative(BlockFace.DOWN).isLiquid() || block.getRelative(BlockFace.UP).isLiquid()) {
+                return false;
+            }
+            if (block.getRelative(BlockFace.DOWN).isEmpty() || !block.getRelative(BlockFace.UP).isEmpty()) {
+                return false;
+            }
+            if (!block.getRelative(BlockFace.DOWN).getType().isSolid() || block.getRelative(BlockFace.UP).getType().isSolid()) {
+                return false;
+            }
             if (block.getState().getData() instanceof Stairs) {
                 Stairs stair = (Stairs) block.getState().getData();
-                if (ChairUtil.isSuitableChair(block.getRelative(BlockFace.UP))) {
-                    return false;
-                }
-                if (block.getRelative(BlockFace.DOWN).isLiquid() || block.getRelative(BlockFace.UP).isLiquid()) {
-                    return false;
-                }
-                if (block.getRelative(BlockFace.DOWN).isEmpty() || !block.getRelative(BlockFace.UP).isEmpty()) {
-                    return false;
-                }
-                if (!block.getRelative(BlockFace.DOWN).getType().isSolid() || block.getRelative(BlockFace.UP).getType().isSolid()) {
-                    return false;
-                }
                 if (stair.isInverted()) {
                     return false;
                 }
