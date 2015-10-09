@@ -37,7 +37,7 @@ public class Commandnearby implements CommandExecutor {
                 message.send(player);
             }
         } else {
-            player.sendMessage(ChatColor.RED + "Could not find any warps within " + DEFAULT_SEARCH_DISTANCE + "blocks.");
+            player.sendMessage(ChatColor.RED + "Could not find any warps within " + DEFAULT_SEARCH_DISTANCE + " blocks.");
         }
         return true;
     }
