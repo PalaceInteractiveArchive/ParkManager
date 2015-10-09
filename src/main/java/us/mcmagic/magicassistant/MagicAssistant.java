@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.autograph.Autographs;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.chairs.ArrowFactory;
+import us.mcmagic.magicassistant.chairs.ChairListener;
 import us.mcmagic.magicassistant.chairs.ChairManager;
 import us.mcmagic.magicassistant.chairs.IArrowFactory;
 import us.mcmagic.magicassistant.commands.*;
@@ -167,6 +168,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
         hotelManager.serverStop();
         warps.clear();
+        chairManager.emptyAllData();
         for (World world : Bukkit.getWorlds()) {
             for (Entity e : world.getEntities()) {
                 if (e instanceof Cart) {
@@ -473,6 +475,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(packManager, this);
         pm.registerEvents(new FountainUtil(), this);
         pm.registerEvents(new PlayerCloseInventory(), this);
+        pm.registerEvents(new ChairListener(), this);
         //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);

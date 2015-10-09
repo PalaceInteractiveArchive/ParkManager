@@ -14,7 +14,7 @@ public class NMSChairsArrow extends EntityArrow {
         setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         this.world.addEntity(this);
         this.bukkitEntity = new CraftChairsArrow((CraftServer) Bukkit.getServer(), this);
-        this.setYawPitch(0, 180);
+        this.setYawPitch(0, 45);
     }
 
     @Override

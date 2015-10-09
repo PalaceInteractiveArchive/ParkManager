@@ -16,7 +16,6 @@ public class ChairUtil {
         put(BlockFace.SOUTH, 0F);
         put(BlockFace.WEST, 90F);
     }};
-
     public static final Material[] SUITABLE_CHAIR_TYPES = {
             Material.WOOD_STAIRS, Material.COBBLESTONE_STAIRS, Material.BRICK_STAIRS,
             Material.SMOOTH_STAIRS, Material.NETHER_BRICK_STAIRS, Material.SANDSTONE_STAIRS,
@@ -52,13 +51,5 @@ public class ChairUtil {
             }
         }
         return false;
-    }
-
-    public float hideArrowDirty(Stairs chair) {
-        return 0;
-    }
-
-    public static String getStringFromLocation(Location loc) {
-        return loc.getWorld().getName() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ();
     }
 }
