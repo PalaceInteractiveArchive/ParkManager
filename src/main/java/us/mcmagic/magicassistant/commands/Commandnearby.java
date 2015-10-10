@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant.commands;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -8,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.utils.FormattedMessageNoSpace;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -52,7 +54,8 @@ public class Commandnearby implements CommandExecutor {
         if (!nearby.isEmpty()) {
             player.sendMessage(ChatColor.GREEN + "Nearby: (Click to warp)");
             for (Warp warp : nearby.keySet()) {
-                FormattedMessage message = new FormattedMessage(" - ").color(ChatColor.GREEN);
+                FormattedMessageNoSpace message = new FormattedMessageNoSpace(" - ");
+                message.color(ChatColor.GREEN);
                 message.then(warp.getName()).color(ChatColor.AQUA).command("/warp " + warp.getName()).tooltip(ChatColor.GREEN + "Click to warp").color(ChatColor.GREEN).then(" (" + nearby.get(warp) + " blocks)").color(ChatColor.AQUA);
                 message.send(player);
             }
@@ -61,6 +64,4 @@ public class Commandnearby implements CommandExecutor {
         }
         return true;
     }
-
-
 }
