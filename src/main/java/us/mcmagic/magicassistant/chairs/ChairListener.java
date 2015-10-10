@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class ChairListener implements Listener {
 
     private ChairManager manager = MagicAssistant.chairManager;
-    public static final double MAX_SIT_DISTANCE = 2.0D;
+    public static final double MAX_SIT_DISTANCE = 3.0D;
 
     @EventHandler
     public void interact(PlayerInteractEvent event) {
@@ -128,19 +128,19 @@ public class ChairListener implements Listener {
 
     private boolean canSit(Player player, Block block) {
         if (ChairUtil.isSuitableChair(block)) {
-            if (manager.isSitting(player)) {
+            if (player.getItemInHand().getType() != Material.AIR) {
                 return false;
             }
-            if (player.getItemInHand().getType() != Material.AIR) {
-                return player.getGameMode() != GameMode.CREATIVE;
-            }
-            if (player.getLocation().distance(block.getLocation()) > MAX_SIT_DISTANCE) {
+            if (player.getLocation().distance(block.getLocation()) >= MAX_SIT_DISTANCE) {
                 return false;
             }
             if (player.isSneaking()) {
                 return false;
             }
             if (player.isInsideVehicle()) {
+                return false;
+            }
+            if (manager.isSitting(player)) {
                 return false;
             }
             if (manager.isChairOccupied(block)) {
