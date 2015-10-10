@@ -5,6 +5,10 @@ description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib]
 commands:
+   nearby:
+     description: Finds warps within 100 blocks of your location.
+     permission: mcmagic.nearby
+     permission-message: §4Please notify a Cast Member that you can’t do this.
    magic:
       description: New Command :O
       permission: arcade.bypass
