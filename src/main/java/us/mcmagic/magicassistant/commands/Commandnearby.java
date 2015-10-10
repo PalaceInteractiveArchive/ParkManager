@@ -53,7 +53,7 @@ public class Commandnearby implements CommandExecutor {
             player.sendMessage(ChatColor.GREEN + "Nearby: (Click to warp)");
             for (Warp warp : nearby.keySet()) {
                 FormattedMessage message = new FormattedMessage(" - ").color(ChatColor.GREEN);
-                message.then(warp.getName()).color(ChatColor.AQUA).command("/warp " + warp.getName()).tooltip("Click to warp").color(ChatColor.GREEN).then(" (" + nearby.get(warp) + " blocks)").color(ChatColor.AQUA);
+                message.then(warp.getName()).color(ChatColor.AQUA).command("/warp " + warp.getName()).tooltip(ChatColor.GREEN + "Click to warp").color(ChatColor.GREEN).then(" (" + nearby.get(warp) + " blocks)").color(ChatColor.AQUA);
                 message.send(player);
             }
         } else {

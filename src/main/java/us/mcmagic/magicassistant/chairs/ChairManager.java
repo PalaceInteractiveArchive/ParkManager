@@ -10,12 +10,13 @@ import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class ChairManager {
 
     private MagicAssistant plugin;
-    private HashMap<Player, SitData> sitting = new HashMap<>();
-    private HashMap<Block, Player> chairs = new HashMap<>();
+    private HashMap<UUID, SitData> sitting = new HashMap<>();
+    private HashMap<Block, UUID> chairs = new HashMap<>();
 
     public ChairManager(MagicAssistant plugin) {
         this.plugin = plugin;
@@ -35,14 +36,14 @@ public class ChairManager {
         }, 1000L, 1000L);
         player.teleport(location);
         arrow.setPassenger(player);
-        sitting.put(player, data);
-        chairs.put(block, player);
+        sitting.put(player.getUniqueId(), data);
+        chairs.put(block, player.getUniqueId());
         data.sitting = true;
         return true;
     }
 
     public boolean standPlayer(final Player player, boolean noMessage) {
-        SitData data = sitting.get(player);
+        SitData data = sitting.get(player.getUniqueId());
         data.sitting = false;
         player.leaveVehicle();
         ((CraftEntity) data.arrow).getHandle().die();
@@ -56,7 +57,7 @@ public class ChairManager {
     }
 
     public void resetArrow(final Player player) {
-        SitData data = sitting.get(player);
+        SitData data = sitting.get(player.getUniqueId());
         data.sitting = false;
         Entity previousArrow = data.arrow;
         final Entity arrow = plugin.chairFactory.spawnArrow(previousArrow.getLocation());
@@ -71,8 +72,8 @@ public class ChairManager {
             return;
         }
         chairs.remove(remove);
-        chairs.put(chair, player);
-        SitData data = sitting.get(player);
+        chairs.put(chair, player.getUniqueId());
+        SitData data = sitting.get(player.getUniqueId());
         data.chairBlock = chair;
         data.sitting = false;
         Entity old = data.arrow;
@@ -87,7 +88,10 @@ public class ChairManager {
     }
 
     public boolean isSitting(Player player) {
-        return sitting.containsKey(player) && sitting.get(player).sitting;
+        if (!(sitting.get(player.getUniqueId()) instanceof SitData)) {
+            return false;
+        }
+        return sitting.containsKey(player.getUniqueId()) && sitting.get(player.getUniqueId()).sitting;
     }
 
     public boolean isChairOccupied(Block block) {
@@ -95,13 +99,13 @@ public class ChairManager {
     }
 
     public Player getSittingPlayer(Block chair) {
-        return chairs.get(chair);
+        return Bukkit.getPlayer(chairs.get(chair));
     }
 
     public void emptyAllData() {
-        HashMap<Player, SitData> clone = new HashMap<>(sitting);
-        for (Player player : clone.keySet()) {
-            this.standPlayer(player, true);
+        HashMap<UUID, SitData> clone = new HashMap<>(sitting);
+        for (UUID uuid : clone.keySet()) {
+            this.standPlayer(Bukkit.getPlayer(uuid), true);
         }
         sitting.clear();
         chairs.clear();
