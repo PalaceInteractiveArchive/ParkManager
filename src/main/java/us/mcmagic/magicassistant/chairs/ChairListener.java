@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public class ChairListener implements Listener {
 
     private ChairManager manager = MagicAssistant.chairManager;
+    public static final double MAX_SIT_DISTANCE = 2.0D;
 
     @EventHandler
     public void interact(PlayerInteractEvent event) {
@@ -132,6 +133,9 @@ public class ChairListener implements Listener {
             }
             if (player.getItemInHand().getType() != Material.AIR) {
                 return player.getGameMode() != GameMode.CREATIVE;
+            }
+            if (player.getLocation().distance(block.getLocation()) > MAX_SIT_DISTANCE) {
+                return false;
             }
             if (player.isSneaking()) {
                 return false;
