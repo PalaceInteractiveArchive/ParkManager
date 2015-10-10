@@ -88,6 +88,9 @@ public class ChairManager {
     }
 
     public boolean isSitting(Player player) {
+        if (player == null) {
+            return false;
+        }
         if (!(sitting.get(player.getUniqueId()) instanceof SitData)) {
             return false;
         }
