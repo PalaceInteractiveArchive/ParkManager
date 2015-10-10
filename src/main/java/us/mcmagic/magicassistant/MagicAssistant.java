@@ -101,6 +101,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         vanishUtil = new VisibleUtil();
         blockChanger = new BlockChanger();
         parkSoundManager = new ParkSoundManager();
+        chairManager = new ChairManager(this);
+        chairFactory = new ArrowFactory();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -151,8 +153,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         packManager.initialize();
         parkSoundManager.initialize();
         DesignStation.initialize();
-        chairManager = new ChairManager(this);
-        chairFactory = new ArrowFactory();
         for (World world : Bukkit.getWorlds()) {
             world.setTime(0);
         }
