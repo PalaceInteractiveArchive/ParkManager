@@ -8,7 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
+
 import java.util.HashMap;
 
 public class Commandnearby implements CommandExecutor {
@@ -24,6 +28,22 @@ public class Commandnearby implements CommandExecutor {
         Location center  = player.getLocation().clone();
         HashMap<Warp, Integer> nearby = new HashMap<>();
         for (Warp warp : MagicAssistant.warps) {
+            if (!warp.getServer().equals(MCMagicCore.getMCMagicConfig().serverName)) {
+                continue;
+            }
+            if (warp.getLocation() == null) {
+                continue;
+            }
+            User user = MCMagicCore.getUser(player.getUniqueId());
+            if (warp.getName().startsWith("dvc") && user.getRank().getRankId() < Rank.DVCMEMBER.getRankId()) {
+                continue;
+            }
+            if (warp.getName().startsWith("char") && user.getRank().getRankId() < Rank.CHARACTERGUEST.getRankId()) {
+                continue;
+            }
+            if (warp.getName().startsWith("staff") && user.getRank().getRankId() < Rank.INTERN.getRankId()) {
+                continue;
+            }
             int distance = (int) warp.getLocation().distance(center);
             if (distance <= DEFAULT_SEARCH_DISTANCE) {
                 nearby.put(warp, distance);
@@ -41,4 +61,6 @@ public class Commandnearby implements CommandExecutor {
         }
         return true;
     }
+
+
 }
