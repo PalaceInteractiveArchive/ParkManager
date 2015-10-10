@@ -51,7 +51,7 @@ public class ChairManager {
         player.setSneaking(false);
         chairs.remove(data.chairBlock);
         Bukkit.getScheduler().cancelTask(data.sittingTask);
-        sitting.remove(player);
+        sitting.remove(player.getUniqueId());
         if (!noMessage) player.sendMessage(ChatColor.GRAY + "Have a magical day!");
         return false;
     }
