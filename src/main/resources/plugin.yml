@@ -7,7 +7,7 @@ depend: [MCMagicCore, ProtocolLib]
 commands:
    nearby:
       description: Finds warps within 100 blocks of your location.
-      permission: mcmagic.nearby
+      permission: mcmagic.warp
       permission-message: §4Please notify a Cast Member that you can’t do this.
    magic:
       description: New Command :O
