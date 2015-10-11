@@ -1,10 +1,13 @@
 package us.mcmagic.magicassistant.commands;
 
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.Warp;
@@ -12,7 +15,6 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
-
 import java.util.HashMap;
 
 public class Commandnearby implements CommandExecutor {
@@ -50,7 +52,8 @@ public class Commandnearby implements CommandExecutor {
             }
         }
         if (!nearby.isEmpty()) {
-            FormattedMessage message = new FormattedMessage("Nearby locations: (Click to warp there)\n").color(ChatColor.GREEN);
+            FormattedMessageNoSpace message = new FormattedMessageNoSpace("Nearby locations: (Click to warp there)\n");
+            message.color(ChatColor.GREEN);
             for (int i = 0; i < nearby.keySet().size(); i++) {
                 Warp warp = (Warp) nearby.keySet().toArray()[i];
                 message.then(" - ");
@@ -63,5 +66,17 @@ public class Commandnearby implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "Could not find any warps within " + DEFAULT_SEARCH_DISTANCE + " blocks.");
         }
         return true;
+    }
+
+    private class FormattedMessageNoSpace extends FormattedMessage {
+
+        public FormattedMessageNoSpace(String firstSection) {
+            super(firstSection);
+        }
+
+        @Override
+        public void send(Player player) {
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(toJSONString())));
+        }
     }
 }
