@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.autograph.Autographs;
+import us.mcmagic.magicassistant.backpack.BackpackManager;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.designstation.DesignStation;
@@ -27,6 +28,7 @@ import us.mcmagic.magicassistant.ridemanager.RideManager;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.shop.ShopManager;
+import us.mcmagic.magicassistant.show.FountainManager;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
 import us.mcmagic.magicassistant.uoe.UniverseEnergyRide;
@@ -51,12 +53,11 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean resortsServer;
     public static FileConfiguration config = FileUtil.configurationYaml();
     public static PlayerJoinAndLeave playerJoinAndLeave;
+    public static FountainManager fountainManager;
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static Map<UUID, String> userCache = new HashMap<>();
-    public static boolean party = false;
-    public static List<String> partyServer = new ArrayList<>();
     public static boolean hubServer;
     public static MagicAssistant instance;
     public static BlockChanger blockChanger;
@@ -69,6 +70,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static HotelManager hotelManager;
     public static QueueManager queueManager;
     public static Autographs autographManager;
+    public static BackpackManager backpackManager;
     public static VisibleUtil vanishUtil;
     public static Shooter shooter = null;
 
@@ -88,7 +90,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         queueManager = new QueueManager();
         log("Queue Manager Initialized!");
         bandUtil = new BandUtil();
-        bandUtil.askForParty();
+        backpackManager = new BackpackManager();
         inventoryUtil = new InventoryUtil();
         vanishUtil = new VisibleUtil();
         blockChanger = new BlockChanger();
@@ -209,38 +211,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
 
     public WorldGuardPlugin getWG() {
         return wg;
-    }
-
-    public static boolean isInt(String s) {
-        try {
-            Integer.parseInt(s);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public void sendToServer(Player player, String server) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("Connect");
-            out.writeUTF(server);
-            player.sendPluginMessage(this, "BungeeCord", b.toByteArray());
-        } catch (Exception e) {
-            player.sendMessage(ChatColor.RED
-                    + "Sorry, looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
-        }
-    }
-
-    public static boolean isInPermGroup(Player player, String group) {
-        String[] groups = WorldGuardPlugin.inst().getGroups(player);
-        for (String group1 : groups) {
-            if (group1.toLowerCase().equals(group.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static PlayerData getPlayerData(UUID uuid) {
@@ -426,7 +396,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("pack").setExecutor(new Commandpack());
         getCommand("ptime").setExecutor(new Commandptime());
         getCommand("pweather").setExecutor(new Commandpweather());
-        getCommand("serverparty").setExecutor(new Commandserverparty());
         getCommand("sethub").setExecutor(new Commandsethub());
         getCommand("setspawn").setExecutor(new Commandsetspawn());
         getCommand("setwarp").setExecutor(new Commandsetwarp());
@@ -462,7 +431,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
-        pm.registerEvents(new FountainUtil(), this);
+        fountainManager = new FountainManager();
+        pm.registerEvents(fountainManager, this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {

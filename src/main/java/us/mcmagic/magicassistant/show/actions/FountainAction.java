@@ -2,9 +2,9 @@ package us.mcmagic.magicassistant.show.actions;
 
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
-import us.mcmagic.magicassistant.show.Show;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.show.Fountain;
-import us.mcmagic.magicassistant.utils.FountainUtil;
+import us.mcmagic.magicassistant.show.Show;
 
 public class FountainAction extends ShowAction {
     private double duration;
@@ -24,6 +24,6 @@ public class FountainAction extends ShowAction {
 
     @Override
     public void play() {
-        FountainUtil.fountains.add(new Fountain(loc, duration, type, data, force));
+        MagicAssistant.fountainManager.addFountain(new Fountain(loc, duration, type, data, force));
     }
 }

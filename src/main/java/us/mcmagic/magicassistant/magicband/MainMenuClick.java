@@ -14,6 +14,7 @@ import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class MainMenuClick {
                 return;
             case ENDER_PEARL:
                 player.closeInventory();
-                MagicAssistant.getInstance().sendToServer(player, "Hub");
+                BungeeUtil.sendToServer(player, "Hub");
                 return;
             case NETHER_STAR:
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PARK);
@@ -98,11 +99,11 @@ public class MainMenuClick {
                 return;
             case GLOWSTONE_DUST:
                 player.closeInventory();
-                MagicAssistant.getInstance().sendToServer(player, "Arcade");
+                BungeeUtil.sendToServer(player, "Arcade");
                 return;
             case GRASS:
                 player.closeInventory();
-                MagicAssistant.getInstance().sendToServer(player, "Creative");
+                BungeeUtil.sendToServer(player, "Creative");
                 return;
             case CLAY_BRICK:
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FASTPASS);

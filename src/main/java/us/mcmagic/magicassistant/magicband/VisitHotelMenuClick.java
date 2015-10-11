@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 
 /**
  * Created by Marc on 5/10/15
@@ -31,7 +32,7 @@ public class VisitHotelMenuClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Yes":
-                MagicAssistant.getInstance().sendToServer(player, "Resorts");
+                BungeeUtil.sendToServer(player, "Resorts");
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Resorts...");
                 return;

@@ -7,9 +7,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.*;
-import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.FileUtil;
 
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class ShowScheduleSpreadsheet {
 

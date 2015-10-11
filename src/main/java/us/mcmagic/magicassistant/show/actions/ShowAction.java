@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.show.actions;
 
-
 import us.mcmagic.magicassistant.show.Show;
 
 public abstract class ShowAction {

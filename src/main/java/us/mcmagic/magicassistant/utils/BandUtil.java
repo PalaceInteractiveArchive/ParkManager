@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.backpack.Backpack;
+import us.mcmagic.magicassistant.backpack.BackpackManager;
+import us.mcmagic.magicassistant.backpack.BackpackSize;
 import us.mcmagic.magicassistant.handlers.BandColor;
 import us.mcmagic.magicassistant.handlers.DataResponse;
 import us.mcmagic.magicassistant.handlers.PlayerData;
@@ -17,8 +20,6 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -147,6 +148,15 @@ public class BandUtil {
             results.close();
             counts.close();
             data.setRideCounts(rides);
+            PreparedStatement pack = connection.prepareStatement("SELECT * FROM backpack WHERE uuid=?");
+            pack.setString(1, uuid.toString());
+            ResultSet packres = sql.executeQuery();
+            byte[] p = packres.getBytes("pack");
+            Backpack backpack = new Backpack(uuid, BackpackSize.fromString(result.getString("size")),
+                    BackpackManager.deserial(p));
+            packres.close();
+            pack.close();
+            data.setBackpack(backpack);
             MagicAssistant.playerData.put(uuid, data);
             dataResponses.remove(uuid);
             return data;
@@ -177,10 +187,10 @@ public class BandUtil {
         MagicAssistant.playerData.remove(player.getUniqueId());
     }
 
-    public long getOnlineTime(String uuid) {
+    public long getOnlineTime(UUID uuid) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT lastseen FROM player_data WHERE uuid=?");
-            sql.setString(1, uuid);
+            sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             result.next();
             Timestamp time = result.getTimestamp("lastseen");
@@ -262,7 +272,7 @@ public class BandUtil {
             @Override
             public void run() {
                 DataResponse response = new DataResponse(uuid, MCMagicCore.economy.getBalance(uuid),
-                        MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid.toString())));
+                        MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid)));
                 dataResponses.put(uuid, response);
             }
         });
@@ -434,69 +444,5 @@ public class BandUtil {
             hour = h + ":" + minute + ":" + second + " AM";
         }
         return hour;
-    }
-
-    public void friendTeleport(Player player, String friendUUID) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("FriendTeleport");
-            out.writeUTF(player.getUniqueId().toString());
-            out.writeUTF(friendUUID);
-            player.sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (Exception e) {
-            player.sendMessage(ChatColor.RED
-                    + "Sorry! It looks like something went wrong! It's probably out fault. We will try to fix it as soon as possible!");
-        }
-    }
-
-    public void askForParty() {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("PartyRequest");
-            out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
-            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (Exception e) {
-            System.out.println("Error requesting Party Info");
-        }
-    }
-
-    public void createParty() {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("MagicPartySetup");
-            out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
-            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (Exception e) {
-            System.out.println("Error creating Party");
-        }
-    }
-
-    public void removeParty() {
-        MagicAssistant.party = false;
-        MagicAssistant.partyServer.clear();
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("MagicPartyRemove");
-            out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
-            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (Exception e) {
-            System.out.println("Error removing Party");
-        }
-    }
-
-    public void joinParty(Player player) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-        try {
-            out.writeUTF("PartyJoin");
-            out.writeUTF(player.getUniqueId().toString());
-            PlayerUtil.randomPlayer().sendPluginMessage(MagicAssistant.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (Exception e) {
-            player.sendMessage(ChatColor.RED + "Error joining Party");
-        }
     }
 }

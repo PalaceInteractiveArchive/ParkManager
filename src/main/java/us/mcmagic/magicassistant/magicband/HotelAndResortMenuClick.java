@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 
 /**
  * Created by Greenlock28 on 1/24/2015.
@@ -29,7 +30,7 @@ public class HotelAndResortMenuClick {
         Material itemType = item.getType();
         switch (itemType) {
             case GLOWSTONE_DUST:
-                MagicAssistant.getInstance().sendToServer(player, "Resorts");
+                BungeeUtil.sendToServer(player, "Resorts");
                 return;
             case BOOK:
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MYHOTELROOMS);

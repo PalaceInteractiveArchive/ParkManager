@@ -2,6 +2,7 @@ package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import us.mcmagic.magicassistant.backpack.Backpack;
 
 import java.util.*;
 
@@ -22,10 +23,12 @@ public class PlayerData {
     private int fastpass;
     private int dailyfp;
     private int fpday;
+    private Backpack backpack;
     private HashMap<String, Integer> rideCounts = new HashMap<>();
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
-                      boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp, int fpday) {
+                      boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp,
+                      int fpday) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -75,6 +78,14 @@ public class PlayerData {
 
     public boolean getFountain() {
         return fountain;
+    }
+
+    public Backpack getBackpack() {
+        return backpack;
+    }
+
+    public void setBackpack(Backpack backpack) {
+        this.backpack = backpack;
     }
 
     public void setFountain(boolean fountain) {

@@ -132,10 +132,6 @@ commands:
       description: Usefull for Helopoh!
       permission: mcmagic.top
       permission-message: §4Only Cast Members can use this command!
-   serverparty:
-      description: Create a Party!
-      permission: mcmagic.serverparty
-      permission-message: §4Only Cast Members can use this command!
    msg:
       description: Messaging for Command Blocks
       permission: mcmagic.msg
