@@ -18,7 +18,7 @@ public class TestTrackVehicle {
     public EngineType engineType = EngineType.GASOLINE;
 
     public enum EngineType {
-        SOLAR,FUELCELL, ELECTRIC, HYBRID, GASOLINE, SUPERCHARGED, PLASMA;
+        SOLAR, FUELCELL, ELECTRIC, HYBRID, GASOLINE, SUPERCHARGED, PLASMA;
 
         public static int getEfficiency(EngineType t) {
             switch (t) {
@@ -147,11 +147,11 @@ public class TestTrackVehicle {
 
     private int getWidthRatioAmount(int relativeAmount) {
         int scale = getWidthOffset() + 9;
-        return ((int)(((double)width / (double)scale) * (double)relativeAmount));
+        return ((int) (((double) width / (double) scale) * (double) relativeAmount));
     }
 
     private int getHeightRatioAmount(int relativeAmount) {
-        return ((int)(((double)height / 11) * (double)relativeAmount));
+        return ((int) (((double) height / 11) * (double) relativeAmount));
     }
 
 }

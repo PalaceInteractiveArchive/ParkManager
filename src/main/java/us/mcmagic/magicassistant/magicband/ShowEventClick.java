@@ -6,8 +6,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.utils.BandUtil;
 
 /**
  * Created by Marc on 12/22/14
@@ -28,18 +28,6 @@ public class ShowEventClick {
         ItemMeta meta = item.getItemMeta();
         if (meta.getDisplayName() == null) {
             return;
-        }
-        if (meta.getDisplayName().contains("Party")) {
-            if (item.getData().getData() == (byte) 14) {
-                player.closeInventory();
-                player.sendMessage(ChatColor.RED + "There is no Party right now, sorry!");
-                return;
-            } else if (item.getData().getData() == (byte) 5) {
-                player.closeInventory();
-                player.sendMessage(ChatColor.GREEN + "Joining Party...");
-                MagicAssistant.bandUtil.joinParty(player);
-                return;
-            }
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {

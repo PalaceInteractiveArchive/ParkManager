@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 
 /**

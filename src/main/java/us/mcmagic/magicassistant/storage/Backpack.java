@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.backpack;
+package us.mcmagic.magicassistant.storage;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -9,10 +9,10 @@ import java.util.UUID;
  */
 public class Backpack {
     private UUID uuid;
-    private BackpackSize size;
+    private StorageSize size;
     private ItemStack[] contents;
 
-    public Backpack(UUID uuid, BackpackSize size, ItemStack[] contents) {
+    public Backpack(UUID uuid, StorageSize size, ItemStack[] contents) {
         this.uuid = uuid;
         this.size = size;
         this.contents = contents;
@@ -22,7 +22,7 @@ public class Backpack {
         return uuid;
     }
 
-    public BackpackSize getSize() {
+    public StorageSize getSize() {
         return size;
     }
 

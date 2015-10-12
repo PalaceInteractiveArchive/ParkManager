@@ -441,7 +441,7 @@ public class QueueRide {
             String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
             return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
         }
-        double seconds = (delay * (group - 1)) + timeToNextRide;
+        double seconds = (delay * group) + timeToNextRide;
         Calendar to = new GregorianCalendar();
         to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
         String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);

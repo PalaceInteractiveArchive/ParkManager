@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.autograph.Autographs;
+import us.mcmagic.magicassistant.autograph.AutographManager;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -58,7 +58,7 @@ public class PlayerDropItem implements Listener {
         }
         if (drop.getType().equals(Material.WRITTEN_BOOK)) {
             BookMeta meta = (BookMeta) drop.getItemMeta();
-            if (meta.getTitle().equalsIgnoreCase(Autographs.BOOK_TITLE)) {
+            if (meta.getTitle().equalsIgnoreCase(AutographManager.BOOK_TITLE)) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You don't want to lose your " + ChatColor.DARK_AQUA + "Autograph Book!");
             }

@@ -17,10 +17,6 @@ public class Commandmb implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (MagicAssistant.bandUtil.isLoading(player)) {
-            player.sendMessage(ChatColor.GRAY + "Your MagicBand is currently initializing!");
-            return true;
-        }
         MagicAssistant.bandUtil.giveBandToPlayer(player);
         player.sendMessage(ChatColor.GRAY + "MagicBand has been restored!");
         return true;

@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.show.actions.*;
+import us.mcmagic.magicassistant.show.handlers.ShowNPC;
+import us.mcmagic.magicassistant.show.handlers.armorstand.ShowStand;
 import us.mcmagic.magicassistant.utils.MathUtil;
 import us.mcmagic.magicassistant.utils.WorldUtil;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
@@ -25,6 +27,7 @@ public class Show {
     private HashMap<String, FireworkEffect> effectMap;
     private HashMap<String, String> invalidLines;
     private HashMap<String, ShowNPC> npcMap;
+    private HashMap<Integer, ShowStand> standmap;
     private int npcTick = 0;
     private long lastPlayerListUpdate = System.currentTimeMillis();
     private List<UUID> nearbyPlayers = new ArrayList<>();
@@ -103,6 +106,19 @@ public class Show {
                     effectMap.put(tokens[1], effect);
                     continue;
                 }
+                // ArmorStand Ids
+                if (tokens[0].equals("ArmorStand")) {
+                    // ArmorStand id small
+                    Integer id = Integer.parseInt(tokens[1]);
+                    if (standmap.get(id) != null) {
+                        invalidLines.put(strLine, "ArmorStand with the ID " + id + " already exists!");
+                        continue;
+                    }
+                    Boolean small = Boolean.valueOf(tokens[2]);
+                    ShowStand stand = new ShowStand(id, small);
+                    standmap.put(id, stand);
+                    continue;
+                }
                 // Get time
                 String[] timeToks = tokens[0].split("_");
                 long time = addTime;
@@ -135,6 +151,49 @@ public class Show {
                         continue;
                     }
                     actions.add(new PulseAction(this, time, loc));
+                }
+                // ArmorStand Movement
+                if (tokens[1].equals("ArmorStand")) {
+                    // Show ArmorStand id action param
+                    Integer id = Integer.parseInt(tokens[2]);
+                    ShowStand stand = standmap.get(id);
+                    if (stand == null) {
+                        invalidLines.put(strLine, "No ArmorStand exists with the ID " + id);
+                        continue;
+                    }
+                    String action = tokens[3];
+                    switch (action) {
+                        case "Spawn": {
+                            // x,y,z
+                            Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
+                            ArmorStandSpawn spawn = new ArmorStandSpawn(this, time, stand, loc);
+                            actions.add(spawn);
+                            break;
+                        }
+                        case "Move": {
+                            // x,y,z speed
+                            if (!stand.hasSpawned()) {
+                                invalidLines.put(strLine, "ArmorStand with ID " + id + " has not spawned");
+                                continue;
+                            }
+                            Location l = stand.getStand().getLocation();
+                            Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
+                            Integer speed = Integer.parseInt(tokens[5]);
+                            double x = ((l.getX() - loc.getX()) / speed) / 20;
+                            double y = ((l.getY() - loc.getY()) / speed) / 20;
+                            double z = ((l.getZ() - loc.getZ()) / speed) / 20;
+                            Vector motion = new Vector(x, y, z);
+                            ArmorStandMove move = new ArmorStandMove(this, time, stand, motion, speed);
+                            actions.add(move);
+                            break;
+                        }
+                        case "Despawn": {
+                            ArmorStandDespawn despawn = new ArmorStandDespawn(this, time, stand);
+                            actions.add(despawn);
+                            break;
+                        }
+                    }
+                    continue;
                 }
                 // Take away GWTS Hats
                 if (tokens[1].contains("GlowDone")) {
@@ -452,21 +511,32 @@ public class Show {
                 }
             }
             in.close();
-        } catch (Exception e) {
+        } catch (
+                Exception e
+                )
+
+        {
             System.out.println("Error on Line [" + strLine + "]");
             Bukkit.broadcast("Error on Line [" + strLine + "]", "arcade.bypass");
             e.printStackTrace();
         }
 
-        if (loc == null) {
+        if (loc == null)
+
+        {
             invalidLines.put("Missing Line", "Show loc x,y,z");
         }
 
-        for (String cur : invalidLines.keySet()) {
+        for (
+                String cur
+                : invalidLines.keySet())
+
+        {
             System.out.print(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "));
             Bukkit.broadcast(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "),
                     "arcade.bypass");
         }
+
     }
 
     private Color colorFromString(String s) {

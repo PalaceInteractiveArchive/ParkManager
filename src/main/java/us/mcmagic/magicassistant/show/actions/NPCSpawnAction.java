@@ -12,7 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.show.Show;
-import us.mcmagic.magicassistant.show.ShowNPC;
+import us.mcmagic.magicassistant.show.handlers.ShowNPC;
 
 import java.lang.reflect.Field;
 

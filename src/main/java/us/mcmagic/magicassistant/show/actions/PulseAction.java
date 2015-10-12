@@ -6,20 +6,24 @@ import org.bukkit.block.Block;
 import us.mcmagic.magicassistant.show.Show;
 
 public class PulseAction extends ShowAction {
-    public Location Location;
+    private Show show;
+    private long time;
+    public Location loc;
 
-    public PulseAction(Show show, long time, Location location) {
+    public PulseAction(Show show, long time, Location loc) {
         super(show, time);
-
-        Location = location;
+        this.show = show;
+        this.time = time;
+        this.loc = loc;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void play() {
-        Block pre = Location.getBlock();
-        Location.getBlock().setType(Material.REDSTONE_BLOCK);
-        Location.getBlock().setType(pre.getType());
-        Location.getBlock().setData(pre.getData());
+        Block pre = loc.getBlock();
+        final int id = pre.getTypeId();
+        final byte data = pre.getData();
+        loc.getBlock().setType(Material.REDSTONE_BLOCK);
+        show.actions.add(new BlockAction(show, time + 100, loc, id, data));
     }
 }

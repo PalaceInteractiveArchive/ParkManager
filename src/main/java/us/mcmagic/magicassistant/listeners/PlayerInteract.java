@@ -3,7 +3,6 @@ package us.mcmagic.magicassistant.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -25,7 +24,6 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,28 +43,6 @@ public class PlayerInteract implements Listener {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         Action action = event.getAction();
         if (action.equals(Action.PHYSICAL)) {
-//            if (event.getClickedBlock().getType().equals(Material.IRON_PLATE) ||
-//                    event.getClickedBlock().getType().equals(Material.GOLD_PLATE) ||
-//                    event.getClickedBlock().getType().equals(Material.STONE_PLATE) ||
-//                    event.getClickedBlock().getType().equals(Material.WOOD_PLATE)) {
-//                final Block base = event.getClickedBlock().getRelative(0, -1, 0);
-//                List<Block> relatives = new ArrayList<Block>() {{
-//                    add(base.getRelative(0, 0, -1));
-//                    add(base.getRelative(-1, 0, 0));
-//                    add(base.getRelative(0, 0, 1));
-//                    add(base.getRelative(1, 0, 0));
-//                }};
-//                for(Block b : relatives) {
-//                    Material type = b.getType();
-//                    if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
-//                        Sign s = (Sign) event.getClickedBlock().getState();
-//                        if (s.getLine(0).equals(disposal)) {
-//                            player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
-//                            return;
-//                        }
-//                    }
-//                }
-//            }
             return;
         }
         if (action.name().toLowerCase().contains("block")) {
@@ -127,7 +103,9 @@ public class PlayerInteract implements Listener {
                             }
                         }
                         if (playerOwnsRooms) {
-                            player.sendMessage(ChatColor.RED + "You cannot book more than one room at a time!  You need to wait for your current reservation to lapse or check out by right-clicking the booked room's sign.");
+                            player.sendMessage(ChatColor.RED + "You cannot book more than one room at a time! " +
+                                    "You need to wait for your current reservation to lapse or check out by " +
+                                    "right-clicking the booked room's sign.");
                             return;
                         }
 
@@ -163,7 +141,8 @@ public class PlayerInteract implements Listener {
                         if (friends.contains(room.getCurrentOccupant())) {
                             PlayerData target = MagicAssistant.getPlayerData(room.getCurrentOccupant());
                             if (target == null) {
-                                player.sendMessage(ChatColor.RED + "Your friend must be online for you to access their room!");
+                                player.sendMessage(ChatColor.RED +
+                                        "Your friend must be online for you to access their room!");
                                 event.setCancelled(true);
                                 return;
                             }
@@ -185,7 +164,8 @@ public class PlayerInteract implements Listener {
                             event.setCancelled(true);
                         }
                     } else {
-                        player.sendMessage(ChatColor.GREEN + "That room is currently unoccupied. Book your stay by right-clicking the sign or viewing the room in your MagicBand.");
+                        player.sendMessage(ChatColor.GREEN + "That room is currently unoccupied. Book your stay by " +
+                                "right-clicking the sign or viewing the room in your MagicBand.");
                         event.setCancelled(true);
                     }
                 }
@@ -193,12 +173,25 @@ public class PlayerInteract implements Listener {
             }
         }
         PlayerInventory pi = player.getInventory();
-        if (pi.getHeldItemSlot() != 8) {
-            return;
+        if (pi.getHeldItemSlot() == 5) {
+            if (pi.getItemInHand().getType().equals(Material.CHEST)) {
+                event.setCancelled(true);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.BACKPACK);
+                return;
+            }
         }
-        if (pi.getItemInHand().getType().equals(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()))) {
-            event.setCancelled(true);
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+        if (pi.getHeldItemSlot() == 6) {
+            if (pi.getItemInHand().getType().equals(Material.WATCH)) {
+                event.setCancelled(true);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.SHOWTIMES);
+                return;
+            }
+        }
+        if (pi.getHeldItemSlot() == 8) {
+            if (pi.getItemInHand().getType().equals(MagicAssistant.bandUtil.getBandMaterial(data.getBandColor()))) {
+                event.setCancelled(true);
+                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            }
         }
     }
 

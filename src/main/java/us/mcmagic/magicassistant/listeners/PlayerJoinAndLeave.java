@@ -11,10 +11,11 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.storage.Backpack;
 import us.mcmagic.magicassistant.commands.Commandvanish;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
@@ -22,12 +23,13 @@ import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class PlayerJoinAndLeave implements Listener {
@@ -57,6 +59,9 @@ public class PlayerJoinAndLeave implements Listener {
         User user = MCMagicCore.getUser(player.getUniqueId());
         if (user == null) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+        }
+        if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
+            player.getInventory().clear();
         }
     }
 
@@ -98,14 +103,6 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             if (MagicAssistant.hubServer) {
-                if (firstJoins.contains(player.getUniqueId())) {
-                    firstJoins.remove(player.getUniqueId());
-                    PlayerInventory pi = player.getInventory();
-                    for (Map.Entry<Integer, Integer> item : MagicAssistant.firstJoinItems.entrySet()) {
-                        ItemStack i = new ItemStack(item.getKey(), item.getValue());
-                        pi.addItem(i);
-                    }
-                }
                 if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                     if (player.getLocation().distance(MagicAssistant.spawn) <= 5) {
                         for (Player tp : Bukkit.getOnlinePlayers()) {
@@ -117,45 +114,51 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
             }
-            ItemStack helm = player.getInventory().getHelmet();
-            if (helm != null && helm.getItemMeta() != null && helm.getItemMeta().getDisplayName() != null) {
-                if (helm.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
-                    player.getInventory().setHelmet(new ItemStack(Material.AIR));
-                }
-            }
-            if (MagicAssistant.shooter != null) {
-                player.getInventory().remove(MagicAssistant.shooter.getItem().getType());
-            }
-            MagicAssistant.bandUtil.giveBandToPlayer(player);
-            MagicAssistant.autographManager.giveBook(player);
-            if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        HotelManager manager = MagicAssistant.hotelManager;
-                        for (HotelRoom room : manager.getHotelRooms()) {
-                            if (room.getCheckoutNotificationRecipient() != null &&
-                                    room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
-                                room.setCheckoutNotificationRecipient(null);
-                                room.setCheckoutTime(0);
-                                manager.updateHotelRoom(room);
-                                manager.updateRooms();
-                                player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
-                                        " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                                manager.expire.send(player);
-                                player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
-                                return;
-                            }
-                            if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCurrentOccupant()
-                                    != null && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                                manager.checkout(room, true);
-                            }
+            setInventory(player);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    Backpack pack = MagicAssistant.storageManager.getBackpack(player);
+                    MagicAssistant.getPlayerData(player.getUniqueId()).setBackpack(pack);
+                    if (!MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+                        return;
+                    }
+                    HotelManager manager = MagicAssistant.hotelManager;
+                    for (HotelRoom room : manager.getHotelRooms()) {
+                        if (room.getCheckoutNotificationRecipient() != null &&
+                                room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
+                            room.setCheckoutNotificationRecipient(null);
+                            room.setCheckoutTime(0);
+                            manager.updateHotelRoom(room);
+                            manager.updateRooms();
+                            player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
+                                    " room has lapsed and you have been checked out. Please come stay with us again soon!");
+                            manager.expire.send(player);
+                            player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                            return;
+                        }
+                        if (room.getCurrentOccupant() != null &&
+                                room.getCurrentOccupant().equals(player.getUniqueId()) &&
+                                room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+                            manager.checkout(room, true);
                         }
                     }
-                }, 60L);
-            }
+                }
+            }, 40L);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void setInventory(Player player) {
+        Inventory inv = player.getInventory();
+        inv.setItem(5, new ItemCreator(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"));
+        inv.setItem(6, new ItemCreator(Material.WATCH, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
+                Arrays.asList(ChatColor.GRAY + "Right-Click to open the", ChatColor.GRAY + "Show Schedule Menu")));
+        MagicAssistant.autographManager.giveBook(player);
+        MagicAssistant.bandUtil.giveBandToPlayer(player);
+        if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+            inv.setItem(0, new ItemStack(Material.COMPASS));
         }
     }
 
@@ -221,7 +224,7 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.autographManager.logout(player);
         MagicAssistant.parkSoundManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
-        MagicAssistant.backpackManager.logout(player);
+        MagicAssistant.storageManager.logout(player);
         MagicAssistant.stitch.logout(player);
         MagicAssistant.vanishUtil.logout(player);
         Commandvanish.unvanish(player.getUniqueId());

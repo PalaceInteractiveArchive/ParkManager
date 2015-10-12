@@ -2,9 +2,13 @@ package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import us.mcmagic.magicassistant.backpack.Backpack;
+import us.mcmagic.magicassistant.storage.Backpack;
+import us.mcmagic.magicassistant.storage.Locker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Marc on 12/13/14
@@ -24,6 +28,7 @@ public class PlayerData {
     private int dailyfp;
     private int fpday;
     private Backpack backpack;
+    private Locker locker;
     private HashMap<String, Integer> rideCounts = new HashMap<>();
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
@@ -167,5 +172,9 @@ public class PlayerData {
 
     public void setRideCounts(HashMap<String, Integer> rideCounts) {
         this.rideCounts = rideCounts;
+    }
+
+    public Locker getLocker() {
+        return locker;
     }
 }

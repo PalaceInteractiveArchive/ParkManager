@@ -56,6 +56,9 @@ public class VisibleUtil {
             if (tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
+            if (hideall.contains(tp.getUniqueId())) {
+                continue;
+            }
             tp.showPlayer(player);
         }
     }
@@ -69,19 +72,17 @@ public class VisibleUtil {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         List<UUID> friends = data.getFriendList();
         hideall.add(player.getUniqueId());
-        for (User user : MCMagicCore.getUsers()) {
-            Player tp = Bukkit.getPlayer(user.getUniqueId());
-            if (tp == null) {
-                continue;
-            }
-            if (friends.contains(user.getUniqueId()) && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            User user = MCMagicCore.getUser(tp.getUniqueId());
+            if (friends.contains(tp.getUniqueId()) && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 player.showPlayer(tp);
                 continue;
             }
-            if (!tp.getUniqueId().equals(player.getUniqueId())) {
-                if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                    player.hidePlayer(tp);
-                }
+            if (tp.getUniqueId().equals(player.getUniqueId())) {
+                continue;
+            }
+            if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                player.hidePlayer(tp);
             }
         }
     }
@@ -90,15 +91,16 @@ public class VisibleUtil {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         List<UUID> friends = data.getFriendList();
         hideall.remove(player.getUniqueId());
-        for (User user : MCMagicCore.getUsers()) {
-            Player tp = Bukkit.getPlayer(user.getUniqueId());
-            if (tp == null) {
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            User user = MCMagicCore.getUser(tp.getUniqueId());
+            if (spawnHide.contains(tp.getUniqueId())) {
                 continue;
             }
-            if (!tp.getUniqueId().equals(player.getUniqueId())) {
-                if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                    player.showPlayer(tp);
-                }
+            if (tp.getUniqueId().equals(player.getUniqueId())) {
+                continue;
+            }
+            if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                player.showPlayer(tp);
             }
         }
     }

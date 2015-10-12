@@ -15,25 +15,26 @@ import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BlockEdit implements Listener {
-    private List<String> ships = Arrays.asList("CaptainSoleil", "CharlesGoldburn", "CraftyHazzer", "kristjanpaeva");
+    private static List<UUID> buildMode = new ArrayList<>();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (player.getName().equals("DevSlashNull")) {
-            event.setCancelled(false);
-            return;
-        }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !ships.contains(player.getName())) {
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
             event.setCancelled(true);
             return;
         } else {
-            event.setCancelled(false);
+            if (!isInBuildMode(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You must be in Build Mode to break blocks!");
+                event.setCancelled(true);
+                return;
+            }
         }
         if (event.getBlock().getType() == Material.SIGN_POST || event.getBlock().getType() == Material.WALL_SIGN) {
             Sign s = (Sign) event.getBlock().getState();
@@ -76,15 +77,28 @@ public class BlockEdit implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if (player.getName().equals("DevSlashNull")) {
-            event.setCancelled(false);
-            return;
-        }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId() && !ships.contains(player.getName())) {
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
             event.setCancelled(true);
-            return;
+        } else {
+            if (!isInBuildMode(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You must be in Build Mode to place blocks!");
+                event.setCancelled(true);
+            }
         }
-        event.setCancelled(false);
+    }
+
+    public static boolean isInBuildMode(UUID uuid) {
+        return buildMode.contains(uuid);
+    }
+
+    public static boolean toggleBuildMode(UUID uuid) {
+        if (buildMode.contains(uuid)) {
+            buildMode.remove(uuid);
+            return false;
+        } else {
+            buildMode.add(uuid);
+            return true;
+        }
     }
 }

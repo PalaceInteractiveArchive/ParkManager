@@ -3,7 +3,7 @@ package us.mcmagic.magicassistant.show.actions;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.show.Fountain;
+import us.mcmagic.magicassistant.show.handlers.Fountain;
 import us.mcmagic.magicassistant.show.Show;
 
 public class FountainAction extends ShowAction {

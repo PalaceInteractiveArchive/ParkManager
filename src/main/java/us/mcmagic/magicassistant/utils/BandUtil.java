@@ -10,9 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.backpack.Backpack;
-import us.mcmagic.magicassistant.backpack.BackpackManager;
-import us.mcmagic.magicassistant.backpack.BackpackSize;
 import us.mcmagic.magicassistant.handlers.BandColor;
 import us.mcmagic.magicassistant.handlers.DataResponse;
 import us.mcmagic.magicassistant.handlers.PlayerData;
@@ -148,15 +145,6 @@ public class BandUtil {
             results.close();
             counts.close();
             data.setRideCounts(rides);
-            PreparedStatement pack = connection.prepareStatement("SELECT * FROM backpack WHERE uuid=?");
-            pack.setString(1, uuid.toString());
-            ResultSet packres = sql.executeQuery();
-            byte[] p = packres.getBytes("pack");
-            Backpack backpack = new Backpack(uuid, BackpackSize.fromString(result.getString("size")),
-                    BackpackManager.deserial(p));
-            packres.close();
-            pack.close();
-            data.setBackpack(backpack);
             MagicAssistant.playerData.put(uuid, data);
             dataResponses.remove(uuid);
             return data;
@@ -243,7 +231,7 @@ public class BandUtil {
         if (data.getSpecial()) {
             mb = new ItemStack(getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
-            mbm.setDisplayName(data.getBandName() + "MagicBand");
+            mbm.setDisplayName(data.getBandName() + "MagicBand " + ChatColor.GRAY + "(Right Click)");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));
             mb.setItemMeta(mbm);
@@ -251,7 +239,7 @@ public class BandUtil {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
             mbm.setEffect(FireworkEffect.builder().withColor(getBandColor(data.getBandColor())).build());
-            mbm.setDisplayName(data.getBandName() + "MagicBand");
+            mbm.setDisplayName(data.getBandName() + "MagicBand " + ChatColor.GRAY + "(Right Click)");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));
             mb.setItemMeta(mbm);

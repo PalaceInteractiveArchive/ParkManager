@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.util.Vector;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.show.handlers.Fountain;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,7 @@ public class FountainManager implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    public void start() {
+    private void start() {
         final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             public void run() {

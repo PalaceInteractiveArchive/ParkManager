@@ -1,6 +1,6 @@
 name: MagicAssistant
 author: MCMagicDev
-version: 1.7.8
+version: 1.7.9-SNAPSHOT
 description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib]
@@ -167,11 +167,3 @@ commands:
       description: Give/take infinite Night Vision
       permission: arcade.bypass
       permission-message: §4Only Cast Members can use this command!
-   signfix:
-      description: Good stuff
-      permission: you.cant.do.this
-      permission-message: §4You can't do this!
-   balfix:
-      description: Better stuff
-      permission: you.cant.do.this
-      permission-message: §4You can't do this!

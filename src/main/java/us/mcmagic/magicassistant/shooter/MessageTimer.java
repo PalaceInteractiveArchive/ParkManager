@@ -34,6 +34,9 @@ public class MessageTimer {
                 }
                 for (UUID uuid : MagicAssistant.shooter.getIngame()) {
                     Player player = Bukkit.getPlayer(uuid);
+                    if (player == null) {
+                        continue;
+                    }
                     ActionBarManager.sendMessage(player, msg + player.getMetadata("shooter").get(0).asInt());
                 }
             }

@@ -1,7 +1,7 @@
 package us.mcmagic.magicassistant.show.actions;
 
 import us.mcmagic.magicassistant.show.Show;
-import us.mcmagic.magicassistant.show.ShowNPC;
+import us.mcmagic.magicassistant.show.handlers.ShowNPC;
 
 public class NPCRemoveAction extends ShowAction {
     public String Name;

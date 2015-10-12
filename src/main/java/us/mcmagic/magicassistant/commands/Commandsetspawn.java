@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +20,8 @@ public class Commandsetspawn implements CommandExecutor {
         Player player = (Player) sender;
         FileUtil.setSpawn(player.getLocation());
         MagicAssistant.spawn = player.getLocation();
+        Location l = player.getLocation();
+        player.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
         player.sendMessage(ChatColor.GRAY + "Spawn Set!");
         return true;
     }

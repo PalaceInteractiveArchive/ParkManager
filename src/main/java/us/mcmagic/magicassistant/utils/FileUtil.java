@@ -10,7 +10,8 @@ import java.util.List;
 
 public class FileUtil {
 
-    private FileUtil() { }
+    private FileUtil() {
+    }
 
     private static File blockchanger = new File("plugins/MagicAssistant/blockchanger.yml");
     private static File configuration = new File("plugins/MagicAssistant/config.yml");
@@ -70,7 +71,7 @@ public class FileUtil {
             if (file.exists()) {
                 return;
             }
-            if(file.createNewFile()) {
+            if (file.createNewFile()) {
                 return;
             }
             YamlConfiguration config = configurationYaml();

@@ -142,20 +142,20 @@ public class InventoryClick implements Listener {
                 DesignStationClick.handleEngine(event);
                 return;
             case "Shop":
-                ShopMainMenuClick.handle(event);
                 event.setCancelled(true);
+                ShopMainMenuClick.handle(event);
                 return;
             case "Wait Times":
-                WaitTimeClick.handle(event);
                 event.setCancelled(true);
+                WaitTimeClick.handle(event);
                 return;
             case "Purchase FastPass":
-                FastPassMenuClick.handle(event);
                 event.setCancelled(true);
+                FastPassMenuClick.handle(event);
                 return;
             case "Show Timetable":
-                ShowTimeClick.handle(event);
                 event.setCancelled(true);
+                ShowTimeClick.handle(event);
                 return;
         }
         if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {

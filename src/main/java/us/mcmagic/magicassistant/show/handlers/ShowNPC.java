@@ -1,4 +1,4 @@
-package us.mcmagic.magicassistant.show;
+package us.mcmagic.magicassistant.show.handlers;
 
 import net.minecraft.server.v1_8_R3.EntityCreature;
 import net.minecraft.server.v1_8_R3.NavigationAbstract;

@@ -22,14 +22,12 @@ import java.util.*;
 /**
  * Created by Jacob on 7/19/15.
  */
-public class Autographs {
-
+public class AutographManager {
     public static final String BOOK_TITLE = ChatColor.DARK_AQUA + "Autograph Book";
     private HashMap<UUID, UUID> map = new HashMap<>();
     private HashMap<UUID, Integer> map2 = new HashMap<>();
     private HashMap<UUID, Integer> map3 = new HashMap<>();
     private HashMap<UUID, UUID> active = new HashMap<>();
-    private HashMap<UUID, String> nameMap = new HashMap<>();
     private HashMap<UUID, ItemStack> books = new HashMap<>();
 
     public void setBook(UUID uuid) {
@@ -39,11 +37,11 @@ public class Autographs {
         List<Signature> list = getSignatures(uuid);
         for (Signature sign : list) {
             String name = "Unknown";
-            if (nameMap.containsKey(sign.getSigner())) {
-                name = nameMap.get(sign.getSigner());
+            if (MagicAssistant.userCache.containsKey(sign.getSigner())) {
+                name = MagicAssistant.userCache.get(sign.getSigner());
             } else {
                 try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement n = connection.prepareStatement("SELECT * FROM player_data WHERE uuid=?");
+                    PreparedStatement n = connection.prepareStatement("SELECT rank,username FROM player_data WHERE uuid=?");
                     n.setString(1, sign.getSigner().toString());
                     ResultSet r = n.executeQuery();
                     if (!r.next()) {
@@ -53,7 +51,7 @@ public class Autographs {
                     }
                     Rank rank = Rank.fromString(r.getString("rank"));
                     name = rank.getTagColor() + r.getString("username");
-                    nameMap.put(sign.getSigner(), name);
+                    MagicAssistant.userCache.put(sign.getSigner(), name);
                     r.close();
                     n.close();
                 } catch (SQLException e) {
@@ -199,56 +197,6 @@ public class Autographs {
         }, 0, 20L).getTaskId());
     }
 
-
-    private String getTimerMessage(int i) {
-        switch (i) {
-            case 20:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉▉▉";
-            case 19:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉▉" + ChatColor.GREEN + "▉";
-            case 18:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉▉" + ChatColor.RED + "▉";
-            case 17:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉";
-            case 16:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉" + ChatColor.RED + "▉▉";
-            case 15:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉";
-            case 14:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉" + ChatColor.RED + "▉▉▉";
-            case 13:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉";
-            case 12:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉" + ChatColor.RED + "▉▉▉▉";
-            case 11:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉";
-            case 10:
-                return ChatColor.DARK_GREEN + "▉▉▉▉▉" + ChatColor.RED + "▉▉▉▉▉";
-            case 9:
-                return ChatColor.DARK_GREEN + "▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉";
-            case 8:
-                return ChatColor.DARK_GREEN + "▉▉▉▉" + ChatColor.RED + "▉▉▉▉▉▉";
-            case 7:
-                return ChatColor.DARK_GREEN + "▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉";
-            case 6:
-                return ChatColor.DARK_GREEN + "▉▉▉" + ChatColor.RED + "▉▉▉▉▉▉▉";
-            case 5:
-                return ChatColor.DARK_GREEN + "▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉";
-            case 4:
-                return ChatColor.DARK_GREEN + "▉▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉";
-            case 3:
-                return ChatColor.DARK_GREEN + "▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉";
-            case 2:
-                return ChatColor.DARK_GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉▉";
-            case 1:
-                return ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉▉";
-            case 0:
-                return ChatColor.RED + "▉▉▉▉▉▉▉▉▉▉";
-            default:
-                return "";
-        }
-    }
-
     public void acceptRequest(Player player) {
         if (!map.containsValue(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You don't have any pending Autograph Requests!");
@@ -345,5 +293,54 @@ public class Autographs {
                 player.sendMessage(ChatColor.GREEN + "You removed the Autograph on " + ChatColor.YELLOW + "Page #" + num);
             }
         });
+    }
+
+    private String getTimerMessage(int i) {
+        switch (i) {
+            case 20:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉▉▉";
+            case 19:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉▉" + ChatColor.GREEN + "▉";
+            case 18:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉▉" + ChatColor.RED + "▉";
+            case 17:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉";
+            case 16:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉▉" + ChatColor.RED + "▉▉";
+            case 15:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉";
+            case 14:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉▉" + ChatColor.RED + "▉▉▉";
+            case 13:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉";
+            case 12:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉▉" + ChatColor.RED + "▉▉▉▉";
+            case 11:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉";
+            case 10:
+                return ChatColor.DARK_GREEN + "▉▉▉▉▉" + ChatColor.RED + "▉▉▉▉▉";
+            case 9:
+                return ChatColor.DARK_GREEN + "▉▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉";
+            case 8:
+                return ChatColor.DARK_GREEN + "▉▉▉▉" + ChatColor.RED + "▉▉▉▉▉▉";
+            case 7:
+                return ChatColor.DARK_GREEN + "▉▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉";
+            case 6:
+                return ChatColor.DARK_GREEN + "▉▉▉" + ChatColor.RED + "▉▉▉▉▉▉▉";
+            case 5:
+                return ChatColor.DARK_GREEN + "▉▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉";
+            case 4:
+                return ChatColor.DARK_GREEN + "▉▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉";
+            case 3:
+                return ChatColor.DARK_GREEN + "▉" + ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉";
+            case 2:
+                return ChatColor.DARK_GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉▉";
+            case 1:
+                return ChatColor.GREEN + "▉" + ChatColor.RED + "▉▉▉▉▉▉▉▉▉";
+            case 0:
+                return ChatColor.RED + "▉▉▉▉▉▉▉▉▉▉";
+            default:
+                return "";
+        }
     }
 }

@@ -13,6 +13,8 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.queue.QueueRide;
+import us.mcmagic.magicassistant.storage.Backpack;
+import us.mcmagic.magicassistant.storage.Locker;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -127,10 +129,6 @@ public class InventoryUtil {
             "Main Street Electrical Parade");
     private ItemStack fofp = new ItemCreator(Material.INK_SACK, 1, (byte) 12, ChatColor.DARK_AQUA +
             "Festival of Fantasy Parade", Collections.singletonList(""));
-    private ItemStack party = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN +
-            "Click to join the Party!", Collections.singletonList(""));
-    private ItemStack noparty = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED +
-            "There is no Party right now!", Collections.singletonList(""));
     private ItemStack times = new ItemCreator(Material.BOOK, ChatColor.GREEN + "Show Timetable");
     //Rides and Attractions
     private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
@@ -159,6 +157,11 @@ public class InventoryUtil {
     private ItemStack f = new ItemStack(Material.BANNER);
     private ItemStack s = new ItemStack(Material.BANNER);
     private ItemStack su = new ItemStack(Material.BANNER);
+    //Storage
+    private ItemStack loadingPack = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
+            "Loading Pack...", new ArrayList<String>());
+    private ItemStack loadingLocker = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
+            "Loading Locker...", new ArrayList<String>());
 
 
     public InventoryUtil() {
@@ -361,11 +364,6 @@ public class InventoryUtil {
                     return;
                 case SHOWSANDEVENTS:
                     Inventory shows = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Shows and Events");
-                    if (MagicAssistant.party) {
-                        shows.setItem(4, party);
-                    } else {
-                        shows.setItem(4, noparty);
-                    }
                     shows.setItem(8, times);
                     shows.setItem(9, fant);
                     shows.setItem(11, iroe);
@@ -591,6 +589,36 @@ public class InventoryUtil {
                     fp.setItem(15, no);
                     player.openInventory(fp);
                     return;
+                case BACKPACK:
+                    Backpack pack = data.getBackpack();
+                    if (pack == null) {
+                        Inventory load = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Loading Backpack...");
+                        load.setItem(13, loadingPack);
+                        player.openInventory(load);
+                        MagicAssistant.storageManager.setLoadingPack(player);
+                        return;
+                    } else {
+                        Inventory bp = Bukkit.createInventory(player, pack.getSize().getRows() * 9, ChatColor.BLUE +
+                                "Your Backpack");
+                        bp.setContents(pack.getContents());
+                        player.openInventory(bp);
+                    }
+                    break;
+                case LOCKER:
+                    Locker locker = data.getLocker();
+                    if (locker == null) {
+                        Inventory load = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Loading Locker...");
+                        load.setItem(13, loadingLocker);
+                        player.openInventory(load);
+                        MagicAssistant.storageManager.setLoadingLocker(player);
+                        return;
+                    } else {
+                        Inventory lkr = Bukkit.createInventory(player, locker.getSize().getRows() * 9, ChatColor.BLUE +
+                                "Your Locker");
+                        lkr.setContents(locker.getContents());
+                        player.openInventory(lkr);
+                    }
+                    break;
                 case SHOWTIMES:
                     Inventory s = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Show Timetable");
                     s.setItem(1, m);

@@ -1,7 +1,6 @@
 package us.mcmagic.magicassistant.listeners;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -27,25 +26,24 @@ public class EntityDamage implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
         if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.PAINTING) ||
                 entity.getType().equals(EntityType.ARMOR_STAND)) {
-            event.setCancelled(true);
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
                 Player player = (Player) damager;
                 User user = MCMagicCore.getUser(player.getUniqueId());
-                if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
-                    if (!player.getItemInHand().getType().equals(Material.GOLD_HOE)) {
-                        player.sendMessage(ChatColor.RED + "To break this, please use a Golden Hoe");
-                        return;
+                if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                    if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You must be in Build Mode to break entities!");
                     }
-                    event.setCancelled(false);
-                    return;
+                } else {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You are not allowed to break this!");
                 }
-                player.sendMessage(ChatColor.RED + "You are not allowed to break this!");
             }
         }
     }
