@@ -21,7 +21,7 @@ public class CustomizeMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.shopManager.openMenu(player);
             return;
         }
         ItemMeta meta = item.getItemMeta();

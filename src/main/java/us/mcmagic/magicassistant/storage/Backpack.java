@@ -1,5 +1,9 @@
 package us.mcmagic.magicassistant.storage;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -10,12 +14,15 @@ import java.util.UUID;
 public class Backpack {
     private UUID uuid;
     private StorageSize size;
-    private ItemStack[] contents;
+    private Inventory inv;
 
-    public Backpack(UUID uuid, StorageSize size, ItemStack[] contents) {
-        this.uuid = uuid;
+    public Backpack(Player player, StorageSize size, ItemStack[] contents) {
+        this.uuid = player.getUniqueId();
         this.size = size;
-        this.contents = contents;
+        inv = Bukkit.createInventory(player, size.getRows() * 9, ChatColor.BLUE + "Your Backpack");
+        if (contents != null) {
+            inv.setContents(contents);
+        }
     }
 
     public UUID getUniqueId() {
@@ -26,7 +33,7 @@ public class Backpack {
         return size;
     }
 
-    public ItemStack[] getContents() {
-        return contents;
+    public Inventory getInventory() {
+        return inv;
     }
 }

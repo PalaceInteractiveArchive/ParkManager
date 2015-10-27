@@ -21,7 +21,7 @@ public class Commandfly implements CommandExecutor {
                             + "I can'commands find that player!");
                     return true;
                 }
-                if (player.isFlying()) {
+                if (player.getAllowFlight()) {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.sendMessage(ChatColor.RED + "You can't fly anymore!");
@@ -29,8 +29,6 @@ public class Commandfly implements CommandExecutor {
                     return true;
                 }
                 player.setAllowFlight(true);
-                player.setFlying(true);
-                player.teleport(player.getLocation().add(0, 0.5, 0));
                 player.sendMessage(ChatColor.GREEN + "You can fly!");
                 sender.sendMessage(player.getName() + " can now fly!");
                 return true;
@@ -42,15 +40,13 @@ public class Commandfly implements CommandExecutor {
         if (args.length == 1) {
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
-                if (player.isFlying()) {
+                if (player.getAllowFlight()) {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.sendMessage(ChatColor.RED + "You can't fly anymore!");
                     return true;
                 }
                 player.setAllowFlight(true);
-                player.setFlying(true);
-                player.teleport(player.getLocation().add(0, 0.5, 0));
                 player.sendMessage(ChatColor.GREEN + "You can fly!");
                 return true;
             }
@@ -59,7 +55,7 @@ public class Commandfly implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "I can't find that player!");
                 return true;
             }
-            if (tp.isFlying()) {
+            if (tp.getAllowFlight()) {
                 tp.setAllowFlight(false);
                 tp.setFlying(false);
                 tp.sendMessage(ChatColor.RED + "You can't fly anymore!");
@@ -67,21 +63,17 @@ public class Commandfly implements CommandExecutor {
                 return true;
             }
             tp.setAllowFlight(true);
-            tp.setFlying(true);
-            tp.teleport(tp.getLocation().add(0, 0.5, 0));
             tp.sendMessage(ChatColor.GREEN + "You can fly!");
             player.sendMessage(ChatColor.GREEN + tp.getName() + " can now fly!");
             return true;
         }
-        if (player.isFlying()) {
+        if (player.getAllowFlight()) {
             player.setAllowFlight(false);
             player.setFlying(false);
             player.sendMessage(ChatColor.RED + "You can't fly anymore!");
             return true;
         }
         player.setAllowFlight(true);
-        player.setFlying(true);
-        player.teleport(player.getLocation().add(0, 0.5, 0));
         player.sendMessage(ChatColor.GREEN + "You can fly!");
         return true;
     }

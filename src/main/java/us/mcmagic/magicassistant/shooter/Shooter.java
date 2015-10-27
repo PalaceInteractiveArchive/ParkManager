@@ -202,7 +202,6 @@ public class Shooter implements Listener {
 
     public void done(Player player) {
         ingame.remove(player.getUniqueId());
-        player.getInventory().remove(stack.getType());
         switch (game) {
             case "buzz":
                 String rank = getRank(player.getMetadata("shooter").get(0).asInt());
@@ -224,9 +223,11 @@ public class Shooter implements Listener {
                         + player.getMetadata("shooter").get(0).asInt() + "!");
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
         }
-        if (itemMap.containsKey(player.getUniqueId())) {
-            player.getInventory().setItem(4, itemMap.get(player.getUniqueId()));
-        }
+        player.getInventory().setItem(4, new ItemCreator(Material.QUARTZ, 1, ChatColor.GRAY +
+                "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
+                "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
+                "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
+                "Toy Story Midway Mania.")));
     }
 
     public ItemStack getItem() {

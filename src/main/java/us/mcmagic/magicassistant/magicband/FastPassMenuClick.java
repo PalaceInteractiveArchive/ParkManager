@@ -6,7 +6,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.SqlUtil;
@@ -34,7 +33,7 @@ public class FastPassMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.shopManager.openMenu(player);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -57,7 +56,7 @@ public class FastPassMenuClick {
                 setFastpassValue(player.getUniqueId(), data.getFastpass(), data.getDailyfp(), data.getDay());
                 return;
             case "No":
-                MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+                MagicAssistant.shopManager.openMenu(player);
         }
     }
 

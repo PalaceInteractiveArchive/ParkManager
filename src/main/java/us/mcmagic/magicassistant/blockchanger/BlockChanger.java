@@ -16,31 +16,105 @@ import java.util.*;
  * Created by Marc on 3/8/15
  */
 public class BlockChanger implements Listener {
+    //private final PatcherAPI api;
     private List<UUID> debug = new ArrayList<>();
     private HashMap<String, Changer> changers = new HashMap<>();
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
+    /*
+    private Map<UUID, BlockVector> glassChunk = new WeakHashMap<>();
 
     public BlockChanger() {
-        /*
-        PatcherAPI api = new PatcherAPI();
+        api = new PatcherAPI();
         ConversionCache cache = new ConversionCache(api);
-        EventScheduler scheduler = new EventScheduler(Bukkit.getPluginManager());
+        EventScheduler scheduler = new EventScheduler();
         final ChangeCalculations calculations = new ChangeCalculations(cache, scheduler);
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MagicAssistant.getInstance(),
-                PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                PacketContainer e = event.getPacket();
-                if (e.getType().equals(PacketType.Play.Server.MAP_CHUNK)) {
-                    calculations.translateMapChunk(e, event.getPlayer());
-                } else if (e.getType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) {
-                    calculations.translateMapChunkBulk(e, event.getPlayer());
-                }
-            }
-        });
-        */
+        ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(
+                new PacketAdapter(MagicAssistant.getInstance(), ListenerPriority.HIGHEST,
+                        PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK,
+                        PacketType.Play.Server.UPDATE_SIGN, PacketType.Play.Server.TILE_ENTITY_DATA) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK)) {
+                            calculations.translateMapChunk(event.getPacket(), event.getPlayer());
+                        } else if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) {
+                            calculations.translateMapChunkBulk(event.getPacket(), event.getPlayer());
+                        }
+                    }
+                });
     }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        // See if the player has moved outside the chunk
+        updateChunk(event.getPlayer());
+    }
+
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        updateChunk(event.getPlayer());
+    }
+
+    private void updateChunk(Player player) {
+        // See if the chunk coordinate changed in the X or Z direction
+        BlockVector coord = getChunkCoordinate(player);
+        BlockVector last = glassChunk.get(player.getUniqueId());
+
+        if (last == null || coord.getBlockX() != last.getBlockX() || coord.getBlockZ() != last.getBlockZ()) {
+            // Update!
+            api.resendChunk(player, coord.getBlockX(), coord.getBlockZ());
+
+            if (last != null)
+                api.resendChunk(player, last.getBlockX(), last.getBlockZ());
+            glassChunk.put(player.getUniqueId(), coord);
+        }
+    }
+
+    private BlockVector getChunkCoordinate(Player player) {
+        Location loc = player.getLocation();
+        return new BlockVector(loc.getBlockX() >> 4, loc.getBlockY() >> 4, loc.getBlockZ() >> 4);
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void onChunk(ChunkPostProcessingEvent event) {
+        BlockVector last = glassChunk.get(event.getPlayer().getUniqueId());
+        // Convert to glass
+        if (last != null) {
+            Bukkit.broadcastMessage("Not Null!");
+        } else {
+            Bukkit.broadcastMessage("null!");
+        }
+        if (last != null && (last.getBlockX() == event.getChunkX() && last.getBlockZ() == event.getChunkZ())) {
+            SegmentLookup lookup = event.getLookup();
+
+            int glass = Material.GLASS.getId();
+
+            // To glass
+            lookup.setBlockLookup(Material.BEDROCK.getId(), glass);
+            lookup.setBlockLookup(Material.BRICK.getId(), glass);
+            lookup.setBlockLookup(Material.CLAY.getId(), glass);
+            lookup.setBlockLookup(Material.DIRT.getId(), glass);
+            lookup.setBlockLookup(Material.GRASS.getId(), glass);
+            lookup.setBlockLookup(Material.GRAVEL.getId(), glass);
+            lookup.setBlockLookup(Material.ICE.getId(), glass);
+            lookup.setBlockLookup(Material.OBSIDIAN.getId(), glass);
+            lookup.setBlockLookup(Material.NETHER_BRICK.getId(), glass);
+            lookup.setBlockLookup(Material.NETHERRACK.getId(), glass);
+            lookup.setBlockLookup(Material.SAND.getId(), glass);
+
+            lookup.setBlockLookup(Material.SOUL_SAND.getId(), glass);
+            lookup.setBlockLookup(Material.STONE.getId(), glass);
+
+            // To air
+            lookup.setBlockLookup(Material.SNOW.getId(), 0);
+            lookup.setBlockLookup(Material.WATER.getId(), 0);
+
+            lookup.setBlockLookup(Material.LAPIS_BLOCK.getId(), glass);
+            lookup.setBlockLookup(Material.IRON_BLOCK.getId(), glass);
+
+            System.out.println("GLASS at " + event.getChunkX() + " " + event.getChunkZ());
+        }
+    }*/
 
     @SuppressWarnings("deprecation")
     public void initialize() throws FileNotFoundException {

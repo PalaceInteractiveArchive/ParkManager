@@ -237,11 +237,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     finalRideName);
                             tp.sendMessage(ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD +
                                     "--------------------------------------" + ChatColor.MAGIC + "------" +
-                                    ChatColor.RESET + ChatColor.GOLD + "-\n  " + ChatColor.MAGIC + "||" + ChatColor.YELLOW +
-                                    "Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW + " is now at " +
-                                    ChatColor.GREEN + data.getRideCounts().get(finalRideName) + "\n" + ChatColor.GOLD +
-                                    "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD +
-                                    "--------------------------------------" + ChatColor.MAGIC + "------" +
+                                    ChatColor.RESET + ChatColor.GOLD + "-\n  " + ChatColor.YELLOW +
+                                    "       Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
+                                    "is now at " + ChatColor.GREEN + data.getRideCounts().get(finalRideName) + "\n" +
+                                    ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD
+                                    + "--------------------------------------" + ChatColor.MAGIC + "------" +
                                     ChatColor.RESET + ChatColor.GOLD + "-");
                             tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
                             Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
@@ -367,9 +367,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 return true;
                             }
                             PlayerInventory inv = player.getInventory();
-                            if (inv.getItem(4) != null && !inv.getItem(4).getType().equals(Material.AIR)) {
-                                MagicAssistant.shooter.addToHashMap(player.getUniqueId(), player.getInventory().getItem(4));
-                            }
                             player.setMetadata("shooter", new FixedMetadataValue(MagicAssistant.getInstance(), 0));
                             inv.setItem(4, MagicAssistant.shooter.getItem());
                             inv.setHeldItemSlot(4);
@@ -388,6 +385,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 return true;
                             }
                             MagicAssistant.shooter.done(player);
+                            return true;
                         }
                 }
                 helpMenu("shooter", sender);
@@ -664,12 +662,12 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant ma = MagicAssistant.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
                 SqlUtil.initialize();
-                MagicAssistant.bandUtil.askForParty();
                 ma.setupFirstJoinItems();
                 ma.setupFoodLocations();
                 MagicAssistant.parkSoundManager.initialize();
                 ma.setupRides();
                 MagicAssistant.stitch.initialize();
+                MagicAssistant.itemUtil.initialize();
                 MagicAssistant.hotelManager.refreshRooms();
                 try {
                     MagicAssistant.blockChanger.reload();
@@ -711,7 +709,7 @@ public class Commandmagic implements Listener, CommandExecutor {
             case "shooter":
                 sender.sendMessage(ChatColor.GREEN + "Shooter Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter add [Name] " + ChatColor.AQUA + "- Adds player to Shooter Game");
-                sender.sendMessage(ChatColor.GREEN + "/magic show remove [Name] " + ChatColor.AQUA + "- Removes player from Shooter Game");
+                sender.sendMessage(ChatColor.GREEN + "/magic shooter remove [Name] " + ChatColor.AQUA + "- Removes player from Shooter Game");
                 break;
             case "show":
                 sender.sendMessage(ChatColor.GREEN + "Show Commands:");
@@ -780,9 +778,7 @@ public class Commandmagic implements Listener, CommandExecutor {
         for (Map.Entry<String, Show> entry : new HashSet<>(shows.entrySet())) {
             Show show = entry.getValue();
             if (show.update()) {
-                Bukkit.broadcast(ChatColor.GREEN + "Show " + ChatColor.BLUE + entry.getKey() + ChatColor.GREEN +
-                        " has ended.", "arcade.bypass");
-                System.out.print("Show Ended.");
+                System.out.print("Show " + entry.getKey() + " Ended.");
                 shows.remove(entry.getKey());
             }
         }
@@ -813,7 +809,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Block blk = min.getWorld().getBlockAt(new Location(min.getWorld(), x, y, z));
                     if (blk.getTypeId() == select) {
-                        Bukkit.broadcastMessage("Block Added " + blk.getLocation());
                         list.add(blk);
                     }
                 }

@@ -35,8 +35,8 @@ public class BandUtil {
 
     private void initialize() {
         FireworkEffectMeta bm = (FireworkEffectMeta) back.getItemMeta();
-        bm.setDisplayName(ChatColor.GREEN + "Back");
-        bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(41, 106, 255)).build());
+        bm.setDisplayName(ChatColor.GREEN + "Back");//41, 106, 255
+        bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 153, 0)).build());
         back.setItemMeta(bm);
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
@@ -102,18 +102,20 @@ public class BandUtil {
         if (band.getEnchantments().containsKey(Enchantment.PROTECTION_ENVIRONMENTAL)) {
             return;
         }
-        band.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+        band.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+        player.playSound(player.getLocation(), Sound.LEVEL_UP, 10f, 1f);
         Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
                 band.removeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL);
             }
-        }, 20L);
+        }, 10L);
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM player_data WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("SELECT friends,bandcolor,rank,namecolor,flash,visibility," +
+                    "fountain,hotel,fastpass,dailyfp,fpday FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
@@ -134,6 +136,16 @@ public class BandUtil {
                     result.getInt("dailyfp"), result.getInt("fpday"));
             result.close();
             sql.close();
+            List<Integer> purch = new ArrayList<>();
+            PreparedStatement pur = connection.prepareStatement("SELECT item FROM purchases WHERE uuid=?");
+            pur.setString(1, uuid.toString());
+            ResultSet purr = pur.executeQuery();
+            while (purr.next()) {
+                purch.add(purr.getInt("item"));
+            }
+            purr.close();
+            pur.close();
+            data.setPurchases(purch);
             HashMap<String, Integer> rides = new HashMap<>();
             PreparedStatement counts = connection.prepareStatement("SELECT name,count from ridecounter WHERE uuid=? AND server=?");
             counts.setString(1, uuid.toString());
@@ -161,7 +173,7 @@ public class BandUtil {
                 try (Connection connection = SqlUtil.getConnection()) {
                     PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
                     sql.setInt(1, value ? 1 : 0);
-                    sql.setString(2, uuid + "");
+                    sql.setString(2, uuid.toString());
                     sql.execute();
                     sql.close();
                 } catch (SQLException e) {
@@ -231,7 +243,7 @@ public class BandUtil {
         if (data.getSpecial()) {
             mb = new ItemStack(getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
-            mbm.setDisplayName(data.getBandName() + "MagicBand " + ChatColor.GRAY + "(Right Click)");
+            mbm.setDisplayName(data.getBandName() + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));
             mb.setItemMeta(mbm);
@@ -239,7 +251,7 @@ public class BandUtil {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
             mbm.setEffect(FireworkEffect.builder().withColor(getBandColor(data.getBandColor())).build());
-            mbm.setDisplayName(data.getBandName() + "MagicBand " + ChatColor.GRAY + "(Right Click)");
+            mbm.setDisplayName(data.getBandName() + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the MagicBand menu!"));
             mb.setItemMeta(mbm);
@@ -419,7 +431,7 @@ public class BandUtil {
     }
 
     public String currentTime() {
-        Date current = new Date(System.currentTimeMillis() + 10800);
+        Date current = new Date(System.currentTimeMillis());
         String h = new SimpleDateFormat("HH").format(current);
         String minute = new SimpleDateFormat("mm").format(current);
         String second = new SimpleDateFormat("ss").format(current);

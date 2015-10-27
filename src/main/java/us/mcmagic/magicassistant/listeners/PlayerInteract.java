@@ -202,7 +202,12 @@ public class PlayerInteract implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        event.setCancelled(user.getRank().getRankId() < Rank.CASTMEMBER.getRankId());
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+            if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You must be in Build Mode to modify Item Frames!");
+                event.setCancelled(true);
+            }
+        }
     }
 
     private boolean isInt(String s) {

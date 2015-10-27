@@ -22,7 +22,6 @@ public class SpecialEditionClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            event.setCancelled(true);
             MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
@@ -42,8 +41,8 @@ public class SpecialEditionClick {
         if (type.equals(Material.REDSTONE_BLOCK)) {
             return;
         }
-        if (type.equals(MagicAssistant.bandUtil.getBandMaterial(MagicAssistant.getPlayerData(
-                player.getUniqueId()).getBandColor()))) {
+        if (type.equals(MagicAssistant.bandUtil.getBandMaterial(MagicAssistant.getPlayerData(player.getUniqueId())
+                .getBandColor()))) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;

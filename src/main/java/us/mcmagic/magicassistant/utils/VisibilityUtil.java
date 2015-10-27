@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class VisibleUtil {
+public class VisibilityUtil {
     private List<UUID> hideall = new ArrayList<>();
     private List<UUID> spawnHide = new ArrayList<>();
 
-    public VisibleUtil() {
+    public VisibilityUtil() {
         if (!MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("hub")) {
             return;
         }
@@ -59,7 +59,10 @@ public class VisibleUtil {
             if (hideall.contains(tp.getUniqueId())) {
                 continue;
             }
-            tp.showPlayer(player);
+            PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
+            if (data.getVisibility()) {
+                tp.showPlayer(player);
+            }
         }
     }
 
@@ -74,11 +77,8 @@ public class VisibleUtil {
         hideall.add(player.getUniqueId());
         for (Player tp : Bukkit.getOnlinePlayers()) {
             User user = MCMagicCore.getUser(tp.getUniqueId());
-            if (friends.contains(tp.getUniqueId()) && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                player.showPlayer(tp);
-                continue;
-            }
-            if (tp.getUniqueId().equals(player.getUniqueId())) {
+            if (friends.contains(tp.getUniqueId()) && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() ||
+                    tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
             if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {

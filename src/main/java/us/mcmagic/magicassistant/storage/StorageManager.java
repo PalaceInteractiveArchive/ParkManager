@@ -3,12 +3,14 @@ package us.mcmagic.magicassistant.storage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.listeners.BlockEdit;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 
 import java.io.ByteArrayInputStream;
@@ -82,15 +84,29 @@ public class StorageManager {
             pack.setString(1, player.getUniqueId().toString());
             ResultSet result = pack.executeQuery();
             if (!result.next()) {
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (uuid) VALUES (?)");
+                result.close();
+                pack.close();
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (id, uuid, pack, packsize, " +
+                        "locker, lockersize, hotbar) VALUES (0,?,?,'small',?,'small',?)");
                 insert.setString(1, player.getUniqueId().toString());
+                insert.setBytes(2, new byte[]{});
+                insert.setBytes(3, new byte[]{});
+                insert.setBytes(4, new byte[]{});
                 insert.execute();
                 insert.close();
-                return new Backpack(player.getUniqueId(), StorageSize.SMALL, new ItemStack[]{});
+                return new Backpack(player, StorageSize.SMALL, new ItemStack[]{});
             }
+            StorageSize size = StorageSize.fromString(result.getString("packsize"));
             byte[] p = result.getBytes("pack");
-            Backpack backpack = new Backpack(player.getUniqueId(), StorageSize.fromString(result.getString("packsize")),
-                    deserial(p));
+            ItemStack[] deserial = deserial(p);
+            ItemStack[] cont = new ItemStack[size.getRows() * 9];
+            try {
+                for (int i = 0; i < p.length; i++) {
+                    cont[i] = deserial[i];
+                }
+            } catch (Exception ignored) {
+            }
+            Backpack backpack = new Backpack(player, size, cont);
             result.close();
             pack.close();
             return backpack;
@@ -106,10 +122,28 @@ public class StorageManager {
             pack.setString(1, player.getUniqueId().toString());
             ResultSet result = pack.executeQuery();
             if (!result.next()) {
+                result.close();
+                pack.close();
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (id, uuid, pack, packsize, " +
+                        "locker, lockersize) VALUES (0,?,?,'small',?,'small')");
+                insert.setString(1, player.getUniqueId().toString());
+                insert.setBytes(2, new byte[]{});
+                insert.setBytes(3, new byte[]{});
+                insert.execute();
+                insert.close();
+                return new Locker(player, StorageSize.SMALL, new ItemStack[]{});
             }
+            StorageSize size = StorageSize.fromString(result.getString("lockersize"));
             byte[] p = result.getBytes("locker");
-            Locker locker = new Locker(player.getUniqueId(), StorageSize.fromString(result.getString("lockersize")),
-                    deserial(p));
+            ItemStack[] deserial = deserial(p);
+            ItemStack[] cont = new ItemStack[size.getRows() * 9];
+            try {
+                for (int i = 0; i < p.length; i++) {
+                    cont[i] = deserial[i];
+                }
+            } catch (Exception ignored) {
+            }
+            Locker locker = new Locker(player, size, cont);
             result.close();
             pack.close();
             return locker;
@@ -149,7 +183,6 @@ public class StorageManager {
                     os.close();
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -166,7 +199,6 @@ public class StorageManager {
                     bais.close();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -187,7 +219,6 @@ public class StorageManager {
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -217,7 +248,6 @@ public class StorageManager {
 
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
             return null;
         } finally {
             try {
@@ -230,21 +260,43 @@ public class StorageManager {
 
     public void logout(final Player player) {
         loadingPack.remove(player.getUniqueId());
+        loadingLocker.remove(player.getUniqueId());
+        final PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                update(player);
+                final long time = System.currentTimeMillis();
+                update(player, data);
+                System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
             }
         });
     }
 
     private void update(Player player) {
-        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        update(player, MagicAssistant.getPlayerData(player.getUniqueId()));
+    }
+
+    private void update(Player player, PlayerData data) {
         Backpack pack = data.getBackpack();
+        Locker locker = data.getLocker();
+        Inventory bp = Bukkit.createInventory(player, pack.getInventory().getSize());
+        boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
+        if (build) {
+            bp.setContents(player.getInventory().getContents());
+        } else {
+            bp.setContents(pack.getInventory().getContents());
+        }
         try (Connection connection = SqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE storage SET pack=? WHERE uuid=?");
-            sql.setBytes(1, serial(pack.getContents()));
-            sql.setString(2, player.getUniqueId().toString());
+            ItemStack[] hotbar = new ItemStack[4];
+            ItemStack[] cont = player.getInventory().getContents();
+            for (int i = 0; i < 4; i++) {
+                hotbar[i] = cont[i];
+            }
+            PreparedStatement sql = connection.prepareStatement("UPDATE storage SET pack=?,locker=?,hotbar=? WHERE uuid=?");
+            sql.setBytes(1, serial(bp.getContents()));
+            sql.setBytes(2, serial(locker.getInventory().getContents()));
+            sql.setBytes(3, serial(hotbar));
+            sql.setString(4, player.getUniqueId().toString());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -260,5 +312,40 @@ public class StorageManager {
     public void setLoadingLocker(Player player) {
         loadingLocker.remove(player.getUniqueId());
         loadingLocker.add(player.getUniqueId());
+    }
+
+    public ItemStack[] getHotbar(Player player) {
+        try (Connection connection = SqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("SELECT hotbar FROM storage WHERE uuid=?");
+            sql.setString(1, player.getUniqueId().toString());
+            ResultSet result = sql.executeQuery();
+            if (!result.next()) {
+                return null;
+            }
+            byte[] hot = result.getBytes("hotbar");
+            result.close();
+            sql.close();
+            return deserial(hot);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setValue(final UUID uuid, final String key, final String value) {
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = SqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE storage SET " + key + "=? WHERE uuid=?");
+                    sql.setString(1, value);
+                    sql.setString(2, uuid.toString());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

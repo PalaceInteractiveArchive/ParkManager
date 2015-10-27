@@ -18,6 +18,7 @@ public class Commandspawn implements CommandExecutor {
                 if (tp == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                 }
+                MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(MagicAssistant.spawn);
                 return true;
             }
@@ -35,6 +36,7 @@ public class Commandspawn implements CommandExecutor {
                 if (MagicAssistant.shooter != null) {
                     MagicAssistant.shooter.warp(tp);
                 }
+                MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(MagicAssistant.spawn);
                 return true;
             }
@@ -43,6 +45,7 @@ public class Commandspawn implements CommandExecutor {
         if (MagicAssistant.shooter != null) {
             MagicAssistant.shooter.warp(player);
         }
+        MagicAssistant.teleportUtil.log(player, player.getLocation());
         player.teleport(MagicAssistant.spawn);
         return true;
     }

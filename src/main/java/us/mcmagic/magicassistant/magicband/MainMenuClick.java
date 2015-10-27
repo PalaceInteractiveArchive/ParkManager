@@ -55,7 +55,6 @@ public class MainMenuClick {
                 return;
             case WOOL:
                 byte data = item.getData().getData();
-                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 if (data == 5) {
                     player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
                     player.closeInventory();
@@ -69,6 +68,7 @@ public class MainMenuClick {
                     pdata.setVisibility(true);
                     MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 }
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 return;
             case WATCH:
                 ItemStack time = new ItemStack(Material.WATCH);

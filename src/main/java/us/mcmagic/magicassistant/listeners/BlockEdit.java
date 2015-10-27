@@ -101,4 +101,8 @@ public class BlockEdit implements Listener {
             return true;
         }
     }
+
+    public static void logout(UUID uuid) {
+        buildMode.remove(uuid);
+    }
 }

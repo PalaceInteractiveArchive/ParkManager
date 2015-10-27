@@ -51,6 +51,7 @@ public class Commandwarp implements CommandExecutor {
                         Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                             @Override
                             public void run() {
+                                MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                                 tp.teleport(loc);
                                 tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                                         + ChatColor.WHITE + "[" + ChatColor.GREEN + w
@@ -59,6 +60,7 @@ public class Commandwarp implements CommandExecutor {
                         }, 10L);
                         return true;
                     }
+                    MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                     tp.teleport(warp.getLocation());
                     tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                             + ChatColor.WHITE + "[" + ChatColor.GREEN + w
@@ -129,6 +131,7 @@ public class Commandwarp implements CommandExecutor {
                     Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                         @Override
                         public void run() {
+                            MagicAssistant.teleportUtil.log(player, player.getLocation());
                             player.teleport(loc);
                             player.sendMessage(ChatColor.BLUE + "You have arrived at "
                                     + ChatColor.WHITE + "[" + ChatColor.GREEN + w
@@ -137,6 +140,7 @@ public class Commandwarp implements CommandExecutor {
                     }, 10L);
                     return true;
                 }
+                MagicAssistant.teleportUtil.log(player, player.getLocation());
                 player.teleport(warp.getLocation());
                 if (warp.getName().equalsIgnoreCase("sge")) {
                     if (MagicAssistant.stitch.isWatching(player.getUniqueId())) {
@@ -196,6 +200,7 @@ public class Commandwarp implements CommandExecutor {
                     Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                         @Override
                         public void run() {
+                            MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                             tp.teleport(loc);
                             tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                                     + ChatColor.WHITE + "[" + ChatColor.GREEN + w
@@ -204,6 +209,7 @@ public class Commandwarp implements CommandExecutor {
                     }, 10L);
                     return true;
                 }
+                MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(warp.getLocation());
                 tp.sendMessage(ChatColor.BLUE + "You have arrived at "
                         + ChatColor.WHITE + "[" + ChatColor.GREEN + w

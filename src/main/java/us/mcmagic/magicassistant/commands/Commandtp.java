@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 public class Commandtp implements CommandExecutor {
@@ -20,6 +21,7 @@ public class Commandtp implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return true;
                 }
+                MagicAssistant.teleportUtil.log(tp1, tp1.getLocation());
                 tp1.teleport(tp2);
                 sender.sendMessage(ChatColor.GRAY + tp1.getName() + " has been teleported to " + tp2.getName());
                 return true;
@@ -38,6 +40,7 @@ public class Commandtp implements CommandExecutor {
                             num(args[3]);
                     Location loc = new Location(tp.getWorld(), x, y, z, tp
                             .getLocation().getYaw(), tp.getLocation().getPitch());
+                    MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                     tp.teleport(loc);
                     sender.sendMessage(ChatColor.GRAY + tp.getName() + " has been teleported to " + x + ", " + y + ", "
                             + z);
@@ -57,6 +60,7 @@ public class Commandtp implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "Player not found!");
                 return true;
             }
+            MagicAssistant.teleportUtil.log(player, player.getLocation());
             player.teleport(tp);
             player.sendMessage(ChatColor.GRAY + "You teleported to " + tp.getName());
             return true;
@@ -68,6 +72,7 @@ public class Commandtp implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Player not found!");
                 return true;
             }
+            MagicAssistant.teleportUtil.log(tp1, tp1.getLocation());
             tp1.teleport(tp2);
             player.sendMessage(ChatColor.GRAY + tp1.getName()
                     + " has been teleported to " + tp2.getName());
@@ -83,6 +88,7 @@ public class Commandtp implements CommandExecutor {
                         + num(args[2].substring(1)) : num(args[2]);
                 Location loc = new Location(player.getWorld(), x, y, z, player
                         .getLocation().getYaw(), player.getLocation().getPitch());
+                MagicAssistant.teleportUtil.log(player, player.getLocation());
                 player.teleport(loc);
                 player.sendMessage(ChatColor.GRAY + "You teleported to " + x + ", " + y + ", " + z);
                 return true;
@@ -102,6 +108,7 @@ public class Commandtp implements CommandExecutor {
                         + num(args[2].substring(1)) : num(args[3]);
                 Location loc = new Location(tp.getWorld(), x, y, z, tp
                         .getLocation().getYaw(), tp.getLocation().getPitch());
+                MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(loc);
                 player.sendMessage(ChatColor.GRAY + tp.getName() + " has been teleported to " + x + ", " + y + ", " + z);
                 return true;
@@ -114,22 +121,14 @@ public class Commandtp implements CommandExecutor {
         return true;
     }
 
-    private boolean isDouble(String s) {
-        try {
-            Double.parseDouble(s);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     private double num(String s) {
         if (s == null) {
             return 0;
         }
-        if (isDouble(s)) {
+        try {
             return Double.parseDouble(s);
+        } catch (NumberFormatException ignored) {
+            return 0;
         }
-        return Integer.parseInt(s);
     }
 }

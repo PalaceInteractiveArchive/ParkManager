@@ -57,6 +57,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static boolean resortsServer;
     public static FileConfiguration config = FileUtil.configurationYaml();
     public static FountainManager fountainManager;
+    public static TeleportUtil teleportUtil;
     private WorldGuardPlugin wg;
     public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
@@ -70,12 +71,13 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static RideManager rideManager;
     public static InventoryUtil inventoryUtil;
     public static ArmorStandManager armorStandManager;
+    public static ItemUtil itemUtil;
     public static ShopManager shopManager;
     public static HotelManager hotelManager;
     public static QueueManager queueManager;
     public static AutographManager autographManager;
     public static StorageManager storageManager;
-    public static VisibleUtil vanishUtil;
+    public static VisibilityUtil vanishUtil;
     public static Shooter shooter = null;
 
     public void onEnable() {
@@ -96,7 +98,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         bandUtil = new BandUtil();
         storageManager = new StorageManager();
         inventoryUtil = new InventoryUtil();
-        vanishUtil = new VisibleUtil();
+        vanishUtil = new VisibilityUtil();
+        teleportUtil = new TeleportUtil();
+        itemUtil = new ItemUtil();
         blockChanger = new BlockChanger();
         parkSoundManager = new ParkSoundManager();
         armorStandManager = new ArmorStandManager();
@@ -153,7 +157,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         for (World world : Bukkit.getWorlds()) {
             world.setTime(0);
         }
-        Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), 0L, 20L);
+        Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), (System.currentTimeMillis() -
+                ((System.currentTimeMillis() / 1000) * 1000)) / 50, 20L);
     }
 
     private void log(String s) {
@@ -375,7 +380,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         Commandmagic magic = new Commandmagic();
         getCommand("autograph").setExecutor(new Commandautograph());
         getCommand("autograph").setAliases(Arrays.asList("a", "auto"));
+        getCommand("back").setExecutor(new Commandback());
         getCommand("bc").setExecutor(new Commandbc());
+        getCommand("build").setExecutor(new Commandbuild());
         getCommand("day").setExecutor(new Commandday());
         getCommand("delay").setExecutor(new Commanddelay());
         getCommand("delwarp").setExecutor(new Commanddelwarp());
@@ -427,6 +434,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new ChunkUnload(), this);
         pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new InventoryClick(), this);
+        pm.registerEvents(new PlayerGameModeChange(), this);
         pm.registerEvents(new FoodLevel(), this);
         pm.registerEvents(new PlayerDropItem(), this);
         pm.registerEvents(stitch, this);
@@ -434,6 +442,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         pm.registerEvents(new EntityDamage(), this);
         pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
+        pm.registerEvents(new InventoryOpen(), this);
         fountainManager = new FountainManager();
         pm.registerEvents(fountainManager, this);
         pm.registerEvents(new PlayerCloseInventory(), this);

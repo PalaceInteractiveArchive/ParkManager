@@ -30,6 +30,7 @@ public class PlayerData {
     private Backpack backpack;
     private Locker locker;
     private HashMap<String, Integer> rideCounts = new HashMap<>();
+    private List<Integer> purchases;
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
                       boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp,
@@ -47,6 +48,7 @@ public class PlayerData {
         this.fastpass = fastpass;
         this.dailyfp = dailyfp;
         this.fpday = fpday;
+        this.purchases = purchases;
     }
 
     public UUID getUniqueId() {
@@ -176,5 +178,23 @@ public class PlayerData {
 
     public Locker getLocker() {
         return locker;
+    }
+
+    public void setLocker(Locker locker) {
+        this.locker = locker;
+    }
+
+    public List<Integer> getPurchases() {
+        return new ArrayList<>(purchases);
+    }
+
+    public void setPurchases(List<Integer> purchases) {
+        this.purchases = purchases;
+    }
+
+    public void addPurchase(int i) {
+        if (!purchases.contains(i)) {
+            purchases.add(i);
+        }
     }
 }

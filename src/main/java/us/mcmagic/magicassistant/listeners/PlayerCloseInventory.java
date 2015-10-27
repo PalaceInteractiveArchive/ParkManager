@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.player.User;
@@ -17,7 +18,8 @@ public class PlayerCloseInventory implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        String title = event.getInventory().getTitle().toLowerCase();
+        Inventory inv = event.getInventory();
+        String title = inv.getTitle().toLowerCase();
         if (title.endsWith("'s magicband")) {
             MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
             return;

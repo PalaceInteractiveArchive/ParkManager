@@ -27,7 +27,7 @@ public class Show {
     private HashMap<String, FireworkEffect> effectMap;
     private HashMap<String, String> invalidLines;
     private HashMap<String, ShowNPC> npcMap;
-    private HashMap<Integer, ShowStand> standmap;
+    private HashMap<Integer, ShowStand> standmap = new HashMap<>();
     private int npcTick = 0;
     private long lastPlayerListUpdate = System.currentTimeMillis();
     private List<UUID> nearbyPlayers = new ArrayList<>();
@@ -83,8 +83,8 @@ public class Show {
                         invalidLines.put(strLine, "You cannot load a file that's already being loaded");
                         continue;
                     }
-                    int time = Integer.parseInt(tokens[3]);
-                    loadActions(f, time);
+                    double time = Double.parseDouble(tokens[3]);
+                    loadActions(f, (long) (time * 1000));
                     continue;
                 }
                 // Set Text Radius
@@ -110,6 +110,10 @@ public class Show {
                 if (tokens[0].equals("ArmorStand")) {
                     // ArmorStand id small
                     Integer id = Integer.parseInt(tokens[1]);
+                    if (id == null) {
+                        invalidLines.put(strLine, "Invalid ArmorStand ID - Must be an Integer!");
+                        continue;
+                    }
                     if (standmap.get(id) != null) {
                         invalidLines.put(strLine, "ArmorStand with the ID " + id + " already exists!");
                         continue;
@@ -172,18 +176,9 @@ public class Show {
                         }
                         case "Move": {
                             // x,y,z speed
-                            if (!stand.hasSpawned()) {
-                                invalidLines.put(strLine, "ArmorStand with ID " + id + " has not spawned");
-                                continue;
-                            }
-                            Location l = stand.getStand().getLocation();
-                            Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
                             Integer speed = Integer.parseInt(tokens[5]);
-                            double x = ((l.getX() - loc.getX()) / speed) / 20;
-                            double y = ((l.getY() - loc.getY()) / speed) / 20;
-                            double z = ((l.getZ() - loc.getZ()) / speed) / 20;
-                            Vector motion = new Vector(x, y, z);
-                            ArmorStandMove move = new ArmorStandMove(this, time, stand, motion, speed);
+                            Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
+                            ArmorStandMove move = new ArmorStandMove(this, time, stand, loc, speed);
                             actions.add(move);
                             break;
                         }
@@ -511,32 +506,21 @@ public class Show {
                 }
             }
             in.close();
-        } catch (
-                Exception e
-                )
-
-        {
+        } catch (Exception e) {
             System.out.println("Error on Line [" + strLine + "]");
             Bukkit.broadcast("Error on Line [" + strLine + "]", "arcade.bypass");
             e.printStackTrace();
         }
 
-        if (loc == null)
-
-        {
+        if (loc == null) {
             invalidLines.put("Missing Line", "Show loc x,y,z");
         }
 
-        for (
-                String cur
-                : invalidLines.keySet())
-
-        {
+        for (String cur : invalidLines.keySet()) {
             System.out.print(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "));
             Bukkit.broadcast(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "),
                     "arcade.bypass");
         }
-
     }
 
     private Color colorFromString(String s) {

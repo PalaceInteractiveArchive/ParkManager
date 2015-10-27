@@ -29,7 +29,21 @@ public class ShopMainMenuClick {
         if (meta == null) {
             return;
         }
-        String name = meta.getDisplayName();
+        String name = ChatColor.stripColor(meta.getDisplayName());
+        if (event.getSlot() < 9) {
+            switch (name) {
+                case "FastPass Shop":
+                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.FASTPASS);
+                    break;
+                case "Storage Shop":
+                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.STORAGE);
+                    break;
+                case "Custom MagicBands":
+                    MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+                    break;
+            }
+            return;
+        }
         Shop shop = MagicAssistant.shopManager.getShop(name);
         if (shop == null) {
             player.sendMessage(ChatColor.RED + "Error finding that Shop!");

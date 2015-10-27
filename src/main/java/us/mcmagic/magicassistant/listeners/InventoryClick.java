@@ -6,8 +6,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStationClick;
 import us.mcmagic.magicassistant.magicband.*;
@@ -24,6 +26,16 @@ public class InventoryClick implements Listener {
         ItemStack clicked = event.getCurrentItem();
         if (clicked == null) {
             return;
+        }
+        int slot = event.getSlot();
+        if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+            if (!BlockEdit.isInBuildMode(((PlayerInventory) event.getClickedInventory()).getHolder().getUniqueId())) {
+                if (slot > 3) {
+                    event.setResult(Event.Result.DENY);
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
         String name = ChatColor.stripColor(inv.getName());
         if (name.equals(player.getName() + "'s MagicBand")) {
@@ -62,6 +74,11 @@ public class InventoryClick implements Listener {
             return;
         }
         switch (name) {
+            case "Your Backpack":
+                if (slot == 26) {
+                    event.setCancelled(true);
+                }
+                return;
             case "Ride Counter":
                 event.setCancelled(true);
                 RideCounterClick.handle(event);
@@ -105,6 +122,7 @@ public class InventoryClick implements Listener {
             case "Special Edition MagicBands":
                 event.setCancelled(true);
                 SpecialEditionClick.handle(event);
+                return;
             case "Hotels and Resorts":
                 event.setCancelled(true);
                 HotelAndResortMenuClick.handle(event);
@@ -113,6 +131,9 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 HotelMenuClick.handle(event);
                 return;
+            case "Storage Upgrade":
+                event.setCancelled(true);
+                StorageUpgradeClick.handle(event);
             case "My Hotel Rooms":
                 event.setCancelled(true);
                 MyHotelRoomsMenuClick.handle(event);
@@ -166,7 +187,7 @@ public class InventoryClick implements Listener {
             }
             User user = MCMagicCore.getUser(player.getUniqueId());
             if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-                if (event.getSlot() == 7 || event.getSlot() == 8) {
+                if (slot == 7 || slot == 8) {
                     event.setCancelled(true);
                     event.setResult(Event.Result.DENY);
                     return;

@@ -33,8 +33,8 @@ public class Commandvanish implements CommandExecutor {
                 player.sendMessage(ChatColor.DARK_AQUA + "You have become visible.");
                 for (Player tp : Bukkit.getOnlinePlayers()) {
                     User user = MCMagicCore.getUser(tp.getUniqueId());
-                    if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() &&
-                            tp.getUniqueId().equals(player.getUniqueId())) {
+                    if (user.getRank().getRankId() > Rank.SPECIALGUEST.getRankId() &&
+                            !tp.getUniqueId().equals(player.getUniqueId())) {
                         tp.sendMessage(ChatColor.YELLOW + player.getName() + " has become visible.");
                     }
                 }
@@ -49,8 +49,8 @@ public class Commandvanish implements CommandExecutor {
                 player.sendMessage(ChatColor.DARK_AQUA + "You have vanished. Poof.");
                 for (Player tp : Bukkit.getOnlinePlayers()) {
                     User user = MCMagicCore.getUser(tp.getUniqueId());
-                    if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() &&
-                            tp.getUniqueId().equals(player.getUniqueId())) {
+                    if (user.getRank().getRankId() > Rank.SPECIALGUEST.getRankId() &&
+                            !tp.getUniqueId().equals(player.getUniqueId())) {
                         tp.sendMessage(ChatColor.YELLOW + player.getName() + " has vanished. Poof.");
                     }
                 }

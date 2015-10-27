@@ -21,6 +21,7 @@ public class Commandhub implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return true;
                 }
+                MagicAssistant.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(MagicAssistant.hub);
                 tp.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
             }
@@ -31,6 +32,7 @@ public class Commandhub implements CommandExecutor {
         if (MagicAssistant.shooter != null) {
             MagicAssistant.shooter.warp(player);
         }
+        MagicAssistant.teleportUtil.log(player, player.getLocation());
         player.teleport(MagicAssistant.hub);
         sender.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
         return true;

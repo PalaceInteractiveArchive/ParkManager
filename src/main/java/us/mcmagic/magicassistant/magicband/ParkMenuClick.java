@@ -64,6 +64,11 @@ public class ParkMenuClick {
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Disney Cruise Line...");
                 BungeeUtil.sendToServer(player, "DCL");
                 return;
+            case "Seasonal":
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Seasonal...");
+                BungeeUtil.sendToServer(player, "Seasonal");
+                return;
             default:
                 player.closeInventory();
                 player.sendMessage(ChatColor.RED + "There was an error, please report this to a Staff Member!");

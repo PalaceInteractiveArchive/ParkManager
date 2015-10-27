@@ -15,6 +15,7 @@ import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.magicassistant.storage.Backpack;
 import us.mcmagic.magicassistant.storage.Locker;
+import us.mcmagic.magicassistant.storage.StorageSize;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -29,14 +30,16 @@ public class InventoryUtil {
     private ItemStack sne = new ItemCreator(Material.FIREWORK, ChatColor.GREEN + "Shows and Events",
             Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous " + ChatColor.AQUA +
                     "MCMagic " + ChatColor.GREEN + "Shows!"));
-    private ItemStack hnr = new ItemCreator(Material.BED, ChatColor.GREEN + "Hotels and Resorts " + ChatColor.BLUE + "*New*",
+    private ItemStack hnr = new ItemCreator(Material.BED, ChatColor.GREEN + "Hotels and Resorts ",
             Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
-    private ItemStack toggleon = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.AQUA + "Player Visibility " +
-            ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden", Collections.singletonList(""));
-    private ItemStack toggleoff = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.AQUA + "Player Visibility " +
-            ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible", Collections.singletonList(""));
-    private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop " + ChatColor.BLUE + "*New*",
-            Collections.singletonList(ChatColor.GREEN + "Purchase Items!"));
+    private ItemStack toggleon = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.AQUA + "Guest Visibility " +
+            ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden", Collections.singletonList(ChatColor.GREEN +
+            "Click to show Guests!"));
+    private ItemStack toggleoff = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.AQUA + "Guest Visibility " +
+            ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible", Collections.singletonList(ChatColor.GREEN +
+            "Click to hide Guests!"));
+    private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop ",
+            Arrays.asList(ChatColor.GREEN + "Purchase Items!"));
     private ItemStack food = new ItemCreator(Material.POTATO_ITEM, ChatColor.GREEN + "Find Food", Arrays.asList(
             ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
     private ItemStack hub = new ItemCreator(Material.ENDER_PEARL, ChatColor.GREEN + "Return to Hub", Arrays.asList(
@@ -50,9 +53,8 @@ public class InventoryUtil {
     private ItemStack creative = new ItemCreator(Material.GRASS, ChatColor.GREEN + "Creative", Arrays.asList(
             ChatColor.YELLOW + "Create your", ChatColor.GREEN + "own " + ChatColor.RED + "M" + ChatColor.GOLD + "a"
                     + ChatColor.YELLOW + "g" + ChatColor.DARK_GREEN + "i" + ChatColor.BLUE + "c" + ChatColor.LIGHT_PURPLE + "!"));
-    private ItemStack fastpass = new ItemCreator(Material.CLAY_BRICK, 1, ChatColor.GREEN + "Purchase FastPass " +
-            ChatColor.BLUE + "*New*", Arrays.asList(ChatColor.YELLOW + "Use a FastPass to skip", ChatColor.YELLOW +
-            "the line on most rides!"));
+    private ItemStack fastpass = new ItemCreator(Material.CLAY_BRICK, 1, ChatColor.GREEN + "Purchase FastPass",
+            Arrays.asList(ChatColor.YELLOW + "Use a FastPass to skip", ChatColor.YELLOW + "the line on most rides!"));
     //Park Menu Items
     private ItemStack mk = new ItemCreator(Material.DIAMOND_HOE, ChatColor.AQUA + "Magic Kingdom",
             Collections.singletonList(ChatColor.GREEN + "/join MK"));
@@ -66,14 +68,15 @@ public class InventoryUtil {
             Collections.singletonList(ChatColor.GREEN + "/join Typhoon"));
     private ItemStack dcl = new ItemCreator(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line",
             Collections.singletonList(ChatColor.GREEN + "/join DCL"));
+    private ItemStack seasonal = new ItemCreator(Material.STAINED_GLASS_PANE, 1, (byte) 12, ChatColor.GREEN +
+            "Seasonal", Arrays.asList(ChatColor.GREEN + "/join Seasonal"));
     //My Profile
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
     private ItemStack web = new ItemCreator(Material.REDSTONE, ChatColor.GREEN + "Website");
     private ItemStack locker = new ItemCreator(Material.ENDER_CHEST, ChatColor.GREEN + "Locker");
     private ItemStack rc = new ItemCreator(Material.EMERALD, ChatColor.GREEN + "Ride Counter");
     private ItemStack mumble = new ItemCreator(Material.COMPASS, ChatColor.GREEN + "Mumble");
-    private ItemStack packs = new ItemCreator(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs " +
-            ChatColor.BLUE + "*New*");
+    private ItemStack packs = new ItemCreator(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs");
     private ItemStack prefs = new ItemCreator(Material.DIODE, ChatColor.GREEN + "Player Settings");
     //Pages
     private ItemStack nextPage = new ItemCreator(Material.ARROW, ChatColor.GREEN + "Next Page");
@@ -95,16 +98,11 @@ public class InventoryUtil {
             new ArrayList<String>());
     private ItemStack pinkBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.LIGHT_PURPLE + "Pink",
             new ArrayList<String>());
-    private ItemStack s1Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL1),
-            ChatColor.BLUE + "Holiday Band", new ArrayList<String>());
-    private ItemStack s2Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL2),
-            ChatColor.RED + "Big Hero 6", new ArrayList<String>());
-    private ItemStack s3Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL3),
-            ChatColor.GRAY + "Haunted Mansion", new ArrayList<String>());
-    private ItemStack s4Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL4),
-            ChatColor.DARK_AQUA + "Sorcerer Mickey", new ArrayList<String>());
-    private ItemStack s5Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL5),
-            ChatColor.LIGHT_PURPLE + "Princess", new ArrayList<String>());
+    private ItemStack s1Band;
+    private ItemStack s2Band;
+    private ItemStack s3Band;
+    private ItemStack s4Band;
+    private ItemStack s5Band;
     //Customize Color
     private ItemStack red = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Red",
             new ArrayList<String>());
@@ -135,12 +133,9 @@ public class InventoryUtil {
     private ItemStack wait = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Wait Times");
     private ItemStack attraction = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Attractions");
     //Hotels and Resorts
-    private ItemStack joinHotelsAndResorts = new ItemCreator(Material.GLOWSTONE_DUST, 1, ChatColor.GREEN +
-            "Visit Hotels and Resorts", Arrays.asList(ChatColor.GREEN + "Teleport yourself to the hotels",
-            ChatColor.GREEN + "and resorts world!"));
-    private ItemStack viewMyRooms = new ItemCreator(Material.BOOK, 1, ChatColor.GREEN + "View your Hotel Rooms",
-            Arrays.asList(ChatColor.GREEN + "View the rooms that you've", ChatColor.GREEN + "currently booked!"));
-    private ItemStack viewHotels = new ItemCreator(Material.BED, 1, ChatColor.GREEN + "Rent a New Hotel Room",
+    private ItemStack viewMyRooms = new ItemCreator(Material.BED, 1, ChatColor.GREEN + "Visit Your Hotel Room",
+            Arrays.asList(ChatColor.GREEN + "View the room that you booked!"));
+    private ItemStack viewHotels = new ItemCreator(Material.EMERALD, 1, ChatColor.GREEN + "Rent a Hotel Room",
             Collections.singletonList(ChatColor.GREEN + "Book a hotel room!"));
     //Show Timetable
     private ItemStack dark49 = new ItemCreator(Material.WOOL, 1, (byte) 11, "4pm & 9pm EST", new ArrayList<String>());
@@ -159,7 +154,7 @@ public class InventoryUtil {
     private ItemStack su = new ItemStack(Material.BANNER);
     //Storage
     private ItemStack loadingPack = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
-            "Loading Pack...", new ArrayList<String>());
+            "Loading Backpack...", new ArrayList<String>());
     private ItemStack loadingLocker = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
             "Loading Locker...", new ArrayList<String>());
 
@@ -248,7 +243,17 @@ public class InventoryUtil {
         this.f.setItemMeta(bf);
         this.s.setItemMeta(bs);
         this.su.setItemMeta(bsu);
-        //Show Schedule System
+        //MagicBands
+        s1Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL1),
+                ChatColor.BLUE + "Holiday Band", new ArrayList<String>());
+        s2Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL2),
+                ChatColor.RED + "Big Hero 6", new ArrayList<String>());
+        s3Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL3),
+                ChatColor.GRAY + "Haunted Mansion", new ArrayList<String>());
+        s4Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL4),
+                ChatColor.DARK_AQUA + "Sorcerer Mickey", new ArrayList<String>());
+        s5Band = new ItemCreator(MagicAssistant.bandUtil.getBandMaterial(BandColor.SPECIAL5),
+                ChatColor.LIGHT_PURPLE + "Princess", new ArrayList<String>());
     }
 
     public void openInventory(final Player player, InventoryType inv) {
@@ -256,14 +261,28 @@ public class InventoryUtil {
             PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             switch (inv) {
-                case MAINMENU:
-                    final Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
+                case MAINMENU: {
+                    Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
                             + player.getName() + "'s MagicBand");
                     ItemStack playerInfo = HeadUtil.getPlayerHead(MCMagicCore.getUser(player.getUniqueId())
                             .getTextureHash(), ChatColor.GREEN + "My Profile");
                     ItemMeta im = playerInfo.getItemMeta();
                     im.setLore(Collections.singletonList(ChatColor.GRAY + "Loading..."));
                     playerInfo.setItemMeta(im);
+                    main.setItem(10, hnr);
+                    main.setItem(11, sne);
+                    main.setItem(12, rna);
+                    main.setItem(13, parks);
+                    main.setItem(14, shop);
+                    main.setItem(15, playerInfo);
+                    if (MagicAssistant.vanishUtil.isInHideAll(player.getUniqueId())) {
+                        main.setItem(16, toggleon);
+                    } else {
+                        main.setItem(16, toggleoff);
+                    }
+                    player.openInventory(main);
+                    MagicAssistant.bandUtil.loadPlayerData(player);
+                    /*
                     ItemStack time = new ItemCreator(Material.WATCH);
                     ItemMeta tm = time.getItemMeta();
                     tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
@@ -288,21 +307,24 @@ public class InventoryUtil {
                     main.setItem(8, arcade);
                     main.setItem(17, creative);
                     main.setItem(26, fastpass);
-                    player.openInventory(main);
                     MagicAssistant.bandUtil.loadPlayerData(player);
+                    */
                     return;
-                case PARK:
+                }
+                case PARK: {
                     Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
                     park.setItem(10, mk);
                     park.setItem(11, epcot);
                     park.setItem(12, hws);
-                    park.setItem(14, ak);
-                    park.setItem(15, tl);
-                    park.setItem(16, dcl);
+                    park.setItem(13, ak);
+                    park.setItem(14, tl);
+                    park.setItem(15, dcl);
+                    park.setItem(16, seasonal);
                     park.setItem(22, BandUtil.getBackItem());
                     player.openInventory(park);
                     return;
-                case FOOD:
+                }
+                case FOOD: {
                     Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
                     List<FoodLocation> foodLocations = MagicAssistant.foodLocations;
                     // If odd amount of items
@@ -351,7 +373,8 @@ public class InventoryUtil {
                         player.openInventory(foodMenu);
                     }
                     return;
-                case MYPROFILE:
+                }
+                case MYPROFILE: {
                     Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
                     pmenu.setItem(10, web);
                     pmenu.setItem(11, dvc);
@@ -362,7 +385,8 @@ public class InventoryUtil {
                     pmenu.setItem(22, BandUtil.getBackItem());
                     player.openInventory(pmenu);
                     return;
-                case SHOWSANDEVENTS:
+                }
+                case SHOWSANDEVENTS: {
                     Inventory shows = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Shows and Events");
                     shows.setItem(8, times);
                     shows.setItem(9, fant);
@@ -373,7 +397,8 @@ public class InventoryUtil {
                     shows.setItem(22, BandUtil.getBackItem());
                     player.openInventory(shows);
                     return;
-                case CUSTOMIZE:
+                }
+                case CUSTOMIZE: {
                     Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
                     ItemStack band;
                     if (data.getSpecial()) {
@@ -393,7 +418,8 @@ public class InventoryUtil {
                     custom.setItem(22, BandUtil.getBackItem());
                     player.openInventory(custom);
                     return;
-                case CUSTOMNAME:
+                }
+                case CUSTOMNAME: {
                     Inventory cname = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Name Color");
                     cname.setItem(10, red);
                     cname.setItem(11, orange);
@@ -405,7 +431,8 @@ public class InventoryUtil {
                     cname.setItem(22, BandUtil.getBackItem());
                     player.openInventory(cname);
                     return;
-                case CUSTOMCOLOR:
+                }
+                case CUSTOMCOLOR: {
                     Inventory ccolor = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Band Color");
                     ccolor.setItem(10, redBand);
                     ccolor.setItem(11, orangeBand);
@@ -418,7 +445,8 @@ public class InventoryUtil {
                     ccolor.setItem(23, nextPage);
                     player.openInventory(ccolor);
                     return;
-                case SPECIALCOLOR:
+                }
+                case SPECIALCOLOR: {
                     Inventory special = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Special Edition MagicBands");
                     if (rank.equals(Rank.GUEST)) {
                         special.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "DVC Members only!"
@@ -435,23 +463,25 @@ public class InventoryUtil {
                     special.setItem(22, BandUtil.getBackItem());
                     player.openInventory(special);
                     return;
-                case RIDESANDATTRACTIONS:
-                    Inventory rna = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Rides and Attractions");
-                    rna.setItem(20, ride);
-                    rna.setItem(22, wait);
-                    rna.setItem(24, attraction);
-                    rna.setItem(49, BandUtil.getBackItem());
+                }
+                case RIDESANDATTRACTIONS: {
+                    Inventory rna = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rides and Attractions");
+                    rna.setItem(11, ride);
+                    rna.setItem(13, wait);
+                    rna.setItem(15, attraction);
+                    rna.setItem(22, BandUtil.getBackItem());
                     player.openInventory(rna);
                     return;
-                case HOTELSANDRESORTS:
+                }
+                case HOTELSANDRESORTS: {
                     Inventory hotelsAndResorts = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels and Resorts");
-                    hotelsAndResorts.setItem(11, joinHotelsAndResorts);
-                    hotelsAndResorts.setItem(13, viewMyRooms);
+                    hotelsAndResorts.setItem(11, viewMyRooms);
                     hotelsAndResorts.setItem(15, viewHotels);
                     hotelsAndResorts.setItem(22, BandUtil.getBackItem());
                     player.openInventory(hotelsAndResorts);
                     return;
-                case MYHOTELROOMS:
+                }
+                case MYHOTELROOMS: {
                     Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
                     List<HotelRoom> rooms = new ArrayList<>();
                     for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
@@ -483,7 +513,8 @@ public class InventoryUtil {
                     viewMyHotelRooms.setItem(22, BandUtil.getBackItem());
                     player.openInventory(viewMyHotelRooms);
                     return;
-                case HOTELS:
+                }
+                case HOTELS: {
                     Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
                     List<String> availableHotels = new ArrayList<>();
                     for (HotelRoom room : MagicAssistant.hotelManager.getHotelRooms()) {
@@ -509,7 +540,8 @@ public class InventoryUtil {
                     viewAvailableHotels.setItem(22, BandUtil.getBackItem());
                     player.openInventory(viewAvailableHotels);
                     return;
-                case PLAYERSETTINGS:
+                }
+                case PLAYERSETTINGS: {
                     Inventory settings = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Player Settings");
                     List<String> enab = Collections.singletonList(ChatColor.GREEN + "Enabled");
                     List<String> disab = Collections.singletonList(ChatColor.RED + "Disabled");
@@ -544,10 +576,12 @@ public class InventoryUtil {
                     settings.setItem(22, BandUtil.getBackItem());
                     player.openInventory(settings);
                     return;
-                case DESIGNSTATION:
+                }
+                case DESIGNSTATION: {
                     DesignStation.openPickModelInventory(player);
                     return;
-                case FASTPASS:
+                }
+                case FASTPASS: {
                     Inventory fp = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Purchase FastPass");
                     fp.setItem(22, BandUtil.getBackItem());
                     int current = data.getFastpass();
@@ -583,13 +617,50 @@ public class InventoryUtil {
                                             "FastPass for " + ChatColor.GREEN + "$50.",
                                     ChatColor.DARK_AQUA + "This cannot be undone!"));
                     ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
-                            Collections.singletonList(ChatColor.DARK_AQUA + "Click to return to the Main Menu"));
+                            Collections.singletonList(ChatColor.DARK_AQUA + "Click to return to the Shop Menu"));
                     fp.setItem(4, info);
                     fp.setItem(11, yes);
                     fp.setItem(15, no);
                     player.openInventory(fp);
                     return;
-                case BACKPACK:
+                }
+                case STORAGE: {
+                    Inventory storage = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Storage Upgrade");
+                    StorageSize packSize = data.getBackpack().getSize();
+                    StorageSize lockerSize = data.getLocker().getSize();
+                    List<String> packLore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Current Size: " +
+                            packSize.getSize()));
+                    switch (packSize) {
+                        case SMALL:
+                            packLore.add(ChatColor.YELLOW + "Click to upgrade to the Large size");
+                            packLore.add(ChatColor.GREEN + "Cost: $500");
+                            break;
+                        case LARGE:
+                            packLore.add(ChatColor.RED + "Cannot be upgraded anymore!");
+                            break;
+                    }
+                    ItemStack pack = new ItemCreator(Material.CHEST, ChatColor.GREEN + "Upgrade Backpack",
+                            packLore);
+                    List<String> lockerLore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Current Size: " +
+                            lockerSize.getSize()));
+                    switch (lockerSize) {
+                        case SMALL:
+                            lockerLore.add(ChatColor.YELLOW + "Click to upgrade to the Large size");
+                            lockerLore.add(ChatColor.GREEN + "Cost: $500");
+                            break;
+                        case LARGE:
+                            lockerLore.add(ChatColor.RED + "Cannot be upgraded anymore!");
+                            break;
+                    }
+                    ItemStack locker = new ItemCreator(Material.CHEST, ChatColor.GREEN + "Upgrade Locker",
+                            lockerLore);
+                    storage.setItem(11, pack);
+                    storage.setItem(15, locker);
+                    storage.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(storage);
+                    return;
+                }
+                case BACKPACK: {
                     Backpack pack = data.getBackpack();
                     if (pack == null) {
                         Inventory load = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Loading Backpack...");
@@ -598,13 +669,11 @@ public class InventoryUtil {
                         MagicAssistant.storageManager.setLoadingPack(player);
                         return;
                     } else {
-                        Inventory bp = Bukkit.createInventory(player, pack.getSize().getRows() * 9, ChatColor.BLUE +
-                                "Your Backpack");
-                        bp.setContents(pack.getContents());
-                        player.openInventory(bp);
+                        player.openInventory(pack.getInventory());
+                        return;
                     }
-                    break;
-                case LOCKER:
+                }
+                case LOCKER: {
                     Locker locker = data.getLocker();
                     if (locker == null) {
                         Inventory load = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Loading Locker...");
@@ -613,13 +682,11 @@ public class InventoryUtil {
                         MagicAssistant.storageManager.setLoadingLocker(player);
                         return;
                     } else {
-                        Inventory lkr = Bukkit.createInventory(player, locker.getSize().getRows() * 9, ChatColor.BLUE +
-                                "Your Locker");
-                        lkr.setContents(locker.getContents());
-                        player.openInventory(lkr);
+                        player.openInventory(locker.getInventory());
+                        return;
                     }
-                    break;
-                case SHOWTIMES:
+                }
+                case SHOWTIMES: {
                     Inventory s = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Show Timetable");
                     s.setItem(1, m);
                     s.setItem(2, t);
@@ -654,6 +721,7 @@ public class InventoryUtil {
                     s.setItem(34, assistance);
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
