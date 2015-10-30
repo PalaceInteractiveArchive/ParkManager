@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -14,6 +15,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.autograph.AutographManager;
 import us.mcmagic.magicassistant.blockchanger.BlockChanger;
+import us.mcmagic.magicassistant.chairs.ArrowFactory;
+import us.mcmagic.magicassistant.chairs.ChairListener;
+import us.mcmagic.magicassistant.chairs.ChairManager;
+import us.mcmagic.magicassistant.chairs.IArrowFactory;
 import us.mcmagic.magicassistant.commands.*;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
@@ -43,6 +48,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
+
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
     public static Stitch stitch;
@@ -79,6 +85,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static StorageManager storageManager;
     public static VisibilityUtil vanishUtil;
     public static Shooter shooter = null;
+    public static ChairManager chairManager;
+    public static IArrowFactory chairFactory;
 
     public void onEnable() {
         instance = this;
@@ -104,6 +112,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         blockChanger = new BlockChanger();
         parkSoundManager = new ParkSoundManager();
         armorStandManager = new ArmorStandManager();
+        chairManager = new ChairManager(this);
+        chairFactory = new ArrowFactory();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -171,6 +181,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         }
         hotelManager.serverStop();
         warps.clear();
+        chairManager.emptyAllData();
         for (World world : Bukkit.getWorlds()) {
             for (Entity e : world.getEntities()) {
                 if (e instanceof Cart) {
@@ -402,6 +413,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("more").setExecutor(new Commandmore());
         getCommand("msg").setExecutor(new Commandmsg());
         getCommand("msg").setAliases(Arrays.asList("tell", "t", "w", "whisper", "m"));
+        getCommand("nearby").setExecutor(new Commandnearby());
         getCommand("night").setExecutor(new Commandnight());
         getCommand("noon").setExecutor(new Commandnoon());
         getCommand("nv").setExecutor(new Commandnv());
@@ -446,6 +458,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         fountainManager = new FountainManager();
         pm.registerEvents(fountainManager, this);
         pm.registerEvents(new PlayerCloseInventory(), this);
+        pm.registerEvents(new ChairListener(), this);
         //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);
