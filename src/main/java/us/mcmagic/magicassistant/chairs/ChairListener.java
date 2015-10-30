@@ -1,13 +1,13 @@
 package us.mcmagic.magicassistant.chairs;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,10 +21,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.material.Stairs;
 import us.mcmagic.magicassistant.MagicAssistant;
+
 import java.util.ArrayList;
 
 public class ChairListener implements Listener {
-
     private ChairManager manager = MagicAssistant.chairManager;
     public static final double MAX_SIT_DISTANCE = 3.0D;
 
@@ -42,7 +42,7 @@ public class ChairListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void teleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
         if (manager.isSitting(player)) {
@@ -89,7 +89,7 @@ public class ChairListener implements Listener {
 
     @EventHandler
     public void explode(EntityExplodeEvent event) {
-        for (Block block : new ArrayList<Block>(event.blockList())) {
+        for (Block block : new ArrayList<>(event.blockList())) {
             if (manager.isChairOccupied(block)) {
                 event.blockList().remove(block);
             }

@@ -13,6 +13,10 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.queue.QueueRide;
+import us.mcmagic.magicassistant.show.handlers.schedule.ShowDay;
+import us.mcmagic.magicassistant.show.handlers.schedule.ShowTime;
+import us.mcmagic.magicassistant.show.handlers.schedule.ShowType;
+import us.mcmagic.magicassistant.show.schedule.ScheduledShow;
 import us.mcmagic.magicassistant.storage.Backpack;
 import us.mcmagic.magicassistant.storage.Locker;
 import us.mcmagic.magicassistant.storage.StorageSize;
@@ -152,6 +156,9 @@ public class InventoryUtil {
     private ItemStack f = new ItemStack(Material.BANNER);
     private ItemStack s = new ItemStack(Material.BANNER);
     private ItemStack su = new ItemStack(Material.BANNER);
+    private ItemStack eleven = new ItemCreator(Material.WATCH, ChatColor.GREEN + "11:00 a.m.");
+    private ItemStack four = new ItemCreator(Material.WATCH, ChatColor.GREEN + "4:00 p.m.");
+    private ItemStack nine = new ItemCreator(Material.WATCH, ChatColor.GREEN + "9:00 p.m.");
     //Storage
     private ItemStack loadingPack = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
             "Loading Backpack...", new ArrayList<String>());
@@ -695,30 +702,30 @@ public class InventoryUtil {
                     s.setItem(5, f);
                     s.setItem(6, this.s);
                     s.setItem(7, su);
-                    s.setItem(9, wishes);
-                    s.setItem(10, dark49);
-                    s.setItem(11, dark11);
-                    s.setItem(12, dark49);
-                    s.setItem(13, dark11);
-                    s.setItem(14, dark49);
-                    s.setItem(15, assistance);
-                    s.setItem(16, assistance);
-                    s.setItem(18, iroe);
-                    s.setItem(19, light11);
-                    s.setItem(20, light49);
-                    s.setItem(21, light11);
-                    s.setItem(22, light49);
-                    s.setItem(23, light11);
-                    s.setItem(24, assistance);
-                    s.setItem(25, assistance);
-                    s.setItem(27, tfant);
-                    s.setItem(28, na);
-                    s.setItem(29, na);
-                    s.setItem(30, na);
-                    s.setItem(31, na);
-                    s.setItem(32, na);
-                    s.setItem(33, assistance);
-                    s.setItem(34, assistance);
+                    s.setItem(9, eleven);
+                    List<ScheduledShow> shows = MagicAssistant.showSchedule.getShows();
+                    for (ScheduledShow show : shows) {
+                        ShowType type = show.getType();
+                        int place = getShowPos(show.getDay(), show.getTime());
+                        if (type.getType().equals(Material.BANNER)) {
+                            ItemStack banner = new ItemStack(Material.BANNER);
+                            BannerMeta bm = (BannerMeta) banner.getItemMeta();
+                            bm.setBaseColor(DyeColor.RED);
+                            bm.addPattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_SMALL));
+                            bm.addPattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_SMALL));
+                            bm.addPattern(new Pattern(DyeColor.BLUE, PatternType.SQUARE_TOP_RIGHT));
+                            bm.addPattern(new Pattern(DyeColor.BLUE, PatternType.SQUARE_TOP_RIGHT));
+                            bm.addPattern(new Pattern(DyeColor.BLUE, PatternType.SQUARE_TOP_RIGHT));
+                            bm.setDisplayName(type.getName());
+                            banner.setItemMeta(bm);
+                            s.setItem(place, banner);
+                            continue;
+                        }
+                        s.setItem(place, new ItemCreator(type.getType(), 1, type.getData(), type.getName(),
+                                new ArrayList<String>()));
+                    }
+                    s.setItem(18, four);
+                    s.setItem(27, nine);
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
                 }
@@ -726,6 +733,13 @@ public class InventoryUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private int getShowPos(ShowDay day, ShowTime time) {
+        int i = 10;
+        i += day.ordinal();
+        i += (9 * time.ordinal());
+        return i;
     }
 
     public void openHotelRoomListPage(final Player player, String hotelName) {

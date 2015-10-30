@@ -282,15 +282,30 @@ public class StorageManager {
         Inventory bp = Bukkit.createInventory(player, pack.getInventory().getSize());
         boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
         if (build) {
-            bp.setContents(player.getInventory().getContents());
+            ItemStack[] list = new ItemStack[27];
+            int i = 0;
+            for (ItemStack it : player.getInventory().getContents()) {
+                if (i >= 27) {
+                    break;
+                }
+                if (it == null || it.getType().equals(Material.AIR) || it.getType().equals(Material.WOOD_AXE) ||
+                        it.getType().equals(Material.COMPASS)) {
+                    continue;
+                }
+                list[i] = it;
+                i++;
+            }
+            bp.setContents(list);
         } else {
             bp.setContents(pack.getInventory().getContents());
         }
         try (Connection connection = SqlUtil.getConnection()) {
             ItemStack[] hotbar = new ItemStack[4];
-            ItemStack[] cont = player.getInventory().getContents();
-            for (int i = 0; i < 4; i++) {
-                hotbar[i] = cont[i];
+            if (!build) {
+                ItemStack[] cont = player.getInventory().getContents();
+                for (int i = 0; i < 4; i++) {
+                    hotbar[i] = cont[i];
+                }
             }
             PreparedStatement sql = connection.prepareStatement("UPDATE storage SET pack=?,locker=?,hotbar=? WHERE uuid=?");
             sql.setBytes(1, serial(bp.getContents()));

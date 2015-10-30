@@ -667,6 +667,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant.parkSoundManager.initialize();
                 ma.setupRides();
                 MagicAssistant.stitch.initialize();
+                MagicAssistant.showSchedule.update();
                 MagicAssistant.itemUtil.initialize();
                 MagicAssistant.hotelManager.refreshRooms();
                 try {

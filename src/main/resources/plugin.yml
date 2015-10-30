@@ -175,3 +175,12 @@ commands:
       description: Enter/leave Build Mode
       permission: arcade.bypass
       permission-message: §cOnly Cast Members can use this command!
+   tpa:
+      description: Request to teleport to another player.
+      permission: mcmagic.tpa
+   tpaccept:
+      description: Accept a teleport from a player.
+      permission: creative.tpa
+   tpdeny:
+      description: Deny a teleport from a player.
+      permission: creative.tpa

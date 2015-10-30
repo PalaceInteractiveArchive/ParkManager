@@ -49,7 +49,7 @@ public class HotelManager {
                 }
             }
         }, 10L, 6000L);
-        if (!MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+        if (!MagicAssistant.hotelServer) {
             return;
         }
         refreshRooms();
@@ -363,13 +363,12 @@ public class HotelManager {
 
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        boolean resorts = MCMagicCore.getMCMagicConfig().serverName.equals("Resorts");
-        if (resorts) {
+        if (MagicAssistant.hotelServer) {
             closeDoor(room);
         }
         room.setCheckoutTime(0);
         if (tp != null) {
-            if (room.getWarp() != null && resorts) {
+            if (room.getWarp() != null && MagicAssistant.hotelServer) {
                 Warp w = room.getWarp();
                 if (tp.getLocation().distance(w.getLocation()) < 25) {
                     tp.teleport(w.getLocation());
@@ -386,7 +385,7 @@ public class HotelManager {
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
         }
-        if (!lapsed && resorts) {
+        if (!lapsed && MagicAssistant.hotelServer) {
             Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
             Material type = b.getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {

@@ -13,7 +13,6 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.BandUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
@@ -43,7 +42,7 @@ public class MainMenuClick {
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.SHOWSANDEVENTS);
                 return;
             case BED:
-                if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+                if (MagicAssistant.hotelServer) {
                     MagicAssistant.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
                 } else {
                     Inventory hotel = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Visit Hotels and Resorts?");

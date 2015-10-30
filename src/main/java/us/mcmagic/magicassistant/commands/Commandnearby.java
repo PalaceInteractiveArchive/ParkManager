@@ -15,10 +15,10 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
+
 import java.util.HashMap;
 
 public class Commandnearby implements CommandExecutor {
-
     public static final int DEFAULT_SEARCH_DISTANCE = 100;
 
     @Override
@@ -27,7 +27,7 @@ public class Commandnearby implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        Location center  = player.getLocation().clone();
+        Location center = player.getLocation().clone();
         HashMap<Warp, Integer> nearby = new HashMap<>();
         for (Warp warp : MagicAssistant.warps) {
             if (!warp.getServer().equals(MCMagicCore.getMCMagicConfig().serverName)) {
@@ -59,7 +59,7 @@ public class Commandnearby implements CommandExecutor {
                 message.then(" - ");
                 message.color(ChatColor.GREEN);
                 message.then(warp.getName()).color(ChatColor.AQUA).command("/warp " + warp.getName()).tooltip(ChatColor.GREEN + "Click to warp").color(ChatColor.GREEN).then(" (" + nearby.get(warp) + " blocks)").color(ChatColor.AQUA);
-                if(i < nearby.keySet().size() - 1) message.then("\n");
+                if (i < nearby.keySet().size() - 1) message.then("\n");
             }
             message.send(player);
         } else {

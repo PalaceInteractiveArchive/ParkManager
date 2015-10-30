@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ChairManager {
-
     private MagicAssistant plugin;
     private HashMap<UUID, SitData> sitting = new HashMap<>();
     private HashMap<Block, UUID> chairs = new HashMap<>();
@@ -23,7 +22,7 @@ public class ChairManager {
     }
 
     public boolean sitPlayer(final Player player, Block block, Location location, boolean noMessage) {
-        if(!noMessage) player.sendMessage(ChatColor.GRAY + "Relaxing...");
+        if (!noMessage) player.sendMessage(ChatColor.GRAY + "Relaxing...");
         SitData data = new SitData();
         final Entity arrow = plugin.chairFactory.spawnArrow(location.getBlock().getLocation().add(0.5, 0.0, 0.5));
         data.arrow = arrow;
@@ -88,13 +87,8 @@ public class ChairManager {
     }
 
     public boolean isSitting(Player player) {
-        if (player == null) {
-            return false;
-        }
-        if (!(sitting.get(player.getUniqueId()) instanceof SitData)) {
-            return false;
-        }
-        return sitting.containsKey(player.getUniqueId()) && sitting.get(player.getUniqueId()).sitting;
+        return player != null && sitting.get(player.getUniqueId()) instanceof SitData &&
+                sitting.containsKey(player.getUniqueId()) && sitting.get(player.getUniqueId()).sitting;
     }
 
     public boolean isChairOccupied(Block block) {

@@ -74,11 +74,6 @@ public class InventoryClick implements Listener {
             return;
         }
         switch (name) {
-            case "Your Backpack":
-                if (slot == 26) {
-                    event.setCancelled(true);
-                }
-                return;
             case "Ride Counter":
                 event.setCancelled(true);
                 RideCounterClick.handle(event);
@@ -134,6 +129,7 @@ public class InventoryClick implements Listener {
             case "Storage Upgrade":
                 event.setCancelled(true);
                 StorageUpgradeClick.handle(event);
+                return;
             case "My Hotel Rooms":
                 event.setCancelled(true);
                 MyHotelRoomsMenuClick.handle(event);

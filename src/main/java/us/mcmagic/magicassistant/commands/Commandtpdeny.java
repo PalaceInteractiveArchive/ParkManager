@@ -5,7 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.creative.utils.TpaUtil;
+import us.mcmagic.magicassistant.utils.TpaUtil;
 
 /**
  * Created by Marc on 2/8/15

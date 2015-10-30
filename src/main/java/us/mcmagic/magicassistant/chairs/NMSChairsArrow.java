@@ -18,13 +18,14 @@ public class NMSChairsArrow extends EntityArrow {
     }
 
     @Override
-    public void t_() {}
-
-    @Override
-    public void g(double x, double y, double z) {
-        return;
+    public void t_() {
     }
 
     @Override
-    public void collide(Entity entity) { }
+    public void g(double x, double y, double z) {
+    }
+
+    @Override
+    public void collide(Entity entity) {
+    }
 }

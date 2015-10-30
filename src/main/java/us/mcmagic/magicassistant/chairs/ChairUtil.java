@@ -24,7 +24,8 @@ public class ChairUtil {
             Material.RED_SANDSTONE_STAIRS
     };
 
-    private ChairUtil() { }
+    private ChairUtil() {
+    }
 
     public static Location sitLocation(Block block, float playerYaw) {
         double height = 0.7;

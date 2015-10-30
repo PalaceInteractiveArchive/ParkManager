@@ -68,7 +68,7 @@ public class Commandbuild implements CommandExecutor {
             player.sendMessage(ChatColor.GREEN + "You have exited " + ChatColor.YELLOW + "" + ChatColor.BOLD +
                     "Build Mode!");
             boolean isFlying = player.isFlying();
-            player.setGameMode(GameMode.ADVENTURE);
+            player.setGameMode(GameMode.SURVIVAL);
             player.setAllowFlight(true);
             player.setFlying(isFlying);
             final PlayerInventory inv = player.getInventory();

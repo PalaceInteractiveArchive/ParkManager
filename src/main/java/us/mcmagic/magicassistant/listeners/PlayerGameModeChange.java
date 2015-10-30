@@ -17,7 +17,7 @@ public class PlayerGameModeChange implements Listener {
     private FormattedMessage needBuild = new FormattedMessage("To enter Creative Mode, you must be in ").color(ChatColor.GREEN)
             .then("Build Mode! ").color(ChatColor.YELLOW).style(ChatColor.BOLD).then("Click here to switch modes")
             .color(ChatColor.AQUA).tooltip(ChatColor.DARK_AQUA + "Command: /build").command("/build");
-    private FormattedMessage noBuild = new FormattedMessage("To enter Adventure Mode, you cannot be in ").color(ChatColor.GREEN)
+    private FormattedMessage noBuild = new FormattedMessage("To enter Survival Mode, you cannot be in ").color(ChatColor.GREEN)
             .then("Build Mode! ").color(ChatColor.YELLOW).style(ChatColor.BOLD).then("Click here to switch modes")
             .color(ChatColor.AQUA).tooltip(ChatColor.DARK_AQUA + "Command: /build").command("/build");
 
@@ -25,7 +25,6 @@ public class PlayerGameModeChange implements Listener {
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
         GameMode newMode = event.getNewGameMode();
-        boolean isStaff = MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() <= Rank.INTERN.getRankId();
         switch (newMode) {
             case SPECTATOR:
                 break;
@@ -35,15 +34,19 @@ public class PlayerGameModeChange implements Listener {
                     needBuild.send(player);
                 }
                 break;
-            case SURVIVAL:
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.GREEN + "You cannot enter Survival Mode, change to " + ChatColor.YELLOW +
-                        "Adventure Mode!");
-                break;
             case ADVENTURE:
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.GREEN + "You cannot enter Adventure Mode, change to " + ChatColor.YELLOW +
+                        "Survival Mode!");
+                break;
+            case SURVIVAL:
                 if (BlockEdit.isInBuildMode(player.getUniqueId())) {
                     event.setCancelled(true);
                     noBuild.send(player);
+                } else {
+                    if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.INTERN.getRankId()) {
+                        player.setAllowFlight(true);
+                    }
                 }
                 break;
         }

@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -34,6 +33,7 @@ import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.shop.ShopManager;
 import us.mcmagic.magicassistant.show.ArmorStandManager;
 import us.mcmagic.magicassistant.show.FountainManager;
+import us.mcmagic.magicassistant.show.schedule.ShowSchedule;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
 import us.mcmagic.magicassistant.storage.StorageManager;
@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class MagicAssistant extends JavaPlugin implements Listener {
-
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
     public static Stitch stitch;
@@ -60,7 +59,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Location hub;
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
-    public static boolean resortsServer;
+    public static boolean hotelServer;
     public static FileConfiguration config = FileUtil.configurationYaml();
     public static FountainManager fountainManager;
     public static TeleportUtil teleportUtil;
@@ -87,6 +86,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Shooter shooter = null;
     public static ChairManager chairManager;
     public static IArrowFactory chairFactory;
+    public static ShowSchedule showSchedule;
 
     public void onEnable() {
         instance = this;
@@ -136,6 +136,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         WarpUtil.refreshWarps();
         log("Warps Initialized!");
         shopManager = new ShopManager();
+        String sn = MCMagicCore.getMCMagicConfig().serverName;
+        hotelServer = sn.equals("Resorts") || sn.equals("DCL");
         log("Initializing Hotel Rooms...");
         hotelManager = new HotelManager();
         log("Hotel Rooms Initialized!");
@@ -145,6 +147,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         log("Initializing Rides...");
         setupRides();
         log("Rides Initialized!");
+        log("Initializing Show Schedule...");
+        showSchedule = new ShowSchedule();
+        log("Show Schedule Initialized!");
         setupAttractions();
         if (config.getBoolean("show-server")) {
             // Show Ticker
@@ -159,7 +164,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 config.getInt("spawn.pitch"));
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
-        resortsServer = MCMagicCore.getMCMagicConfig().serverName == "Resorts";
         hubServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
         parkSoundManager.initialize();
@@ -429,6 +433,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("spawn").setExecutor(new Commandspawn());
         getCommand("top").setExecutor(new Commandtop());
         getCommand("tp").setExecutor(new Commandtp());
+        getCommand("tpa").setExecutor(new Commandtpa());
+        getCommand("tpaccept").setExecutor(new Commandtpaccept());
+        getCommand("tpdeny").setExecutor(new Commandtpdeny());
         getCommand("uwarp").setExecutor(new Commanduwarp());
         getCommand("vanish").setExecutor(new Commandvanish());
         getCommand("vanish").setAliases(Collections.singletonList("v"));

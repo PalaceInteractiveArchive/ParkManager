@@ -3,7 +3,7 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import us.mcmagic.creative.Creative;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 
@@ -53,7 +53,7 @@ public class TpaUtil {
         final String name2 = MCMagicCore.getUser(target.getUniqueId()).getRank().getTagColor() + target.getName();
         sender.sendMessage(ChatColor.GREEN + "Teleport Request sent to " + name2);
         target.sendMessage(name + ChatColor.GREEN + " has sent you a Teleport Request. Type /tpaccept to accept, and /tpdeny to deny.");
-        map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(Creative.getInstance(), new Runnable() {
+        map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
                 if (!map.containsKey(sender.getUniqueId())) {
@@ -65,7 +65,7 @@ public class TpaUtil {
                 target.sendMessage(name + "'s " + ChatColor.RED + "Teleport Request sent to you has timed out!");
             }
         }, 400L).getTaskId());
-        map3.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskTimer(Creative.getInstance(), new Runnable() {
+        map3.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             int i = 20;
 
             @Override
@@ -103,7 +103,7 @@ public class TpaUtil {
         }
         map.remove(tp.getUniqueId());
         cancelTimer(tp.getUniqueId());
-        Creative.teleportUtil.log(tp, tp.getLocation());
+        MagicAssistant.teleportUtil.log(tp, tp.getLocation());
         tp.teleport(player);
         final String name = MCMagicCore.getUser(tp.getUniqueId()).getRank().getTagColor() + tp.getName();
         final String name2 = MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName();

@@ -83,9 +83,11 @@ public class PlayerJoinAndLeave implements Listener {
             for (PotionEffect type : player.getActivePotionEffects()) {
                 player.removePotionEffect(type.getType());
             }
-            player.setGameMode(GameMode.ADVENTURE);
             if (user.getRank().getRankId() >= Rank.INTERN.getRankId()) {
+                player.setGameMode(GameMode.SURVIVAL);
                 player.setAllowFlight(true);
+            } else {
+                player.setGameMode(GameMode.ADVENTURE);
             }
             if (MagicAssistant.spawnOnJoin || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");
@@ -125,25 +127,25 @@ public class PlayerJoinAndLeave implements Listener {
                     Locker locker = MagicAssistant.storageManager.getLocker(player);
                     ItemStack[] hotbar = MagicAssistant.storageManager.getHotbar(player);
                     setInventory(player, true);
+                    PlayerInventory inv = player.getInventory();
                     if (hotbar != null) {
-                        PlayerInventory inv = player.getInventory();
                         ItemStack[] cont = inv.getContents();
                         for (int i = 0; i < 4; i++) {
                             cont[i] = hotbar[i];
                         }
                         inv.setContents(cont);
-                        if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
-                            if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
-                                inv.setItem(0, new ItemStack(Material.COMPASS));
-                            }
-                        } else {
-                            inv.remove(Material.COMPASS);
+                    }
+                    if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
+                        if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
+                            inv.setItem(0, new ItemStack(Material.COMPASS));
                         }
+                    } else {
+                        inv.remove(Material.COMPASS);
                     }
                     PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
                     data.setBackpack(pack);
                     data.setLocker(locker);
-                    if (!MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+                    if (!MagicAssistant.hotelServer) {
                         return;
                     }
                     HotelManager manager = MagicAssistant.hotelManager;
@@ -244,7 +246,7 @@ public class PlayerJoinAndLeave implements Listener {
         if (player.getVehicle() != null) {
             player.getVehicle().eject();
         }
-        if (MCMagicCore.getMCMagicConfig().serverName.equals("Resorts")) {
+        if (MagicAssistant.hotelServer) {
             HotelManager manager = MagicAssistant.hotelManager;
             for (HotelRoom room : manager.getRooms()) {
                 if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {

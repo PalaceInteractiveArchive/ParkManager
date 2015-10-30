@@ -203,38 +203,49 @@ public class BandUtil {
         }
     }
 
-    public void setBandColor(Player player, BandColor color) {
-        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
-            sql.setString(1, color.getName());
-            sql.setString(2, player.getUniqueId().toString());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        data.setBandColor(color);
-        data.setSpecial(color.getName().startsWith("s"));
-        giveBandToPlayer(player);
+    public void setBandColor(final Player player, final BandColor color) {
+        final PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
+                    sql.setString(1, color.getName());
+                    sql.setString(2, player.getUniqueId().toString());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                data.setBandColor(color);
+                data.setSpecial(color.getName().startsWith("s"));
+                giveBandToPlayer(player);
+            }
+        });
     }
 
-    public void setBandColor(Player player, Material color) {
-        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
-            sql.setString(1, getBandName(color));
-            sql.setString(2, player.getUniqueId().toString());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void setBandColor(final Player player, Material color) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-        data.setBandColor(getBandColor(getBandName(color)));
-        data.setSpecial(getBandColor(getBandName(color)).getName().startsWith("s"));
-        giveBandToPlayer(player);
+        final String name = getBandName(color);
+        data.setBandColor(getBandColor(name));
+        data.setSpecial(getBandColor(name).getName().startsWith("s"));
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
+                    sql.setString(1, name);
+                    sql.setString(2, player.getUniqueId().toString());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                giveBandToPlayer(player);
+            }
+        });
     }
 
     public void giveBandToPlayer(Player player) {
@@ -299,20 +310,25 @@ public class BandUtil {
         }
     }
 
-    public void setBandName(Player player, ChatColor color) {
-        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE uuid=?");
-            sql.setString(1, getBandNameColor(color));
-            sql.setString(2, player.getUniqueId().toString());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void setBandName(final Player player, final ChatColor color) {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         data.setBandName(color);
-        giveBandToPlayer(player);
         player.sendMessage(ChatColor.GREEN + "You have changed the name color of your " + data.getBandName() + "MagicBand!");
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE uuid=?");
+                    sql.setString(1, getBandNameColor(color));
+                    sql.setString(2, player.getUniqueId().toString());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                giveBandToPlayer(player);
+            }
+        });
     }
 
     public static ItemStack getBackItem() {

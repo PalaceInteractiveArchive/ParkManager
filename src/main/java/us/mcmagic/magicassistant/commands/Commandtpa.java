@@ -5,9 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.creative.utils.TpaUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.magicassistant.utils.TpaUtil;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 
 /**
@@ -30,12 +28,6 @@ public class Commandtpa implements CommandExecutor {
         if (tp == null) {
             player.sendMessage(ChatColor.RED + "Player not found!");
             return true;
-        }
-        if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.INTERN.getRankId()) {
-            if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() > Rank.INTERN.getRankId()) {
-                player.sendMessage(ChatColor.RED + "You can't send this player a TPA Request!");
-                return true;
-            }
         }
         TpaUtil.addTeleport(player, tp);
         return true;

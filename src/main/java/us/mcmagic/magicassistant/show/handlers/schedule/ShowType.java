@@ -88,6 +88,6 @@ public enum ShowType {
             case "fotlk":
                 return FOTLK;
         }
-        return null;
+        return WISHES;
     }
 }
