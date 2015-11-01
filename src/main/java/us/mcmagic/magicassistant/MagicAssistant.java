@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -33,7 +32,7 @@ import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.shop.ShopManager;
 import us.mcmagic.magicassistant.show.ArmorStandManager;
 import us.mcmagic.magicassistant.show.FountainManager;
-import us.mcmagic.magicassistant.show.schedule.ShowSchedule;
+import us.mcmagic.magicassistant.show.schedule.ScheduleManager;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
 import us.mcmagic.magicassistant.storage.StorageManager;
@@ -63,7 +62,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static FileConfiguration config = FileUtil.configurationYaml();
     public static FountainManager fountainManager;
     public static TeleportUtil teleportUtil;
-    private WorldGuardPlugin wg;
     public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static Map<UUID, String> userCache = new HashMap<>();
@@ -86,7 +84,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static Shooter shooter = null;
     public static ChairManager chairManager;
     public static IArrowFactory chairFactory;
-    public static ShowSchedule showSchedule;
+    public static ScheduleManager scheduleManager;
 
     public void onEnable() {
         instance = this;
@@ -148,7 +146,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         setupRides();
         log("Rides Initialized!");
         log("Initializing Show Schedule...");
-        showSchedule = new ShowSchedule();
+        scheduleManager = new ScheduleManager();
         log("Show Schedule Initialized!");
         setupAttractions();
         if (config.getBoolean("show-server")) {
@@ -171,8 +169,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         for (World world : Bukkit.getWorlds()) {
             world.setTime(0);
         }
-        Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), (System.currentTimeMillis() -
-                ((System.currentTimeMillis() / 1000) * 1000)) / 50, 20L);
+        long curr = System.currentTimeMillis();
+        long time = (curr - (Long.parseLong(Long.toString(curr).substring(0, Long.toString(curr).length() - 3) + 1) *
+                1000)) / 50;
+        Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
     }
 
     private void log(String s) {
@@ -233,10 +233,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public WorldGuardPlugin getWG() {
-        return wg;
     }
 
     public static PlayerData getPlayerData(UUID uuid) {

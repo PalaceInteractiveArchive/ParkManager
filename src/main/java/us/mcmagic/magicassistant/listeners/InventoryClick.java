@@ -7,13 +7,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStationClick;
 import us.mcmagic.magicassistant.magicband.*;
+import us.mcmagic.magicassistant.watch.WatchTask;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
@@ -204,6 +207,21 @@ public class InventoryClick implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        if (BlockEdit.isInBuildMode(player.getUniqueId())) {
+            return;
+        }
+        if (event.getNewSlot() == 6) {
+            ActionBarManager.sendMessage(player, ChatColor.YELLOW + "" + ChatColor.BOLD + "Current time in EST: " +
+                    ChatColor.GREEN + MagicAssistant.bandUtil.currentTime());
+            WatchTask.addToMessage(player.getUniqueId());
+        } else if (event.getPreviousSlot() == 6) {
+            WatchTask.removeFromMessage(player.getUniqueId());
         }
     }
 }

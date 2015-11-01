@@ -14,7 +14,6 @@ import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.magicassistant.show.handlers.schedule.ShowDay;
-import us.mcmagic.magicassistant.show.handlers.schedule.ShowTime;
 import us.mcmagic.magicassistant.show.handlers.schedule.ShowType;
 import us.mcmagic.magicassistant.show.schedule.ScheduledShow;
 import us.mcmagic.magicassistant.storage.Backpack;
@@ -142,13 +141,6 @@ public class InventoryUtil {
     private ItemStack viewHotels = new ItemCreator(Material.EMERALD, 1, ChatColor.GREEN + "Rent a Hotel Room",
             Collections.singletonList(ChatColor.GREEN + "Book a hotel room!"));
     //Show Timetable
-    private ItemStack dark49 = new ItemCreator(Material.WOOL, 1, (byte) 11, "4pm & 9pm EST", new ArrayList<String>());
-    private ItemStack dark11 = new ItemCreator(Material.WOOL, 1, (byte) 11, "11am EST", new ArrayList<String>());
-    private ItemStack light49 = new ItemCreator(Material.WOOL, 1, (byte) 3, "4pm & 9pm EST", new ArrayList<String>());
-    private ItemStack light11 = new ItemCreator(Material.WOOL, 1, (byte) 3, "11am EST", new ArrayList<String>());
-    private ItemStack assistance = new ItemCreator(Material.REDSTONE_BLOCK, 1, "Ask a Staff Member for assistance",
-            new ArrayList<String>());
-    private ItemStack na = new ItemCreator(Material.BARRIER, 1, "N/A", new ArrayList<String>());
     private ItemStack m = new ItemStack(Material.BANNER);
     private ItemStack t = new ItemStack(Material.BANNER);
     private ItemStack w = new ItemStack(Material.BANNER);
@@ -156,9 +148,6 @@ public class InventoryUtil {
     private ItemStack f = new ItemStack(Material.BANNER);
     private ItemStack s = new ItemStack(Material.BANNER);
     private ItemStack su = new ItemStack(Material.BANNER);
-    private ItemStack eleven = new ItemCreator(Material.WATCH, ChatColor.GREEN + "11:00 a.m.");
-    private ItemStack four = new ItemCreator(Material.WATCH, ChatColor.GREEN + "4:00 p.m.");
-    private ItemStack nine = new ItemCreator(Material.WATCH, ChatColor.GREEN + "9:00 p.m.");
     //Storage
     private ItemStack loadingPack = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
             "Loading Backpack...", new ArrayList<String>());
@@ -195,40 +184,40 @@ public class InventoryUtil {
         BannerMeta bf = (BannerMeta) f.getItemMeta();
         BannerMeta bs = (BannerMeta) s.getItemMeta();
         BannerMeta bsu = (BannerMeta) su.getItemMeta();
-        bm.setBaseColor(DyeColor.LIGHT_BLUE);
-        bt.setBaseColor(DyeColor.LIGHT_BLUE);
-        bw.setBaseColor(DyeColor.LIGHT_BLUE);
-        bth.setBaseColor(DyeColor.LIGHT_BLUE);
-        bf.setBaseColor(DyeColor.LIGHT_BLUE);
-        bs.setBaseColor(DyeColor.LIGHT_BLUE);
-        bsu.setBaseColor(DyeColor.LIGHT_BLUE);
+        bm.setBaseColor(DyeColor.BLACK);
+        bt.setBaseColor(DyeColor.BLACK);
+        bw.setBaseColor(DyeColor.BLACK);
+        bth.setBaseColor(DyeColor.BLACK);
+        bf.setBaseColor(DyeColor.BLACK);
+        bs.setBaseColor(DyeColor.BLACK);
+        bsu.setBaseColor(DyeColor.BLACK);
         List<Pattern> m = new ArrayList<>();
         List<Pattern> t = new ArrayList<>();
         List<Pattern> w = new ArrayList<>();
         List<Pattern> f = new ArrayList<>();
         List<Pattern> s = new ArrayList<>();
+        DyeColor lb = DyeColor.LIGHT_BLUE;
         DyeColor bl = DyeColor.BLACK;
-        DyeColor blu = DyeColor.LIGHT_BLUE;
-        m.add(new Pattern(bl, PatternType.TRIANGLE_TOP));
-        m.add(new Pattern(bl, PatternType.TRIANGLES_TOP));
-        m.add(new Pattern(bl, PatternType.STRIPE_LEFT));
-        m.add(new Pattern(bl, PatternType.STRIPE_RIGHT));
-        t.add(new Pattern(bl, PatternType.STRIPE_CENTER));
-        t.add(new Pattern(bl, PatternType.STRIPE_TOP));
-        w.add(new Pattern(bl, PatternType.TRIANGLE_BOTTOM));
-        w.add(new Pattern(blu, PatternType.TRIANGLES_BOTTOM));
-        w.add(new Pattern(bl, PatternType.STRIPE_LEFT));
-        w.add(new Pattern(bl, PatternType.STRIPE_RIGHT));
-        f.add(new Pattern(bl, PatternType.STRIPE_MIDDLE));
-        f.add(new Pattern(blu, PatternType.STRIPE_RIGHT));
-        f.add(new Pattern(bl, PatternType.STRIPE_LEFT));
-        f.add(new Pattern(bl, PatternType.STRIPE_TOP));
-        s.add(new Pattern(bl, PatternType.TRIANGLE_TOP));
-        s.add(new Pattern(bl, PatternType.TRIANGLE_BOTTOM));
-        s.add(new Pattern(bl, PatternType.SQUARE_TOP_RIGHT));
-        s.add(new Pattern(bl, PatternType.SQUARE_BOTTOM_LEFT));
-        s.add(new Pattern(blu, PatternType.RHOMBUS_MIDDLE));
-        s.add(new Pattern(bl, PatternType.STRIPE_DOWNRIGHT));
+        m.add(new Pattern(lb, PatternType.TRIANGLE_TOP));
+        m.add(new Pattern(lb, PatternType.TRIANGLES_TOP));
+        m.add(new Pattern(lb, PatternType.STRIPE_LEFT));
+        m.add(new Pattern(lb, PatternType.STRIPE_RIGHT));
+        t.add(new Pattern(lb, PatternType.STRIPE_CENTER));
+        t.add(new Pattern(lb, PatternType.STRIPE_TOP));
+        w.add(new Pattern(lb, PatternType.TRIANGLE_BOTTOM));
+        w.add(new Pattern(bl, PatternType.TRIANGLES_BOTTOM));
+        w.add(new Pattern(lb, PatternType.STRIPE_LEFT));
+        w.add(new Pattern(lb, PatternType.STRIPE_RIGHT));
+        f.add(new Pattern(lb, PatternType.STRIPE_MIDDLE));
+        f.add(new Pattern(bl, PatternType.STRIPE_RIGHT));
+        f.add(new Pattern(lb, PatternType.STRIPE_LEFT));
+        f.add(new Pattern(lb, PatternType.STRIPE_TOP));
+        s.add(new Pattern(lb, PatternType.TRIANGLE_TOP));
+        s.add(new Pattern(lb, PatternType.TRIANGLE_BOTTOM));
+        s.add(new Pattern(lb, PatternType.SQUARE_TOP_RIGHT));
+        s.add(new Pattern(lb, PatternType.SQUARE_BOTTOM_LEFT));
+        s.add(new Pattern(bl, PatternType.RHOMBUS_MIDDLE));
+        s.add(new Pattern(lb, PatternType.STRIPE_DOWNRIGHT));
         bm.setPatterns(m);
         bt.setPatterns(t);
         bw.setPatterns(w);
@@ -702,11 +691,26 @@ public class InventoryUtil {
                     s.setItem(5, f);
                     s.setItem(6, this.s);
                     s.setItem(7, su);
-                    s.setItem(9, eleven);
-                    List<ScheduledShow> shows = MagicAssistant.showSchedule.getShows();
+                    List<ScheduledShow> shows = MagicAssistant.scheduleManager.getShows();
+                    List<String> times = new ArrayList<>();
+                    for (ScheduledShow show : shows) {
+                        if (!times.contains(show.getTime())) {
+                            times.add(show.getTime());
+                        }
+                    }
+                    HashMap<String, Integer> timeMap = new HashMap<>();
+                    int i = 9;
+                    for (String st : times) {
+                        if (i >= 54) {
+                            break;
+                        }
+                        s.setItem(i, new ItemCreator(Material.WATCH, ChatColor.GREEN + st));
+                        timeMap.put(st, i / 9);
+                        i += 9;
+                    }
                     for (ScheduledShow show : shows) {
                         ShowType type = show.getType();
-                        int place = getShowPos(show.getDay(), show.getTime());
+                        int place = getShowPos(show.getDay(), show.getTime(), timeMap);
                         if (type.getType().equals(Material.BANNER)) {
                             ItemStack banner = new ItemStack(Material.BANNER);
                             BannerMeta bm = (BannerMeta) banner.getItemMeta();
@@ -724,8 +728,6 @@ public class InventoryUtil {
                         s.setItem(place, new ItemCreator(type.getType(), 1, type.getData(), type.getName(),
                                 new ArrayList<String>()));
                     }
-                    s.setItem(18, four);
-                    s.setItem(27, nine);
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
                 }
@@ -735,10 +737,10 @@ public class InventoryUtil {
         }
     }
 
-    private int getShowPos(ShowDay day, ShowTime time) {
+    private int getShowPos(ShowDay day, String time, HashMap<String, Integer> timeMap) {
         int i = 10;
         i += day.ordinal();
-        i += (9 * time.ordinal());
+        i += (9 * (timeMap.get(time) - 1));
         return i;
     }
 

@@ -6,9 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 /**
  * Created by Marc on 10/23/15
@@ -43,10 +41,6 @@ public class PlayerGameModeChange implements Listener {
                 if (BlockEdit.isInBuildMode(player.getUniqueId())) {
                     event.setCancelled(true);
                     noBuild.send(player);
-                } else {
-                    if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.INTERN.getRankId()) {
-                        player.setAllowFlight(true);
-                    }
                 }
                 break;
         }

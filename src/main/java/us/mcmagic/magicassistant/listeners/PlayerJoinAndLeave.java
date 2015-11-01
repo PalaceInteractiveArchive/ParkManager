@@ -25,6 +25,7 @@ import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.storage.Backpack;
 import us.mcmagic.magicassistant.storage.Locker;
+import us.mcmagic.magicassistant.watch.WatchTask;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -263,6 +264,7 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.stitch.logout(player);
         Commandbuild.logout(player.getUniqueId());
         MagicAssistant.vanishUtil.logout(player);
+        WatchTask.removeFromMessage(player.getUniqueId());
         Commandvanish.unvanish(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
         DesignStation.removePlayerVehicle(player.getUniqueId());

@@ -454,6 +454,8 @@ public class BandUtil {
         String hour;
         if (Integer.parseInt(h) > 12) {
             hour = (Integer.parseInt(h) - 12) + ":" + minute + ":" + second + " PM";
+        } else if (Integer.parseInt(h) == 12) {
+            hour = 12 + ":" + minute + ":" + second + " PM";
         } else if (Integer.parseInt(h) == 0) {
             hour = 12 + ":" + minute + ":" + second + " AM";
         } else {

@@ -16,11 +16,13 @@ import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class BlockEdit implements Listener {
     private static List<UUID> buildMode = new ArrayList<>();
+    private HashMap<UUID, Long> delay = new HashMap<>();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -31,8 +33,15 @@ public class BlockEdit implements Listener {
             return;
         } else {
             if (!isInBuildMode(player.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You must be in Build Mode to break blocks!");
                 event.setCancelled(true);
+                if (delay.containsKey(player.getUniqueId())) {
+                    if (System.currentTimeMillis() < delay.get(player.getUniqueId())) {
+                        return;
+                    }
+                    delay.remove(player.getUniqueId());
+                }
+                player.sendMessage(ChatColor.RED + "You must be in Build Mode to break blocks!");
+                delay.put(player.getUniqueId(), System.currentTimeMillis() + 1000);
                 return;
             }
         }
@@ -82,8 +91,15 @@ public class BlockEdit implements Listener {
             event.setCancelled(true);
         } else {
             if (!isInBuildMode(player.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You must be in Build Mode to place blocks!");
                 event.setCancelled(true);
+                if (delay.containsKey(player.getUniqueId())) {
+                    if (System.currentTimeMillis() < delay.get(player.getUniqueId())) {
+                        return;
+                    }
+                    delay.remove(player.getUniqueId());
+                }
+                player.sendMessage(ChatColor.RED + "You must be in Build Mode to place blocks!");
+                delay.put(player.getUniqueId(), System.currentTimeMillis() + 1000);
             }
         }
     }

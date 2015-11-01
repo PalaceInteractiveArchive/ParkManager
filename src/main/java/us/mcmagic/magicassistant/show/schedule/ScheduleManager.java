@@ -5,8 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.show.handlers.schedule.ShowDay;
-import us.mcmagic.magicassistant.show.handlers.schedule.ShowTime;
 import us.mcmagic.magicassistant.show.handlers.schedule.ShowType;
+import us.mcmagic.magicassistant.show.handlers.schedule.TimeStorage;
 
 import java.io.*;
 import java.net.URL;
@@ -14,11 +14,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShowSchedule {
+public class ScheduleManager {
     public String url = "https://spreadsheets.google.com/feeds/cells/10TSt2OhCQGb8Wh_uUn-PLZExmuLP6ROKXCaywN_Ai1U/od6/public/basic?alt=json";
     private List<ScheduledShow> shows = new ArrayList<>();
 
-    public ShowSchedule() {
+    public ScheduleManager() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -34,13 +34,19 @@ public class ShowSchedule {
         }
         JSONArray array = obj.getJSONObject("feed").getJSONArray("entry");
         shows.clear();
+        TimeStorage timeStorage = new TimeStorage();
         for (int i = 0; i < array.length(); i++) {
             JSONObject ob = array.getJSONObject(i);
             JSONObject sch = ob.getJSONObject("content");
             JSONObject id = ob.getJSONObject("title");
+            String column = id.getString("$t");
+            Integer row = Integer.parseInt(column.substring(1, 2));
+            if (column.substring(0, 1).equalsIgnoreCase("a")) {
+                timeStorage.add(row, sch.getString("$t"));
+                continue;
+            }
             ShowType name = ShowType.fromString(sch.getString("$t"));
-            ScheduledShow show = new ScheduledShow(name, dayFromCellID(id.getString("$t")),
-                    timeFromCellID(id.getString("$t")));
+            ScheduledShow show = new ScheduledShow(name, dayFromCellID(id.getString("$t")), timeStorage.getTime(row));
             shows.add(show);
         }
     }
@@ -49,48 +55,30 @@ public class ShowSchedule {
         return new ArrayList<>(shows);
     }
 
-    private ShowTime timeFromCellID(String s) {
-        String column = s.substring(0, 1);
-        Integer row = Integer.parseInt(s.substring(1));
-        ShowTime time = null;
-        switch (row) {
-            case 1:
-                time = ShowTime.ELEVEN;
-                break;
-            case 2:
-                time = ShowTime.FOUR;
-                break;
-            case 3:
-                time = ShowTime.NINE;
-                break;
-        }
-        return time;
-    }
-
     private ShowDay dayFromCellID(String s) {
         String column = s.substring(0, 1);
         Integer row = Integer.parseInt(s.substring(1));
         ShowDay day = null;
         switch (column.toLowerCase()) {
-            case "a":
+            case "b":
                 day = ShowDay.MONDAY;
                 break;
-            case "b":
+            case "c":
                 day = ShowDay.TUESDAY;
                 break;
-            case "c":
+            case "d":
                 day = ShowDay.WEDNESDAY;
                 break;
-            case "d":
+            case "e":
                 day = ShowDay.THURSDAY;
                 break;
-            case "e":
+            case "f":
                 day = ShowDay.FRIDAY;
                 break;
-            case "f":
+            case "g":
                 day = ShowDay.SATURDAY;
                 break;
-            case "g":
+            case "h":
                 day = ShowDay.SUNDAY;
                 break;
         }

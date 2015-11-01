@@ -1,7 +1,6 @@
 package us.mcmagic.magicassistant.show.schedule;
 
 import us.mcmagic.magicassistant.show.handlers.schedule.ShowDay;
-import us.mcmagic.magicassistant.show.handlers.schedule.ShowTime;
 import us.mcmagic.magicassistant.show.handlers.schedule.ShowType;
 
 /**
@@ -10,9 +9,9 @@ import us.mcmagic.magicassistant.show.handlers.schedule.ShowType;
 public class ScheduledShow {
     private ShowType type;
     private ShowDay day;
-    private ShowTime time;
+    private String time;
 
-    public ScheduledShow(ShowType type, ShowDay day, ShowTime time) {
+    public ScheduledShow(ShowType type, ShowDay day, String time) {
         this.type = type;
         this.day = day;
         this.time = time;
@@ -26,7 +25,7 @@ public class ScheduledShow {
         return day;
     }
 
-    public ShowTime getTime() {
+    public String getTime() {
         return time;
     }
 }

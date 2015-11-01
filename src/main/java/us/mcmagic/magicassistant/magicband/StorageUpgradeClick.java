@@ -47,6 +47,7 @@ public class StorageUpgradeClick {
                     player.closeInventory();
                     return;
                 }
+                player.closeInventory();
                 MCMagicCore.economy.addBalance(player.getUniqueId(), -500);
                 ItemStack[] cont = data.getBackpack().getInventory().getContents();
                 data.setBackpack(new Backpack(player, StorageSize.LARGE, cont));
@@ -65,6 +66,7 @@ public class StorageUpgradeClick {
                     player.closeInventory();
                     return;
                 }
+                player.closeInventory();
                 MCMagicCore.economy.addBalance(player.getUniqueId(), -500);
                 ItemStack[] cont = data.getLocker().getInventory().getContents();
                 data.setLocker(new Locker(player, StorageSize.LARGE, cont));

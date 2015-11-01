@@ -1,6 +1,5 @@
 package us.mcmagic.magicassistant.show;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.*;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.entity.EntityType;
@@ -444,12 +443,9 @@ public class Show {
                         int x = Integer.parseInt(tokens[3]);
                         int y = Integer.parseInt(tokens[4]);
                         int z = Integer.parseInt(tokens[5]);
-                        Location pasteloc = new Location(
-                                Bukkit.getWorld(tokens[6]), x, y, z);
-                        WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-                        File schemfile = new File(wep.getDataFolder().getPath() + "/schematics/" + tokens[2] + ".schematic");
-                        boolean noAir;
-                        noAir = !tokens[7].toLowerCase().contains("false");
+                        Location pasteloc = new Location(Bukkit.getWorld(tokens[6]), x, y, z);
+                        File schemfile = new File("plugins/WorldEdit/schematics/" + tokens[2] + ".schematic");
+                        boolean noAir = !tokens[7].toLowerCase().contains("false");
                         actions.add(new SchematicAction(this, time, pasteloc, schemfile, noAir));
                     }
                 }

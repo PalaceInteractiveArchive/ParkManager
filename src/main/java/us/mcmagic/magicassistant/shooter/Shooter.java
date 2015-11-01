@@ -80,7 +80,10 @@ public class Shooter implements Listener {
 
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        event.setCancelled(event.getPlayer().getInventory().contains(stack));
+        Player player = event.getPlayer();
+        if (ingame.contains(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
     }
 
     @SuppressWarnings("deprecation")

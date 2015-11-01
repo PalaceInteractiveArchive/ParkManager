@@ -557,6 +557,22 @@ public class Commandmagic implements Listener, CommandExecutor {
                         helpMenu("changer", sender);
                         return true;
                 }
+            case "schedule":
+                if (args.length > 1) {
+                    if (args[1].equalsIgnoreCase("reload")) {
+                        sender.sendMessage(ChatColor.BLUE + "Reloading Show Schedule...");
+                        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+                                MagicAssistant.scheduleManager.update();
+                                sender.sendMessage(ChatColor.BLUE + "Show Schedule reloaded!");
+                            }
+                        });
+                        return true;
+                    }
+                }
+                helpMenu("schedule", sender);
+                return true;
             case "hotel":
                 sender.sendMessage(ChatColor.BLUE + "Reloading hotel rooms...");
                 MagicAssistant.hotelManager.refreshRooms();
@@ -667,7 +683,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant.parkSoundManager.initialize();
                 ma.setupRides();
                 MagicAssistant.stitch.initialize();
-                MagicAssistant.showSchedule.update();
+                MagicAssistant.scheduleManager.update();
                 MagicAssistant.itemUtil.initialize();
                 MagicAssistant.hotelManager.refreshRooms();
                 try {
@@ -705,6 +721,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic rc " + ChatColor.AQUA + "- Ride Counters");
+                sender.sendMessage(ChatColor.GREEN + "/magic schedule " + ChatColor.AQUA + "- Show Schedule");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
                 break;
             case "shooter":
@@ -747,6 +764,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Effect Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic effect particle type x y z xd yd zd speed amount");
                 sender.sendMessage(ChatColor.GREEN + "/magic effect flash x y z");
+                break;
+            case "schedule":
+                sender.sendMessage(ChatColor.GREEN + "Schedule Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic schedule reload" + ChatColor.AQUA + " - Reload Show Schedule");
                 break;
             case "queue":
                 sender.sendMessage(ChatColor.GREEN + "Queue Commands:");
