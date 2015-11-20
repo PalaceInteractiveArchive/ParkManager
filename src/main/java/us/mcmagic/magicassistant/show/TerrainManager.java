@@ -15,6 +15,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.world.registry.WorldData;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -80,10 +81,13 @@ public class TerrainManager {
         editSession.flushQueue();
     }
 
-    public void loadSchematic(WorldEditPlugin wep, File saveFile, Location loc, boolean noAir) throws FilenameException, DataException,
-            IOException, MaxChangedBlocksException, EmptyClipboardException {
-        File f = wep.getWorldEdit().getSafeOpenFile(null, new File("plugins/WorldEdit/schematics"), saveFile.getName(),
+    public void loadSchematic(WorldEditPlugin wep, String fileName, Location loc, boolean noAir) throws Exception {
+        File f = wep.getWorldEdit().getSafeOpenFile(null, new File("plugins/WorldEdit/schematics"), fileName,
                 "schematic", "schematic");
+        if (!f.exists()) {
+            Bukkit.broadcast("Tried to load Schematic " + fileName + " but does not exist!", "arcade.bypass");
+            return;
+        }
         Closer closer = Closer.create();
         FileInputStream fis = closer.register(new FileInputStream(f));
         BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
@@ -92,27 +96,14 @@ public class TerrainManager {
         Clipboard clipboard = reader.read(worldData);
         localSession.setClipboard(new ClipboardHolder(clipboard, worldData));
         Region region = clipboard.getRegion();
-        Vector to = clipboard.getOrigin();
+        Vector to = new Vector(loc.getX(), loc.getY(), loc.getZ());
         Operation operation = localSession.getClipboard().createPaste(editSession, editSession.getWorld()
                 .getWorldData()).to(to).ignoreAirBlocks(noAir).build();
         Operations.completeLegacy(operation);
-        /*
-
-        Location loc1 = null;
-        Location loc2 = null;
-        CuboidRegion r = new CuboidRegion(getMin(loc1, loc2), getMax(loc1, loc2));
-        BlockArrayClipboard clip = new BlockArrayClipboard(r);
-        ClipboardHolder holder = new ClipboardHolder(clip, new BukkitWorld(loc.getWorld()).getWorldData());
-        localSession.setClipboard(holder);
-        localSession.getClipboard().place(editSession, getPastePosition(loc), noAir);
-        editSession.flushQueue();
-        we.flushBlockBag(localPlayer, editSession);
-        */
     }
 
-    public void loadSchematic(WorldEditPlugin wep, File saveFile, boolean noAir) throws FilenameException, DataException, IOException,
-            MaxChangedBlocksException, EmptyClipboardException {
-        loadSchematic(wep, saveFile, null, noAir);
+    public void loadSchematic(WorldEditPlugin wep, String fileName, boolean noAir) throws Exception {
+        loadSchematic(wep, fileName, null, noAir);
     }
 
     private Vector getMin(Location l1, Location l2) {

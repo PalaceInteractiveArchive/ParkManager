@@ -30,10 +30,12 @@ public class ItemUtil {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM items");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
-                String[] list = result.getString("lore").split(";");
                 List<String> lore = new ArrayList<>();
-                for (String s : list) {
-                    lore.add(ChatColor.translateAlternateColorCodes('&', s));
+                String l = result.getString("lore");
+                if (!l.equals("")) {
+                    for (String s : l.split(";")) {
+                        lore.add(ChatColor.translateAlternateColorCodes('&', s));
+                    }
                 }
                 ItemStack item = new ItemCreator(Material.getMaterial(result.getInt("type")), 1,
                         (byte) result.getInt("data"), ChatColor.translateAlternateColorCodes('&',

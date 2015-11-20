@@ -13,6 +13,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.BandColor;
 import us.mcmagic.magicassistant.handlers.DataResponse;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
@@ -56,7 +57,7 @@ public class BandUtil {
                     if (inv == null) {
                         continue;
                     }
-                    ItemStack pinfo = inv.getItem(15);
+                    ItemStack pinfo = inv.getItem(4);
                     if (pinfo == null) {
                         continue;
                     }
@@ -67,7 +68,7 @@ public class BandUtil {
                             ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
                             ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
                     pinfo.setItemMeta(meta);
-                    inv.setItem(15, pinfo);
+                    inv.setItem(4, pinfo);
                 }
             }
         }, 0L, 10L);
@@ -115,7 +116,7 @@ public class BandUtil {
     public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT friends,bandcolor,rank,namecolor,flash,visibility," +
-                    "fountain,hotel,fastpass,dailyfp,fpday FROM player_data WHERE uuid=?");
+                    "fountain,hotel,fastpass,dailyfp,fpday,buildmode,outfit FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
@@ -133,7 +134,10 @@ public class BandUtil {
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
                     result.getInt("fountain") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"),
-                    result.getInt("dailyfp"), result.getInt("fpday"));
+                    result.getInt("dailyfp"), result.getInt("fpday"), result.getString("outfit"));
+            if (result.getInt("buildmode") == 1) {
+                PlayerJoinAndLeave.makeBuildMode.add(uuid);
+            }
             result.close();
             sql.close();
             List<Integer> purch = new ArrayList<>();
@@ -181,10 +185,6 @@ public class BandUtil {
                 }
             }
         });
-    }
-
-    public void removePlayerData(Player player) {
-        MagicAssistant.playerData.remove(player.getUniqueId());
     }
 
     public long getOnlineTime(UUID uuid) {

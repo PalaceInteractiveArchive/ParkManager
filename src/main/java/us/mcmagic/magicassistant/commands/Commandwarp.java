@@ -167,7 +167,7 @@ public class Commandwarp implements CommandExecutor {
                 return true;
             }
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
-            if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
+            if (rank.getRankId() < Rank.INTERN.getRankId()) {
                 player.performCommand("warp " + args[0]);
                 return true;
             }

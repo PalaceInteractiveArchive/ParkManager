@@ -46,8 +46,8 @@ public class ShowEventClick {
             case "Main Street Electrical Parade":
                 player.performCommand("warp mainstreet");
                 return;
-            case "Festival of Fantasy Parade":
-                player.performCommand("warp mainstreet");
+            case "Finding Nemo the Musical":
+                player.performCommand("warp fntm");
         }
     }
 }

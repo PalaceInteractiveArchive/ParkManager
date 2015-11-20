@@ -69,6 +69,9 @@ public class MainMenuClick {
                 }
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 return;
+            case IRON_CHESTPLATE:
+                MagicAssistant.inventoryUtil.openWardrobeManagerPage(player, 1);
+                return;
             case WATCH:
                 ItemStack time = new ItemStack(Material.WATCH);
                 ItemMeta tm = time.getItemMeta();

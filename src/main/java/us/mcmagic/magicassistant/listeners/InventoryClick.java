@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -15,10 +16,7 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStationClick;
 import us.mcmagic.magicassistant.magicband.*;
 import us.mcmagic.magicassistant.watch.WatchTask;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
-import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.User;
 
 public class InventoryClick implements Listener {
 
@@ -33,8 +31,19 @@ public class InventoryClick implements Listener {
         int slot = event.getSlot();
         if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
             if (!BlockEdit.isInBuildMode(((PlayerInventory) event.getClickedInventory()).getHolder().getUniqueId())) {
+                if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
+                    event.setCancelled(true);
+                    return;
+                }
                 if (slot > 3) {
                     event.setResult(Event.Result.DENY);
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        } else {
+            if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
+                if (event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -44,6 +53,11 @@ public class InventoryClick implements Listener {
         if (name.equals(player.getName() + "'s MagicBand")) {
             MainMenuClick.handle(event);
             event.setCancelled(true);
+            return;
+        }
+        if (name.startsWith("Wardrobe Manager Page")) {
+            event.setCancelled(true);
+            MagicAssistant.wardrobeManager.handle(event);
             return;
         }
         if (name.startsWith("Resource Pack Menu")) {
@@ -96,6 +110,10 @@ public class InventoryClick implements Listener {
             case "Customize Menu":
                 event.setCancelled(true);
                 CustomizeMenuClick.handle(event);
+                return;
+            case "Wardrobe Manager":
+                event.setCancelled(true);
+                MagicAssistant.wardrobeManager.handle(event);
                 return;
             case "Customize Band Color":
                 event.setCancelled(true);
@@ -176,37 +194,6 @@ public class InventoryClick implements Listener {
             case "Show Timetable":
                 event.setCancelled(true);
                 ShowTimeClick.handle(event);
-                return;
-        }
-        if (clicked.getItemMeta() != null && clicked.getItemMeta().getDisplayName() != null) {
-            if (clicked.getItemMeta().getDisplayName().toLowerCase().endsWith("mickey ears")) {
-                event.setCancelled(true);
-                event.setResult(Event.Result.DENY);
-                return;
-            }
-            User user = MCMagicCore.getUser(player.getUniqueId());
-            if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-                if (slot == 7 || slot == 8) {
-                    event.setCancelled(true);
-                    event.setResult(Event.Result.DENY);
-                    return;
-                }
-                if (clicked.getItemMeta().getDisplayName().startsWith("&")) {
-                    if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', clicked.getItemMeta().getDisplayName())).startsWith("MagicBand")) {
-                        event.setCancelled(true);
-                        event.setResult(Event.Result.DENY);
-                    }
-                } else {
-                    if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("MagicBand")) {
-                        event.setCancelled(true);
-                        event.setResult(Event.Result.DENY);
-                    }
-                    if (ChatColor.stripColor(clicked.getItemMeta().getDisplayName()).startsWith("Autograph Book")) {
-                        event.setCancelled(true);
-                        event.setResult(Event.Result.DENY);
-                    }
-                }
-            }
         }
     }
 

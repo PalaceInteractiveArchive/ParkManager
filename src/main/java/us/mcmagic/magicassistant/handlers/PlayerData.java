@@ -2,6 +2,8 @@ package us.mcmagic.magicassistant.handlers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.storage.Backpack;
 import us.mcmagic.magicassistant.storage.Locker;
 
@@ -31,10 +33,12 @@ public class PlayerData {
     private Locker locker;
     private HashMap<String, Integer> rideCounts = new HashMap<>();
     private List<Integer> purchases;
+    private Clothing clothing;
+    private String outfitCode;
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
                       boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp,
-                      int fpday) {
+                      int fpday, String outfitCode) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -49,6 +53,41 @@ public class PlayerData {
         this.dailyfp = dailyfp;
         this.fpday = fpday;
         this.purchases = purchases;
+        this.outfitCode = outfitCode;
+        Clothing c = new Clothing();
+        String[] list = outfitCode.split(",");
+        int in = 0;
+        for (String s : list) {
+            try {
+                Integer i = Integer.parseInt(s);
+                Outfit o = MagicAssistant.wardrobeManager.getOutfit(i);
+                if (o == null) {
+                    continue;
+                }
+                switch (in) {
+                    case 0:
+                        c.setHead(o.getHead());
+                        c.setHeadID(i);
+                        break;
+                    case 1:
+                        c.setShirt(o.getShirt());
+                        c.setShirtID(i);
+                        break;
+                    case 2:
+                        c.setPants(o.getPants());
+                        c.setPantsID(i);
+                        break;
+                    case 3:
+                        c.setBoots(o.getBoots());
+                        c.setBootsID(i);
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            in++;
+        }
+        this.clothing = c;
     }
 
     public UUID getUniqueId() {
@@ -114,6 +153,10 @@ public class PlayerData {
             default:
                 this.bandColor = BandColor.BLUE;
         }
+    }
+
+    public void addPurchase(Integer id) {
+        purchases.add(id);
     }
 
     public HashMap<String, Integer> getRideCounts() {
@@ -195,6 +238,112 @@ public class PlayerData {
     public void addPurchase(int i) {
         if (!purchases.contains(i)) {
             purchases.add(i);
+        }
+    }
+
+    public String getOutfitCode() {
+        return outfitCode;
+    }
+
+    public void setOutfitCode(String outfitCode) {
+        this.outfitCode = outfitCode;
+    }
+
+    public Clothing getClothing() {
+        return clothing;
+    }
+
+    public void setClothing(Clothing clothing) {
+        this.clothing = clothing;
+    }
+
+    public class Clothing {
+        private ItemStack head = null;
+        private int headID;
+        private ItemStack shirt = null;
+        private int shirtID;
+        private ItemStack pants = null;
+        private int pantsID;
+        private ItemStack boots = null;
+        private int bootsID;
+
+        public Clothing() {
+        }
+
+        public Clothing(ItemStack head, int headID, ItemStack shirt, int shirtID, ItemStack pants,
+                        int pantsID, ItemStack boots, int bootsID) {
+            this.head = head;
+            this.headID = headID;
+            this.shirt = shirt;
+            this.shirtID = shirtID;
+            this.pants = pants;
+            this.pantsID = pantsID;
+            this.boots = boots;
+            this.bootsID = bootsID;
+        }
+
+        public ItemStack getHead() {
+            return head;
+        }
+
+        public int getHeadID() {
+            return headID;
+        }
+
+        public ItemStack getShirt() {
+            return shirt;
+        }
+
+        public int getShirtID() {
+            return shirtID;
+        }
+
+        public ItemStack getPants() {
+            return pants;
+        }
+
+        public int getPantsID() {
+            return pantsID;
+        }
+
+        public ItemStack getBoots() {
+            return boots;
+        }
+
+        public int getBootsID() {
+            return bootsID;
+        }
+
+        public void setHead(ItemStack head) {
+            this.head = head;
+        }
+
+        public void setHeadID(int headID) {
+            this.headID = headID;
+        }
+
+        public void setShirt(ItemStack shirt) {
+            this.shirt = shirt;
+        }
+
+        public void setShirtID(int shirtID) {
+            this.shirtID = shirtID;
+        }
+
+        public void setPants(ItemStack pants) {
+            this.pants = pants;
+        }
+
+        public void setPantsID(int pantsID) {
+            this.pantsID = pantsID;
+        }
+
+        public void setBoots(ItemStack boots) {
+            this.boots = boots;
+        }
+
+        public void setBootsID(int bootsID) {
+            this.bootsID = bootsID;
         }
     }
 }

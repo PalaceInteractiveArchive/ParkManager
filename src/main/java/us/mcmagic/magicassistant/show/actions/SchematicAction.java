@@ -1,30 +1,23 @@
 package us.mcmagic.magicassistant.show.actions;
 
-import com.sk89q.worldedit.EmptyClipboardException;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.data.DataException;
-import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import us.mcmagic.magicassistant.show.Show;
 import us.mcmagic.magicassistant.show.TerrainManager;
 
-import java.io.File;
-import java.io.IOException;
-
 public class SchematicAction extends ShowAction {
-    private static WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-    private static TerrainManager tm = new TerrainManager(wep, Bukkit.getWorlds().get(0));
+    public static WorldEditPlugin wep;
+    private static TerrainManager tm;
     private Location loc;
-    private File fname;
+    private String fname;
     private boolean noAir;
 
-    public SchematicAction(Show show, long time, Location loadloc, File file, boolean pastea) {
+    public SchematicAction(Show show, long time, Location loc, String fname, boolean noAir) {
         super(show, time);
-        loc = loadloc;
-        fname = file;
-        noAir = pastea;
+        this.loc = loc;
+        this.fname = fname;
+        this.noAir = noAir;
     }
 
     @Override
@@ -32,10 +25,13 @@ public class SchematicAction extends ShowAction {
     public void play() {
         try {
             tm.loadSchematic(wep, fname, loc, noAir);
-        } catch (FilenameException | DataException | MaxChangedBlocksException | IOException | EmptyClipboardException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
+    public static void setWorldEdit(WorldEditPlugin pl) {
+        wep = pl;
+        tm = new TerrainManager(wep, Bukkit.getWorlds().get(0));
+    }
 }

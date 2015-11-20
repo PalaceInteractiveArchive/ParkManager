@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
+import us.mcmagic.magicassistant.handlers.Outfit;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.utils.BandUtil;
 import us.mcmagic.magicassistant.utils.FileUtil;
@@ -27,6 +29,7 @@ import java.util.*;
 public class ShopManager {
     private List<Shop> shops = new ArrayList<>();
     private HashMap<UUID, ShopItem> confirmations = new HashMap<>();
+    private HashMap<UUID, OutfitItem> outfitConfirm = new HashMap<>();
 
     public ShopManager() {
         initialize();
@@ -42,6 +45,7 @@ public class ShopManager {
                 lore.add(ChatColor.translateAlternateColorCodes('&', ss));
             }
             List<ShopItem> items = new ArrayList<>();
+            List<OutfitItem> outfits = new ArrayList<>();
             for (String i : config.getStringList("shop." + s + ".items")) {
                 int id = 0;
                 byte data = 0;
@@ -55,8 +59,12 @@ public class ShopManager {
                 ShopItem item = new ShopItem(ChatColor.translateAlternateColorCodes('&', ChatColor.RESET +
                         config.getString("items." + i + ".name")), ShopCategory.fromString(config.getString("items." +
                         i + ".category")), id, data, lore,
-                        config.getInt("items." + i + ".cost"));
+                        config.getInt("items." + i + ".cost"), CurrencyType.fromString(config.getString("items." + i +
+                        ".currency")));
                 items.add(item);
+            }
+            for (Integer i : config.getIntegerList("shop." + s + ".outfits")) {
+                outfits.add(new OutfitItem(i, config.getInt("outfits." + i + ".cost")));
             }
             Warp warp = WarpUtil.findWarp(config.getString("shop." + s + ".warp"));
             if (warp == null) {
@@ -74,8 +82,8 @@ public class ShopManager {
             }
             Location loc = new Location(Bukkit.getWorlds().get(0), config.getDouble("shop." + s + ".x"),
                     config.getDouble("shop." + s + ".y"), config.getDouble("shop." + s + ".z"));
-            Shop shop = new Shop(display, loc, items, new ItemCreator(Material.getMaterial(id), 1, data, display,
-                    Arrays.asList(" ", ChatColor.GREEN + "/warp " + warp.getName())), warp.getName(),
+            Shop shop = new Shop(display, loc, items, outfits, new ItemCreator(Material.getMaterial(id), 1, data,
+                    display, Arrays.asList(" ", ChatColor.GREEN + "/warp " + warp.getName())), warp.getName(),
                     config.getDouble("shop." + s + ".radius"));
             shops.add(shop);
         }
@@ -107,7 +115,8 @@ public class ShopManager {
             List<String> lore = new ArrayList<>(item.getLore());
             int cost = item.getCost();
             lore.add(" ");
-            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) + "$" + cost);
+            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                    item.getCurrencyType().getIcon() + cost);
             ItemStack i = new ItemCreator(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
                     lore);
             menu.setItem(place, i);
@@ -174,6 +183,10 @@ public class ShopManager {
 
     @SuppressWarnings("deprecation")
     public void openCategory(Player player, Shop shop, ShopCategory category) {
+        if (category.equals(ShopCategory.WARDROBE)) {
+            openWardrobe(player, shop);
+            return;
+        }
         List<ShopItem> items = new ArrayList<>();
         for (ShopItem item : shop.getItems()) {
             if (item.getCategory().equals(category)) {
@@ -205,7 +218,8 @@ public class ShopManager {
             List<String> lore = new ArrayList<>(item.getLore());
             int cost = item.getCost();
             lore.add(" ");
-            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) + "$" + cost);
+            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                    item.getCurrencyType().getIcon() + cost);
             ItemStack i = new ItemCreator(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
                     lore);
             menu.setItem(place, i);
@@ -218,6 +232,51 @@ public class ShopManager {
         }
         menu.setItem(22, BandUtil.getBackItem());
         player.openInventory(menu);
+    }
+
+    private void openWardrobe(Player player, Shop shop) {
+        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + shop.getName() +
+                ChatColor.GREEN + " - " + ChatColor.BLUE + "Wardrobe");
+        List<OutfitItem> outfits = shop.getOutfits();
+        if (outfits.isEmpty()) {
+            inv.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
+                    "No items are currently available in this category!"));
+            inv.setItem(22, BandUtil.getBackItem());
+            player.openInventory(inv);
+            return;
+        }
+        int balance = MCMagicCore.economy.getBalance(player.getUniqueId());
+        int size = outfits.size();
+        int place = 13;
+        int amount = 1;
+        //If even, increase place by 1
+        if (size % 2 == 0) {
+            place++;
+            amount++;
+        }
+        for (OutfitItem item : outfits) {
+            List<String> lore = new ArrayList<>();
+            int cost = item.getCost();
+            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                    CurrencyType.TOKEN.getIcon() + cost);
+            Outfit o = MagicAssistant.wardrobeManager.getOutfit(item.getOutfitId());
+            ItemStack it = o.getHead() == null ? (o.getShirt() == null ? (o.getPants() == null ? o.getBoots() :
+                    o.getPants()) : o.getShirt()) : o.getHead();
+            ItemStack i = it.clone();
+            ItemMeta m = i.getItemMeta();
+            m.setDisplayName(o.getName());
+            m.setLore(lore);
+            i.setItemMeta(m);
+            inv.setItem(place, i);
+            if (amount % 2 == 0) {
+                place -= amount;
+            } else {
+                place += amount;
+            }
+            amount++;
+        }
+        inv.setItem(22, BandUtil.getBackItem());
+        player.openInventory(inv);
     }
 
     public void openMenu(Player player) {
@@ -241,7 +300,6 @@ public class ShopManager {
         inv.setItem(11, ShopCategory.WARDROBE.getStack());
         inv.setItem(13, ShopCategory.TOYS.getStack());
         inv.setItem(15, ShopCategory.DOLLS.getStack());
-        inv.setItem(22, BandUtil.getBackItem());
         player.openInventory(inv);
     }
 
@@ -266,13 +324,17 @@ public class ShopManager {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (sname.contains("-")) {
-            if (stack.equals(BandUtil.getBackItem())) {
-                openMenu(player);
-                return;
-            }
             String[] list = ChatColor.stripColor(sname).split(" - ");
             Shop shop = getShop(list[0]);
+            if (stack.equals(BandUtil.getBackItem())) {
+                openMenu(player, shop);
+                return;
+            }
             ShopCategory category = ShopCategory.fromString(list[1]);
+            if (category.equals(ShopCategory.WARDROBE)) {
+                purchaseOutfit(player, shop, name, event);
+                return;
+            }
             List<ShopItem> items = new ArrayList<>();
             for (ShopItem item : shop.getItems()) {
                 if (item.getCategory().equals(category)) {
@@ -300,6 +362,33 @@ public class ShopManager {
         }
     }
 
+    private void purchaseOutfit(Player player, Shop shop, String name, InventoryClickEvent event) {
+        List<OutfitItem> items = new ArrayList<>();
+        for (OutfitItem item : shop.getOutfits()) {
+            items.add(item);
+        }
+        Outfit ou = null;
+        OutfitItem item = null;
+        for (Outfit o : MagicAssistant.wardrobeManager.getOutfits()) {
+            if (ChatColor.stripColor(o.getName()).equalsIgnoreCase(name)) {
+                ou = o;
+                break;
+            }
+        }
+        if (ou == null) {
+            return;
+        }
+        for (OutfitItem i : items) {
+            if (i.getOutfitId() == ou.getId()) {
+                item = i;
+            }
+        }
+        if (item == null) {
+            return;
+        }
+        openConfirm(player, item);
+    }
+
     public void cancelPurchase(Player player) {
         confirmations.remove(player.getUniqueId());
     }
@@ -313,30 +402,77 @@ public class ShopManager {
                 player.closeInventory();
                 return;
             }
-            MCMagicCore.economy.addBalance(player.getUniqueId(), -item.getCost());
+            switch (item.getCurrencyType()) {
+                case MONEY:
+                    MCMagicCore.economy.addBalance(player.getUniqueId(), -item.getCost(),
+                            MCMagicCore.getMCMagicConfig().serverName + " Store");
+                    break;
+                case TOKEN:
+                    MCMagicCore.economy.addTokens(player.getUniqueId(), -item.getCost(),
+                            MCMagicCore.getMCMagicConfig().serverName + " Store");
+                    break;
+            }
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased " + item.getDisplayName() +
                     ChatColor.GREEN + "!");
             player.closeInventory();
             player.getInventory().addItem(item.getItem());
+        } else if (outfitConfirm.containsKey(player.getUniqueId())) {
+            OutfitItem item = outfitConfirm.remove(player.getUniqueId());
+            Outfit o = MagicAssistant.wardrobeManager.getOutfit(item.getOutfitId());
+            int tkn = MCMagicCore.economy.getTokens(player.getUniqueId());
+            if (tkn < item.getCost()) {
+                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cannot afford that item!");
+                player.closeInventory();
+                return;
+            }
+            MCMagicCore.economy.addTokens(player.getUniqueId(), -item.getCost(),
+                    MCMagicCore.getMCMagicConfig().serverName + " Store");
+            player.sendMessage(ChatColor.GREEN + "You have successfully purchased the " + o.getName() + " Outfit" +
+                    ChatColor.GREEN + "!");
+            player.closeInventory();
+            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+            data.addPurchase(o.getId());
         }
     }
 
-    public void openConfirm(Player player, ShopItem item) {
-        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
-        ItemStack name = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
-                Arrays.asList(ChatColor.GREEN + "You are about to purchase", item.getDisplayName(), ChatColor.GREEN +
-                        "for " + ChatColor.YELLOW + "$" + item.getCost() + ChatColor.GREEN + "."));
-        ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
-                Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
-        ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",
-                new ArrayList<String>());
-        inv.setItem(4, name);
-        inv.setItem(11, no);
-        inv.setItem(15, yes);
-        if (confirmations.containsKey(player.getUniqueId())) {
-            confirmations.remove(player.getUniqueId());
+    public void openConfirm(Player player, Object item) {
+        if (item instanceof ShopItem) {
+            ShopItem itm = (ShopItem) item;
+            Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
+            ItemStack name = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
+                    Arrays.asList(ChatColor.GREEN + "You are about to purchase", itm.getDisplayName(), ChatColor.GREEN +
+                            "for " + ChatColor.YELLOW + itm.getCurrencyType().getIcon() + itm.getCost() + ChatColor.GREEN + "."));
+            ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
+                    Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
+            ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",
+                    new ArrayList<String>());
+            inv.setItem(4, name);
+            inv.setItem(11, no);
+            inv.setItem(15, yes);
+            if (confirmations.containsKey(player.getUniqueId())) {
+                confirmations.remove(player.getUniqueId());
+            }
+            confirmations.put(player.getUniqueId(), itm);
+            player.openInventory(inv);
+        } else if (item instanceof OutfitItem) {
+            OutfitItem itm = (OutfitItem) item;
+            Outfit o = MagicAssistant.wardrobeManager.getOutfit(itm.getOutfitId());
+            Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
+            ItemStack name = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
+                    Arrays.asList(ChatColor.GREEN + "You are about to purchase the ", o.getName() + " Outfit", ChatColor.GREEN +
+                            "for " + ChatColor.YELLOW + CurrencyType.TOKEN.getIcon() + itm.getCost() + ChatColor.GREEN + "."));
+            ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
+                    Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
+            ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",
+                    new ArrayList<String>());
+            inv.setItem(4, name);
+            inv.setItem(11, no);
+            inv.setItem(15, yes);
+            if (outfitConfirm.containsKey(player.getUniqueId())) {
+                outfitConfirm.remove(player.getUniqueId());
+            }
+            outfitConfirm.put(player.getUniqueId(), itm);
+            player.openInventory(inv);
         }
-        confirmations.put(player.getUniqueId(), item);
-        player.openInventory(inv);
     }
 }

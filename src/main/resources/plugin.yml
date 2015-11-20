@@ -1,9 +1,9 @@
 name: MagicAssistant
 author: MCMagicDev
-version: 1.8-SNAPSHOT
+version: 1.9-SNAPSHOT
 description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
-depend: [MCMagicCore, ProtocolLib]
+depend: [MCMagicCore, ProtocolLib, WorldEdit]
 commands:
    nearby:
       description: Finds warps within 100 blocks of your location.
@@ -28,6 +28,10 @@ commands:
    noon:
       description: Set time to noon
       permission: mcmagic.time.set
+      permission-message: §cOnly Cast Members can use this command!
+   pixel:
+      description: Pixelator Command
+      permission: arcade.bypass
       permission-message: §cOnly Cast Members can use this command!
    warp:
       description: Warp Command
@@ -77,10 +81,6 @@ commands:
    fly:
       description: Toggle your fly!
       permission: mcmagic.fly
-      permission-message: §cOnly Staff Members can use this command!
-   mb:
-      description: Default MagicBand Command!
-      permission: band.mb
       permission-message: §cOnly Staff Members can use this command!
    more:
       description: Get more of an item!

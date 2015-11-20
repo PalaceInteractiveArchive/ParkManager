@@ -3,6 +3,7 @@ package us.mcmagic.magicassistant.utils;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -43,6 +44,9 @@ public class InventoryUtil {
             "Click to hide Guests!"));
     private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop ",
             Arrays.asList(ChatColor.GREEN + "Purchase Items!"));
+    private ItemStack ward = new ItemCreator(Material.IRON_CHESTPLATE, ChatColor.GREEN + "Wardrobe Manager",
+            Arrays.asList(ChatColor.GREEN + "Change your outfit to cloths", ChatColor.GREEN +
+                    "that you can purchase in shops!"));
     private ItemStack food = new ItemCreator(Material.POTATO_ITEM, ChatColor.GREEN + "Find Food", Arrays.asList(
             ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
     private ItemStack hub = new ItemCreator(Material.ENDER_PEARL, ChatColor.GREEN + "Return to Hub", Arrays.asList(
@@ -71,7 +75,7 @@ public class InventoryUtil {
             Collections.singletonList(ChatColor.GREEN + "/join Typhoon"));
     private ItemStack dcl = new ItemCreator(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line",
             Collections.singletonList(ChatColor.GREEN + "/join DCL"));
-    private ItemStack seasonal = new ItemCreator(Material.STAINED_GLASS_PANE, 1, (byte) 12, ChatColor.GREEN +
+    private ItemStack seasonal = new ItemCreator(Material.RED_ROSE, 1, (byte) 2, ChatColor.GREEN +
             "Seasonal", Arrays.asList(ChatColor.GREEN + "/join Seasonal"));
     //My Profile
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
@@ -128,8 +132,8 @@ public class InventoryUtil {
     private ItemStack tfant = new ItemCreator(Material.DIAMOND_HELMET, ChatColor.AQUA + "Taste of Fantasmic!");
     private ItemStack msep = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.YELLOW +
             "Main Street Electrical Parade");
-    private ItemStack fofp = new ItemCreator(Material.INK_SACK, 1, (byte) 12, ChatColor.DARK_AQUA +
-            "Festival of Fantasy Parade", Collections.singletonList(""));
+    private ItemStack fntm = new ItemCreator(Material.RAW_FISH, 1, (byte) 2, ChatColor.GOLD +
+            "Finding Nemo the Musical", new ArrayList<String>());
     private ItemStack times = new ItemCreator(Material.BOOK, ChatColor.GREEN + "Show Timetable");
     //Rides and Attractions
     private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
@@ -265,12 +269,13 @@ public class InventoryUtil {
                     ItemMeta im = playerInfo.getItemMeta();
                     im.setLore(Collections.singletonList(ChatColor.GRAY + "Loading..."));
                     playerInfo.setItemMeta(im);
+                    main.setItem(4, playerInfo);
                     main.setItem(10, hnr);
                     main.setItem(11, sne);
                     main.setItem(12, rna);
                     main.setItem(13, parks);
                     main.setItem(14, shop);
-                    main.setItem(15, playerInfo);
+                    main.setItem(15, ward);
                     if (MagicAssistant.vanishUtil.isInHideAll(player.getUniqueId())) {
                         main.setItem(16, toggleon);
                     } else {
@@ -389,7 +394,7 @@ public class InventoryUtil {
                     shows.setItem(11, iroe);
                     shows.setItem(13, wishes);
                     shows.setItem(15, msep);
-                    shows.setItem(17, fofp);
+                    shows.setItem(17, fntm);
                     shows.setItem(22, BandUtil.getBackItem());
                     player.openInventory(shows);
                     return;
@@ -405,7 +410,8 @@ public class InventoryUtil {
                     } else {
                         band = new ItemCreator(Material.FIREWORK_CHARGE);
                         FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
-                        bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil.getBandColor(data.getBandColor())).build());
+                        bm.setEffect(FireworkEffect.builder().withColor(MagicAssistant.bandUtil
+                                .getBandColor(data.getBandColor())).build());
                         bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                         band.setItemMeta(bm);
                     }
@@ -744,6 +750,96 @@ public class InventoryUtil {
         return i;
     }
 
+    public void openWardrobeManagerPage(Player player, int page) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wardrobe Manager Page " + page);
+        List<Outfit> first = MagicAssistant.wardrobeManager.getOutfits();
+        List<Outfit> outfits = first.subList((page - 1) * 6, (page + 5) > first.size() ? first.size() : page + 5);
+        boolean lpage = page > 1;
+        boolean npage = (page * 6) < first.size();
+        int i = 0;
+        List<Integer> purchs = data.getPurchases();
+        PlayerData.Clothing c = data.getClothing();
+        for (Outfit o : outfits) {
+            boolean owns = purchs.contains(o.getId());
+            ItemStack h = o.getHead().clone();
+            ItemStack s = o.getShirt().clone();
+            ItemStack p = o.getPants().clone();
+            ItemStack b = o.getBoots().clone();
+            if (!owns) {
+                ItemMeta hm = h.getItemMeta();
+                hm.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH +
+                        ChatColor.stripColor(hm.getDisplayName()));
+                h.setItemMeta(hm);
+                ItemMeta sm = s.getItemMeta();
+                sm.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH +
+                        ChatColor.stripColor(sm.getDisplayName()));
+                s.setItemMeta(sm);
+                ItemMeta pm = p.getItemMeta();
+                pm.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH +
+                        ChatColor.stripColor(pm.getDisplayName()));
+                p.setItemMeta(pm);
+                ItemMeta bm = b.getItemMeta();
+                bm.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH +
+                        ChatColor.stripColor(bm.getDisplayName()));
+                b.setItemMeta(bm);
+            }
+            try {
+                if (c.getHead().equals(h)) {
+                    h.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                    inv.setItem(10 + i, h);
+                } else {
+                    inv.setItem(10 + i, h);
+                }
+            } catch (Exception ignored) {
+                inv.setItem(10 + i, h);
+            }
+            try {
+                if (c.getShirt().equals(s)) {
+                    s.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                    inv.setItem(19 + i, s);
+                } else {
+                    inv.setItem(19 + i, s);
+                }
+            } catch (Exception ignored) {
+                inv.setItem(19 + i, s);
+            }
+            try {
+                if (c.getPants().equals(p)) {
+                    p.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                    inv.setItem(28 + i, p);
+                } else {
+                    inv.setItem(28 + i, p);
+                }
+            } catch (Exception ignored) {
+                inv.setItem(28 + i, p);
+            }
+            try {
+                if (c.getBoots().equals(b)) {
+                    b.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                    inv.setItem(37 + i, b);
+                } else {
+                    inv.setItem(37 + i, b);
+                }
+            } catch (Exception ignored) {
+                inv.setItem(37 + i, b);
+            }
+            i++;
+        }
+        if (lpage) {
+            inv.setItem(48, lastPage);
+        }
+        if (npage) {
+            inv.setItem(50, nextPage);
+        }
+        inv.setItem(16, new ItemCreator(Material.GLASS, ChatColor.GREEN + "Reset Head"));
+        inv.setItem(25, new ItemCreator(Material.GLASS, ChatColor.GREEN + "Reset Shirt"));
+        inv.setItem(34, new ItemCreator(Material.GLASS, ChatColor.GREEN + "Reset Pants"));
+        inv.setItem(43, new ItemCreator(Material.GLASS, ChatColor.GREEN + "Reset Boots"));
+        inv.setItem(49, BandUtil.getBackItem());
+        player.openInventory(inv);
+    }
+
     public void openHotelRoomListPage(final Player player, String hotelName) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rooms in " + hotelName);
         List<HotelRoom> availableHotelRooms = new ArrayList<>();
@@ -820,9 +916,9 @@ public class InventoryUtil {
         HashMap<Integer, List<Attraction>> al = MagicAssistant.attPages;
         Inventory alist;
         if (al.size() > 1) {
-            alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List Page " + page);
+            alist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Attraction List Page " + page);
         } else {
-            alist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Attraction List");
+            alist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Attraction List");
         }
         if (al.isEmpty() || al.get(1).isEmpty()) {
             ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
@@ -832,7 +928,7 @@ public class InventoryUtil {
                     ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             alist.setItem(22, empty);
-            alist.setItem(49, BandUtil.getBackItem());
+            alist.setItem(31, BandUtil.getBackItem());
             player.openInventory(alist);
             return;
         }
@@ -850,23 +946,23 @@ public class InventoryUtil {
         }
         int i = 10;
         for (ItemStack item : items) {
-            if (i > 34) {
+            if (i > 25) {
                 break;
             }
             alist.setItem(i, item);
-            if (i == 16 || i == 25) {
+            if (i == 16) {
                 i += 3;
             } else {
                 i++;
             }
         }
         if (page > 1) {
-            alist.setItem(48, lastPage);
+            alist.setItem(30, lastPage);
         }
         if (al.size() > page) {
-            alist.setItem(50, nextPage);
+            alist.setItem(32, nextPage);
         }
-        alist.setItem(49, BandUtil.getBackItem());
+        alist.setItem(31, BandUtil.getBackItem());
         player.openInventory(alist);
     }
 
@@ -875,9 +971,9 @@ public class InventoryUtil {
         HashMap<Integer, List<Ride>> rl = MagicAssistant.ridePages;
         Inventory rlist;
         if (rl.size() > 1) {
-            rlist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride List Page " + page);
+            rlist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Ride List Page " + page);
         } else {
-            rlist = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride List");
+            rlist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Ride List");
         }
         if (rl.isEmpty() || rl.get(1).isEmpty()) {
             ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
@@ -887,7 +983,7 @@ public class InventoryUtil {
                     ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             rlist.setItem(22, empty);
-            rlist.setItem(49, BandUtil.getBackItem());
+            rlist.setItem(31, BandUtil.getBackItem());
             player.openInventory(rlist);
             return;
         }
@@ -905,23 +1001,23 @@ public class InventoryUtil {
         }
         int i = 10;
         for (ItemStack item : items) {
-            if (i > 34) {
+            if (i > 25) {
                 break;
             }
             rlist.setItem(i, item);
-            if (i == 16 || i == 25) {
+            if (i == 16) {
                 i += 3;
             } else {
                 i++;
             }
         }
         if (page > 1) {
-            rlist.setItem(48, lastPage);
+            rlist.setItem(30, lastPage);
         }
         if (rl.size() > page) {
-            rlist.setItem(50, nextPage);
+            rlist.setItem(32, nextPage);
         }
-        rlist.setItem(49, BandUtil.getBackItem());
+        rlist.setItem(31, BandUtil.getBackItem());
         player.openInventory(rlist);
     }
 
@@ -938,7 +1034,7 @@ public class InventoryUtil {
             List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + ride.appxWaitTime(), ChatColor.YELLOW +
                     "Players in Queue: " + (ride.getQueueSize() <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW +
                     "Warp: " + ChatColor.GREEN + "/warp " + ride.getWarp());
-            items.add(new ItemCreator(Material.SIGN, 1, ride.getName(), lore));
+            items.add(new ItemCreator(Material.SIGN, ride.getName(), lore));
         }
         int i = 10;
         for (ItemStack item : items) {

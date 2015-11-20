@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.commands.Commandbuild;
 import us.mcmagic.magicassistant.commands.Commandvanish;
 import us.mcmagic.magicassistant.designstation.DesignStation;
 import us.mcmagic.magicassistant.handlers.HotelRoom;
@@ -38,6 +37,7 @@ import java.util.UUID;
 
 public class PlayerJoinAndLeave implements Listener {
     private List<UUID> firstJoins = new ArrayList<>();
+    public static List<UUID> makeBuildMode = new ArrayList<>();
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
@@ -119,16 +119,21 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
             }
-            player.getInventory().clear();
+            final PlayerInventory inv = player.getInventory();
+            PlayerData.Clothing c = data.getClothing();
+            inv.clear();
+            inv.setHelmet(c.getHead());
+            inv.setChestplate(c.getShirt());
+            inv.setLeggings(c.getPants());
+            inv.setBoots(c.getBoots());
             setInventory(player, false);
             Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
                     Backpack pack = MagicAssistant.storageManager.getBackpack(player);
                     Locker locker = MagicAssistant.storageManager.getLocker(player);
-                    ItemStack[] hotbar = MagicAssistant.storageManager.getHotbar(player);
+                    final ItemStack[] hotbar = MagicAssistant.storageManager.getHotbar(player);
                     setInventory(player, true);
-                    PlayerInventory inv = player.getInventory();
                     if (hotbar != null) {
                         ItemStack[] cont = inv.getContents();
                         for (int i = 0; i < 4; i++) {
@@ -139,6 +144,14 @@ public class PlayerJoinAndLeave implements Listener {
                     if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
                         if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                             inv.setItem(0, new ItemStack(Material.COMPASS));
+                        }
+                        if (makeBuildMode.remove(player.getUniqueId())) {
+                            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    player.performCommand("build");
+                                }
+                            }, 20L);
                         }
                     } else {
                         inv.remove(Material.COMPASS);
@@ -180,7 +193,7 @@ public class PlayerJoinAndLeave implements Listener {
         Inventory inv = player.getInventory();
         ItemStack[] barrier = new ItemStack[36];
         for (int i = 9; i < barrier.length; i++) {
-            barrier[i] = new ItemCreator(Material.QUARTZ, ChatColor.RED + "You can't use this area!",
+            barrier[i] = new ItemCreator(Material.INK_SACK, 1, (byte) 7, ChatColor.RED + "You can't use this area!",
                     Arrays.asList(ChatColor.GREEN + "Use your Backpack for Storage."));
         }
         inv.setContents(barrier);
@@ -191,7 +204,7 @@ public class PlayerJoinAndLeave implements Listener {
             MagicAssistant.autographManager.giveBook(player);
         }
         MagicAssistant.bandUtil.giveBandToPlayer(player);
-        inv.setItem(4, new ItemCreator(Material.QUARTZ, 1, ChatColor.GRAY +
+        inv.setItem(4, new ItemCreator(Material.INK_SACK, 1, (byte) 7, ChatColor.GRAY +
                 "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
                 "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
                 "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
@@ -262,12 +275,11 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.parkSoundManager.logout(player);
         MagicAssistant.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         MagicAssistant.stitch.logout(player);
-        Commandbuild.logout(player.getUniqueId());
         MagicAssistant.vanishUtil.logout(player);
         WatchTask.removeFromMessage(player.getUniqueId());
         Commandvanish.unvanish(player.getUniqueId());
         MagicAssistant.blockChanger.logout(player);
         DesignStation.removePlayerVehicle(player.getUniqueId());
-        MagicAssistant.bandUtil.removePlayerData(player);
+        MagicAssistant.playerData.remove(player.getUniqueId());
     }
 }

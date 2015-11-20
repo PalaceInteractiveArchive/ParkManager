@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.blockchanger.Changer;
+import us.mcmagic.magicassistant.handlers.Outfit;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.queue.QueueRide;
 import us.mcmagic.magicassistant.show.Show;
@@ -390,6 +392,103 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 helpMenu("shooter", sender);
                 break;
+            case "outfit":
+                if (args.length == 2) {
+                    if (args[1].equalsIgnoreCase("list")) {
+                        List<Outfit> outfits = MagicAssistant.wardrobeManager.getOutfits();
+                        sender.sendMessage(ChatColor.GREEN + "Current Outfits:");
+                        for (Outfit o : outfits) {
+                            sender.sendMessage(ChatColor.AQUA + "- " + ChatColor.GREEN + "ID: " + o.getId() + " Name: "
+                                    + o.getName());
+                        }
+                        break;
+                    }
+                } else if (args.length == 3) {
+                    if (isInt(args[2])) {
+                        if (args[1].equalsIgnoreCase("remove")) {
+                            final Integer id = Integer.parseInt(args[2]);
+                            Outfit o = MagicAssistant.wardrobeManager.getOutfit(id);
+                            if (o == null) {
+                                sender.sendMessage(ChatColor.RED + "No outfit found by that ID!");
+                                break;
+                            }
+                            sender.sendMessage(ChatColor.GREEN + "Removed the Outfit with the ID " + id + "!");
+                            Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    MagicAssistant.wardrobeManager.removeOutfit(id);
+                                }
+                            });
+                            break;
+                        } else if (args[1].equalsIgnoreCase("info")) {
+                            Integer id = Integer.parseInt(args[2]);
+                            Outfit o = MagicAssistant.wardrobeManager.getOutfit(id);
+                            if (o == null) {
+                                sender.sendMessage(ChatColor.RED + "No outfit found by that ID!");
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (args.length >= 3) {
+                    if (args[1].equalsIgnoreCase("create")) {
+                        if (!(sender instanceof Player)) {
+                            return true;
+                        }
+                        final Player player = (Player) sender;
+                        player.sendMessage(ChatColor.GREEN + "Preparing outfit...");
+                        String name = "";
+                        for (int i = 2; i < args.length; i++) {
+                            name += args[i];
+                            if (i < (args.length - 1)) {
+                                name += " ";
+                            }
+                        }
+                        PlayerInventory inv = player.getInventory();
+                        final ItemStack h = inv.getHelmet();
+                        final ItemStack c = inv.getChestplate();
+                        final ItemStack p = inv.getLeggings();
+                        final ItemStack b = inv.getBoots();
+                        final net.minecraft.server.v1_8_R3.ItemStack head = CraftItemStack.asNMSCopy(inv.getHelmet());
+                        final net.minecraft.server.v1_8_R3.ItemStack chest = CraftItemStack.asNMSCopy(inv.getChestplate());
+                        final net.minecraft.server.v1_8_R3.ItemStack pants = CraftItemStack.asNMSCopy(inv.getLeggings());
+                        final net.minecraft.server.v1_8_R3.ItemStack boots = CraftItemStack.asNMSCopy(inv.getBoots());
+                        final String finalName = name;
+                        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+                                try (Connection conneciton = SqlUtil.getConnection()) {
+                                    PreparedStatement sql = conneciton.prepareStatement("INSERT INTO outfits (id,name," +
+                                            "hid,hdata,head,cid,cdata,chestplate,lid,ldata,leggings,bid,bdata,boots) " +
+                                            "VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                    sql.setString(1, finalName);
+                                    sql.setInt(2, h.getTypeId());
+                                    sql.setInt(3, h.getData().getData());
+                                    sql.setString(4, head.getTag() == null ? "" : head.getTag().toString());
+                                    sql.setInt(5, c.getTypeId());
+                                    sql.setInt(6, c.getData().getData());
+                                    sql.setString(7, chest.getTag() == null ? "" : chest.getTag().toString());
+                                    sql.setInt(8, p.getTypeId());
+                                    sql.setInt(9, p.getData().getData());
+                                    sql.setString(10, pants.getTag() == null ? "" : pants.getTag().toString());
+                                    sql.setInt(11, b.getTypeId());
+                                    sql.setInt(12, b.getData().getData());
+                                    sql.setString(13, boots.getTag() == null ? "" : boots.getTag().toString());
+                                    sql.execute();
+                                    sql.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                MagicAssistant.wardrobeManager.initialize();
+                                player.sendMessage(ChatColor.GREEN + "Created outfit!");
+                            }
+                        });
+                        break;
+                    }
+                }
+                helpMenu("outfit", sender);
+                break;
             case "changer":
                 switch (args.length) {
                     case 2:
@@ -693,6 +792,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 MagicAssistant.packManager.initialize();
                 MagicAssistant.shopManager.initialize();
+                MagicAssistant.wardrobeManager.initialize();
                 MagicAssistant.queueManager.initialize();
                 sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");
                 return true;
@@ -722,7 +822,17 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic rc " + ChatColor.AQUA + "- Ride Counters");
                 sender.sendMessage(ChatColor.GREEN + "/magic schedule " + ChatColor.AQUA + "- Show Schedule");
+                sender.sendMessage(ChatColor.GREEN + "/magic outfit " + ChatColor.AQUA + "- Outfit Manager");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
+                break;
+            case "outfit":
+                sender.sendMessage(ChatColor.GREEN + "Outfit Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic outfit create [Name] " + ChatColor.AQUA +
+                        "- Create new outfit based on what you are currently wearing");
+                sender.sendMessage(ChatColor.GREEN + "/magic outfit info [ID] " + ChatColor.AQUA + "- Info for an outfit");
+                sender.sendMessage(ChatColor.GREEN + "/magic outfit list " + ChatColor.AQUA + "- List all outfits");
+                sender.sendMessage(ChatColor.GREEN + "/magic outfit remove [ID] " + ChatColor.AQUA +
+                        "- Remove outfit based on numeric ID");
                 break;
             case "shooter":
                 sender.sendMessage(ChatColor.GREEN + "Shooter Commands:");
@@ -845,6 +955,15 @@ public class Commandmagic implements Listener, CommandExecutor {
             System.out.print("");
         } else {
             shows.put(name, new Show(MagicAssistant.getInstance(), file));
+        }
+    }
+
+    private static boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ignored) {
+            return false;
         }
     }
 }

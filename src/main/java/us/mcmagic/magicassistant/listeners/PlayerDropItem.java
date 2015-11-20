@@ -6,6 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
 public class PlayerDropItem implements Listener {
@@ -14,6 +15,10 @@ public class PlayerDropItem implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         User user = MCMagicCore.getUser(player.getUniqueId());
+        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+            event.setCancelled(true);
+            return;
+        }
         if (BlockEdit.isInBuildMode(player.getUniqueId())) {
             return;
         }

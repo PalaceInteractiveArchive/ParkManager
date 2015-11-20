@@ -440,13 +440,19 @@ public class Show {
                 // Schematic
                 if (tokens[1].contains("Schematic")) {
                     if (isInt(tokens[3]) && isInt(tokens[4]) && isInt(tokens[5])) {
-                        int x = Integer.parseInt(tokens[3]);
-                        int y = Integer.parseInt(tokens[4]);
-                        int z = Integer.parseInt(tokens[5]);
-                        Location pasteloc = new Location(Bukkit.getWorld(tokens[6]), x, y, z);
-                        File schemfile = new File("plugins/WorldEdit/schematics/" + tokens[2] + ".schematic");
-                        boolean noAir = !tokens[7].toLowerCase().contains("false");
-                        actions.add(new SchematicAction(this, time, pasteloc, schemfile, noAir));
+                        try {
+                            int x = Integer.parseInt(tokens[3]);
+                            int y = Integer.parseInt(tokens[4]);
+                            int z = Integer.parseInt(tokens[5]);
+                            Location pasteloc = new Location(Bukkit.getWorld(tokens[6]), x, y, z);
+                            boolean noAir = !tokens[7].toLowerCase().contains("false");
+                            actions.add(new SchematicAction(this, time, pasteloc, tokens[2], noAir));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            invalidLines.put(strLine, "Error creating Schematic Action!");
+                        }
+                    } else {
+                        invalidLines.put(strLine, "Invalid X, Y, or Z Coordinates!");
                     }
                 }
                 if (tokens[1].contains("Fountain")) {
@@ -585,11 +591,15 @@ public class Show {
         }
         HashSet<ShowAction> list = new HashSet<>(actions);
         for (ShowAction action : list) {
-            if (System.currentTimeMillis() - startTime <= action.time) {
-                continue;
+            try {
+                if (System.currentTimeMillis() - startTime <= action.time) {
+                    continue;
+                }
+                action.play();
+                actions.remove(action);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            action.play();
-            actions.remove(action);
         }
         return actions.isEmpty();
     }

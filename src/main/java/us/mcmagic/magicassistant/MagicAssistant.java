@@ -1,5 +1,6 @@
 package us.mcmagic.magicassistant;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mcmagic.magicassistant.autograph.AutographManager;
@@ -23,6 +25,7 @@ import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.parksounds.ParkSoundManager;
+import us.mcmagic.magicassistant.pixelator.Pixelator;
 import us.mcmagic.magicassistant.queue.QueueManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
@@ -30,8 +33,10 @@ import us.mcmagic.magicassistant.ridemanager.RideManager;
 import us.mcmagic.magicassistant.shooter.MessageTimer;
 import us.mcmagic.magicassistant.shooter.Shooter;
 import us.mcmagic.magicassistant.shop.ShopManager;
+import us.mcmagic.magicassistant.shop.WardrobeManager;
 import us.mcmagic.magicassistant.show.ArmorStandManager;
 import us.mcmagic.magicassistant.show.FountainManager;
+import us.mcmagic.magicassistant.show.actions.SchematicAction;
 import us.mcmagic.magicassistant.show.schedule.ScheduleManager;
 import us.mcmagic.magicassistant.show.ticker.Ticker;
 import us.mcmagic.magicassistant.stitch.Stitch;
@@ -85,6 +90,8 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static ChairManager chairManager;
     public static IArrowFactory chairFactory;
     public static ScheduleManager scheduleManager;
+    public static WardrobeManager wardrobeManager;
+    public static Pixelator pixelator;
 
     public void onEnable() {
         instance = this;
@@ -111,6 +118,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         parkSoundManager = new ParkSoundManager();
         armorStandManager = new ArmorStandManager();
         chairManager = new ChairManager(this);
+        wardrobeManager = new WardrobeManager();
         chairFactory = new ArrowFactory();
         registerListeners();
         registerCommands();
@@ -148,12 +156,19 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         log("Initializing Show Schedule...");
         scheduleManager = new ScheduleManager();
         log("Show Schedule Initialized!");
+        enablePixelator();
         setupAttractions();
         if (config.getBoolean("show-server")) {
             // Show Ticker
-            System.out.println("Starting Show Timer");
-            Bukkit.getScheduler().runTaskTimer(this, new Ticker(), 1, 1);
-            System.out.println("Show Timer Started!");
+            Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+            if (plugin instanceof WorldEditPlugin) {
+                SchematicAction.setWorldEdit((WorldEditPlugin) plugin);
+                log("Starting Show Timer");
+                Bukkit.getScheduler().runTaskTimer(this, new Ticker(), 1, 1);
+                log("Show Timer Started!");
+            } else {
+                log("Error finding WorldEdit!");
+            }
         }
         hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
                 config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
@@ -166,9 +181,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         packManager.initialize();
         parkSoundManager.initialize();
         DesignStation.initialize();
-        for (World world : Bukkit.getWorlds()) {
-            world.setTime(0);
-        }
         long curr = System.currentTimeMillis();
         long time = (curr - (Long.parseLong(Long.toString(curr).substring(0, Long.toString(curr).length() - 3) + 1) *
                 1000)) / 50;
@@ -193,6 +205,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 }
             }
         }
+        pixelator.rendererManager.disable();
     }
 
     public static MagicAssistant getInstance() {
@@ -379,6 +392,10 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         return null;
     }
 
+    private void enablePixelator() {
+        pixelator = new Pixelator();
+    }
+
     public static void removeWarp(Warp warp) {
         warps.remove(warp);
     }
@@ -409,7 +426,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         getCommand("item").setExecutor(new Commanditem());
         getCommand("item").setAliases(Collections.singletonList("i"));
         getCommand("magic").setExecutor(magic);
-        getCommand("mb").setExecutor(new Commandmb());
         getCommand("more").setExecutor(new Commandmore());
         getCommand("msg").setExecutor(new Commandmsg());
         getCommand("msg").setAliases(Arrays.asList("tell", "t", "w", "whisper", "m"));

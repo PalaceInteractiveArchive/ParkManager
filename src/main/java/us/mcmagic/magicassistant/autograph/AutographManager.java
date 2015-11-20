@@ -33,7 +33,7 @@ public class AutographManager {
     public void setBook(UUID uuid) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bm = (BookMeta) book.getItemMeta();
-        bm.addPage("This is your Autograph Book! Find Characters and they will sign it for you!");
+        bm.addPage("This is your MCMagic Autograph Book! Find Characters and they will sign it for you!");
         List<Signature> list = getSignatures(uuid);
         for (Signature sign : list) {
             String name = "Unknown";

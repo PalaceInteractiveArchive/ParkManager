@@ -11,13 +11,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.designstation.DesignStation;
-import us.mcmagic.magicassistant.handlers.HotelRoom;
-import us.mcmagic.magicassistant.handlers.InventoryType;
-import us.mcmagic.magicassistant.handlers.PlayerData;
-import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -45,6 +43,30 @@ public class PlayerInteract implements Listener {
         if (action.equals(Action.PHYSICAL)) {
             return;
         }
+        final ItemStack hand = player.getItemInHand();
+        if (isArmor(hand)) {
+            if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
+                event.setCancelled(true);
+                player.setItemInHand(hand);
+                ArmorType type = getArmorType(hand);
+                PlayerInventory inv = player.getInventory();
+                switch (type) {
+                    case HELMET:
+                        inv.setHelmet(inv.getHelmet());
+                        break;
+                    case CHESTPLATE:
+                        inv.setChestplate(inv.getChestplate());
+                        break;
+                    case LEGGINGS:
+                        inv.setLeggings(inv.getLeggings());
+                        break;
+                    case BOOTS:
+                        inv.setBoots(inv.getBoots());
+                        break;
+                }
+                return;
+            }
+        }
         if (action.name().toLowerCase().contains("block")) {
             if (player.getItemInHand().getType().equals(Material.DIAMOND_AXE)) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
@@ -62,7 +84,7 @@ public class PlayerInteract implements Listener {
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
                 if (s.getLine(0).equals(disposal)) {
-                    player.openInventory(Bukkit.createInventory(player, 54, ChatColor.BLUE + "Disposal"));
+                    player.openInventory(Bukkit.createInventory(player, 36, ChatColor.BLUE + "Disposal"));
                     return;
                 }
                 if (s.getLine(0).equals(warp)) {
@@ -193,6 +215,32 @@ public class PlayerInteract implements Listener {
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             }
         }
+    }
+
+    private ArmorType getArmorType(ItemStack item) {
+        String n = item.getType().name().toLowerCase();
+        if (n.contains("helmet")) {
+            return ArmorType.HELMET;
+        }
+        if (n.contains("chestplate")) {
+            return ArmorType.CHESTPLATE;
+        }
+        if (n.contains("leggings")) {
+            return ArmorType.LEGGINGS;
+        }
+        if (n.contains("boots")) {
+            return ArmorType.BOOTS;
+        }
+        return null;
+    }
+
+    private boolean isArmor(ItemStack item) {
+        try {
+            String n = item.getType().name().toLowerCase();
+            return n.contains("helmet") || n.contains("chestplate") || n.contains("leggings") || n.contains("boots");
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 
     @EventHandler

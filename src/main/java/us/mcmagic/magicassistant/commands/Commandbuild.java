@@ -14,17 +14,19 @@ import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.listeners.BlockEdit;
 import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
+import us.mcmagic.magicassistant.utils.SqlUtil;
+import us.mcmagic.magicassistant.watch.WatchTask;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Created by Marc on 10/11/15
  */
 public class Commandbuild implements CommandExecutor {
-    private static HashMap<UUID, ItemStack[]> hotbars = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -33,6 +35,7 @@ public class Commandbuild implements CommandExecutor {
             return true;
         }
         final Player player = (Player) sender;
+        WatchTask.removeFromMessage(player.getUniqueId());
         if (BlockEdit.toggleBuildMode(player.getUniqueId())) {
             player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.YELLOW + "" + ChatColor.BOLD +
                     "Build Mode!");
@@ -62,8 +65,8 @@ public class Commandbuild implements CommandExecutor {
                 h[in] = i;
                 in++;
             }
-            hotbars.remove(player.getUniqueId());
-            hotbars.put(player.getUniqueId(), h);
+            MagicAssistant.storageManager.removeHotbar(player.getUniqueId());
+            MagicAssistant.storageManager.addHotbar(player.getUniqueId(), h);
         } else {
             player.sendMessage(ChatColor.GREEN + "You have exited " + ChatColor.YELLOW + "" + ChatColor.BOLD +
                     "Build Mode!");
@@ -92,21 +95,34 @@ public class Commandbuild implements CommandExecutor {
                             inv.setItem(0, new ItemStack(Material.COMPASS));
                         }
                     }
-                    for (ItemStack i : hotbars.get(player.getUniqueId())) {
+                    if (!MagicAssistant.storageManager.getBuildModeHotbars().containsKey(player.getUniqueId())) {
+                        return;
+                    }
+                    for (ItemStack i : MagicAssistant.storageManager.removeHotbar(player.getUniqueId())) {
                         if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
                                 i.getType().equals(Material.COMPASS)) {
                             continue;
                         }
                         inv.addItem(i);
                     }
-                    hotbars.remove(player.getUniqueId());
                 }
             });
         }
+        player.closeInventory();
+        Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = SqlUtil.getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE uuid=?");
+                    sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);
+                    sql.setString(2, player.getUniqueId().toString());
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         return true;
-    }
-
-    public static void logout(UUID uuid) {
-        hotbars.remove(uuid);
     }
 }

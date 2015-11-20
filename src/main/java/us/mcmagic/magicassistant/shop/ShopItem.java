@@ -16,14 +16,16 @@ public class ShopItem {
     private byte data;
     private final List<String> lore;
     private int cost;
+    private CurrencyType currencyType;
 
-    public ShopItem(String name, ShopCategory category, int id, byte data, List<String> lore, int cost) {
+    public ShopItem(String name, ShopCategory category, int id, byte data, List<String> lore, int cost, CurrencyType currencyType) {
         this.displayName = name;
         this.category = category;
         this.id = id;
         this.data = data;
         this.lore = lore;
         this.cost = cost;
+        this.currencyType = currencyType;
     }
 
     @SuppressWarnings("deprecation")
@@ -53,5 +55,9 @@ public class ShopItem {
 
     public int getCost() {
         return cost;
+    }
+
+    public CurrencyType getCurrencyType() {
+        return currencyType;
     }
 }

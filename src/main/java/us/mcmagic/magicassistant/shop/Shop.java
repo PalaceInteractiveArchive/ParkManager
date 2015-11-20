@@ -13,14 +13,17 @@ public class Shop {
     private String name;
     private Location location;
     private List<ShopItem> items = new ArrayList<>();
+    private List<OutfitItem> outfits = new ArrayList<>();
     private ItemStack identifier;
     private String warp;
     private double radius;
 
-    public Shop(String name, Location location, List<ShopItem> items, ItemStack identifier, String warp, double radius) {
+    public Shop(String name, Location location, List<ShopItem> items, List<OutfitItem> outfits, ItemStack identifier,
+                String warp, double radius) {
         this.name = name;
         this.location = location;
         this.items = items;
+        this.outfits = outfits;
         this.identifier = identifier;
         this.warp = warp;
         this.radius = radius;
@@ -36,6 +39,10 @@ public class Shop {
 
     public List<ShopItem> getItems() {
         return items;
+    }
+
+    public List<OutfitItem> getOutfits() {
+        return outfits;
     }
 
     public ItemStack getIdentifier() {

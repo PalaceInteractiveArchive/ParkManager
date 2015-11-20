@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import us.mcmagic.magicassistant.MagicAssistant;
@@ -20,10 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -33,6 +31,7 @@ import java.util.zip.GZIPOutputStream;
 public class StorageManager {
     private List<UUID> loadingPack = new ArrayList<>();
     private List<UUID> loadingLocker = new ArrayList<>();
+    private HashMap<UUID, ItemStack[]> buildModeHotbars = new HashMap<>();
 
     public StorageManager() {
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
@@ -158,6 +157,9 @@ public class StorageManager {
     }
 
     public static byte[] serial(ItemStack[] stacks) {
+        if (stacks == null) {
+            return new byte[]{};
+        }
         for (int i = 0; i < stacks.length; i++) {
             ItemStack s = stacks[i];
             if (s == null) {
@@ -262,11 +264,13 @@ public class StorageManager {
         loadingPack.remove(player.getUniqueId());
         loadingLocker.remove(player.getUniqueId());
         final PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        final boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
                 final long time = System.currentTimeMillis();
-                update(player, data);
+                update(player, data, build);
+                removeHotbar(player.getUniqueId());
                 System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
             }
         });
@@ -276,32 +280,37 @@ public class StorageManager {
         update(player, MagicAssistant.getPlayerData(player.getUniqueId()));
     }
 
+
     private void update(Player player, PlayerData data) {
+        update(player, data, BlockEdit.isInBuildMode(player.getUniqueId()));
+    }
+
+    private void update(Player player, PlayerData data, boolean build) {
         Backpack pack = data.getBackpack();
         Locker locker = data.getLocker();
-        Inventory bp = Bukkit.createInventory(player, pack.getInventory().getSize());
-        boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
+        Inventory bp = pack.getInventory();
         if (build) {
-            ItemStack[] list = new ItemStack[27];
-            int i = 0;
-            for (ItemStack it : player.getInventory().getContents()) {
-                if (i >= 27) {
-                    break;
-                }
-                if (it == null || it.getType().equals(Material.AIR) || it.getType().equals(Material.WOOD_AXE) ||
-                        it.getType().equals(Material.COMPASS)) {
+            final PlayerInventory inv = player.getInventory();
+            bp.clear();
+            for (ItemStack i : inv.getContents()) {
+                if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
+                        i.getType().equals(Material.COMPASS)) {
                     continue;
                 }
-                list[i] = it;
-                i++;
+                bp.addItem(i);
             }
-            bp.setContents(list);
-        } else {
-            bp.setContents(pack.getInventory().getContents());
         }
         try (Connection connection = SqlUtil.getConnection()) {
             ItemStack[] hotbar = new ItemStack[4];
-            if (!build) {
+            if (build) {
+                ItemStack[] h = getBuildModeHotbars().get(player.getUniqueId());
+                for (int i = 0; i < 4; i++) {
+                    try {
+                        hotbar[i] = h[i] == null ? null : h[i];
+                    } catch (Exception ignored) {
+                    }
+                }
+            } else {
                 ItemStack[] cont = player.getInventory().getContents();
                 for (int i = 0; i < 4; i++) {
                     hotbar[i] = cont[i];
@@ -362,5 +371,18 @@ public class StorageManager {
                 }
             }
         });
+    }
+
+    public HashMap<UUID, ItemStack[]> getBuildModeHotbars() {
+        return new HashMap<>(buildModeHotbars);
+    }
+
+    public void addHotbar(UUID uuid, ItemStack[] stack) {
+        buildModeHotbars.remove(uuid);
+        buildModeHotbars.put(uuid, stack);
+    }
+
+    public ItemStack[] removeHotbar(UUID uuid) {
+        return buildModeHotbars.remove(uuid);
     }
 }
