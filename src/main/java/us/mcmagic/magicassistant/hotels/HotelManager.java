@@ -290,6 +290,9 @@ public class HotelManager {
     }
 
     public void serverStop() {
+        if (!MagicAssistant.hotelServer) {
+            return;
+        }
         for (HotelRoom room : hotelRooms) {
             if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCheckoutTime() != 0) {
                 room.setCheckoutNotificationRecipient(room.getCurrentOccupant());

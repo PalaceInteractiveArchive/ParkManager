@@ -1,12 +1,25 @@
 package us.mcmagic.magicassistant.blockchanger;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.util.BlockVector;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.blockchanger.calc.ChangeCalculations;
+import us.mcmagic.magicassistant.blockchanger.calc.ConversionCache;
+import us.mcmagic.magicassistant.blockchanger.calc.EventScheduler;
+import us.mcmagic.magicassistant.blockchanger.calc.PatcherAPI;
+import us.mcmagic.magicassistant.blockchanger.calc.events.ChunkPostProcessingEvent;
+import us.mcmagic.magicassistant.blockchanger.calc.lookup.SegmentLookup;
 import us.mcmagic.magicassistant.utils.FileUtil;
 
 import java.io.*;
@@ -16,12 +29,11 @@ import java.util.*;
  * Created by Marc on 3/8/15
  */
 public class BlockChanger implements Listener {
-    //private final PatcherAPI api;
+    private final PatcherAPI api;
     private List<UUID> debug = new ArrayList<>();
     private HashMap<String, Changer> changers = new HashMap<>();
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
-    /*
     private Map<UUID, BlockVector> glassChunk = new WeakHashMap<>();
 
     public BlockChanger() {
@@ -35,13 +47,17 @@ public class BlockChanger implements Listener {
                         PacketType.Play.Server.UPDATE_SIGN, PacketType.Play.Server.TILE_ENTITY_DATA) {
                     @Override
                     public void onPacketSending(PacketEvent event) {
-                        if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK)) {
-                            calculations.translateMapChunk(event.getPacket(), event.getPlayer());
-                        } else if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) {
-                            calculations.translateMapChunkBulk(event.getPacket(), event.getPlayer());
+                        try {
+                            if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK)) {
+                                calculations.translateMapChunk(event.getPacket(), event.getPlayer());
+                            } else if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) {
+                                calculations.translateMapChunkBulk(event.getPacket(), event.getPlayer());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
-                });
+                }).start();
     }
 
     @EventHandler
@@ -114,7 +130,7 @@ public class BlockChanger implements Listener {
 
             System.out.println("GLASS at " + event.getChunkX() + " " + event.getChunkZ());
         }
-    }*/
+    }
 
     @SuppressWarnings("deprecation")
     public void initialize() throws FileNotFoundException {

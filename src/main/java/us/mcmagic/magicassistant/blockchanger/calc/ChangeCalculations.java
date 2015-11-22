@@ -8,6 +8,8 @@ import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.google.common.base.Stopwatch;
+import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunk;
+import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunkBulk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -17,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import us.mcmagic.magicassistant.blockchanger.calc.lookup.ConversionLookup;
 import us.mcmagic.magicassistant.blockchanger.calc.lookup.SegmentLookup;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,9 +32,7 @@ public class ChangeCalculations {
         public int chunkX;
         public int chunkZ;
         public int chunkMask;
-        public int extraMask;
         public int chunkSectionNumber;
-        public int extraSectionNumber;
         public boolean hasContinous;
         public byte[] data;
         public Player player;
@@ -77,9 +78,8 @@ public class ChangeCalculations {
                 (((int) player.getLocation().getZ())) >> 4) == 0;
     }
 
-    public void translateMapChunkBulk(PacketContainer packet, Player player) throws FieldAccessException {
+    public void translateMapChunkBulk(PacketContainer packet, Player player) throws FieldAccessException, NoSuchFieldException, IllegalAccessException {
         StructureModifier<int[]> intArrays = packet.getSpecificModifier(int[].class);
-        StructureModifier<byte[]> byteArrays = packet.getSpecificModifier(byte[].class);
 
         int[] x = intArrays.read(0); // getPrivateField(packet, "c");
         int[] z = intArrays.read(1); // getPrivateField(packet, "d");
@@ -87,8 +87,6 @@ public class ChangeCalculations {
         ChunkInfo[] infos = new ChunkInfo[x.length];
 
         int dataStartIndex = 0;
-        int[] chunkMask = intArrays.read(2); // packet.a;
-        int[] extraMask = intArrays.read(3); // packet.b;
 
         for (int chunkNum = 0; chunkNum < infos.length; chunkNum++) {
             // Create an info objects
@@ -97,10 +95,11 @@ public class ChangeCalculations {
             info.player = player;
             info.chunkX = x[chunkNum];
             info.chunkZ = z[chunkNum];
-            info.chunkMask = chunkMask[chunkNum];
-            info.extraMask = extraMask[chunkNum];
+            Field field = ((PacketPlayOutMapChunkBulk) packet.getHandle()).getClass().getDeclaredField("c");
+            field.setAccessible(true);
+            info.chunkMask = ((PacketPlayOutMapChunk.ChunkMap[]) field.get(packet.getHandle()))[chunkNum].b;
             info.hasContinous = true; // Always true
-            info.data = byteArrays.read(1); //packet.buildBuffer;
+            info.data = ((PacketPlayOutMapChunk.ChunkMap[]) field.get(packet.getHandle()))[chunkNum].a;
 
             // Check for Spigot
             if (info.data == null || info.data.length == 0) {
@@ -119,7 +118,7 @@ public class ChangeCalculations {
         return value != null ? value : defaultIfNull;
     }
 
-    public void translateMapChunk(PacketContainer packet, Player player) throws FieldAccessException {
+    public void translateMapChunk(PacketContainer packet, Player player) throws FieldAccessException, NoSuchFieldException, IllegalAccessException {
         StructureModifier<Integer> ints = packet.getSpecificModifier(int.class);
         StructureModifier<byte[]> byteArray = packet.getSpecificModifier(byte[].class);
         // Create an info objects
@@ -127,9 +126,10 @@ public class ChangeCalculations {
         info.player = player;
         info.chunkX = ints.read(0);    // packet.a;
         info.chunkZ = ints.read(1);    // packet.b;
-        info.chunkMask = ints.read(2);    // packet.c;
-        info.extraMask = ints.read(3);  // packet.d;
-        info.data = byteArray.read(1);  // packet.inflatedBuffer;
+        Field field = ((PacketPlayOutMapChunk) packet.getHandle()).getClass().getField("c");
+        field.setAccessible(true);
+        info.chunkMask = ((PacketPlayOutMapChunk.ChunkMap) field.get(packet.getHandle())).b;
+        info.data = ((PacketPlayOutMapChunk.ChunkMap) field.get(packet.getHandle())).a;
         info.hasContinous = getOrDefault(packet.getBooleans().readSafely(0), true);
         info.startIndex = 0;
 
@@ -236,7 +236,8 @@ public class ChangeCalculations {
         }
     }
 
-    public void translateDroppedItem(PacketContainer packet, Player player, EventScheduler scheduler) throws FieldAccessException {
+    public void translateDroppedItem(PacketContainer packet, Player player,
+                                     EventScheduler scheduler) throws FieldAccessException {
 
         StructureModifier<Integer> ints = packet.getSpecificModifier(int.class);
 
@@ -297,14 +298,11 @@ public class ChangeCalculations {
             if ((info.chunkMask & (1 << i)) > 0) {
                 info.chunkSectionNumber++;
             }
-            if ((info.extraMask & (1 << i)) > 0) {
-                info.extraSectionNumber++;
-            }
         }
 
         // There's no sun/moon in the end or in the nether, so Minecraft doesn't sent any skylight information
         // This optimization was added in 1.4.6. Note that ideally you should get this from the "f" (skylight) field.
-        int skylightCount = info.player.getWorld().getEnvironment() == World.Environment.NORMAL ? 1 : 0;
+        int skylightCount = info.player.getWorld().getEnvironment().equals(World.Environment.NORMAL) ? 1 : 0;
 
         // The total size of a chunk is the number of blocks sent (depends on the number of sections) multiplied by the
         // amount of bytes per block. This last figure can be calculated by adding together all the data parts:
@@ -320,9 +318,7 @@ public class ChangeCalculations {
         //    * Biome array       -   256 bytes
         //
         // A section has 16 * 16 * 16 = 4096 blocks.
-        info.size = BYTES_PER_NIBBLE_PART * (
-                (NIBBLES_REQUIRED + skylightCount) * info.chunkSectionNumber +
-                        info.extraSectionNumber) +
+        info.size = BYTES_PER_NIBBLE_PART * ((NIBBLES_REQUIRED + skylightCount) * info.chunkSectionNumber) +
                 (info.hasContinous ? BIOME_ARRAY_LENGTH : 0);
 
         info.blockSize = 4096 * info.chunkSectionNumber;
