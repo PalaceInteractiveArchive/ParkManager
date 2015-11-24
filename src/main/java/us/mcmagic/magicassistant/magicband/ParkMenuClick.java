@@ -34,6 +34,11 @@ public class ParkMenuClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
+            case "Transportation and Ticket Center":
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "TTC...");
+                BungeeUtil.sendToServer(player, "TTC");
+                return;
             case "Magic Kingdom":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Magic Kingdom...");

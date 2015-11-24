@@ -31,7 +31,6 @@ import us.mcmagic.mcmagiccore.player.User;
 import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
-    private List<UUID> firstJoins = new ArrayList<>();
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
 
     public PlayerJoinAndLeave() {

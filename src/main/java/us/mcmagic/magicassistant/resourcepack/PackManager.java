@@ -113,7 +113,7 @@ public class PackManager implements Listener {
         User user = MCMagicCore.getUser(player.getUniqueId());
         boolean doSeasonal = !Bukkit.hasWhitelist();
         if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         if (item.getItemMeta() == null) {

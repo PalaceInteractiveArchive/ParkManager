@@ -1,6 +1,6 @@
 name: MagicAssistant
 author: MCMagicDev
-version: 1.9.2-SNAPSHOT
+version: 1.9.3
 description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib, WorldEdit]

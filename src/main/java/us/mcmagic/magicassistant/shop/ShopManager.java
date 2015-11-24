@@ -428,12 +428,17 @@ public class ShopManager {
                 player.closeInventory();
                 return;
             }
+            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+            if (data.getPurchases().contains(o.getId())) {
+                player.closeInventory();
+                player.sendMessage(ChatColor.RED + "You already own that Outfit!");
+                return;
+            }
             MCMagicCore.economy.addTokens(player.getUniqueId(), -item.getCost(),
                     MCMagicCore.getMCMagicConfig().serverName + " Store");
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased the " + o.getName() + " Outfit" +
                     ChatColor.GREEN + "!");
             player.closeInventory();
-            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             data.addPurchase(o.getId());
             Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                 @Override

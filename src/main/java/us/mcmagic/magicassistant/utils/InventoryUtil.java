@@ -49,8 +49,8 @@ public class InventoryUtil {
                     "that you can purchase in shops!"));
     private ItemStack food = new ItemCreator(Material.POTATO_ITEM, ChatColor.GREEN + "Find Food", Arrays.asList(
             ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
-    private ItemStack hub = new ItemCreator(Material.ENDER_PEARL, ChatColor.GREEN + "Return to Hub", Arrays.asList(
-            ChatColor.GREEN + "Return to the", ChatColor.GREEN + "Hub Server!"));
+    private ItemStack ttc = new ItemCreator(Material.ENDER_PEARL, ChatColor.GREEN + "Transportation and Ticket Center",
+            Arrays.asList(ChatColor.GREEN + "Return to the Transportation", ChatColor.GREEN + "and Ticket Center!"));
     private ItemStack parks = new ItemCreator(Material.NETHER_STAR, ChatColor.GREEN + "Park Menu", Arrays.asList(
             ChatColor.GREEN + "Visit one of the Walt", ChatColor.GREEN + "Disney World Parks!"));
     private ItemStack custom = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Customize your MagicBand",
@@ -300,7 +300,7 @@ public class InventoryUtil {
                     main.setItem(11, shop);
                     main.setItem(20, food);
                     main.setItem(4, time);
-                    main.setItem(13, hub);
+                    main.setItem(13, ttc);
                     main.setItem(22, parks);
                     main.setItem(6, packs);
                     main.setItem(15, playerInfo);
@@ -314,6 +314,7 @@ public class InventoryUtil {
                 }
                 case PARK: {
                     Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
+                    park.setItem(4, ttc);
                     park.setItem(10, mk);
                     park.setItem(11, epcot);
                     park.setItem(12, hws);
