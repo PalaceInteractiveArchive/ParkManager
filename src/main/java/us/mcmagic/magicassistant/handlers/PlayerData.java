@@ -24,7 +24,7 @@ public class PlayerData {
     private boolean special;
     private boolean flash;
     private boolean visibility;
-    private boolean fountain;
+    private boolean loop;
     private boolean hotel;
     private int fastpass;
     private int dailyfp;
@@ -35,9 +35,10 @@ public class PlayerData {
     private List<Integer> purchases;
     private Clothing clothing;
     private String outfitCode;
+    private boolean inventorySet = false;
 
     public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
-                      boolean flash, boolean visibility, boolean fountain, boolean hotel, int fastpass, int dailyfp,
+                      boolean flash, boolean visibility, boolean loop, boolean hotel, int fastpass, int dailyfp,
                       int fpday, String outfitCode) {
         this.uuid = uuid;
         this.dvc = dvc;
@@ -47,7 +48,7 @@ public class PlayerData {
         this.special = special;
         this.flash = flash;
         this.visibility = visibility;
-        this.fountain = fountain;
+        this.loop = loop;
         this.hotel = hotel;
         this.fastpass = fastpass;
         this.dailyfp = dailyfp;
@@ -122,8 +123,8 @@ public class PlayerData {
         this.flash = flash;
     }
 
-    public boolean getFountain() {
-        return fountain;
+    public boolean getLoop() {
+        return loop;
     }
 
     public Backpack getBackpack() {
@@ -134,8 +135,8 @@ public class PlayerData {
         this.backpack = backpack;
     }
 
-    public void setFountain(boolean fountain) {
-        this.fountain = fountain;
+    public void setLoop(boolean loop) {
+        this.loop = loop;
     }
 
     public void setBandColor(Material color) {
@@ -344,6 +345,14 @@ public class PlayerData {
 
         public void setBootsID(int bootsID) {
             this.bootsID = bootsID;
+        }
+
+        public void setInventorySet(boolean b) {
+            inventorySet = b;
+        }
+
+        public boolean getInventorySet() {
+            return inventorySet;
         }
     }
 }

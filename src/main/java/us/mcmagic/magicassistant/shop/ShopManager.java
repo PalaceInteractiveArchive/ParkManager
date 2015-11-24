@@ -235,8 +235,11 @@ public class ShopManager {
     }
 
     private void openWardrobe(Player player, Shop shop) {
-        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + shop.getName() +
-                ChatColor.GREEN + " - " + ChatColor.BLUE + "Wardrobe");
+        String title = ChatColor.GREEN + "Shop - " + shop.getName() + ChatColor.GREEN + " - " + "Wardrobe";
+        if (title.length() > 32) {
+            title = title.substring(0, 32);
+        }
+        Inventory inv = Bukkit.createInventory(player, 27, title);
         List<OutfitItem> outfits = shop.getOutfits();
         if (outfits.isEmpty()) {
             inv.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
@@ -393,7 +396,7 @@ public class ShopManager {
         confirmations.remove(player.getUniqueId());
     }
 
-    public void confirmPurchase(Player player) {
+    public void confirmPurchase(final Player player) {
         if (confirmations.containsKey(player.getUniqueId())) {
             ShopItem item = confirmations.remove(player.getUniqueId());
             int balance = MCMagicCore.economy.getBalance(player.getUniqueId());
@@ -418,7 +421,7 @@ public class ShopManager {
             player.getInventory().addItem(item.getItem());
         } else if (outfitConfirm.containsKey(player.getUniqueId())) {
             OutfitItem item = outfitConfirm.remove(player.getUniqueId());
-            Outfit o = MagicAssistant.wardrobeManager.getOutfit(item.getOutfitId());
+            final Outfit o = MagicAssistant.wardrobeManager.getOutfit(item.getOutfitId());
             int tkn = MCMagicCore.economy.getTokens(player.getUniqueId());
             if (tkn < item.getCost()) {
                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cannot afford that item!");
@@ -432,6 +435,12 @@ public class ShopManager {
             player.closeInventory();
             PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             data.addPurchase(o.getId());
+            Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    MagicAssistant.wardrobeManager.purchaseOutfit(player, o.getId());
+                }
+            });
         }
     }
 

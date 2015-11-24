@@ -53,11 +53,11 @@ public class PlayerSettingsClick {
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
                 MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "visibility", data.getVisibility());
                 return;
-            case "Fountains":
+            case "Park Loop Music":
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
-                data.setFountain(!data.getFountain());
+                data.setLoop(!data.getLoop());
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "fountain", data.getFountain());
+                MagicAssistant.bandUtil.setSetting(player.getUniqueId(), "parkloop", data.getLoop());
                 return;
             case "Friends Access Hotel Room":
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);

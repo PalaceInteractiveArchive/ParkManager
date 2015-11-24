@@ -35,7 +35,6 @@ import us.mcmagic.mcmagiccore.player.PlayerUtil;
 import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -504,17 +503,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     sender.sendMessage(ChatColor.AQUA + s);
                                 }
                                 return true;
-                            case "reload":
-                                sender.sendMessage(ChatColor.GREEN + "Reloading Changer Areas...");
-                                try {
-                                    MagicAssistant.blockChanger.reload();
-                                } catch (FileNotFoundException e) {
-                                    sender.sendMessage(ChatColor.RED + "Error reloading, see console for details.");
-                                    e.printStackTrace();
-                                    return true;
-                                }
-                                sender.sendMessage(ChatColor.GREEN + "Reload Complete!");
-                                return true;
                             case "debug":
                                 if (sender instanceof Player) {
                                     if (MagicAssistant.blockChanger.toggleDebug(((Player) sender))) {
@@ -785,11 +773,12 @@ public class Commandmagic implements Listener, CommandExecutor {
                 MagicAssistant.scheduleManager.update();
                 MagicAssistant.itemUtil.initialize();
                 MagicAssistant.hotelManager.refreshRooms();
+                /*
                 try {
                     MagicAssistant.blockChanger.reload();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                }
+                }*/
                 MagicAssistant.packManager.initialize();
                 MagicAssistant.shopManager.initialize();
                 MagicAssistant.wardrobeManager.initialize();
@@ -868,7 +857,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.AQUA + "*Remember, use Block IDs instead of Block Names*");
                 sender.sendMessage(ChatColor.GREEN + "/magic changer wand " + ChatColor.AQUA + "- Get the Changer Wand");
                 sender.sendMessage(ChatColor.GREEN + "/magic changer remove [Name] " + ChatColor.AQUA + "- Remove a Changer Area");
-                sender.sendMessage(ChatColor.GREEN + "/magic changer reload " + ChatColor.AQUA + "- Reload areas");
                 break;
             case "effect":
                 sender.sendMessage(ChatColor.GREEN + "Effect Commands:");

@@ -93,9 +93,6 @@ public class MainMenuClick {
             case NETHER_STAR:
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.PARK);
                 return;
-            case NOTE_BLOCK:
-                MagicAssistant.packManager.openMenu(player);
-                return;
             case FIREWORK_CHARGE:
                 MagicAssistant.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
                 return;

@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.listeners.BlockEdit;
-import us.mcmagic.magicassistant.listeners.PlayerJoinAndLeave;
 import us.mcmagic.magicassistant.utils.SqlUtil;
 import us.mcmagic.magicassistant.watch.WatchTask;
 import us.mcmagic.mcmagiccore.MCMagicCore;
@@ -89,7 +88,7 @@ public class Commandbuild implements CommandExecutor {
                 @Override
                 public void run() {
                     MagicAssistant.autographManager.setBook(player.getUniqueId());
-                    PlayerJoinAndLeave.setInventory(player, true);
+                    MagicAssistant.playerJoinAndLeave.setInventory(player, true);
                     if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() > Rank.INTERN.getRankId()) {
                         if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                             inv.setItem(0, new ItemStack(Material.COMPASS));

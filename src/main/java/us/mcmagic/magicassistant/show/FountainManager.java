@@ -50,7 +50,7 @@ public class FountainManager implements Listener {
 
     @EventHandler
     public void entityToBlock(EntityChangeBlockEvent event) {
-        if (blocks.contains(event.getEntity().getUniqueId())) {
+        if (blocks.remove(event.getEntity().getUniqueId())) {
             event.setCancelled(true);
             event.getEntity().remove();
         }

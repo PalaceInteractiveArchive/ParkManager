@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.utils.FileUtil;
 
 import java.util.ArrayList;
@@ -14,11 +15,15 @@ public class ParkSoundManager {
     private List<ParkSound> sounds = new ArrayList<>();
 
     public ParkSoundManager() {
-        MagicAssistant.getInstance().getLogger().info("(ParkSoundManager) Instantiated.");
+        MagicAssistant.getInstance().getLogger().info("ParkSoundManager Initialized.");
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+                    if (!data.getLoop()) {
+                        continue;
+                    }
                     for (ParkSound timer : getSounds()) {
                         timer.play(player);
                     }

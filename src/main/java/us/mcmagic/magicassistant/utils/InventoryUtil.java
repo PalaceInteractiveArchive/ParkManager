@@ -379,7 +379,7 @@ public class InventoryUtil {
                     Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
                     pmenu.setItem(10, web);
                     pmenu.setItem(11, dvc);
-                    pmenu.setItem(12, locker);
+                    pmenu.setItem(12, packs);
                     pmenu.setItem(14, rc);
                     pmenu.setItem(15, prefs);
                     pmenu.setItem(16, mumble);
@@ -561,10 +561,10 @@ public class InventoryUtil {
                     } else {
                         visibility = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Player Visibility", disab);
                     }
-                    if (data.getFountain()) {
-                        loop = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Fountains", enab);
+                    if (data.getLoop()) {
+                        loop = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Park Loop Music", enab);
                     } else {
-                        loop = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Fountains", disab);
+                        loop = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Park Loop Music", disab);
                     }
                     if (data.getHotel()) {
                         hotel = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Friends Access Hotel Room", enab);

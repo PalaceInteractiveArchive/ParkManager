@@ -46,8 +46,6 @@ import us.mcmagic.magicassistant.utils.*;
 import us.mcmagic.magicassistant.watch.WatchTask;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -61,6 +59,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static HashMap<Integer, List<Attraction>> attPages = new HashMap<>();
     public static Location spawn;
     public static Location hub;
+    public static PlayerJoinAndLeave playerJoinAndLeave;
     public static boolean spawnOnJoin;
     public static boolean crossServerInv;
     public static boolean hotelServer;
@@ -120,12 +119,14 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         chairManager = new ChairManager(this);
         wardrobeManager = new WardrobeManager();
         chairFactory = new ArrowFactory();
+        playerJoinAndLeave = new PlayerJoinAndLeave();
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage(this));
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage());
         saveConfig();
         FileUtil.setupConfig();
+        /*
         try {
             blockChanger.initialize();
         } catch (FileNotFoundException ignored) {
@@ -135,7 +136,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         warps.clear();
         setupFirstJoinItems();
         log("Initializing Warps...");
@@ -156,7 +157,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         log("Initializing Show Schedule...");
         scheduleManager = new ScheduleManager();
         log("Show Schedule Initialized!");
-        enablePixelator();
+        //enablePixelator();
         setupAttractions();
         if (config.getBoolean("show-server")) {
             // Show Ticker
@@ -182,8 +183,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         parkSoundManager.initialize();
         DesignStation.initialize();
         long curr = System.currentTimeMillis();
-        long time = (curr - (Long.parseLong(Long.toString(curr).substring(0, Long.toString(curr).length() - 3) + 1) *
-                1000)) / 50;
+        long time = (curr % 1000) / 50;
         Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
     }
 
@@ -205,7 +205,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 }
             }
         }
-        pixelator.rendererManager.disable();
+        //pixelator.rendererManager.disable();
     }
 
     public static MagicAssistant getInstance() {
@@ -460,7 +460,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(this, this);
         pm.registerEvents(new ChatListener(), this);
-        pm.registerEvents(new PlayerJoinAndLeave(), this);
+        pm.registerEvents(playerJoinAndLeave, this);
         pm.registerEvents(new SignChange(), this);
         pm.registerEvents(new ChunkUnload(), this);
         pm.registerEvents(new BlockEdit(), this);

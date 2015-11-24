@@ -7,12 +7,9 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 
-public class PluginMessage implements PluginMessageListener {
-    public static MagicAssistant pl;
+import java.util.UUID;
 
-    public PluginMessage(MagicAssistant instance) {
-        pl = instance;
-    }
+public class PluginMessage implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
@@ -21,12 +18,15 @@ public class PluginMessage implements PluginMessageListener {
         }
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subchannel = in.readUTF();
-        if (subchannel.equals("UpdateWarps")) {
-            WarpUtil.refreshWarps();
-            return;
-        }
-        if (subchannel.equals("UpdateHotelRooms")) {
-            MagicAssistant.hotelManager.refreshRooms();
+        switch (subchannel) {
+            case "UpdateWarps":
+                WarpUtil.refreshWarps();
+                return;
+            case "UpdateHotelRooms":
+                MagicAssistant.hotelManager.refreshRooms();
+                return;
+            case "Download":
+                MagicAssistant.storageManager.downloadInventory(UUID.fromString(in.readUTF()));
         }
     }
 }

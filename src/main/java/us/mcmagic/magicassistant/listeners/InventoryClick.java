@@ -31,6 +31,10 @@ public class InventoryClick implements Listener {
         int slot = event.getSlot();
         if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
             if (!BlockEdit.isInBuildMode(((PlayerInventory) event.getClickedInventory()).getHolder().getUniqueId())) {
+                if (event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
+                    event.setCancelled(true);
+                    return;
+                }
                 if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                     event.setCancelled(true);
                     return;

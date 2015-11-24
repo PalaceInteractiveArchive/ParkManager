@@ -17,13 +17,14 @@ import java.util.List;
  * Created by Marc on 12/19/14
  */
 public class MyProfileMenuClick {
-    public static List<String> donatemsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD + "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
+    public static List<String> donatemsgs = Arrays.asList(" ", " ", " ", " ", ChatColor.GREEN + "" + ChatColor.BOLD +
+            "Store Link: " + ChatColor.AQUA + "" + ChatColor.BOLD + "http://store.mcmagic.us");
     private static FormattedMessage mumble = new FormattedMessage("Click here to download Mumble").color(ChatColor.YELLOW)
-            .style(ChatColor.BOLD).link("http://mcmagic.us/mumble").tooltip(ChatColor.GREEN +
-                    "Click to visit http://mcmagic.us/mumble");
+            .style(ChatColor.BOLD).link("https://mcmagic.us/mumble").tooltip(ChatColor.GREEN +
+                    "Click to visit https://mcmagic.us/mumble");
     private static FormattedMessage website = new FormattedMessage("Click here to visit our Website").color(ChatColor.YELLOW)
-            .style(ChatColor.BOLD).link("http://mcmagic.us").tooltip(ChatColor.GREEN +
-                    "Click to visit http://mcmagic.us");
+            .style(ChatColor.BOLD).link("https://mcmagic.us").tooltip(ChatColor.GREEN +
+                    "Click to visit https://mcmagic.us");
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -61,6 +62,9 @@ public class MyProfileMenuClick {
                 return;
             case "Ride Counter":
                 MagicAssistant.inventoryUtil.openRideCounter(player);
+                return;
+            case "Resource/Audio Packs":
+                MagicAssistant.packManager.openMenu(player);
                 return;
             case "Mumble":
                 player.closeInventory();

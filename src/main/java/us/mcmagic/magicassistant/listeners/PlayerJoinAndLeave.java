@@ -22,22 +22,38 @@ import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.PlayerData;
 import us.mcmagic.magicassistant.handlers.Warp;
 import us.mcmagic.magicassistant.hotels.HotelManager;
-import us.mcmagic.magicassistant.storage.Backpack;
-import us.mcmagic.magicassistant.storage.Locker;
 import us.mcmagic.magicassistant.watch.WatchTask;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     private List<UUID> firstJoins = new ArrayList<>();
-    public static List<UUID> makeBuildMode = new ArrayList<>();
+    private HashMap<UUID, Long> needInvSet = new HashMap<>();
+
+    public PlayerJoinAndLeave() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (Map.Entry<UUID, Long> entry : needInvSet.entrySet()) {
+                    UUID uuid = entry.getKey();
+                    Long time = entry.getValue();
+                    if (time + 5000 <= System.currentTimeMillis()) {
+                        needInvSet.remove(uuid);
+                        Player tp = Bukkit.getPlayer(uuid);
+                        if (tp == null) {
+                            continue;
+                        }
+                        tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
+                        MagicAssistant.storageManager.downloadInventory(uuid);
+                    }
+                }
+            }
+        }, 0L, 20L);
+    }
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
@@ -63,6 +79,7 @@ public class PlayerJoinAndLeave implements Listener {
         User user = MCMagicCore.getUser(player.getUniqueId());
         if (user == null) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
         }
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
@@ -75,6 +92,7 @@ public class PlayerJoinAndLeave implements Listener {
         try {
             final Player player = event.getPlayer();
             final User user = MCMagicCore.getUser(player.getUniqueId());
+            needInvSet.put(player.getUniqueId(), System.currentTimeMillis());
             MagicAssistant.userCache.remove(player.getUniqueId());
             MagicAssistant.userCache.put(player.getUniqueId(), player.getName());
             PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
@@ -130,35 +148,6 @@ public class PlayerJoinAndLeave implements Listener {
             Bukkit.getScheduler().runTaskLaterAsynchronously(MagicAssistant.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    Backpack pack = MagicAssistant.storageManager.getBackpack(player);
-                    Locker locker = MagicAssistant.storageManager.getLocker(player);
-                    final ItemStack[] hotbar = MagicAssistant.storageManager.getHotbar(player);
-                    setInventory(player, true);
-                    if (hotbar != null) {
-                        ItemStack[] cont = inv.getContents();
-                        for (int i = 0; i < 4; i++) {
-                            cont[i] = hotbar[i];
-                        }
-                        inv.setContents(cont);
-                    }
-                    if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
-                        if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
-                            inv.setItem(0, new ItemStack(Material.COMPASS));
-                        }
-                        if (makeBuildMode.remove(player.getUniqueId())) {
-                            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    player.performCommand("build");
-                                }
-                            }, 20L);
-                        }
-                    } else {
-                        inv.remove(Material.COMPASS);
-                    }
-                    PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
-                    data.setBackpack(pack);
-                    data.setLocker(locker);
                     if (!MagicAssistant.hotelServer) {
                         return;
                     }
@@ -189,7 +178,7 @@ public class PlayerJoinAndLeave implements Listener {
         }
     }
 
-    public static void setInventory(Player player, boolean book) {
+    public void setInventory(Player player, boolean book) {
         Inventory inv = player.getInventory();
         ItemStack[] barrier = new ItemStack[36];
         for (int i = 9; i < barrier.length; i++) {
@@ -255,7 +244,7 @@ public class PlayerJoinAndLeave implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        final Player player = event.getPlayer();
+        Player player = event.getPlayer();
         MagicAssistant.storageManager.logout(player);
         if (player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -281,5 +270,9 @@ public class PlayerJoinAndLeave implements Listener {
         MagicAssistant.blockChanger.logout(player);
         DesignStation.removePlayerVehicle(player.getUniqueId());
         MagicAssistant.playerData.remove(player.getUniqueId());
+    }
+
+    public void setInventory(UUID uuid) {
+        needInvSet.remove(uuid);
     }
 }

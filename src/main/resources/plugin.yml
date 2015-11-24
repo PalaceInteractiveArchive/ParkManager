@@ -1,6 +1,6 @@
 name: MagicAssistant
 author: MCMagicDev
-version: 1.9-SNAPSHOT
+version: 1.9.2-SNAPSHOT
 description: MCMagic Park Plugin
 main: us.mcmagic.magicassistant.MagicAssistant
 depend: [MCMagicCore, ProtocolLib, WorldEdit]
@@ -29,10 +29,10 @@ commands:
       description: Set time to noon
       permission: mcmagic.time.set
       permission-message: §cOnly Cast Members can use this command!
-   pixel:
-      description: Pixelator Command
-      permission: arcade.bypass
-      permission-message: §cOnly Cast Members can use this command!
+   #pixel:
+   #   description: Pixelator Command
+   #   permission: arcade.bypass
+   #   permission-message: §cOnly Cast Members can use this command!
    warp:
       description: Warp Command
       permission: mcmagic.warp

@@ -1,7 +1,9 @@
 package us.mcmagic.magicassistant.storage;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -9,13 +11,19 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.handlers.HotelRoom;
 import us.mcmagic.magicassistant.handlers.InventoryType;
 import us.mcmagic.magicassistant.handlers.PlayerData;
+import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.listeners.BlockEdit;
 import us.mcmagic.magicassistant.utils.SqlUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,6 +40,7 @@ public class StorageManager {
     private List<UUID> loadingPack = new ArrayList<>();
     private List<UUID> loadingLocker = new ArrayList<>();
     private HashMap<UUID, ItemStack[]> buildModeHotbars = new HashMap<>();
+    public List<UUID> makeBuildMode = new ArrayList<>();
 
     public StorageManager() {
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
@@ -75,6 +84,68 @@ public class StorageManager {
                 }
             }
         }, 0L, 6000L);
+    }
+
+    public void downloadInventory(UUID uuid) {
+        final Player player = Bukkit.getPlayer(uuid);
+        User user = MCMagicCore.getUser(uuid);
+        if (player == null || user == null) {
+            return;
+        }
+        MagicAssistant.playerJoinAndLeave.setInventory(player.getUniqueId());
+        final PlayerInventory inv = player.getInventory();
+        Backpack pack = MagicAssistant.storageManager.getBackpack(player);
+        Locker locker = MagicAssistant.storageManager.getLocker(player);
+        final ItemStack[] hotbar = MagicAssistant.storageManager.getHotbar(player);
+        MagicAssistant.playerJoinAndLeave.setInventory(player, true);
+        if (hotbar != null) {
+            ItemStack[] cont = inv.getContents();
+            for (int i = 0; i < 4; i++) {
+                cont[i] = hotbar[i];
+            }
+            inv.setContents(cont);
+        }
+        if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
+            if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
+                inv.setItem(0, new ItemStack(Material.COMPASS));
+            }
+            if (makeBuildMode.remove(player.getUniqueId())) {
+                Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        player.performCommand("build");
+                    }
+                }, 20L);
+            }
+        } else {
+            inv.remove(Material.COMPASS);
+        }
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
+        data.setBackpack(pack);
+        data.setLocker(locker);
+        if (!MagicAssistant.hotelServer) {
+            return;
+        }
+        HotelManager manager = MagicAssistant.hotelManager;
+        for (HotelRoom room : manager.getHotelRooms()) {
+            if (room.getCheckoutNotificationRecipient() != null &&
+                    room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
+                room.setCheckoutNotificationRecipient(null);
+                room.setCheckoutTime(0);
+                manager.updateHotelRoom(room);
+                manager.updateRooms();
+                player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
+                        " room has lapsed and you have been checked out. Please come stay with us again soon!");
+                manager.expire.send(player);
+                player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                return;
+            }
+            if (room.getCurrentOccupant() != null &&
+                    room.getCurrentOccupant().equals(player.getUniqueId()) &&
+                    room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+                manager.checkout(room, true);
+            }
+        }
     }
 
     public Backpack getBackpack(Player player) {
@@ -268,10 +339,22 @@ public class StorageManager {
         Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                final long time = System.currentTimeMillis();
-                update(player, data, build);
-                removeHotbar(player.getUniqueId());
-                System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
+                try {
+                    final long time = System.currentTimeMillis();
+                    update(player, data, build);
+                    if (Bukkit.getOnlinePlayers().size() > 0) {
+                        ByteArrayOutputStream b = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(b);
+                        out.writeUTF("Uploaded");
+                        out.writeUTF(player.getUniqueId().toString());
+                        ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(MagicAssistant.getInstance(),
+                                "BungeeCord", b.toByteArray());
+                    }
+                    removeHotbar(player.getUniqueId());
+                    //System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -288,6 +371,9 @@ public class StorageManager {
     private void update(Player player, PlayerData data, boolean build) {
         Backpack pack = data.getBackpack();
         Locker locker = data.getLocker();
+        if (pack == null || locker == null) {
+            return;
+        }
         Inventory bp = pack.getInventory();
         if (build) {
             final PlayerInventory inv = player.getInventory();

@@ -100,14 +100,7 @@ public class ChangeCalculations {
             info.chunkMask = ((PacketPlayOutMapChunk.ChunkMap[]) field.get(packet.getHandle()))[chunkNum].b;
             info.hasContinous = true; // Always true
             info.data = ((PacketPlayOutMapChunk.ChunkMap[]) field.get(packet.getHandle()))[chunkNum].a;
-
-            // Check for Spigot
-            if (info.data == null || info.data.length == 0) {
-                info.data = packet.getSpecificModifier(byte[][].class).read(0)[chunkNum];
-            } else {
-                info.startIndex = dataStartIndex;
-            }
-
+            info.startIndex = dataStartIndex;
             translateChunkInfoAndObfuscate(info, info.data);
             dataStartIndex += info.size;
         }
@@ -126,13 +119,12 @@ public class ChangeCalculations {
         info.player = player;
         info.chunkX = ints.read(0);    // packet.a;
         info.chunkZ = ints.read(1);    // packet.b;
-        Field field = ((PacketPlayOutMapChunk) packet.getHandle()).getClass().getField("c");
+        Field field = ((PacketPlayOutMapChunk) packet.getHandle()).getClass().getDeclaredField("c");
         field.setAccessible(true);
         info.chunkMask = ((PacketPlayOutMapChunk.ChunkMap) field.get(packet.getHandle())).b;
         info.data = ((PacketPlayOutMapChunk.ChunkMap) field.get(packet.getHandle())).a;
         info.hasContinous = getOrDefault(packet.getBooleans().readSafely(0), true);
         info.startIndex = 0;
-
         if (info.data != null) {
             translateChunkInfoAndObfuscate(info, info.data);
         }
@@ -145,7 +137,6 @@ public class ChangeCalculations {
         int z = ints.read(2);
         int blockID = 0;
         int data = 0;
-
         if (MinecraftReflection.isUsingNetty()) {
             blockID = packet.getBlocks().read(0).getId();
             data = ints.read(3);
@@ -347,7 +338,6 @@ public class ChangeCalculations {
     private void translate(SegmentLookup lookup, ChunkInfo info) {
         // Loop over 16x16x16 chunks in the 16x256x16 column
         int idIndexModifier = 0;
-
         int idOffset = info.startIndex;
         int dataOffset = idOffset + info.chunkSectionNumber * 4096;
 
@@ -373,9 +363,7 @@ public class ChangeCalculations {
                 for (int y = 0; y < 16; y++) {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
-
                             int blockID = info.data[blockIndex] & 0xFF;
-
                             // Transform block
                             info.data[blockIndex] = (byte) view.getBlockLookup(blockID);
 
