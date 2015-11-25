@@ -45,7 +45,7 @@ public class InventoryUtil {
     private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop ",
             Arrays.asList(ChatColor.GREEN + "Purchase Items!"));
     private ItemStack ward = new ItemCreator(Material.IRON_CHESTPLATE, ChatColor.GREEN + "Wardrobe Manager",
-            Arrays.asList(ChatColor.GREEN + "Change your outfit to cloths", ChatColor.GREEN +
+            Arrays.asList(ChatColor.GREEN + "Change your outfit to clothes", ChatColor.GREEN +
                     "that you can purchase in shops!"));
     private ItemStack food = new ItemCreator(Material.POTATO_ITEM, ChatColor.GREEN + "Find Food", Arrays.asList(
             ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!"));
@@ -314,7 +314,9 @@ public class InventoryUtil {
                 }
                 case PARK: {
                     Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
+                    park.setItem(2, arcade);
                     park.setItem(4, ttc);
+                    park.setItem(6, creative);
                     park.setItem(10, mk);
                     park.setItem(11, epcot);
                     park.setItem(12, hws);

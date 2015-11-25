@@ -37,7 +37,7 @@ public class PlayerJoinAndLeave implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
-                for (Map.Entry<UUID, Long> entry : needInvSet.entrySet()) {
+                for (Map.Entry<UUID, Long> entry : new HashMap<>(needInvSet).entrySet()) {
                     UUID uuid = entry.getKey();
                     Long time = entry.getValue();
                     if (time + 5000 <= System.currentTimeMillis()) {

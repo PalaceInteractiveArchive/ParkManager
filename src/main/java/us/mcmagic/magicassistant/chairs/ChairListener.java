@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant.chairs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,19 +26,16 @@ import us.mcmagic.magicassistant.MagicAssistant;
 import java.util.ArrayList;
 
 public class ChairListener implements Listener {
-    private ChairManager manager = MagicAssistant.chairManager;
     public static final double MAX_SIT_DISTANCE = 3.0D;
 
     @EventHandler
     public void interact(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             Player player = event.getPlayer();
             Block block = event.getClickedBlock();
             if (canSit(player, block)) {
                 Location sitLocation = ChairUtil.sitLocation(block, player.getLocation().getYaw());
-                if (manager.sitPlayer(player, block, sitLocation, false)) {
-                    event.setCancelled(true);
-                }
+                MagicAssistant.chairManager.sitPlayer(player, block, sitLocation, false);
             }
         }
     }
@@ -45,24 +43,24 @@ public class ChairListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void teleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        if (manager.isSitting(player)) {
-            manager.standPlayer(player, true);
+        if (MagicAssistant.chairManager.isSitting(player)) {
+            MagicAssistant.chairManager.standPlayer(player, true);
         }
     }
 
     @EventHandler
     public void quit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (manager.isSitting(player)) {
-            manager.standPlayer(player, true);
+        if (MagicAssistant.chairManager.isSitting(player)) {
+            MagicAssistant.chairManager.standPlayer(player, true);
         }
     }
 
     @EventHandler
     public void death(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (manager.isSitting(player)) {
-            manager.standPlayer(player, true);
+        if (MagicAssistant.chairManager.isSitting(player)) {
+            MagicAssistant.chairManager.standPlayer(player, true);
         }
     }
 
@@ -70,8 +68,8 @@ public class ChairListener implements Listener {
     public void vehicleExit(VehicleExitEvent event) {
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
-            if (manager.isSitting(player)) {
-                if (!manager.standPlayer(player, false)) {
+            if (MagicAssistant.chairManager.isSitting(player)) {
+                if (!MagicAssistant.chairManager.standPlayer(player, false)) {
                     event.setCancelled(true);
                 }
             }
@@ -81,16 +79,16 @@ public class ChairListener implements Listener {
     @EventHandler
     public void blockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (manager.isChairOccupied(block)) {
-            Player player = manager.getSittingPlayer(block);
-            manager.standPlayer(player, false);
+        if (MagicAssistant.chairManager.isChairOccupied(block)) {
+            Player player = MagicAssistant.chairManager.getSittingPlayer(block);
+            MagicAssistant.chairManager.standPlayer(player, false);
         }
     }
 
     @EventHandler
     public void explode(EntityExplodeEvent event) {
         for (Block block : new ArrayList<>(event.blockList())) {
-            if (manager.isChairOccupied(block)) {
+            if (MagicAssistant.chairManager.isChairOccupied(block)) {
                 event.blockList().remove(block);
             }
         }
@@ -99,11 +97,11 @@ public class ChairListener implements Listener {
     @EventHandler
     public void pistonExtend(final BlockPistonExtendEvent event) {
         for (final Block b : event.getBlocks()) {
-            if (manager.isChairOccupied(b)) {
+            if (MagicAssistant.chairManager.isChairOccupied(b)) {
                 Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                     @Override
                     public void run() {
-                        manager.movePlayer(manager.getSittingPlayer(b), b, b.getRelative(event.getDirection()));
+                        MagicAssistant.chairManager.movePlayer(MagicAssistant.chairManager.getSittingPlayer(b), b, b.getRelative(event.getDirection()));
                     }
                 }, 3L);
                 break;
@@ -114,11 +112,11 @@ public class ChairListener implements Listener {
     @EventHandler
     public void pistonRetract(final BlockPistonRetractEvent event) {
         for (final Block b : event.getBlocks()) {
-            if (manager.isChairOccupied(b)) {
+            if (MagicAssistant.chairManager.isChairOccupied(b)) {
                 Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
                     @Override
                     public void run() {
-                        manager.movePlayer(manager.getSittingPlayer(b), b, b.getRelative(event.getDirection()));
+                        MagicAssistant.chairManager.movePlayer(MagicAssistant.chairManager.getSittingPlayer(b), b, b.getRelative(event.getDirection()));
                     }
                 }, 3L);
                 break;
@@ -140,10 +138,11 @@ public class ChairListener implements Listener {
             if (player.isInsideVehicle()) {
                 return false;
             }
-            if (manager.isSitting(player)) {
+            if (MagicAssistant.chairManager.isSitting(player)) {
                 return false;
             }
-            if (manager.isChairOccupied(block)) {
+            if (MagicAssistant.chairManager.isChairOccupied(block)) {
+                player.sendMessage(ChatColor.GRAY + "That seat is occupied!");
                 return false;
             }
             if (block.getRelative(BlockFace.DOWN).isLiquid() || block.getRelative(BlockFace.UP).isLiquid()) {

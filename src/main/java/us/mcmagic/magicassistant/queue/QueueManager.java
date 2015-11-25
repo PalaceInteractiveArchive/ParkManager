@@ -84,15 +84,7 @@ public class QueueManager {
             ride.ejectQueue();
         }
         rides.clear();
-        File file = FileUtil.queueFile();
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
         List<String> qs = config.getStringList("queues");
         Collections.sort(qs);
         for (String s : qs) {
@@ -252,9 +244,9 @@ public class QueueManager {
         }
         if (ride.isFrozen()) {
             if (ride.getName().substring(ride.getName().length() - 1).equalsIgnoreCase("s")) {
-                player.sendMessage(ride.getName() + "'s" + ChatColor.GREEN + " Queue is frozen right now, check back soon!");
-            } else {
                 player.sendMessage(ride.getName() + "'" + ChatColor.GREEN + " Queue is frozen right now, check back soon!");
+            } else {
+                player.sendMessage(ride.getName() + "'s" + ChatColor.GREEN + " Queue is frozen right now, check back soon!");
             }
             return;
         }

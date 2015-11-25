@@ -13,26 +13,27 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ChairManager {
-    private MagicAssistant plugin;
     private HashMap<UUID, SitData> sitting = new HashMap<>();
     private HashMap<Block, UUID> chairs = new HashMap<>();
 
-    public ChairManager(MagicAssistant plugin) {
-        this.plugin = plugin;
-    }
-
     public boolean sitPlayer(final Player player, Block block, Location location, boolean noMessage) {
-        if (!noMessage) player.sendMessage(ChatColor.GRAY + "Relaxing...");
+        if (chairs.containsKey(block)) {
+            player.sendMessage(ChatColor.GRAY + "That seat is occupied!");
+            return false;
+        }
+        if (!noMessage) {
+            player.sendMessage(ChatColor.GRAY + "Relaxing...");
+        }
         SitData data = new SitData();
-        final Entity arrow = plugin.chairFactory.spawnArrow(location.getBlock().getLocation().add(0.5, 0.0, 0.5));
+        final Entity arrow = MagicAssistant.chairFactory.spawnArrow(location.getBlock().getLocation().add(0.5, 0.0, 0.5));
         data.arrow = arrow;
         data.chairBlock = block;
         data.teleportLocation = player.getLocation();
-        data.sittingTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+        data.sittingTask = Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             public void run() {
                 resetArrow(player);
             }
-        }, 1000L, 1000L);
+        }, 1000L, 1000L).getTaskId();
         player.teleport(location);
         arrow.setPassenger(player);
         sitting.put(player.getUniqueId(), data);
@@ -59,7 +60,7 @@ public class ChairManager {
         SitData data = sitting.get(player.getUniqueId());
         data.sitting = false;
         Entity previousArrow = data.arrow;
-        final Entity arrow = plugin.chairFactory.spawnArrow(previousArrow.getLocation());
+        final Entity arrow = MagicAssistant.chairFactory.spawnArrow(previousArrow.getLocation());
         arrow.setPassenger(player);
         data.arrow = arrow;
         previousArrow.remove();
@@ -78,7 +79,7 @@ public class ChairManager {
         Entity old = data.arrow;
         Location sitLocation = chair.getLocation().clone().add(0.5, 0, 0.5);
         sitLocation.setPitch(45);
-        Entity arrow = plugin.chairFactory.spawnArrow(sitLocation);
+        Entity arrow = MagicAssistant.chairFactory.spawnArrow(sitLocation);
         arrow.teleport(arrow.getLocation());
         arrow.setPassenger(player);
         data.arrow = arrow;

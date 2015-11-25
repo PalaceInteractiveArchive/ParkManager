@@ -39,6 +39,16 @@ public class ParkMenuClick {
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "TTC...");
                 BungeeUtil.sendToServer(player, "TTC");
                 return;
+            case "Creative":
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Creative...");
+                BungeeUtil.sendToServer(player, "Creative");
+                return;
+            case "Arcade":
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Arcade...");
+                BungeeUtil.sendToServer(player, "Arcade");
+                return;
             case "Magic Kingdom":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Magic Kingdom...");

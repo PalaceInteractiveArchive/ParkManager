@@ -47,7 +47,7 @@ public class ChairUtil {
 
     public static boolean isSuitableChair(Block block) {
         for (Material material : SUITABLE_CHAIR_TYPES) {
-            if (block.getType() == material) {
+            if (block.getType().equals(material)) {
                 return true;
             }
         }

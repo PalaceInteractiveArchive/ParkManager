@@ -18,7 +18,7 @@ public class VisibilityUtil {
     private List<UUID> spawnHide = new ArrayList<>();
 
     public VisibilityUtil() {
-        if (!MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("hub")) {
+        if (!MagicAssistant.hubServer) {
             return;
         }
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {

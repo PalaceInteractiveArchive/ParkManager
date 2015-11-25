@@ -6,7 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 
 /**
  * Created by Marc on 10/23/15
@@ -33,6 +35,9 @@ public class PlayerGameModeChange implements Listener {
                 }
                 break;
             case ADVENTURE:
+                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() <= Rank.CASTMEMBER.getRankId()) {
+                    return;
+                }
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.GREEN + "You cannot enter Adventure Mode, change to " + ChatColor.YELLOW +
                         "Survival Mode!");

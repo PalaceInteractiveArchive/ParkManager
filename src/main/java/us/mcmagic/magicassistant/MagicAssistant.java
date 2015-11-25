@@ -116,7 +116,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         blockChanger = new BlockChanger();
         parkSoundManager = new ParkSoundManager();
         armorStandManager = new ArmorStandManager();
-        chairManager = new ChairManager(this);
+        chairManager = new ChairManager();
         wardrobeManager = new WardrobeManager();
         chairFactory = new ArrowFactory();
         playerJoinAndLeave = new PlayerJoinAndLeave();

@@ -9,7 +9,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.PlayerData;
-import us.mcmagic.magicassistant.queue.tasks.NextRidersTask;
 import us.mcmagic.magicassistant.queue.tasks.QueueTask;
 import us.mcmagic.magicassistant.queue.tasks.SpawnBlockSetTask;
 import us.mcmagic.magicassistant.utils.DateUtil;
@@ -97,6 +96,14 @@ public class QueueRide {
 
     public void joinQueue(final Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
+        if (queue.size() < 1) {
+            lastSpawn = getTime() - (delay - 10);
+            timeToNextRide = 10;
+            player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
+                    ChatColor.BOLD + "10" + ChatColor.GREEN + " seconds for anyone else to join the Queue.");
+            queue.add(player.getUniqueId());
+            return;
+        }
         queue.add(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have joined the Queue for " + ChatColor.BLUE + name + ChatColor.GREEN
                 + "\nYou are in position #" + (getPosition(player.getUniqueId()) + 1));
@@ -119,7 +126,7 @@ public class QueueRide {
     }
 
     public boolean canSpawn() {
-        return (getTime() - delay) > lastSpawn && !paused;
+        return (getTime() - delay) >= lastSpawn && !paused;
     }
 
     public void leaveQueue(Player player) {
@@ -197,7 +204,6 @@ public class QueueRide {
             leaveQueueSilent(tp);
             fullList.remove(tp.getUniqueId());
         }
-        addTask(new NextRidersTask(this, System.currentTimeMillis() + (delay * 1000)));
     }
 
     private void chargeFastpass(final PlayerData data) {
@@ -434,13 +440,13 @@ public class QueueRide {
 
     public String getWaitFor(UUID uuid) {
         int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
-        int group = (int) Math.ceil((float) ((getPosition(uuid) + 1) / amountOfRiders));
         if (groups < 2) {
             Calendar to = new GregorianCalendar();
             to.setTimeInMillis(System.currentTimeMillis() + (timeToNextRide * 1000));
             String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
             return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
         }
+        int group = (int) Math.ceil((float) (getPosition(uuid) / amountOfRiders));
         double seconds = (delay * group) + timeToNextRide;
         Calendar to = new GregorianCalendar();
         to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
@@ -451,4 +457,5 @@ public class QueueRide {
     public Block getSpawnerBlock() {
         return spawnerBlock;
     }
+
 }

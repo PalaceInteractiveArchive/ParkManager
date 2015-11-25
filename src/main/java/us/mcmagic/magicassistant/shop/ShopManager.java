@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.handlers.InventoryType;
@@ -397,6 +398,7 @@ public class ShopManager {
     }
 
     public void confirmPurchase(final Player player) {
+        PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         if (confirmations.containsKey(player.getUniqueId())) {
             ShopItem item = confirmations.remove(player.getUniqueId());
             int balance = MCMagicCore.economy.getBalance(player.getUniqueId());
@@ -404,6 +406,33 @@ public class ShopManager {
                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cannot afford that item!");
                 player.closeInventory();
                 return;
+            }
+            PlayerInventory inv = player.getInventory();
+            boolean full = true;
+            ItemStack[] cont = inv.getContents();
+            for (int i = 0; i < 5; i++) {
+                if (cont[i] == null || cont[i].getType().equals(Material.AIR)) {
+                    full = false;
+                    break;
+                }
+            }
+            if (full) {
+                ItemStack[] pack = data.getBackpack().getInventory().getContents();
+                for (ItemStack i : pack) {
+                    if (i == null || i.getType().equals(Material.AIR)) {
+                        full = false;
+                        break;
+                    }
+                }
+                if (!full) {
+                    data.getBackpack().getInventory().addItem(item.getItem());
+                } else {
+                    player.closeInventory();
+                    player.sendMessage(ChatColor.RED + "You have no available Inventory Space! Make some space before buying this.");
+                    return;
+                }
+            } else {
+                player.getInventory().addItem(item.getItem());
             }
             switch (item.getCurrencyType()) {
                 case MONEY:
@@ -418,7 +447,6 @@ public class ShopManager {
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased " + item.getDisplayName() +
                     ChatColor.GREEN + "!");
             player.closeInventory();
-            player.getInventory().addItem(item.getItem());
         } else if (outfitConfirm.containsKey(player.getUniqueId())) {
             OutfitItem item = outfitConfirm.remove(player.getUniqueId());
             final Outfit o = MagicAssistant.wardrobeManager.getOutfit(item.getOutfitId());
@@ -428,7 +456,6 @@ public class ShopManager {
                 player.closeInventory();
                 return;
             }
-            PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
             if (data.getPurchases().contains(o.getId())) {
                 player.closeInventory();
                 player.sendMessage(ChatColor.RED + "You already own that Outfit!");
