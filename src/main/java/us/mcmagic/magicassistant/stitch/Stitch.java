@@ -3,6 +3,7 @@ package us.mcmagic.magicassistant.stitch;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -10,6 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import us.mcmagic.magicassistant.MagicAssistant;
+import us.mcmagic.magicassistant.chairs.ChairListener;
+import us.mcmagic.magicassistant.chairs.ChairUtil;
 import us.mcmagic.magicassistant.handlers.StitchSeat;
 import us.mcmagic.magicassistant.utils.FileUtil;
 
@@ -122,6 +125,11 @@ public class Stitch implements Listener {
             watching.add(player.getUniqueId());
             seat.setOccupant(player.getUniqueId());
             player.teleport(seat.getLocation());
+            Block b = seat.getLocation().add(0, -1, 0).getBlock();
+            if (ChairListener.canSit(player, b)) {
+                Location sitLocation = ChairUtil.sitLocation(b, player.getLocation().getYaw());
+                MagicAssistant.chairManager.sitPlayer(player, b, sitLocation, true);
+            }
             player.sendMessage(prefix + ChatColor.BLUE + "You are in your seat! The show will begin shortly.");
             return;
         }

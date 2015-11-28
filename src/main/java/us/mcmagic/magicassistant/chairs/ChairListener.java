@@ -124,7 +124,7 @@ public class ChairListener implements Listener {
         }
     }
 
-    private boolean canSit(Player player, Block block) {
+    public static boolean canSit(Player player, Block block) {
         if (ChairUtil.isSuitableChair(block)) {
             if (player.getItemInHand().getType() != Material.AIR) {
                 return false;

@@ -246,7 +246,7 @@ public class WardrobeManager {
         final PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         List<Outfit> first = getOutfits();
         List<Outfit> outfits = first.subList((page - 1) * 6, (page + 5) > first.size() ? first.size() : page + 5);
-        int id = (slot % 9) + ((page - 1) * 6);
+        int id = (slot % 9) + (page * 6);
         Outfit o = outfits.get((slot % 9) - 1);
         if (o == null) {
             return;

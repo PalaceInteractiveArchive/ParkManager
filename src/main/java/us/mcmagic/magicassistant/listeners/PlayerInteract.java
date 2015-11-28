@@ -195,6 +195,9 @@ public class PlayerInteract implements Listener {
                 return;
             }
         }
+        if (BlockEdit.isInBuildMode(player.getUniqueId())) {
+            return;
+        }
         PlayerInventory pi = player.getInventory();
         if (pi.getHeldItemSlot() == 5) {
             if (pi.getItemInHand().getType().equals(Material.CHEST)) {
