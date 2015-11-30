@@ -101,11 +101,12 @@ public class PlayerJoinAndLeave implements Listener {
             for (PotionEffect type : player.getActivePotionEffects()) {
                 player.removePotionEffect(type.getType());
             }
-            if (user.getRank().getRankId() >= Rank.INTERN.getRankId()) {
+            if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
                 player.setGameMode(GameMode.SURVIVAL);
                 player.setAllowFlight(true);
             } else {
                 player.setGameMode(GameMode.ADVENTURE);
+                player.setAllowFlight(user.getRank().getRankId() >= Rank.INTERN.getRankId());
             }
             if (MagicAssistant.spawnOnJoin || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");

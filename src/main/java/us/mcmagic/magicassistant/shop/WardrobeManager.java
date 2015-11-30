@@ -246,7 +246,38 @@ public class WardrobeManager {
         final PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         List<Outfit> first = getOutfits();
         List<Outfit> outfits = first.subList((page - 1) * 6, (page + 5) > first.size() ? first.size() : page + 5);
-        int id = (slot % 9) + (page * 6);
+        int id = 0;
+        for (Outfit o : getOutfits()) {
+            switch (type) {
+                case HEAD:
+                    if (equals(o.getHead(), item)) {
+                        id = o.getId();
+                        break;
+                    }
+                    break;
+                case SHIRT:
+                    if (equals(o.getShirt(), item)) {
+                        id = o.getId();
+                        break;
+                    }
+                    break;
+                case PANTS:
+                    if (equals(o.getPants(), item)) {
+                        id = o.getId();
+                        break;
+                    }
+                    break;
+                case BOOTS:
+                    if (equals(o.getBoots(), item)) {
+                        id = o.getId();
+                        break;
+                    }
+                    break;
+            }
+            if (id != 0) {
+                break;
+            }
+        }
         Outfit o = outfits.get((slot % 9) - 1);
         if (o == null) {
             return;
@@ -305,6 +336,11 @@ public class WardrobeManager {
                 setOutfitCode(player, data.getOutfitCode());
             }
         });
+    }
+
+    private boolean equals(ItemStack head, ItemStack item) {
+        return head.getType().equals(item.getType()) &&
+                item.getItemMeta().getDisplayName().contains(head.getItemMeta().getDisplayName());
     }
 
     private void setOutfitCode(Player player, String code) {

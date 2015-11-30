@@ -25,24 +25,24 @@ public class VisibilityUtil {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (!spawnHide.contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) <= 5) {
+                    if (!getSpawnHide().contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) <= 5) {
                         User user = MCMagicCore.getUser(player.getUniqueId());
                         if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                             spawnHide.add(player.getUniqueId());
-                            vanish(player);
+                            hidePlayerForOthers(player);
                         }
                         continue;
                     }
-                    if (spawnHide.contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) > 5) {
+                    if (getSpawnHide().contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) > 5) {
                         spawnHide.remove(player.getUniqueId());
-                        show(player);
+                        showPlayerForOthers(player);
                     }
                 }
             }
         }, 0L, 20L);
     }
 
-    private void vanish(Player player) {
+    private void hidePlayerForOthers(Player player) {
         for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
@@ -51,7 +51,7 @@ public class VisibilityUtil {
         }
     }
 
-    private void show(Player player) {
+    private void showPlayerForOthers(Player player) {
         for (Player tp : Bukkit.getOnlinePlayers()) {
             if (tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
@@ -93,7 +93,7 @@ public class VisibilityUtil {
         hideall.remove(player.getUniqueId());
         for (Player tp : Bukkit.getOnlinePlayers()) {
             User user = MCMagicCore.getUser(tp.getUniqueId());
-            if (spawnHide.contains(tp.getUniqueId())) {
+            if (getSpawnHide().contains(tp.getUniqueId())) {
                 continue;
             }
             if (tp.getUniqueId().equals(player.getUniqueId())) {
@@ -110,10 +110,10 @@ public class VisibilityUtil {
     }
 
     public void login(Player player) {
-        for (UUID uuid : spawnHide) {
-            try {
-                player.hidePlayer(Bukkit.getPlayer(uuid));
-            } catch (Exception ignored) {
+        for (UUID uuid : getSpawnHide()) {
+            Player tp = Bukkit.getPlayer(uuid);
+            if (tp != null) {
+                player.hidePlayer(tp);
             }
         }
         if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
@@ -131,4 +131,7 @@ public class VisibilityUtil {
         }
     }
 
+    public List<UUID> getSpawnHide() {
+        return new ArrayList<>(spawnHide);
+    }
 }
