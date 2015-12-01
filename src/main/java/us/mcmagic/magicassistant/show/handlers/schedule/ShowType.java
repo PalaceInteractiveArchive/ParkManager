@@ -17,6 +17,7 @@ public enum ShowType {
     FOF(ChatColor.DARK_AQUA + "Festival of Fantasy Parade", Material.INK_SACK, (byte) 12),
     FNTM(ChatColor.BLUE + "Finding Nemo: The Musical", Material.RAW_FISH, (byte) 2),
     MISIP(ChatColor.GREEN + "Move It Shake It Parade", Material.SUGAR),
+    FHW(ChatColor.AQUA + "Frozen Holiday Wish", Material.QUARTZ),
     SPECIAL(ChatColor.DARK_PURPLE + "Special Event", Material.DIAMOND),
     CA(ChatColor.RED + "Celebrate " + ChatColor.BLUE + "America", Material.BANNER),
     FITS(ChatColor.BLUE + "Fantasy in the Sky", Material.DIAMOND),
@@ -73,6 +74,8 @@ public enum ShowType {
                 return FNTM;
             case "misip":
                 return MISIP;
+            case "fhw":
+                return FHW;
             case "special":
                 return SPECIAL;
             case "ca":
@@ -88,6 +91,6 @@ public enum ShowType {
             case "fotlk":
                 return FOTLK;
         }
-        return WISHES;
+        return RANDOM;
     }
 }
