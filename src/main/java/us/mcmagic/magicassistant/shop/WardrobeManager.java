@@ -153,6 +153,7 @@ public class WardrobeManager {
             player.sendMessage(ChatColor.RED + "You are already wearing that!");
             return;
         }
+        boolean right = event.isRightClick();
         PlayerInventory inv = player.getInventory();
         int slot = event.getRawSlot();
         ClothingType type = null;
@@ -170,6 +171,31 @@ public class WardrobeManager {
         }
         if (itype.equals(Material.GLASS)) {
             ItemStack air = new ItemStack(Material.AIR);
+            if (right) {
+                inv.setHelmet(air);
+                inv.setChestplate(air);
+                inv.setLeggings(air);
+                inv.setBoots(air);
+                final PlayerData.Clothing c = MagicAssistant.getPlayerData(player.getUniqueId()).getClothing();
+                c.setHead(null);
+                c.setShirt(null);
+                c.setPants(null);
+                c.setBoots(null);
+                c.setHeadID(0);
+                c.setShirtID(0);
+                c.setPantsID(0);
+                c.setBootsID(0);
+                Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        setOutfitCode(player, c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," +
+                                c.getBootsID());
+                    }
+                });
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
+                MagicAssistant.inventoryUtil.openWardrobeManagerPage(player, page);
+                return;
+            }
             switch (type) {
                 case HEAD: {
                     inv.setHelmet(air);
@@ -284,6 +310,51 @@ public class WardrobeManager {
         }
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
         PlayerData.Clothing c = data.getClothing();
+        if (right) {
+            c.setHead(o.getHead());
+            c.setHeadID(id);
+            c.setShirt(o.getShirt());
+            c.setShirtID(id);
+            c.setPants(o.getPants());
+            c.setPantsID(id);
+            c.setBoots(o.getBoots());
+            c.setBootsID(id);
+            try {
+                if (!c.getHead().equals(inv.getHelmet())) {
+                    inv.setHelmet(c.getHead());
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (!c.getShirt().equals(inv.getChestplate())) {
+                    inv.setChestplate(c.getShirt());
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (!c.getPants().equals(inv.getLeggings())) {
+                    inv.setLeggings(c.getPants());
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (!c.getBoots().equals(inv.getBoots())) {
+                    inv.setBoots(c.getBoots());
+                }
+            } catch (Exception ignored) {
+            }
+            MagicAssistant.inventoryUtil.openWardrobeManagerPage(player, page);
+            String code = c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID();
+            data.setClothing(c);
+            data.setOutfitCode(code);
+            Bukkit.getScheduler().runTaskAsynchronously(MagicAssistant.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    setOutfitCode(player, data.getOutfitCode());
+                }
+            });
+            return;
+        }
         switch (type) {
             case HEAD:
                 c.setHead(o.getHead());

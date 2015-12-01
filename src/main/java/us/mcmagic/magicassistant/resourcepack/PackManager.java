@@ -51,7 +51,7 @@ public class PackManager implements Listener {
         final Player player = Bukkit.getPlayer(user.getUniqueId());
         String current = event.getPacks();
         String preferred = user.getPreferredPack();
-        boolean doSeasonal = !Bukkit.hasWhitelist();
+        boolean doSeasonal = MCMagicCore.resourceManager.getPack("Seasonal") != null;
         if (preferred.equals("none")) {
             player.sendMessage(ChatColor.GREEN + "Please select a Resource Pack. If you do not want one, select " +
                     ChatColor.RED + "Disabled.");
@@ -77,16 +77,11 @@ public class PackManager implements Listener {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
             user.setCurrentPack("none");
-            MCMagicCore.resourceManager.setCurrentPack(user, "none");
             return;
         }
         if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
-            Bukkit.getScheduler().runTaskLater(MagicAssistant.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    MCMagicCore.resourceManager.sendPack(player, "Seasonal");
-                }
-            }, 100L);
+            MCMagicCore.resourceManager.sendPack(player, "Seasonal");
+            return;
         }
         if (!current.equals(preferred)) {
             ResourcePack pack = MCMagicCore.resourceManager.getPack(preferred);
@@ -138,7 +133,6 @@ public class PackManager implements Listener {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
             user.setCurrentPack("none");
-            MCMagicCore.resourceManager.setCurrentPack(user, "none");
             return;
         }
         if (event.getSlot() == 0) {
@@ -156,7 +150,6 @@ public class PackManager implements Listener {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
             user.setCurrentPack("none");
-            MCMagicCore.resourceManager.setCurrentPack(user, "none");
             return;
         }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
@@ -164,7 +157,6 @@ public class PackManager implements Listener {
             if (stack.getType().equals(item.getType())) {
                 user.setPreferredPack(entry.getKey());
                 user.setCurrentPack(entry.getKey());
-                MCMagicCore.resourceManager.setCurrentPack(user, "none");
                 player.closeInventory();
                 MCMagicCore.resourceManager.sendPack(player, entry.getKey());
                 MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), entry.getKey());
