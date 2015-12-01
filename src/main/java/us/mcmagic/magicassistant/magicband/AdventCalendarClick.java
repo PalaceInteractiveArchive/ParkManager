@@ -5,14 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.magicassistant.MagicAssistant;
-import us.mcmagic.magicassistant.handlers.InventoryType;
-import us.mcmagic.magicassistant.utils.BandUtil;
+import us.mcmagic.magicassistant.handlers.Warp;
+import us.mcmagic.magicassistant.utils.WarpUtil;
 
 /**
- * Created by Marc on 9/1/15
+ * Created by Marc on 12/1/15
  */
-public class RideCounterClick {
+public class AdventCalendarClick {
 
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -20,14 +19,18 @@ public class RideCounterClick {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        if (item.equals(BandUtil.getBackItem())) {
-            MagicAssistant.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
-            return;
-        }
         ItemMeta meta = item.getItemMeta();
         if (meta.getDisplayName() == null) {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
+        int day = Integer.parseInt(name.replace("December ", "").replace("st", "").replace("nd", "").replace("rd", "")
+                .replace("th", ""));
+        Warp warp = WarpUtil.findWarp("advent" + day);
+        if (warp != null) {
+            player.performCommand("warp " + warp.getName());
+        } else {
+            player.sendMessage(ChatColor.RED + "That Advent Area isn't open yet!");
+        }
     }
 }

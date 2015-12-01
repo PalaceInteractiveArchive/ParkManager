@@ -26,15 +26,19 @@ public class SignChange implements Listener {
             for (int i = 0; i < 4; i++) {
                 event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));
             }
-            if (event.getLine(0).equalsIgnoreCase("[warp]")) {
+            String l1 = event.getLine(0);
+            if (l1.equalsIgnoreCase("[warp]")) {
                 event.setLine(0, PlayerInteract.warp);
                 return;
             }
-            if (event.getLine(0).equalsIgnoreCase("[disposal]")) {
+            if (l1.equalsIgnoreCase("[disposal]")) {
                 event.setLine(0, PlayerInteract.disposal);
                 return;
             }
-            if (event.getLine(0).equalsIgnoreCase("[hotel]")) {
+            if (l1.equalsIgnoreCase("[hotel]")) {
+                if (!MagicAssistant.hotelServer) {
+                    return;
+                }
                 event.setLine(0, PlayerInteract.hotel);
                 int roomNumber = Integer.parseInt(ChatColor.stripColor(event.getLine(1)));
                 String hotelName = ChatColor.stripColor(event.getLine(2));
@@ -60,17 +64,23 @@ public class SignChange implements Listener {
                 }
                 return;
             }
-            if (event.getLine(0).equalsIgnoreCase("[shop]")) {
+            if (l1.equalsIgnoreCase("[advent]")) {
+                event.setLine(0, PlayerInteract.advent);
+                event.setLine(1, ChatColor.GREEN + "Click to visit an");
+                event.setLine(2, ChatColor.GREEN + "Advent area!");
+                return;
+            }
+            if (l1.equalsIgnoreCase("[shop]")) {
                 event.setLine(0, PlayerInteract.shop);
                 event.setLine(1, ChatColor.DARK_GREEN + event.getLine(1));
                 return;
             }
-            if (event.getLine(0).equalsIgnoreCase("[queue]")) {
+            if (l1.equalsIgnoreCase("[queue]")) {
                 MagicAssistant.queueManager.createSign(event);
                 return;
             }
             if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
-                if (event.getLine(0).equalsIgnoreCase("[design station]")) {
+                if (l1.equalsIgnoreCase("[design station]")) {
                     if (event.getLine(1).equalsIgnoreCase("stats")) {
                         event.setLine(0, PlayerInteract.designStation);
                         event.setLine(1, ChatColor.GOLD + "Stats");

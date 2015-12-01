@@ -35,6 +35,7 @@ public class PlayerInteract implements Listener {
     public static String queue = ChatColor.BLUE + "[Queue]";
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
+    public static String advent = ChatColor.BLUE + "[Advent]";
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -144,6 +145,12 @@ public class PlayerInteract implements Listener {
                 if (s.getLine(0).equals(queue) || s.getLine(0).equals(fastpass) || s.getLine(0).equals(wait)) {
                     MagicAssistant.queueManager.handle(event);
                     return;
+                }
+                if (s.getLine(0).equalsIgnoreCase(advent)) {
+                    if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("seasonal")) {
+                        MagicAssistant.inventoryUtil.openInventory(player, InventoryType.ADVENT);
+                        return;
+                    }
                 }
                 if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
                     if (s.getLine(0).equals(designStation)) {

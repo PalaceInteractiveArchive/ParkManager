@@ -95,9 +95,9 @@ public class InventoryClick implements Listener {
             return;
         }
         switch (name) {
-            case "Ride Counter":
+            case "Advent Calendar":
                 event.setCancelled(true);
-                RideCounterClick.handle(event);
+                AdventCalendarClick.handle(event);
                 return;
             case "Player Settings":
                 event.setCancelled(true);

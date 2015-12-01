@@ -739,11 +739,47 @@ public class InventoryUtil {
                     }
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
+                    return;
+                }
+                case ADVENT: {
+                    Inventory adv = Bukkit.createInventory(player, 45, ChatColor.BLUE + "Advent Calendar");
+                    int place = 2;
+                    for (int i = 1; i <= 25; i++) {
+                        ItemStack item;
+                        Warp warp = WarpUtil.findWarp("advent" + i);
+                        if (warp != null) {
+                            item = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "December " +
+                                    getNum(i), new ArrayList<String>());
+                        } else {
+                            item = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14, ChatColor.RED + "December " +
+                                    getNum(i), new ArrayList<String>());
+                        }
+                        adv.setItem(place, item);
+                        if (place % 9 == 6) {
+                            place += 5;
+                        } else {
+                            place += 1;
+                        }
+                    }
+                    player.openInventory(adv);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String getNum(int i) {
+        if (i == 1 || i == 21) {
+            return i + "st";
+        }
+        if (i == 2 || i == 22) {
+            return i + "nd";
+        }
+        if (i == 3 || i == 23) {
+            return i + "rd";
+        }
+        return i + "th";
     }
 
     private int getShowPos(ShowDay day, String time, HashMap<String, Integer> timeMap) {
@@ -930,7 +966,7 @@ public class InventoryUtil {
             itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no attraction setup",
                     ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
-            alist.setItem(22, empty);
+            alist.setItem(13, empty);
             alist.setItem(31, BandUtil.getBackItem());
             player.openInventory(alist);
             return;
@@ -985,7 +1021,7 @@ public class InventoryUtil {
             itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup",
                     ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
-            rlist.setItem(22, empty);
+            rlist.setItem(13, empty);
             rlist.setItem(31, BandUtil.getBackItem());
             player.openInventory(rlist);
             return;
