@@ -96,7 +96,7 @@ public class QueueRide {
 
     public void joinQueue(final Player player) {
         MagicAssistant.queueManager.leaveAllQueues(player);
-        if (queue.size() < 1) {
+        if (queue.size() < 1 && timeToNextRide <= 0) {
             lastSpawn = getTime() - (delay - 10);
             timeToNextRide = 10;
             player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
