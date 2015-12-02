@@ -793,7 +793,7 @@ public class InventoryUtil {
         PlayerData data = MagicAssistant.getPlayerData(player.getUniqueId());
         Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wardrobe Manager Page " + page);
         List<Outfit> first = MagicAssistant.wardrobeManager.getOutfits();
-        List<Outfit> outfits = first.subList((page - 1) * 6, (page + 5) > first.size() ? first.size() : page + 5);
+        List<Outfit> outfits = first.subList((page - 1) * 6, (page * 6 > first.size() ? first.size() : page * 6));
         boolean lpage = page > 1;
         boolean npage = (page * 6) < first.size();
         int i = 0;
