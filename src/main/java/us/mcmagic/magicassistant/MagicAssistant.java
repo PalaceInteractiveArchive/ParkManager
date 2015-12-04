@@ -69,7 +69,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
     public static List<String> joinMessages = config.getStringList("join-messages");
     public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static Map<UUID, String> userCache = new HashMap<>();
-    public static boolean hubServer;
+    public static boolean ttcServer;
     public static MagicAssistant instance;
     public static BlockChanger blockChanger;
     public static ParkSoundManager parkSoundManager;
@@ -178,7 +178,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 config.getInt("spawn.pitch"));
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
-        hubServer = getConfig().getBoolean("hub-server");
+        ttcServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
         parkSoundManager.initialize();
         DesignStation.initialize();

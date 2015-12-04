@@ -1,6 +1,7 @@
 package us.mcmagic.magicassistant.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import us.mcmagic.magicassistant.MagicAssistant;
 import us.mcmagic.magicassistant.commands.Commandvanish;
@@ -18,24 +19,31 @@ public class VisibilityUtil {
     private List<UUID> spawnHide = new ArrayList<>();
 
     public VisibilityUtil() {
-        if (!MagicAssistant.hubServer) {
+        if (!MagicAssistant.ttcServer) {
             return;
         }
         Bukkit.getScheduler().runTaskTimer(MagicAssistant.getInstance(), new Runnable() {
             @Override
             public void run() {
+                final Location spawn = MagicAssistant.spawn;
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (!getSpawnHide().contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) <= 5) {
-                        User user = MCMagicCore.getUser(player.getUniqueId());
-                        if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                            spawnHide.add(player.getUniqueId());
-                            hidePlayerForOthers(player);
-                        }
+                    User user = MCMagicCore.getUser(player.getUniqueId());
+                    if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
                         continue;
                     }
-                    if (getSpawnHide().contains(player.getUniqueId()) && player.getLocation().distance(MagicAssistant.spawn) > 5) {
-                        spawnHide.remove(player.getUniqueId());
+                    final UUID uuid = player.getUniqueId();
+                    final Location loc = player.getLocation();
+                    boolean inRegion = loc.distance(spawn) <= 5;
+                    List<UUID> hidden = getSpawnHide();
+                    boolean contains = hidden.contains(uuid);
+                    if (!inRegion && contains) {
+                        hidden.remove(uuid);
+                        spawnHide.remove(uuid);
                         showPlayerForOthers(player);
+                    } else if (inRegion && !contains) {
+                        hidden.add(uuid);
+                        spawnHide.add(uuid);
+                        hidePlayerForOthers(player);
                     }
                 }
             }
@@ -59,8 +67,7 @@ public class VisibilityUtil {
             if (hideall.contains(tp.getUniqueId())) {
                 continue;
             }
-            PlayerData data = MagicAssistant.getPlayerData(tp.getUniqueId());
-            if (data.getVisibility()) {
+            if (MagicAssistant.getPlayerData(tp.getUniqueId()).getVisibility()) {
                 tp.showPlayer(player);
             }
         }

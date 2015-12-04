@@ -125,7 +125,7 @@ public class PlayerJoinAndLeave implements Listener {
                     }
                 }
             }
-            if (MagicAssistant.hubServer) {
+            if (MagicAssistant.ttcServer) {
                 if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                     if (player.getLocation().distance(MagicAssistant.spawn) <= 5) {
                         for (Player tp : Bukkit.getOnlinePlayers()) {
