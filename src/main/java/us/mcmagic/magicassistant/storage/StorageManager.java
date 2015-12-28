@@ -146,6 +146,7 @@ public class StorageManager {
                 manager.checkout(room, true);
             }
         }
+        player.getInventory().remove(Material.MINECART);
     }
 
     public Backpack getBackpack(Player player) {
