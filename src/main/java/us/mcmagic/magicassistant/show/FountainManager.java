@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 public class FountainManager implements Listener {
     public List<Fountain> fountains = new ArrayList<>();
-    private List<UUID> blocks = new ArrayList<>();
+    private static List<UUID> blocks = new ArrayList<>();
 
     public FountainManager() {
         start();
@@ -50,9 +51,10 @@ public class FountainManager implements Listener {
 
     @EventHandler
     public void entityToBlock(EntityChangeBlockEvent event) {
-        if (blocks.remove(event.getEntity().getUniqueId())) {
+        Entity e = event.getEntity();
+        if (blocks.remove(e.getUniqueId())) {
             event.setCancelled(true);
-            event.getEntity().remove();
+            e.remove();
         }
     }
 

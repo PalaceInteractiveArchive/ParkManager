@@ -42,7 +42,7 @@ public class InventoryUtil {
     private ItemStack toggleoff = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.AQUA + "Guest Visibility " +
             ChatColor.GOLD + "➠ " + ChatColor.GREEN + "Visible", Collections.singletonList(ChatColor.GREEN +
             "Click to hide Guests!"));
-    private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop ",
+    private ItemStack shop = new ItemCreator(Material.GOLD_BOOTS, ChatColor.GREEN + "Shop",
             Arrays.asList(ChatColor.GREEN + "Purchase Items!"));
     private ItemStack ward = new ItemCreator(Material.IRON_CHESTPLATE, ChatColor.GREEN + "Wardrobe Manager",
             Arrays.asList(ChatColor.GREEN + "Change your outfit to clothes", ChatColor.GREEN +
@@ -283,33 +283,6 @@ public class InventoryUtil {
                     }
                     player.openInventory(main);
                     MagicAssistant.bandUtil.loadPlayerData(player);
-                    /*
-                    ItemStack time = new ItemCreator(Material.WATCH);
-                    ItemMeta tm = time.getItemMeta();
-                    tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                    tm.setLore(Collections.singletonList(ChatColor.YELLOW + MagicAssistant.bandUtil.currentTime()));
-                    time.setItemMeta(tm);
-                    main.setItem(0, rna);
-                    main.setItem(9, sne);
-                    main.setItem(18, hnr);
-                    if (MagicAssistant.vanishUtil.isInHideAll(player.getUniqueId())) {
-                        main.setItem(2, toggleon);
-                    } else {
-                        main.setItem(2, toggleoff);
-                    }
-                    main.setItem(11, shop);
-                    main.setItem(20, food);
-                    main.setItem(4, time);
-                    main.setItem(13, ttc);
-                    main.setItem(22, parks);
-                    main.setItem(6, packs);
-                    main.setItem(15, playerInfo);
-                    main.setItem(24, custom);
-                    main.setItem(8, arcade);
-                    main.setItem(17, creative);
-                    main.setItem(26, fastpass);
-                    MagicAssistant.bandUtil.loadPlayerData(player);
-                    */
                     return;
                 }
                 case PARK: {

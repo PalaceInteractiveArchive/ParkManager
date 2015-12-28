@@ -29,8 +29,19 @@ public class EntityDamage implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
-        if (entity.getType().equals(EntityType.ITEM_FRAME) || entity.getType().equals(EntityType.PAINTING) ||
-                entity.getType().equals(EntityType.ARMOR_STAND)) {
+        EntityType type = entity.getType();
+        if (type.equals(EntityType.MINECART)) {
+            Entity damager = event.getDamager();
+            if (damager.getType().equals(EntityType.PLAYER)) {
+                Player player = (Player) damager;
+                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+        if (type.equals(EntityType.ITEM_FRAME) || type.equals(EntityType.PAINTING) ||
+                type.equals(EntityType.ARMOR_STAND)) {
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
                 Player player = (Player) damager;
