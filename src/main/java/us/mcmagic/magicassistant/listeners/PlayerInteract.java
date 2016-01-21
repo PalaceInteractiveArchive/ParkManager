@@ -20,6 +20,7 @@ import us.mcmagic.magicassistant.handlers.*;
 import us.mcmagic.magicassistant.hotels.HotelManager;
 import us.mcmagic.magicassistant.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 
@@ -35,7 +36,13 @@ public class PlayerInteract implements Listener {
     public static String queue = ChatColor.BLUE + "[Queue]";
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
-    public static String advent = ChatColor.BLUE + "[Advent]";
+    public static String mcpro = ChatColor.GREEN + "[MCProHosting]";
+    private FormattedMessage mcpromsg = new FormattedMessage("MCProHosting ").color(ChatColor.GREEN)
+            .style(ChatColor.BOLD).then("is the ").color(ChatColor.AQUA)
+            .then("World Leader in Minecraft Server Hosting! ").color(ChatColor.GREEN).style(ChatColor.ITALIC)
+            .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
+            .style(ChatColor.UNDERLINE).link("https://mcmagic.us/mcph").tooltip(ChatColor.DARK_AQUA +
+                    "Click to purchase a server using MCMagic's 25%-OFF Discount!");
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -146,11 +153,9 @@ public class PlayerInteract implements Listener {
                     MagicAssistant.queueManager.handle(event);
                     return;
                 }
-                if (s.getLine(0).equalsIgnoreCase(advent)) {
-                    if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("seasonal")) {
-                        MagicAssistant.inventoryUtil.openInventory(player, InventoryType.ADVENT);
-                        return;
-                    }
+                if (s.getLine(0).equals(mcpro)) {
+                    mcpromsg.send(player);
+                    return;
                 }
                 if (MCMagicCore.getMCMagicConfig().serverName.contains("Epcot")) {
                     if (s.getLine(0).equals(designStation)) {

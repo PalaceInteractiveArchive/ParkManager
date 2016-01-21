@@ -27,6 +27,7 @@ import us.mcmagic.magicassistant.listeners.*;
 import us.mcmagic.magicassistant.parksounds.ParkSoundManager;
 import us.mcmagic.magicassistant.pixelator.Pixelator;
 import us.mcmagic.magicassistant.queue.QueueManager;
+import us.mcmagic.magicassistant.queue.tot.TowerManager;
 import us.mcmagic.magicassistant.resourcepack.PackManager;
 import us.mcmagic.magicassistant.ridemanager.Cart;
 import us.mcmagic.magicassistant.ridemanager.RideManager;
@@ -107,6 +108,7 @@ public class MagicAssistant extends JavaPlugin implements Listener {
         log("Initializing Queue Manager...");
         queueManager = new QueueManager();
         log("Queue Manager Initialized!");
+        ttcServer = MCMagicCore.getMCMagicConfig().serverName.contains("TTC");
         bandUtil = new BandUtil();
         storageManager = new StorageManager();
         inventoryUtil = new InventoryUtil();
@@ -178,7 +180,6 @@ public class MagicAssistant extends JavaPlugin implements Listener {
                 config.getInt("spawn.pitch"));
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
-        ttcServer = getConfig().getBoolean("hub-server");
         packManager.initialize();
         parkSoundManager.initialize();
         DesignStation.initialize();
@@ -483,6 +484,9 @@ public class MagicAssistant extends JavaPlugin implements Listener {
             shooter = new Shooter(this);
             pm.registerEvents(shooter, this);
             MessageTimer.start();
+        }
+        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("NewHWS")) {
+            pm.registerEvents(new TowerManager(Bukkit.getWorlds().get(0)), this);
         }
     }
 }

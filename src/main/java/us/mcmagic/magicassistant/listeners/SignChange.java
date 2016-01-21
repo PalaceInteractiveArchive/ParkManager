@@ -33,6 +33,9 @@ public class SignChange implements Listener {
             }
             if (l1.equalsIgnoreCase("[disposal]")) {
                 event.setLine(0, PlayerInteract.disposal);
+                event.setLine(1, "");
+                event.setLine(2, ChatColor.BLACK + "" + ChatColor.BOLD + "Trash");
+                event.setLine(3, "");
                 return;
             }
             if (l1.equalsIgnoreCase("[hotel]")) {
@@ -64,10 +67,11 @@ public class SignChange implements Listener {
                 }
                 return;
             }
-            if (l1.equalsIgnoreCase("[advent]")) {
-                event.setLine(0, PlayerInteract.advent);
-                event.setLine(1, ChatColor.GREEN + "Click to visit an");
-                event.setLine(2, ChatColor.GREEN + "Advent area!");
+            if (l1.equalsIgnoreCase("[mcpro]")) {
+                event.setLine(0, PlayerInteract.mcpro);
+                event.setLine(1, ChatColor.WHITE + "Click to get a");
+                event.setLine(2, ChatColor.WHITE + "server for 25%");
+                event.setLine(3, ChatColor.WHITE + "off from MCPH!");
                 return;
             }
             if (l1.equalsIgnoreCase("[shop]")) {

@@ -712,29 +712,6 @@ public class InventoryUtil {
                     }
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
-                    return;
-                }
-                case ADVENT: {
-                    Inventory adv = Bukkit.createInventory(player, 45, ChatColor.BLUE + "Advent Calendar");
-                    int place = 2;
-                    for (int i = 1; i <= 25; i++) {
-                        ItemStack item;
-                        Warp warp = WarpUtil.findWarp("advent" + i);
-                        if (warp != null) {
-                            item = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN + "December " +
-                                    getNum(i), new ArrayList<String>());
-                        } else {
-                            item = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14, ChatColor.RED + "December " +
-                                    getNum(i), new ArrayList<String>());
-                        }
-                        adv.setItem(place, item);
-                        if (place % 9 == 6) {
-                            place += 5;
-                        } else {
-                            place += 1;
-                        }
-                    }
-                    player.openInventory(adv);
                 }
             }
         } catch (Exception e) {

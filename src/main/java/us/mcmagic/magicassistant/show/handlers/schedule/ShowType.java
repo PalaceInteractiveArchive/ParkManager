@@ -7,7 +7,7 @@ import org.bukkit.Material;
  * Created by Marc on 10/29/15
  */
 public enum ShowType {
-    RANDOM(ChatColor.LIGHT_PURPLE + "Random", Material.BARRIER),
+    TBA(ChatColor.LIGHT_PURPLE + "TBA", Material.BARRIER),
     WISHES(ChatColor.AQUA + "Wishes", Material.BLAZE_ROD),
     IROE(ChatColor.GREEN + "IROE", Material.NETHER_STAR),
     HALLOWISHES(ChatColor.GOLD + "HalloWishes", Material.JACK_O_LANTERN),
@@ -56,8 +56,8 @@ public enum ShowType {
         switch (name.toLowerCase()) {
             case "wishes":
                 return WISHES;
-            case "random":
-                return RANDOM;
+            case "tba":
+                return TBA;
             case "iroe":
                 return IROE;
             case "halloween":
@@ -91,6 +91,6 @@ public enum ShowType {
             case "fotlk":
                 return FOTLK;
         }
-        return RANDOM;
+        return TBA;
     }
 }

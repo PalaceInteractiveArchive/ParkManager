@@ -96,8 +96,10 @@ public class StorageManager {
         final PlayerInventory inv = player.getInventory();
         Backpack pack = MagicAssistant.storageManager.getBackpack(player);
         pack.getInventory().remove(Material.MINECART);
+        pack.getInventory().remove(Material.SNOW_BALL);
         Locker locker = MagicAssistant.storageManager.getLocker(player);
         locker.getInventory().remove(Material.MINECART);
+        locker.getInventory().remove(Material.SNOW_BALL);
         final ItemStack[] hotbar = MagicAssistant.storageManager.getHotbar(player);
         MagicAssistant.playerJoinAndLeave.setInventory(player, true);
         if (hotbar != null) {
