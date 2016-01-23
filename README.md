@@ -1,4 +1,4 @@
-MagicAssistant
+ParkManager
 ==============
 
-MCMagic Family of Servers Park Server Plugin
+MCMagic Park Server Plugin
