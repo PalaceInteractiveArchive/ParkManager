@@ -29,7 +29,7 @@ public class PlayerUtil {
                 throw new InvalidClassException("The return object type was neither Player[] nor Collection");
             }
         } catch (Exception ex) {
-            Bukkit.getLogger().severe("Exception occured in MagicAssistant:PlayerUtil.onlinePlayers()");
+            Bukkit.getLogger().severe("Exception occured in ParkManager:PlayerUtil.onlinePlayers()");
             Bukkit.getLogger().severe(ex.getClass().getSimpleName() + ": " + ex.getMessage());
             ex.printStackTrace();
             return new Player[0];

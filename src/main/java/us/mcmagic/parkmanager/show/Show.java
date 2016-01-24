@@ -73,7 +73,7 @@ public class Show {
                 //Load other show
                 if (tokens[1].equals("LoadShow")) {
                     String showName = tokens[2];
-                    File f = new File("plugins/MagicAssistant/shows/" + showName);
+                    File f = new File("plugins/ParkManager/shows/" + showName);
                     if (!f.exists()) {
                         invalidLines.put(strLine, "Show does not exist!");
                         continue;

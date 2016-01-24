@@ -84,7 +84,7 @@ public class QueueManager {
             ride.ejectQueue();
         }
         rides.clear();
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/MagicAssistant/queue.yml"));
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/ParkManager/queue.yml"));
         List<String> qs = config.getStringList("queues");
         Collections.sort(qs);
         for (String s : qs) {

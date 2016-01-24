@@ -13,13 +13,13 @@ public class FileUtil {
     private FileUtil() {
     }
 
-    private static File blockchanger = new File("plugins/MagicAssistant/blockchanger.yml");
-    private static File configuration = new File("plugins/MagicAssistant/config.yml");
-    private static File menus = new File("plugins/MagicAssistant/menus.yml");
-    private static File packs = new File("plugins/MagicAssistant/packs.yml");
-    private static File queue = new File("plugins/MagicAssistant/queue.yml");
-    private static File shops = new File("plugins/MagicAssistant/shops.yml");
-    public static File SERVICE_ACCOUNT_PKCS12_FILE = new File("plugins/MagicAssistant/key.p12");
+    private static File blockchanger = new File("plugins/ParkManager/blockchanger.yml");
+    private static File configuration = new File("plugins/ParkManager/config.yml");
+    private static File menus = new File("plugins/ParkManager/menus.yml");
+    private static File packs = new File("plugins/ParkManager/packs.yml");
+    private static File queue = new File("plugins/ParkManager/queue.yml");
+    private static File shops = new File("plugins/ParkManager/shops.yml");
+    public static File SERVICE_ACCOUNT_PKCS12_FILE = new File("plugins/ParkManager/key.p12");
 
     public static File blockchangerFile() {
         return blockchanger;

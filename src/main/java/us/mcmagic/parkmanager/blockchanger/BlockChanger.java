@@ -29,7 +29,7 @@ public class BlockChanger implements Listener {
         EventScheduler scheduler = new EventScheduler();
         final ChangeCalculations calculations = new ChangeCalculations(cache, scheduler);
         ProtocolLibrary.getProtocolManager().getAsynchronousManager().registerAsyncHandler(
-                new PacketAdapter(MagicAssistant.getInstance(), ListenerPriority.HIGHEST,
+                new PacketAdapter(ParkManager.getInstance(), ListenerPriority.HIGHEST,
                         PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK) {
                     @Override
                     public void onPacketSending(PacketEvent event) {

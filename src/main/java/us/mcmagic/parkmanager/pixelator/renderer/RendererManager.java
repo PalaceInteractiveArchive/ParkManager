@@ -27,7 +27,7 @@ import java.util.logging.Level;
 @SuppressWarnings("unchecked")
 public class RendererManager extends Manager {
 
-    private static final CompressedStringReader reader = new CompressedStringReader("renderers.cache", "plugins/MagicAssistant/");
+    private static final CompressedStringReader reader = new CompressedStringReader("renderers.cache", "plugins/ParkManager/");
     private RendererList renderers;
 
 

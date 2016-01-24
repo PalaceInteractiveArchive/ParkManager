@@ -161,7 +161,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 sender.sendMessage(ChatColor.RED + "That show is already running!");
                                 return true;
                             }
-                            File file = new File("plugins/MagicAssistant/shows/" + args[2] + ".show");
+                            File file = new File("plugins/ParkManager/shows/" + args[2] + ".show");
                             if (!file.exists()) {
                                 sender.sendMessage(ChatColor.RED + "----------------------------------------------");
                                 sender.sendMessage(ChatColor.GOLD + args[2] + ChatColor.AQUA + " is not an existing show file.");
@@ -775,7 +775,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 ParkManager.hotelManager.refreshRooms();
                 /*
                 try {
-                    MagicAssistant.blockChanger.reload();
+                    ParkManager.blockChanger.reload();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }*/
@@ -938,7 +938,7 @@ public class Commandmagic implements Listener, CommandExecutor {
     }
 
     public static void startShow(String name) {
-        File file = new File("plugins/MagicAssistant/shows/" + name + ".show");
+        File file = new File("plugins/ParkManager/shows/" + name + ".show");
         if (!file.exists()) {
             System.out.print("");
         } else {
