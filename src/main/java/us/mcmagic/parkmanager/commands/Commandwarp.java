@@ -7,13 +7,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.Warp;
-import us.mcmagic.parkmanager.utils.WarpUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
+import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.handlers.Warp;
+import us.mcmagic.parkmanager.utils.WarpUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,6 +100,13 @@ public class Commandwarp implements CommandExecutor {
             if (warp.getName().toLowerCase().startsWith("dvc")) {
                 if (rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
                     player.sendMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets()
+                            + ChatColor.RED + " rank or above to use this warp!");
+                    return true;
+                }
+            }
+            if (warp.getName().toLowerCase().startsWith("share")) {
+                if (rank.getRankId() < Rank.SHAREHOLDER.getRankId()) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.SHAREHOLDER.getNameWithBrackets()
                             + ChatColor.RED + " rank or above to use this warp!");
                     return true;
                 }

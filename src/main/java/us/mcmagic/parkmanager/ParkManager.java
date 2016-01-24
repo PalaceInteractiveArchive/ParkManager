@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.parkmanager.autograph.AutographManager;
 import us.mcmagic.parkmanager.blockchanger.BlockChanger;
 import us.mcmagic.parkmanager.chairs.ArrowFactory;
@@ -45,7 +46,6 @@ import us.mcmagic.parkmanager.storage.StorageManager;
 import us.mcmagic.parkmanager.uoe.UniverseEnergyRide;
 import us.mcmagic.parkmanager.utils.*;
 import us.mcmagic.parkmanager.watch.WatchTask;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 
 import java.io.IOException;
 import java.util.*;
@@ -485,7 +485,7 @@ public class ParkManager extends JavaPlugin implements Listener {
             pm.registerEvents(shooter, this);
             MessageTimer.start();
         }
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("NewHWS")) {
+        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws")) {
             pm.registerEvents(new TowerManager(Bukkit.getWorlds().get(0)), this);
         }
     }

@@ -26,16 +26,16 @@ import java.util.*;
 public class QueueRide {
     private List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
-    private final String name;
+    protected final String name;
     private Location station;
     private Location spawner;
     private final int delay;
-    private final int amountOfRiders;
+    protected final int amountOfRiders;
     private String warp;
     private long lastSpawn = 0;
     private List<Location> signs = new ArrayList<>();
     private List<Location> fpsigns = new ArrayList<>();
-    private boolean frozen = false;
+    protected boolean frozen = false;
     private boolean fpoff = false;
     private boolean paused = false;
     private List<UUID> FPQueue;
@@ -206,7 +206,7 @@ public class QueueRide {
         }
     }
 
-    private void chargeFastpass(final PlayerData data) {
+    protected void chargeFastpass(final PlayerData data) {
         data.setFastpass(data.getFastpass() - 1);
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
             @Override

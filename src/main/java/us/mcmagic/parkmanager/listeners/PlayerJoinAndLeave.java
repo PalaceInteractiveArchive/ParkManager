@@ -15,6 +15,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.commands.Commandvanish;
 import us.mcmagic.parkmanager.designstation.DesignStation;
@@ -23,10 +27,6 @@ import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.watch.WatchTask;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
-import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.User;
 
 import java.util.*;
 
@@ -212,8 +212,8 @@ public class PlayerJoinAndLeave implements Listener {
             if (warp.getLocation() == null) {
                 continue;
             }
-            if (warp.getName().startsWith("dvc") || warp.getName().startsWith("char") ||
-                    warp.getName().startsWith("staff")) {
+            if (warp.getName().startsWith("dvc") || warp.getName().startsWith("share") ||
+                    warp.getName().startsWith("char") || warp.getName().startsWith("staff")) {
                 continue;
             }
             if (distance == -1) {
