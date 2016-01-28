@@ -81,12 +81,13 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
+        /*
         if (user.getRank().getRankId() < Rank.SHAREHOLDER.getRankId()) {
             event.setKickMessage(ChatColor.RED + "You must be the " + Rank.SHAREHOLDER.getNameWithBrackets()
                     + ChatColor.RED + " rank or above to preview NewHWS!");
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
-        }
+        }*/
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
         }
