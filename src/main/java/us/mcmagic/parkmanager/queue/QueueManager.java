@@ -8,15 +8,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.listeners.PlayerInteract;
 import us.mcmagic.parkmanager.queue.tasks.NextRidersTask;
 import us.mcmagic.parkmanager.queue.tasks.QueueTask;
+import us.mcmagic.parkmanager.queue.tot.TowerPreShow;
 import us.mcmagic.parkmanager.utils.FileUtil;
-import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
-import us.mcmagic.mcmagiccore.particles.ParticleEffect;
-import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,14 +90,32 @@ public class QueueManager {
         List<String> qs = config.getStringList("queues");
         Collections.sort(qs);
         for (String s : qs) {
-            Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station.x"),
-                    config.getDouble("queue." + s + ".station.y"), config.getDouble("queue." + s + ".station.z"),
-                    config.getInt("queue." + s + ".station.yaw"), config.getInt("queue." + s + ".station.pitch"));
-            Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner.x"),
-                    config.getInt("queue." + s + ".spawner.y"), config.getInt("queue." + s + ".spawner.z"));
-            QueueRide ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', config.getString("queue." + s +
-                    ".name")), station, spawner, config.getInt("queue." + s + ".delay"), config.getInt("queue." + s +
-                    ".amount"), config.getString("queue." + s + ".warp"));
+            String name = config.getString("queue." + s + ".name");
+            QueueRide ride;
+            if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws") && s.equals("totpre")) {
+                Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station1.x"),
+                        config.getDouble("queue." + s + ".station1.y"), config.getDouble("queue." + s + ".station1.z"),
+                        config.getInt("queue." + s + ".station1.yaw"), config.getInt("queue." + s + ".station1.pitch"));
+                Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station2.x"),
+                        config.getDouble("queue." + s + ".station2.y"), config.getDouble("queue." + s + ".station2.z"),
+                        config.getInt("queue." + s + ".station2.yaw"), config.getInt("queue." + s + ".station2.pitch"));
+                Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner1.x"),
+                        config.getInt("queue." + s + ".spawner1.y"), config.getInt("queue." + s + ".spawner1.z"));
+                Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner2.x"),
+                        config.getInt("queue." + s + ".spawner2.y"), config.getInt("queue." + s + ".spawner2.z"));
+                ride = new TowerPreShow(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
+                        spawner1, spawner2, config.getInt("queue." + s + ".delay"), config.getInt("queue." + s + ".amount"),
+                        config.getString("queue." + s + ".warp"));
+            } else {
+                Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station.x"),
+                        config.getDouble("queue." + s + ".station.y"), config.getDouble("queue." + s + ".station.z"),
+                        config.getInt("queue." + s + ".station.yaw"), config.getInt("queue." + s + ".station.pitch"));
+                Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner.x"),
+                        config.getInt("queue." + s + ".spawner.y"), config.getInt("queue." + s + ".spawner.z"));
+                ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', name), station, spawner,
+                        config.getInt("queue." + s + ".delay"), config.getInt("queue." + s +
+                        ".amount"), config.getString("queue." + s + ".warp"));
+            }
             for (int i = 1; i <= config.getInt("queue." + s + ".sign-amount"); i++) {
                 ride.addSign(new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".sign." + i + ".x"),
                         config.getInt("queue." + s + ".sign." + i + ".y"), config.getInt("queue." + s + ".sign." + i +

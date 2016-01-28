@@ -2,8 +2,11 @@ package us.mcmagic.parkmanager.queue.tot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import us.mcmagic.parkmanager.queue.QueueRide;
+import us.mcmagic.parkmanager.queue.tasks.SpawnBlockSetTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,9 @@ public class TowerPreShow extends QueueRide {
     private final Location station2;
     private final Location spawner1;
     private final Location spawner2;
-    private int stationNumber = 1;
+    private final Block spawn1;
+    private final Block spawn2;
+    private int stationNumber = 2;
 
     public TowerPreShow(String name, Location station1, Location station2, Location spawner1, Location spawner2,
                         int delay, int amountOfRiders, String warp) {
@@ -26,6 +31,8 @@ public class TowerPreShow extends QueueRide {
         this.station2 = station2;
         this.spawner1 = spawner1;
         this.spawner2 = spawner2;
+        spawn1 = spawner1.getBlock();
+        spawn2 = spawner2.getBlock();
     }
 
     @Override
@@ -33,9 +40,9 @@ public class TowerPreShow extends QueueRide {
         if (frozen) {
             return;
         }
+        changeStation();
         List<UUID> fullList = getQueue();
         Location loc = getStation(stationNumber);
-        changeStation();
         if (fullList.size() >= amountOfRiders) {
             for (int i = 0; i < amountOfRiders; i++) {
                 Player tp = Bukkit.getPlayer(fullList.get(0));
@@ -61,12 +68,36 @@ public class TowerPreShow extends QueueRide {
         }
     }
 
+    @Override
+    public void spawn() {
+        if (frozen) {
+            return;
+        }
+        lastSpawn = getTime();
+        timeToNextRide = delay;
+        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis(), Material.REDSTONE_BLOCK));
+        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
+    }
+
+    @Override
+    public Block getSpawnerBlock() {
+        switch (stationNumber) {
+            case 1:
+                return spawn1;
+            case 2:
+                return spawn2;
+        }
+        return spawn1;
+    }
+
     private void changeStation() {
         switch (stationNumber) {
             case 1:
                 stationNumber = 2;
+                break;
             case 2:
                 stationNumber = 1;
+                break;
             default:
                 stationNumber = 1;
         }

@@ -71,8 +71,13 @@ public class TowerManager implements Listener {
         CommandBlock cmd = (CommandBlock) behind.getState();
         String command = cmd.getCommand();
         String[] coords = command.split(" ");
-        Location setBlock = new Location(world, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]),
-                Double.parseDouble(coords[2]));
+        Location setBlock;
+        try {
+            setBlock = new Location(world, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]),
+                    Double.parseDouble(coords[2]));
+        } catch (Exception ignored) {
+            return;
+        }
         setBlock.getBlock().setType(Material.REDSTONE_BLOCK);
     }
 

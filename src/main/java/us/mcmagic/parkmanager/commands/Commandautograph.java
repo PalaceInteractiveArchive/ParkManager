@@ -5,11 +5,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.parkmanager.ParkManager;
 
 /**
  * Created by Jacob on 1/20/15.
@@ -49,8 +49,8 @@ public class Commandautograph implements CommandExecutor {
                 return true;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() <= Rank.DVCMEMBER.getRankId()) {
-            player.sendMessage(ChatColor.RED + "/" + label + " [accept, deny, remove [Page Number]]");
+        if (user.getRank().getRankId() <= Rank.SHAREHOLDER.getRankId()) {
+            helpMenu(player);
             return true;
         }
         Player tp = PlayerUtil.findPlayer(args[0]);
@@ -70,7 +70,7 @@ public class Commandautograph implements CommandExecutor {
     private void helpMenu(Player player) {
         player.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() > Rank.DVCMEMBER.getRankId()) {
+        if (user.getRank().getRankId() > Rank.SHAREHOLDER.getRankId()) {
             player.sendMessage(ChatColor.GREEN + "/autograph [user] " + ChatColor.AQUA +
                     "- Request to sign a player's book");
         }

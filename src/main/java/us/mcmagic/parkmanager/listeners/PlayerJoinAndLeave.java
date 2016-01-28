@@ -26,6 +26,7 @@ import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.hotels.HotelManager;
+import us.mcmagic.parkmanager.utils.WarpUtil;
 import us.mcmagic.parkmanager.watch.WatchTask;
 
 import java.util.*;
@@ -80,6 +81,12 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
+        if (user.getRank().getRankId() < Rank.SHAREHOLDER.getRankId()) {
+            event.setKickMessage(ChatColor.RED + "You must be the " + Rank.SHAREHOLDER.getNameWithBrackets()
+                    + ChatColor.RED + " rank or above to preview NewHWS!");
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
         }
@@ -91,7 +98,9 @@ public class PlayerJoinAndLeave implements Listener {
         try {
             final Player player = event.getPlayer();
             final User user = MCMagicCore.getUser(player.getUniqueId());
-            needInvSet.put(player.getUniqueId(), System.currentTimeMillis());
+            if (!needInvSet.containsKey(player.getUniqueId())) {
+                needInvSet.put(player.getUniqueId(), System.currentTimeMillis());
+            }
             ParkManager.userCache.remove(player.getUniqueId());
             ParkManager.userCache.put(player.getUniqueId(), player.getName());
             PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
@@ -108,10 +117,15 @@ public class PlayerJoinAndLeave implements Listener {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setAllowFlight(user.getRank().getRankId() >= Rank.INTERN.getRankId());
             }
-            if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
-                player.performCommand("spawn");
+            if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws") &&
+                    user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+                player.teleport(WarpUtil.findWarp("sharehws").getLocation());
             } else {
-                warpToNearestWarp(player);
+                if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
+                    player.performCommand("spawn");
+                } else {
+                    warpToNearestWarp(player);
+                }
             }
             for (String msg : ParkManager.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));

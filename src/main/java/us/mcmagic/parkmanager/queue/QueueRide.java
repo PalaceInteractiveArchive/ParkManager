@@ -29,10 +29,10 @@ public class QueueRide {
     protected final String name;
     private Location station;
     private Location spawner;
-    private final int delay;
+    protected final int delay;
     protected final int amountOfRiders;
     private String warp;
-    private long lastSpawn = 0;
+    protected long lastSpawn = 0;
     private List<Location> signs = new ArrayList<>();
     private List<Location> fpsigns = new ArrayList<>();
     protected boolean frozen = false;
@@ -259,11 +259,11 @@ public class QueueRide {
         addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
     }
 
-    private void addTask(QueueTask task) {
+    protected void addTask(QueueTask task) {
         ParkManager.queueManager.addTask(task);
     }
 
-    private long getTime() {
+    protected long getTime() {
         return System.currentTimeMillis() / 1000;
     }
 
