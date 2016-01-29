@@ -71,8 +71,7 @@ public class Stitch implements Listener {
             if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
                 int i = getSeatNumber(player.getUniqueId());
                 StitchSeat seat = seats.get(i);
-                if (ParkManager.chairManager.isSitting(player)) {
-                    ParkManager.chairManager.standPlayer(player, true);
+                if (!ParkManager.chairManager.isSitting(player)) {
                     Block b = seat.getLocation().add(0, -1, 0).getBlock();
                     if (ChairListener.canSit(player, b)) {
                         Location sitLocation = ChairUtil.sitLocation(b, player.getLocation().getYaw());
