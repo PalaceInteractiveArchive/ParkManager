@@ -134,7 +134,7 @@ public class Commandwarp implements CommandExecutor {
                     ParkManager.shooter.warp(player);
                 }
                 boolean msg = true;
-                if (warp.getName().equalsIgnoreCase("sge")) {
+                if (MCMagicCore.getMCMagicConfig().serverName.equals("MK")) {
                     if (ParkManager.stitch.isWatching(player.getUniqueId())) {
                         ParkManager.stitch.leaveShow(player);
                         msg = false;
@@ -142,14 +142,17 @@ public class Commandwarp implements CommandExecutor {
                 }
                 if (player.isInsideVehicle()) {
                     player.getVehicle().eject();
+                    final boolean finalMsg = msg;
                     Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
                         @Override
                         public void run() {
                             ParkManager.teleportUtil.log(player, player.getLocation());
                             player.teleport(loc);
-                            player.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                    + ChatColor.WHITE + "]");
+                            if (finalMsg) {
+                                player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                        + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                        + ChatColor.WHITE + "]");
+                            }
                         }
                     }, 10L);
                     return true;
