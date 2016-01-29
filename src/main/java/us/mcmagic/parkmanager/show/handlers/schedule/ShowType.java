@@ -23,7 +23,7 @@ public enum ShowType {
     FITS(ChatColor.BLUE + "Fantasy in the Sky", Material.DIAMOND),
     DAWM(ChatColor.GREEN + "Dream Along with Mickey", Material.INK_SACK),
     JEDI(ChatColor.BLUE + "Jedi Training", Material.IRON_SWORD),
-    OSBORNE(ChatColor.AQUA + "The Osborne Family Spectacle of Dancing Lights", Material.GLOWSTONE),
+    SGE(ChatColor.BLUE + "Stitch's Great Escape", Material.INK_SACK, (byte) 6),
     FOTLK(ChatColor.YELLOW + "Festival of the Lion King", Material.INK_SACK, (byte) 3);
 
     private String name;
@@ -86,8 +86,8 @@ public enum ShowType {
                 return DAWM;
             case "jedi":
                 return JEDI;
-            case "ofl":
-                return OSBORNE;
+            case "sge":
+                return SGE;
             case "fotlk":
                 return FOTLK;
         }
