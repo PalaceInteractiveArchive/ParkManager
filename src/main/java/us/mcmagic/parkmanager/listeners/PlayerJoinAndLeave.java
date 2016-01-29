@@ -81,13 +81,14 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        /*
-        if (user.getRank().getRankId() < Rank.SHAREHOLDER.getRankId()) {
-            event.setKickMessage(ChatColor.RED + "You must be the " + Rank.SHAREHOLDER.getNameWithBrackets()
-                    + ChatColor.RED + " rank or above to preview NewHWS!");
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
-        }*/
+        if (MCMagicCore.getMCMagicConfig().serverName.equals("NewHWS")) {
+            if (user.getRank().getRankId() < Rank.SHAREHOLDER.getRankId()) {
+                event.setKickMessage(ChatColor.RED + "You must be the " + Rank.SHAREHOLDER.getNameWithBrackets()
+                        + ChatColor.RED + " rank or above to preview NewHWS!");
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
         }
@@ -132,7 +133,8 @@ public class PlayerJoinAndLeave implements Listener {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
             ParkManager.vanishUtil.login(player);
-            if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+            if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId() &&
+                    !MCMagicCore.getMCMagicConfig().serverName.equals("NewHWS")) {
                 Commandvanish.vanish(player.getUniqueId());
                 for (Player tp : Bukkit.getOnlinePlayers()) {
                     if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {

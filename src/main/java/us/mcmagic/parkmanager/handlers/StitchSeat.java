@@ -26,7 +26,7 @@ public class StitchSeat {
     }
 
     public Location getLocation() {
-        return location;
+        return location.clone();
     }
 
     public UUID getOccupant() {

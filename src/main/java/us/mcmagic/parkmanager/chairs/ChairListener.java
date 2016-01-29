@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.material.Stairs;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.parkmanager.ParkManager;
 
 import java.util.ArrayList;
@@ -69,6 +70,12 @@ public class ChairListener implements Listener {
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
             if (ParkManager.chairManager.isSitting(player)) {
+                if (MCMagicCore.getMCMagicConfig().serverName.equals("MK")) {
+                    if (ParkManager.stitch.isWatching(player.getUniqueId())) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
                 if (!ParkManager.chairManager.standPlayer(player, false)) {
                     event.setCancelled(true);
                 }

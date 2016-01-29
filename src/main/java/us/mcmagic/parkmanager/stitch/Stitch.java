@@ -71,7 +71,15 @@ public class Stitch implements Listener {
             if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
                 int i = getSeatNumber(player.getUniqueId());
                 StitchSeat seat = seats.get(i);
-                player.teleport(seat.getLocation());
+                if (ParkManager.chairManager.isSitting(player)) {
+                    ParkManager.chairManager.standPlayer(player, true);
+                    Block b = seat.getLocation().add(0, -1, 0).getBlock();
+                    if (ChairListener.canSit(player, b)) {
+                        Location sitLocation = ChairUtil.sitLocation(b, player.getLocation().getYaw());
+                        ParkManager.chairManager.sitPlayer(player, b, sitLocation, true);
+                    }
+                    return;
+                }
                 if (!msgTimeout.contains(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "------------------------------------------------");
                     player.sendMessage(ChatColor.BLUE + "Please don't leave your seat during the show.");
@@ -145,6 +153,9 @@ public class Stitch implements Listener {
                 seat.setOccupant(null);
                 watching.remove(player.getUniqueId());
             }
+        }
+        if (ParkManager.chairManager.isSitting(player)) {
+            ParkManager.chairManager.standPlayer(player, true);
         }
         player.sendMessage(prefix + ChatColor.RED + "You are no longer watching Stitch's Great Escape");
     }
