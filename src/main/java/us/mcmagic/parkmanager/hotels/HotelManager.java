@@ -5,12 +5,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.title.TitleObject;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.utils.PlayerUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.title.TitleObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -76,14 +76,15 @@ public class HotelManager {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM hotelrooms");
             ResultSet result = sql.executeQuery();
             while (result.next()) {
-                rooms.add(new HotelRoom(result.getString("hotelName"), result.getInt("roomNumber"),
+                HotelRoom room = new HotelRoom(result.getString("hotelName"), result.getInt("roomNumber"),
                         result.getString("currentOccupant") == "" ? null :
                                 UUID.fromString(result.getString("currentOccupant")), result.getString("occupantName"),
                         result.getLong("checkoutTime"), Warp.fromDatabaseString(result.getString("roomWarp") != "" ?
                         result.getString("roomWarp") : null), result.getInt("cost"),
                         result.getString("checkoutNotificationRecipient") != "" ?
                                 UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
-                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z")));
+                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"));
+                rooms.add(room);
             }
             result.close();
             sql.close();
@@ -139,16 +140,16 @@ public class HotelManager {
         Location loc = null;
         switch (facing) {
             case NORTH:
-                loc = new Location(sign.getWorld(), sign.getX() + 0.5, sign.getY() - 1, sign.getZ() - 0.5, 0, 0);
+                loc = new Location(sign.getWorld(), sign.getX() + 0.5, sign.getY() - 1, sign.getZ() + 0.5, 0, 0);
                 break;
             case EAST:
-                loc = new Location(sign.getWorld(), sign.getX() + 1.5, sign.getY() - 1, sign.getZ() + 0.5, 90, 0);
+                loc = new Location(sign.getWorld(), sign.getX() + 0.5, sign.getY() - 1, sign.getZ() + 0.5, 90, 0);
                 break;
             case SOUTH:
-                loc = new Location(sign.getWorld(), sign.getX() + 0.5, sign.getY() - 1, sign.getZ() + 1.5, 180, 0);
+                loc = new Location(sign.getWorld(), sign.getX() + 0.5, sign.getY() - 1, sign.getZ() + 0.5, 180, 0);
                 break;
             case WEST:
-                loc = new Location(sign.getWorld(), sign.getX() - 0.5, sign.getY() - 1, sign.getZ() + 0.5, -90, 0);
+                loc = new Location(sign.getWorld(), sign.getX() + 0.5, sign.getY() - 1, sign.getZ() + 0.5, -90, 0);
                 break;
         }
         return loc;
@@ -211,12 +212,13 @@ public class HotelManager {
 
     public void updateHotelRoom(HotelRoom room) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE hotelrooms SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=? WHERE name=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE hotelrooms SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=?, roomWarp=? WHERE name=?");
             sql.setString(1, room.getCurrentOccupant() == null ? "" : room.getCurrentOccupant().toString());
             sql.setString(2, room.getOccupantName() == null ? "" : room.getOccupantName());
             sql.setLong(3, room.getCheckoutTime());
             sql.setString(4, room.getCheckoutNotificationRecipient() == null ? "" : room.getCheckoutNotificationRecipient().toString());
-            sql.setString(5, room.getName());
+            sql.setString(5, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
+            sql.setString(6, room.getName());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -318,14 +320,54 @@ public class HotelManager {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public HotelRoom getRoomFromDoor(Block b, Player p) {
-        for (int ix = b.getLocation().getBlockX() - 1; ix < b.getLocation().getBlockX() + 2; ix++) {
-            for (int iz = b.getLocation().getBlockZ() - 1; iz < b.getLocation().getBlockZ() + 2; iz++) {
-                for (int iy = b.getLocation().getBlockY() - 1; iy < b.getLocation().getBlockY() + 2; iy++) {
+        Location bloc = b.getLocation().clone();
+        for (int ix = bloc.getBlockX() - 1; ix < bloc.getBlockX() + 2; ix++) {
+            for (int iz = bloc.getBlockZ() - 1; iz < bloc.getBlockZ() + 2; iz++) {
+                for (int iy = bloc.getBlockY() - 1; iy < bloc.getBlockY() + 2; iy++) {
                     Block targetBlock = b.getWorld().getBlockAt(ix, iy, iz);
                     Material type = targetBlock.getType();
                     if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
                         Sign s = (Sign) targetBlock.getState();
+                        BlockFace facing = getFace(s.getRawData());
+                        if (facing == null) {
+                            return null;
+                        }
+                        boolean isSign = false;
+                        switch (facing) {
+                            case NORTH: {
+                                Location temp = s.getLocation().clone().add(0, 0, 1);
+                                if (bloc.getBlockZ() == temp.getBlockZ()) {
+                                    isSign = true;
+                                }
+                                break;
+                            }
+                            case EAST: {
+                                Location temp = s.getLocation().clone().add(-1, 0, 0);
+                                if (bloc.getBlockX() == temp.getBlockX()) {
+                                    isSign = true;
+                                }
+                                break;
+                            }
+                            case SOUTH: {
+                                Location temp = s.getLocation().clone().add(0, 0, -1);
+                                if (bloc.getBlockZ() == temp.getBlockZ()) {
+                                    isSign = true;
+                                }
+                                break;
+                            }
+                            case WEST: {
+                                Location temp = s.getLocation().clone().add(1, 0, 0);
+                                if (bloc.getBlockX() == temp.getBlockX()) {
+                                    isSign = true;
+                                }
+                                break;
+                            }
+                        }
+                        if (!isSign) {
+                            continue;
+                        }
                         HotelRoom room = getRoomFromSign(s);
                         if (room != null) {
                             return room;
@@ -393,7 +435,7 @@ public class HotelManager {
             Material type = b.getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) b.getState();
-                s.setLine(3, "" + ChatColor.GREEN + room.getCost());
+                s.setLine(3, ChatColor.GREEN + "$" + room.getCost());
                 s.update();
             }
         }

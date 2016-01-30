@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.Warp;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 
 public class SignChange implements Listener {
 
@@ -54,7 +54,7 @@ public class SignChange implements Listener {
                     event.setLine(1, "" + ChatColor.GOLD + newRoom.getRoomNumber());
                     event.setLine(2, ChatColor.DARK_GREEN + event.getLine(2));
                     event.setLine(3, "" + ChatColor.GREEN + cost);
-                    Location loc2 = ParkManager.hotelManager.locFromSign(((Sign) b.getState()));
+                    Location loc2 = ParkManager.hotelManager.locFromSign((Sign) b.getState());
                     Warp warp = null;
                     if (loc != null) {
                         warp = new Warp(newRoom.getName().replace(" ", ""), MCMagicCore.getMCMagicConfig().serverName,
