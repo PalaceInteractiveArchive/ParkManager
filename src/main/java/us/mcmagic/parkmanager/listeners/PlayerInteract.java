@@ -127,7 +127,7 @@ public class PlayerInteract implements Listener {
                         player.sendMessage(ChatColor.RED + "This room is already occupied!");
                     } else {
                         boolean playerOwnsRooms = false;
-                        for (HotelRoom r : manager.getRooms()) {
+                        for (HotelRoom r : manager.getHotelRooms()) {
                             if (r.isOccupied() && r.getCurrentOccupant().equals(player.getUniqueId())) {
                                 playerOwnsRooms = true;
                                 break;

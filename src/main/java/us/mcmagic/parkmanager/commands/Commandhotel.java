@@ -5,11 +5,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.utils.PlayerUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class Commandhotel implements CommandExecutor {
     }
 
     private static void execute_list(CommandSender sender, String[] args) {
-        List<HotelRoom> rooms = ParkManager.hotelManager.getRooms();
+        List<HotelRoom> rooms = ParkManager.hotelManager.getHotelRooms();
         if (rooms.isEmpty()) {
             sender.sendMessage(ChatColor.BLUE + "No hotel rooms exist!");
             return;
@@ -117,7 +117,7 @@ public class Commandhotel implements CommandExecutor {
             return;
         }
 
-        List<HotelRoom> rooms = ParkManager.hotelManager.getRooms();
+        List<HotelRoom> rooms = ParkManager.hotelManager.getHotelRooms();
         if (rooms.isEmpty()) {
             sender.sendMessage(ChatColor.BLUE + "No hotel rooms to clear!");
             return;

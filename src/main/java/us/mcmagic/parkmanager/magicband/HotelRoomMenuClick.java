@@ -5,12 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.utils.BandUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
 
 /**
  * Created by Greenlock28 on 1/25/2015.
@@ -29,7 +29,7 @@ public class HotelRoomMenuClick {
         }
         boolean playerOwnsRooms = false;
         HotelManager manager = ParkManager.hotelManager;
-        for (HotelRoom room : manager.getRooms()) {
+        for (HotelRoom room : manager.getHotelRooms()) {
             if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
                 playerOwnsRooms = true;
                 break;

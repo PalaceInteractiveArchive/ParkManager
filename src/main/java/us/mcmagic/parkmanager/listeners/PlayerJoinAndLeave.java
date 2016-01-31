@@ -268,7 +268,7 @@ public class PlayerJoinAndLeave implements Listener {
         }
         if (ParkManager.hotelServer) {
             HotelManager manager = ParkManager.hotelManager;
-            for (HotelRoom room : manager.getRooms()) {
+            for (HotelRoom room : manager.getHotelRooms()) {
                 if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
                     manager.closeDoor(room);
                     break;
