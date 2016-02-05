@@ -12,10 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.InventoryType;
-import us.mcmagic.parkmanager.utils.BandUtil;
-import us.mcmagic.parkmanager.utils.FileUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.player.User;
@@ -23,6 +19,10 @@ import us.mcmagic.mcmagiccore.resource.CurrentPackReceivedEvent;
 import us.mcmagic.mcmagiccore.resource.ResourceManager;
 import us.mcmagic.mcmagiccore.resource.ResourcePack;
 import us.mcmagic.mcmagiccore.resource.ResourceStatusEvent;
+import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.handlers.InventoryType;
+import us.mcmagic.parkmanager.utils.BandUtil;
+import us.mcmagic.parkmanager.utils.FileUtil;
 
 import java.util.*;
 
@@ -68,15 +68,15 @@ public class PackManager implements Listener {
         }
         if (preferred.equals("NoPrefer")) {
             if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
-                if (!user.getCurrentPack().equals("Seasonal")) {
+                if (!user.getResourcePack().equals("Seasonal")) {
                     MCMagicCore.resourceManager.sendPack(player, "Seasonal");
                 }
                 return;
             }
-            if (!user.getCurrentPack().equals("none")) {
+            if (!user.getResourcePack().equals("none")) {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
-            user.setCurrentPack("none");
+            user.setResourcePack("none");
             return;
         }
         if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
@@ -129,10 +129,10 @@ public class PackManager implements Listener {
             player.sendMessage(ChatColor.RED + "You disabled the Auto-Resource Pack!");
             MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), "Disabled");
             player.closeInventory();
-            if (!user.getCurrentPack().equalsIgnoreCase("none")) {
+            if (!user.getResourcePack().equalsIgnoreCase("none")) {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
-            user.setCurrentPack("none");
+            user.setResourcePack("none");
             return;
         }
         if (event.getSlot() == 0) {
@@ -141,22 +141,22 @@ public class PackManager implements Listener {
             MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), "NoPrefer");
             player.closeInventory();
             if (MCMagicCore.getMCMagicConfig().serverName.equals("Seasonal") && doSeasonal) {
-                if (!user.getCurrentPack().equals("Seasonal")) {
+                if (!user.getResourcePack().equals("Seasonal")) {
                     MCMagicCore.resourceManager.sendPack(player, "Seasonal");
                 }
                 return;
             }
-            if (!user.getCurrentPack().equals("none")) {
+            if (!user.getResourcePack().equals("none")) {
                 MCMagicCore.resourceManager.sendPack(player, "Blank");
             }
-            user.setCurrentPack("none");
+            user.setResourcePack("none");
             return;
         }
         for (Map.Entry<String, ItemStack> entry : packItems.entrySet()) {
             ItemStack stack = entry.getValue();
             if (stack.getType().equals(item.getType())) {
                 user.setPreferredPack(entry.getKey());
-                user.setCurrentPack(entry.getKey());
+                user.setResourcePack(entry.getKey());
                 player.closeInventory();
                 MCMagicCore.resourceManager.sendPack(player, entry.getKey());
                 MCMagicCore.resourceManager.setPreferredPack(player.getUniqueId(), entry.getKey());
@@ -227,7 +227,7 @@ public class PackManager implements Listener {
                 ChatColor.GREEN + " Resource Pack! \n" + pack.getUrl());
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutResourcePackSend(pack.getUrl(),
                 "null"));
-        MCMagicCore.getUser(player.getUniqueId()).setCurrentPack(pack.getName());
+        MCMagicCore.getUser(player.getUniqueId()).setResourcePack(pack.getName());
     }
 
     public void sendPack(Player player, String name) {
