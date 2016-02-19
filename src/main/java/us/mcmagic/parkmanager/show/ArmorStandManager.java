@@ -4,9 +4,11 @@ import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.show.handlers.armorstand.Movement;
+import us.mcmagic.parkmanager.show.handlers.armorstand.Position;
 import us.mcmagic.parkmanager.show.handlers.armorstand.ShowStand;
 import us.mcmagic.parkmanager.show.handlers.armorstand.StandAction;
 
@@ -48,16 +50,49 @@ public class ArmorStandManager {
                 }
                 for (ShowStand stand : new ArrayList<>(pos)) {
                     ArmorStand armor = stand.getStand();
-                    Movement movement = stand.getMovement();
-                    Vector motion = movement.getMotion();
-                    Entity e = ((CraftArmorStand) armor).getHandle();
-                    e.motX = motion.getX();
-                    e.motY = motion.getY();
-                    e.motZ = motion.getZ();
-                    e.velocityChanged = true;
-                    movement.setDuration(movement.getDuration() - 1);
-                    if (movement.getDuration() < 0) {
-                        move.remove(stand);
+                    Position position = stand.getPosition();
+                    Vector motion = position.getMotion();
+                    switch (position.getPositionType()) {
+                        case HEAD: {
+                            EulerAngle cur = armor.getHeadPose();
+                            armor.setHeadPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ()));
+                            break;
+                        }
+                        case BODY: {
+                            EulerAngle cur = armor.getBodyPose();
+                            armor.setBodyPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ()));
+                            break;
+                        }
+                        case ARM_LEFT: {
+                            EulerAngle cur = armor.getLeftArmPose();
+                            armor.setLeftArmPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ()));
+                            break;
+                        }
+                        case ARM_RIGHT: {
+                            EulerAngle cur = armor.getRightArmPose();
+                            armor.setRightArmPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ()));
+                            break;
+                        }
+                        case LEG_LEFT: {
+                            EulerAngle cur = armor.getLeftLegPose();
+                            armor.setLeftLegPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ()));
+                            break;
+                        }
+                        case LEG_RIGHT: {
+                            EulerAngle cur = armor.getRightLegPose();
+                            armor.setRightLegPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ()));
+                            break;
+                        }
+                    }
+                    position.setDuration(position.getDuration() - 1);
+                    if (position.getDuration() < 0) {
+                        pos.remove(stand);
                     }
                 }
             }

@@ -11,6 +11,7 @@ public class ShowStand {
     private boolean hasSpawned = false;
     private ArmorStand stand;
     private Movement motion;
+    private Position position;
 
     public ShowStand(int id, boolean small) {
         this.id = id;
@@ -45,8 +46,16 @@ public class ShowStand {
         this.motion = motion;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public Movement getMovement() {
         return motion;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 
     public void despawn() {
