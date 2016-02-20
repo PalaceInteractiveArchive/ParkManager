@@ -6,13 +6,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.title.TitleObject;
 import us.mcmagic.parkmanager.show.actions.*;
 import us.mcmagic.parkmanager.show.handlers.ShowNPC;
 import us.mcmagic.parkmanager.show.handlers.armorstand.ShowStand;
 import us.mcmagic.parkmanager.utils.MathUtil;
 import us.mcmagic.parkmanager.utils.WorldUtil;
-import us.mcmagic.mcmagiccore.particles.ParticleEffect;
-import us.mcmagic.mcmagiccore.title.TitleObject;
 
 import java.io.*;
 import java.util.*;
@@ -165,15 +165,15 @@ public class Show {
                         continue;
                     }
                     String action = tokens[3];
-                    switch (action) {
-                        case "Spawn": {
+                    switch (action.toLowerCase()) {
+                        case "spawn": {
                             // x,y,z
                             Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
                             ArmorStandSpawn spawn = new ArmorStandSpawn(this, time, stand, loc);
                             actions.add(spawn);
                             break;
                         }
-                        case "Move": {
+                        case "move": {
                             // x,y,z speed
                             Integer speed = Integer.parseInt(tokens[5]);
                             Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
@@ -181,7 +181,12 @@ public class Show {
                             actions.add(move);
                             break;
                         }
-                        case "Despawn": {
+                        case "position": {
+                            // PositionType x,y,z speed
+
+                            break;
+                        }
+                        case "despawn": {
                             ArmorStandDespawn despawn = new ArmorStandDespawn(this, time, stand);
                             actions.add(despawn);
                             break;
