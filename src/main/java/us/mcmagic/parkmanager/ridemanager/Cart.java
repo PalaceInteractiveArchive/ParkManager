@@ -9,9 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
+import us.mcmagic.parkmanager.ParkManager;
 
 import java.util.UUID;
 
@@ -147,7 +147,7 @@ public class Cart extends EntityMinecartRideable {
         return train;
     }
 
-    public BlockMinecartTrackAbstract.EnumTrackPosition getTrackType(byte data) {
+    public static BlockMinecartTrackAbstract.EnumTrackPosition getTrackType(byte data) {
         switch (data) {
             case 0:
                 return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;

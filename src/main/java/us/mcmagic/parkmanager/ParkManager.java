@@ -22,12 +22,14 @@ import us.mcmagic.parkmanager.chairs.ChairManager;
 import us.mcmagic.parkmanager.chairs.IArrowFactory;
 import us.mcmagic.parkmanager.commands.*;
 import us.mcmagic.parkmanager.designstation.DesignStation;
+import us.mcmagic.parkmanager.fastpasskiosk.FPKioskManager;
 import us.mcmagic.parkmanager.handlers.*;
 import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.listeners.*;
 import us.mcmagic.parkmanager.parksounds.ParkSoundManager;
 import us.mcmagic.parkmanager.pixelator.Pixelator;
 import us.mcmagic.parkmanager.queue.QueueManager;
+import us.mcmagic.parkmanager.queue.QueueRide;
 import us.mcmagic.parkmanager.queue.tot.TowerManager;
 import us.mcmagic.parkmanager.resourcepack.PackManager;
 import us.mcmagic.parkmanager.ridemanager.Cart;
@@ -92,6 +94,7 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static ScheduleManager scheduleManager;
     public static WardrobeManager wardrobeManager;
     public static Pixelator pixelator;
+    public static FPKioskManager fpKioskManager;
 
     public void onEnable() {
         instance = this;
@@ -156,6 +159,9 @@ public class ParkManager extends JavaPlugin implements Listener {
         log("Initializing Rides...");
         setupRides();
         log("Rides Initialized!");
+        log("Initializing FastPass Kiosks...");
+        fpKioskManager = new FPKioskManager();
+        log("FastPass Kiosks Initialized!");
         log("Initializing Show Schedule...");
         scheduleManager = new ScheduleManager();
         log("Show Schedule Initialized!");
@@ -276,24 +282,34 @@ public class ParkManager extends JavaPlugin implements Listener {
     }
 
     public void setupRides() {
+        for (Ride r : getRides()) {
+            if (r.getQueue() != null) {
+                r.getQueue().ejectQueue();
+            }
+        }
         ridePages.clear();
         YamlConfiguration config = FileUtil.menusYaml();
         List<String> locations = config.getStringList("ride-names");
         List<Ride> rides = new ArrayList<>();
-        for (String location : locations) {
+        for (String s : locations) {
             String name = config
-                    .getString("ride." + location + ".name");
+                    .getString("ride." + s + ".name");
             String warp = config
-                    .getString("ride." + location + ".warp");
-            int type = config.getInt("ride." + location + ".type");
+                    .getString("ride." + s + ".warp");
+            int type = config.getInt("ride." + s + ".type");
             byte data;
-            if (config.contains("ride." + location + ".data")) {
-                data = (byte) config.getInt("ride." + location
+            if (config.contains("ride." + s + ".data")) {
+                data = (byte) config.getInt("ride." + s
                         + ".data");
             } else {
                 data = 0;
             }
-            Ride ride = new Ride(name, warp, type, data);
+            RideCategory category = RideCategory.fromString(config.getString("ride." + s + ".category"));
+            QueueRide queue = null;
+            if (config.getBoolean("ride." + s + ".has-queue")) {
+                queue = queueManager.createQueue(s, config);
+            }
+            Ride ride = new Ride(name, warp, type, data, category, queue, s);
             rides.add(ride);
         }
         int pages;
@@ -380,6 +396,27 @@ public class ParkManager extends JavaPlugin implements Listener {
             }
         }
         return null;
+    }
+
+    public static Ride getRide2(String shortName) {
+        for (Map.Entry<Integer, List<Ride>> rides : ridePages.entrySet()) {
+            for (Ride ride : rides.getValue()) {
+                if (ride.getShortName().equalsIgnoreCase(shortName)) {
+                    return ride;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static List<Ride> getRides() {
+        List<Ride> list = new ArrayList<>();
+        for (Map.Entry<Integer, List<Ride>> rides : ridePages.entrySet()) {
+            for (Ride ride : rides.getValue()) {
+                list.add(ride);
+            }
+        }
+        return list;
     }
 
     public static Attraction getAttraction(String name) {

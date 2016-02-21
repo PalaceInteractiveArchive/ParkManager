@@ -12,11 +12,11 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.designstation.DesignStationClick;
 import us.mcmagic.parkmanager.magicband.*;
 import us.mcmagic.parkmanager.watch.WatchTask;
-import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 
 public class InventoryClick implements Listener {
 
@@ -195,13 +195,13 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 WaitTimeClick.handle(event);
                 return;
-            case "Purchase FastPass":
+            case "FastPass Kiosk":
                 event.setCancelled(true);
-                FastPassMenuClick.handle(event);
+                ParkManager.fpKioskManager.handle(event);
                 return;
             case "Show Timetable":
-                event.setCancelled(true);
-                ShowTimeClick.handle(event);
+            event.setCancelled(true);
+            ShowTimeClick.handle(event);
         }
     }
 

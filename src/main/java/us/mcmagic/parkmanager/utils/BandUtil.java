@@ -9,13 +9,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.BandColor;
-import us.mcmagic.parkmanager.handlers.DataResponse;
-import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.handlers.*;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -128,12 +126,16 @@ public class BandUtil {
                     friendlist.add(UUID.fromString(friend));
                 }
             }
+            FastPassData fpdata = new FastPassData(result.getInt("slow"), result.getInt("moderate"),
+                    result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"), result.getInt("tday"));
+            KioskData kioskData = new KioskData(result.getLong("lastvote"), result.getLong("monthguest"),
+                    result.getLong("monthguest"), result.getLong("monthguest"));
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
-                    result.getInt("parkloop") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"),
-                    result.getInt("dailyfp"), result.getInt("fpday"), result.getString("outfit"));
+                    result.getInt("parkloop") == 1, result.getInt("hotel") == 1, fpdata, kioskData,
+                    result.getString("outfit"));
             if (result.getInt("buildmode") == 1) {
                 ParkManager.storageManager.makeBuildMode.add(uuid);
             }

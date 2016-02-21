@@ -1,6 +1,6 @@
 name: ParkManager
 author: MCMagicDev
-version: 2.1.5
+version: 2.1.6
 description: MCMagic Park Plugin
 main: us.mcmagic.parkmanager.ParkManager
 depend: [MCMagicCore, ProtocolLib, WorldEdit]
@@ -8,6 +8,14 @@ commands:
    nearby:
       description: Finds warps within 100 blocks of your location.
       permission: mcmagic.warp
+      permission-message: §4Please notify a Cast Member that you can’t do this.
+   b:
+      description: Perform a Cross-Server Broadcast.
+      permission: arcade.bypass
+      permission-message: §4Please notify a Cast Member that you can’t do this.
+   mc:
+      description: Mute or Unmute Park Chat.
+      permission: arcade.bypass
       permission-message: §4Please notify a Cast Member that you can’t do this.
    magic:
       description: New Command :O

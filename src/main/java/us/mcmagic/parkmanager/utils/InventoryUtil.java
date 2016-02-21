@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.designstation.DesignStation;
 import us.mcmagic.parkmanager.handlers.*;
@@ -20,9 +23,6 @@ import us.mcmagic.parkmanager.show.schedule.ScheduledShow;
 import us.mcmagic.parkmanager.storage.Backpack;
 import us.mcmagic.parkmanager.storage.Locker;
 import us.mcmagic.parkmanager.storage.StorageSize;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.*;
 
@@ -478,7 +478,8 @@ public class InventoryUtil {
                         }
                         String times = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);
                         List<String> himl = Arrays.asList(ChatColor.DARK_GREEN + "You have " + times, ChatColor.DARK_GREEN
-                                + "left for this reservation.");
+                                + "left for this reservation.", ChatColor.YELLOW + "Room Type: " + (room.isSuite() ?
+                                ChatColor.GOLD + "Suite" : ChatColor.YELLOW + "Standard"));
                         rim.setLore(himl);
                         roomItem.setItemMeta(rim);
                         viewMyHotelRooms.setItem(roomItemPlacement, roomItem);
@@ -559,6 +560,7 @@ public class InventoryUtil {
                     DesignStation.openPickModelInventory(player);
                     return;
                 }
+                /*
                 case FASTPASS: {
                     Inventory fp = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Purchase FastPass");
                     fp.setItem(22, BandUtil.getBackItem());
@@ -601,7 +603,7 @@ public class InventoryUtil {
                     fp.setItem(15, no);
                     player.openInventory(fp);
                     return;
-                }
+                }*/
                 case STORAGE: {
                     Inventory storage = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Storage Upgrade");
                     StorageSize packSize = data.getBackpack().getSize();
@@ -855,7 +857,8 @@ public class InventoryUtil {
             him.setDisplayName(ChatColor.GREEN + room.getName());
             long time = room.getStayLength() / 3600;
             List<String> himl = Arrays.asList(ChatColor.GOLD + "Cost: $" + Integer.toString(room.getCost()),
-                    ChatColor.GREEN + "Click to rent this room for " + time + " hours.");
+                    ChatColor.GREEN + "Click to rent this room for " + time + " hours.", ChatColor.YELLOW +
+                            "Room Type: " + (room.isSuite() ? ChatColor.GOLD + "Suite" : ChatColor.YELLOW + "Standard"));
             him.setLore(himl);
             item.setItemMeta(him);
             viewAvailableHotelRooms.setItem(placement, item);

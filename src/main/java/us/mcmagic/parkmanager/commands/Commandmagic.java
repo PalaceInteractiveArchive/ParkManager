@@ -1,6 +1,7 @@
 package us.mcmagic.parkmanager.commands;
 
 import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -17,6 +18,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.particles.ParticleEffect;
+import us.mcmagic.mcmagiccore.particles.ParticleUtil;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.PlayerUtil;
+import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.blockchanger.Changer;
 import us.mcmagic.parkmanager.handlers.Outfit;
@@ -26,13 +34,6 @@ import us.mcmagic.parkmanager.show.Show;
 import us.mcmagic.parkmanager.show.ticker.TickEvent;
 import us.mcmagic.parkmanager.utils.SqlUtil;
 import us.mcmagic.parkmanager.utils.WorldUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
-import us.mcmagic.mcmagiccore.particles.ParticleEffect;
-import us.mcmagic.mcmagiccore.particles.ParticleUtil;
-import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.PlayerUtil;
-import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,6 @@ import java.util.*;
  */
 public class Commandmagic implements Listener, CommandExecutor {
     private static HashMap<String, Show> shows = new HashMap<>();
-    public static List<String> containsCommandBlockOnly = new ArrayList<>();
     public ParticleEffect effect;
     public Location location;
 
@@ -761,6 +761,44 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 helpMenu("queue", sender);
                 return true;
+            case "pin": {
+                if (args.length < 1) {
+                    helpMenu("pin", sender);
+                    return true;
+                }
+                String username = args[0];
+                Player tp = Bukkit.getPlayer(username);
+                if (tp == null) {
+                    sender.sendMessage(ChatColor.RED + "Player not found!");
+                    return true;
+                }
+                //TODO: Finish this
+                sender.sendMessage(ChatColor.RED + "TODO");
+                helpMenu("pin", sender);
+                return true;
+            }
+            case "fp": {
+                if (args.length < 0) {
+                    helpMenu("fp", sender);
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(ChatColor.RED + "You must be a Player to do this!");
+                    return true;
+                }
+                Player player = ((Player) sender);
+                if (args[0].equalsIgnoreCase("create")) {
+                    try {
+                        ParkManager.fpKioskManager.create(player);
+                    } catch (MojangsonParseException e) {
+                        player.sendMessage(ChatColor.RED + "There was an error creating that FastPass Kiosk!");
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+                helpMenu("fp", sender);
+                return true;
+            }
             case "reload":
                 ParkManager ma = ParkManager.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
@@ -782,7 +820,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 ParkManager.packManager.initialize();
                 ParkManager.shopManager.initialize();
                 ParkManager.wardrobeManager.initialize();
-                ParkManager.queueManager.initialize();
                 sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");
                 return true;
             default:
@@ -809,10 +846,22 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
+                sender.sendMessage(ChatColor.GREEN + "/magic fp " + ChatColor.AQUA + "- Manage FastPass Kiosks");
+                sender.sendMessage(ChatColor.GREEN + "/magic pin " + ChatColor.AQUA + "- Pin Trading Command");
                 sender.sendMessage(ChatColor.GREEN + "/magic rc " + ChatColor.AQUA + "- Ride Counters");
                 sender.sendMessage(ChatColor.GREEN + "/magic schedule " + ChatColor.AQUA + "- Show Schedule");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit " + ChatColor.AQUA + "- Outfit Manager");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
+                break;
+            case "fp":
+                sender.sendMessage(ChatColor.GREEN + "FastPass Kiosk Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic fp create " + ChatColor.AQUA +
+                        "- Create a FastPass Kiosk where you're standing");
+                break;
+            case "pin":
+                sender.sendMessage(ChatColor.GREEN + "Pin Trading Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic pin [Username] " + ChatColor.AQUA +
+                        "- 10% chance to give the player a Pin");
                 break;
             case "outfit":
                 sender.sendMessage(ChatColor.GREEN + "Outfit Commands:");
@@ -842,7 +891,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Stitch Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge lock " + ChatColor.AQUA + "- Locks/Unlocks Show Room");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge eject " + ChatColor.AQUA + "- Ejects all players from their seats");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge join [Player name] " + ChatColor.AQUA + "- Adds a player to the Show" + ChatColor.RED + "*");
+                sender.sendMessage(ChatColor.GREEN + "/magic sge join [Player name] " + ChatColor.AQUA + "- Adds a player to the Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge add " + ChatColor.AQUA + "- Add a seat to the show where you're standing");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge effect burp x,y,z" + ChatColor.AQUA + "- Displays the Burp effect at a given location");
                 sender.sendMessage(ChatColor.GREEN + "/magic sge effect spit x,y,z" + ChatColor.AQUA + "- Displays the Spit effect at a given location");
@@ -887,9 +936,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Ride Counter Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic rc add [Player] [Ride Name] " + ChatColor.AQUA +
                         "- Increment a player's Ride Count value.");
-        }
-        if (containsCommandBlockOnly.contains(menu)) {
-            sender.sendMessage(ChatColor.RED + "* Only Command Blocks can do this");
         }
     }
 

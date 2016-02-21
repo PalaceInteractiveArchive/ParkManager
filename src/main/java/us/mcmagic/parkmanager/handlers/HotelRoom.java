@@ -18,9 +18,11 @@ public class HotelRoom {
     private int x;
     private int y;
     private int z;
+    private boolean suite = false;
 
     public HotelRoom(String hotelName, int roomNumber, UUID currentOccupant, String occupantName, long checkoutTime,
-                     Warp roomWarp, int cost, UUID checkoutNotificationRecipient, long stayLength, int x, int y, int z) {
+                     Warp roomWarp, int cost, UUID checkoutNotificationRecipient, long stayLength, int x, int y,
+                     int z, boolean suite) {
         this.hotelName = hotelName;
         this.checkoutTime = checkoutTime;
         this.currentOccupant = currentOccupant;
@@ -33,6 +35,7 @@ public class HotelRoom {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.suite = suite;
     }
 
     public String getName() {
@@ -125,5 +128,9 @@ public class HotelRoom {
 
     public void setOccupantName(String occupantName) {
         this.occupantName = occupantName;
+    }
+
+    public boolean isSuite() {
+        return suite;
     }
 }

@@ -14,26 +14,39 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by Marc on 12/30/15
+ * Created by Marc on 2/19/16
  */
-public class TowerPreShow extends QueueRide {
+public class TowerStation extends QueueRide {
     private final Location station1;
     private final Location station2;
+    private final Location station3;
+    private final Location station4;
     private final Location spawner1;
     private final Location spawner2;
+    private final Location spawner3;
+    private final Location spawner4;
     private final Block spawn1;
     private final Block spawn2;
-    private int stationNumber = 2;
+    private final Block spawn3;
+    private final Block spawn4;
+    private int stationNumber = 4;
 
-    public TowerPreShow(String name, Location station1, Location station2, Location spawner1, Location spawner2,
-                        int delay, int amountOfRiders, String warp) {
-        super(name, station1, spawner1, delay, amountOfRiders, warp, RideCategory.SLOW, "totpre");
+    public TowerStation(String name, Location station1, Location station2, Location station3, Location station4,
+                        Location spawner1, Location spawner2, Location spawner3, Location spawner4, int delay,
+                        int amountOfRiders, String warp) {
+        super(name, station1, spawner1, delay, amountOfRiders, warp, RideCategory.THRILL, "totstation");
         this.station1 = station1;
         this.station2 = station2;
+        this.station3 = station3;
+        this.station4 = station4;
         this.spawner1 = spawner1;
         this.spawner2 = spawner2;
+        this.spawner3 = spawner3;
+        this.spawner4 = spawner4;
         spawn1 = spawner1.getBlock();
         spawn2 = spawner2.getBlock();
+        spawn3 = spawner3.getBlock();
+        spawn4 = spawner4.getBlock();
     }
 
     @Override
@@ -87,20 +100,19 @@ public class TowerPreShow extends QueueRide {
                 return spawn1;
             case 2:
                 return spawn2;
+            case 3:
+                return spawn3;
+            case 4:
+                return spawn4;
         }
         return spawn1;
     }
 
     private void changeStation() {
-        switch (stationNumber) {
-            case 1:
-                stationNumber = 2;
-                break;
-            case 2:
-                stationNumber = 1;
-                break;
-            default:
-                stationNumber = 1;
+        if (stationNumber >= 4) {
+            stationNumber = 1;
+        } else {
+            stationNumber++;
         }
     }
 
@@ -110,6 +122,10 @@ public class TowerPreShow extends QueueRide {
                 return station1;
             case 2:
                 return station2;
+            case 3:
+                return station3;
+            case 4:
+                return station4;
             default:
                 return station1;
         }
@@ -121,6 +137,10 @@ public class TowerPreShow extends QueueRide {
                 return spawner1;
             case 2:
                 return spawner2;
+            case 3:
+                return spawner3;
+            case 4:
+                return spawner4;
             default:
                 return spawner1;
         }

@@ -83,7 +83,8 @@ public class HotelManager {
                         result.getString("roomWarp") : null), result.getInt("cost"),
                         result.getString("checkoutNotificationRecipient") != "" ?
                                 UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
-                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"));
+                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"),
+                        result.getInt("suite") == 1);
                 rooms.add(room);
             }
             result.close();
