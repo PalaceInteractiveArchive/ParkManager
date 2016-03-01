@@ -1,10 +1,10 @@
 package us.mcmagic.parkmanager.utils;
 
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.MojangsonParseException;
-import net.minecraft.server.v1_8_R3.MojangsonParser;
+import net.minecraft.server.v1_9_R1.Item;
+import net.minecraft.server.v1_9_R1.MojangsonParseException;
+import net.minecraft.server.v1_9_R1.MojangsonParser;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import us.mcmagic.mcmagiccore.player.User;
 
@@ -24,7 +24,7 @@ public class HeadUtil {
     }
 
     public static ItemStack getPlayerHead(String hash, String display) throws MojangsonParseException {
-        net.minecraft.server.v1_8_R3.ItemStack i = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(397), 1);
+        net.minecraft.server.v1_9_R1.ItemStack i = new net.minecraft.server.v1_9_R1.ItemStack(Item.getById(397), 1);
         i.setData(3);
         i.setTag(MojangsonParser.parse("{display:{Name:\"" + display + ChatColor.RESET + "\"},SkullOwner:{Id:\"" +
                 UUID.randomUUID() + "\",Properties:{textures:[{Value:\"" + hash + "\"}]}}}"));

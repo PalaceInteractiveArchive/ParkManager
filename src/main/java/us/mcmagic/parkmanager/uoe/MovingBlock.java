@@ -1,13 +1,13 @@
 package us.mcmagic.parkmanager.uoe;
 
-import net.minecraft.server.v1_8_R3.EntityFallingBlock;
-import net.minecraft.server.v1_8_R3.IBlockData;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R1.EntityFallingBlock;
+import net.minecraft.server.v1_9_R1.IBlockData;
+import net.minecraft.server.v1_9_R1.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 
 /**
  * Created by Marc on 5/6/15
@@ -60,13 +60,17 @@ public class MovingBlock extends EntityFallingBlock {
         if (i <= amount) {
             return;
         }
-        if (passenger != null) {
+        if (passengers != null) {
             ArmorStand stand = getBukkitEntity().getWorld().spawn(getBukkitEntity().getLocation().add(0, -0.74625, 0),
                     ArmorStand.class);
             stand.setGravity(false);
             stand.setVisible(false);
-            passenger.mount(((CraftArmorStand) stand).getHandle());
+            for (Entity e : stand.getWorld().getEntities()) {
+                if (passengers.contains(e.getUniqueId())) {
+                    e.setPassenger(stand);
+                }
+            }
+            dead = true;
         }
-        dead = true;
     }
 }

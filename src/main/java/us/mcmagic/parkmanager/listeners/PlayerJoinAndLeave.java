@@ -1,8 +1,8 @@
 package us.mcmagic.parkmanager.listeners;
 
-import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_9_R1.EntityPlayer;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -82,8 +82,8 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         if (MCMagicCore.getMCMagicConfig().serverName.equals("NewHWS")) {
-            if (user.getRank().getRankId() < Rank.SHAREHOLDER.getRankId()) {
-                event.setKickMessage(ChatColor.RED + "You must be the " + Rank.SHAREHOLDER.getNameWithBrackets()
+            if (user.getRank().getRankId() < Rank.DVCMEMBER.getRankId()) {
+                event.setKickMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets()
                         + ChatColor.RED + " rank or above to preview NewHWS!");
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -179,7 +179,7 @@ public class PlayerJoinAndLeave implements Listener {
                             player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
                                     " room has lapsed and you have been checked out. Please come stay with us again soon!");
                             manager.expire.send(player);
-                            player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                            player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 10f, 1f);
                             return;
                         }
                         if (room.getCurrentOccupant() != null &&

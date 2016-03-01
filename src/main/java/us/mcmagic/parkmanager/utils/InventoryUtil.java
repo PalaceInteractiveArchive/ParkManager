@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.designstation.DesignStation;
 import us.mcmagic.parkmanager.handlers.*;
@@ -20,9 +23,6 @@ import us.mcmagic.parkmanager.show.schedule.ScheduledShow;
 import us.mcmagic.parkmanager.storage.Backpack;
 import us.mcmagic.parkmanager.storage.Locker;
 import us.mcmagic.parkmanager.storage.StorageSize;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.util.*;
 
@@ -1011,7 +1011,7 @@ public class InventoryUtil {
     }
 
     public void featureComingSoon(Player player) {
-        player.playSound(player.getLocation(), Sound.ITEM_BREAK, 100, 0);
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 100, 0);
         player.closeInventory();
         player.sendMessage(ChatColor.RED + "This feature is coming soon!");
     }

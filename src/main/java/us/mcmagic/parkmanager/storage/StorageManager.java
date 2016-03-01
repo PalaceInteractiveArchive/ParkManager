@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.InventoryType;
@@ -17,9 +20,6 @@ import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.listeners.BlockEdit;
 import us.mcmagic.parkmanager.utils.SqlUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
-import us.mcmagic.mcmagiccore.player.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -141,7 +141,7 @@ public class StorageManager {
                 player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
                         " room has lapsed and you have been checked out. Please come stay with us again soon!");
                 manager.expire.send(player);
-                player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 10f, 1f);
                 return;
             }
             if (room.getCurrentOccupant() != null &&

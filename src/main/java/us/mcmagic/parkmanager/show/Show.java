@@ -4,13 +4,23 @@ import org.bukkit.*;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.audioserver.AudioArea;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.title.TitleObject;
+import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.show.actions.*;
+import us.mcmagic.parkmanager.show.handlers.ArmorData;
 import us.mcmagic.parkmanager.show.handlers.ShowNPC;
+import us.mcmagic.parkmanager.show.handlers.armorstand.PositionType;
 import us.mcmagic.parkmanager.show.handlers.armorstand.ShowStand;
+import us.mcmagic.parkmanager.utils.HeadUtil;
 import us.mcmagic.parkmanager.utils.MathUtil;
 import us.mcmagic.parkmanager.utils.WorldUtil;
 
@@ -21,7 +31,7 @@ public class Show {
     private World world;
     private Location loc;
     private int radius = 75;
-    private long startTime;
+    public long startTime;
     public HashSet<ShowAction> actions;
     private HashMap<String, FireworkEffect> effectMap;
     private HashMap<String, String> invalidLines;
@@ -30,6 +40,9 @@ public class Show {
     private int npcTick = 0;
     private long lastPlayerListUpdate = System.currentTimeMillis();
     private List<UUID> nearbyPlayers = new ArrayList<>();
+    public long musicTime = 0;
+    public String areaName = "none";
+    private String showName = "";
 
     public Show(JavaPlugin plugin, File file) {
         world = Bukkit.getWorlds().get(0);
@@ -59,6 +72,17 @@ public class Show {
                 String[] tokens = strLine.split("\\s+");
                 if (tokens.length < 2) {
                     System.out.println("Invalid Show Line [" + strLine + "]");
+                }
+                if (tokens[1].equals("Name")) {
+                    String name = "";
+                    for (int i = 2; i < tokens.length; i++) {
+                        name += tokens[i] + " ";
+                    }
+                    if (name.length() > 1) {
+                        name = name.substring(0, name.length() - 1);
+                    }
+                    showName = name;
+                    continue;
                 }
                 // Set Show Location
                 if (tokens[1].equals("Location")) {
@@ -118,7 +142,9 @@ public class Show {
                         continue;
                     }
                     Boolean small = Boolean.valueOf(tokens[2]);
-                    ShowStand stand = new ShowStand(id, small);
+                    //ArmorStand 0 false skull:myHash,299(234,124,41),300,301
+                    ArmorData armorData = parseArmorData(tokens[3]);
+                    ShowStand stand = new ShowStand(id, small, null);
                     standmap.put(id, stand);
                     continue;
                 }
@@ -175,15 +201,21 @@ public class Show {
                         }
                         case "move": {
                             // x,y,z speed
-                            Integer speed = Integer.parseInt(tokens[5]);
                             Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
+                            Double speed = Double.parseDouble(tokens[5]);
                             ArmorStandMove move = new ArmorStandMove(this, time, stand, loc, speed);
                             actions.add(move);
                             break;
                         }
                         case "position": {
-                            // PositionType x,y,z speed
-
+                            // PositionType x,y,z time
+                            Double speed = Double.parseDouble(tokens[6]);
+                            String[] alist = tokens[5].split(",");
+                            EulerAngle angle = new EulerAngle(Double.parseDouble(alist[0]), Double.parseDouble(alist[1]),
+                                    Double.parseDouble(alist[2]));
+                            ArmorStandPosition position = new ArmorStandPosition(this, time, stand,
+                                    PositionType.fromString(tokens[4]), angle, speed);
+                            actions.add(position);
                             break;
                         }
                         case "despawn": {
@@ -511,6 +543,9 @@ public class Show {
                     int amount = Integer.parseInt(tokens[8]);
                     actions.add(new ParticleAction(this, time, effect, location, offsetX, offsetY, offsetZ, speed, amount));
                 }
+                if (tokens[1].contains("AudioStart")) {
+                    actions.add(new AudioStart(this, time, tokens[2]));
+                }
             }
             in.close();
         } catch (Exception e) {
@@ -528,6 +563,76 @@ public class Show {
             Bukkit.broadcast(ChatColor.GOLD + invalidLines.get(cur) + " @ " + ChatColor.WHITE + cur.replaceAll("\t", " "),
                     "arcade.bypass");
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private ArmorData parseArmorData(String s) throws Exception {
+        String[] list = s.split(";");
+        ItemStack head = new ItemStack(Material.AIR);
+        ItemStack chestplate = new ItemStack(Material.AIR);
+        ItemStack leggings = new ItemStack(Material.AIR);
+        ItemStack boots = new ItemStack(Material.AIR);
+        int i = 0;
+        if (list.length == 4) {
+            for (String st : list) {
+                i++;
+                if (i == 1) {
+                    if (st.startsWith("skull")) {
+                        head = HeadUtil.getPlayerHead(st.split(":")[1]);
+                        continue;
+                    }
+                }
+                if (st.contains("(")) {
+                    String[] color = st.split("\\(");
+                    String[] l = color[0].split(":");
+                    int id = Integer.parseInt(l[0]);
+                    byte dam = l.length > 1 ? Byte.parseByte(l[1]) : 0;
+                    Material type = Material.getMaterial(id);
+                    if (!type.name().toLowerCase().contains("leather")) {
+                        continue;
+                    }
+                    ItemStack temp = new ItemStack(type, 1, dam);
+                    LeatherArmorMeta lam = (LeatherArmorMeta) temp.getItemMeta();
+                    String[] cls = color[1].split(",");
+                    lam.setColor(Color.fromRGB(Integer.parseInt(cls[0]), Integer.parseInt(cls[1]),
+                            Integer.parseInt(cls[2].replace("\\)", ""))));
+                    temp.setItemMeta(lam);
+                    switch (i) {
+                        case 1:
+                            head = temp;
+                            continue;
+                        case 2:
+                            chestplate = temp;
+                            continue;
+                        case 3:
+                            leggings = temp;
+                            continue;
+                        case 4:
+                            boots = temp;
+                            continue;
+                    }
+                    continue;
+                }
+                String[] l = st.split(":");
+                int id = Integer.parseInt(l[0]);
+                byte dam = l.length > 1 ? Byte.parseByte(l[1]) : 0;
+                ItemStack temp = new ItemCreator(Material.getMaterial(id), 1, dam);
+                switch (i) {
+                    case 1:
+                        head = temp;
+                        continue;
+                    case 2:
+                        chestplate = temp;
+                        continue;
+                    case 3:
+                        leggings = temp;
+                        continue;
+                    case 4:
+                        boots = temp;
+                }
+            }
+        }
+        return new ArmorData(head, chestplate, leggings, boots);
     }
 
     private Color colorFromString(String s) {
@@ -594,7 +699,7 @@ public class Show {
                 npc.move();
             }
         }
-        HashSet<ShowAction> list = new HashSet<>(actions);
+        List<ShowAction> list = new ArrayList<>(actions);
         for (ShowAction action : list) {
             try {
                 if (System.currentTimeMillis() - startTime <= action.time) {
@@ -765,7 +870,25 @@ public class Show {
         return FireworkEffect.builder().with(shape).withColor(colors).withFade(fades).flicker(flicker).trail(trail).build();
     }
 
+    public void syncAudioForPlayer(final Player tp) {
+        final AudioArea area = MCMagicCore.audioServer.getByName(areaName);
+        if (area == null) {
+            return;
+        }
+        area.triggerPlayer(tp);
+        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                area.sync(((System.currentTimeMillis() - musicTime + 300) / 1000), tp);
+            }
+        }, 20L);
+    }
+
     public HashMap<String, ShowNPC> getNPCMap() {
         return npcMap;
+    }
+
+    public String getName() {
+        return showName;
     }
 }

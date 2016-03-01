@@ -8,8 +8,6 @@ import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.google.common.base.Stopwatch;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunk;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunkBulk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -19,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import us.mcmagic.parkmanager.blockchanger.calc.lookup.ConversionLookup;
 import us.mcmagic.parkmanager.blockchanger.calc.lookup.SegmentLookup;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -78,40 +75,13 @@ public class ChangeCalculations {
                 (((int) player.getLocation().getZ())) >> 4) == 0;
     }
 
-    public void translateMapChunkBulk(PacketContainer packet, Player player) throws FieldAccessException, NoSuchFieldException, IllegalAccessException {
-        StructureModifier<int[]> intArrays = packet.getSpecificModifier(int[].class);
-
-        int[] x = intArrays.read(0); // getPrivateField(packet, "c");
-        int[] z = intArrays.read(1); // getPrivateField(packet, "d");
-
-        ChunkInfo[] infos = new ChunkInfo[x.length];
-
-        int dataStartIndex = 0;
-
-        for (int chunkNum = 0; chunkNum < infos.length; chunkNum++) {
-            // Create an info objects
-            ChunkInfo info = new ChunkInfo();
-            infos[chunkNum] = info;
-            info.player = player;
-            info.chunkX = x[chunkNum];
-            info.chunkZ = z[chunkNum];
-            Field field = ((PacketPlayOutMapChunkBulk) packet.getHandle()).getClass().getDeclaredField("c");
-            field.setAccessible(true);
-            info.chunkMask = ((PacketPlayOutMapChunk.ChunkMap[]) field.get(packet.getHandle()))[chunkNum].b;
-            info.hasContinous = true; // Always true
-            info.data = ((PacketPlayOutMapChunk.ChunkMap[]) field.get(packet.getHandle()))[chunkNum].a;
-            info.startIndex = dataStartIndex;
-            translateChunkInfoAndObfuscate(info, info.data);
-            dataStartIndex += info.size;
-        }
-    }
-
     // Mimic the ?? operator in C#
     private <T> T getOrDefault(T value, T defaultIfNull) {
         return value != null ? value : defaultIfNull;
     }
 
     public void translateMapChunk(PacketContainer packet, Player player) throws FieldAccessException, NoSuchFieldException, IllegalAccessException {
+        /*
         StructureModifier<Integer> ints = packet.getSpecificModifier(int.class);
         StructureModifier<byte[]> byteArray = packet.getSpecificModifier(byte[].class);
         // Create an info objects
@@ -127,7 +97,7 @@ public class ChangeCalculations {
         info.startIndex = 0;
         if (info.data != null) {
             translateChunkInfoAndObfuscate(info, info.data);
-        }
+        }*/
     }
 
     public void translateBlockChange(PacketContainer packet, Player player) throws FieldAccessException {
