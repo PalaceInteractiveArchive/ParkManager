@@ -1,17 +1,16 @@
 package us.mcmagic.parkmanager.commands;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.MojangsonParseException;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
+import net.minecraft.server.v1_9_R1.BlockPosition;
+import net.minecraft.server.v1_9_R1.PacketPlayOutBlockChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,6 +48,10 @@ public class Commandmagic implements Listener, CommandExecutor {
     private static HashMap<String, Show> shows = new HashMap<>();
     public ParticleEffect effect;
     public Location location;
+
+    public static List<Show> getShows() {
+        return new ArrayList<>(shows.values());
+    }
 
     @SuppressWarnings("deprecation")
     @Override
@@ -244,11 +247,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD
                                     + "--------------------------------------" + ChatColor.MAGIC + "------" +
                                     ChatColor.RESET + ChatColor.GOLD + "-");
-                            tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
+                            tp.playSound(tp.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100f, 0.75f);
                             Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
                                 @Override
                                 public void run() {
-                                    tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 1f);
+                                    tp.playSound(tp.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100f, 1f);
                                 }
                             }, 2L);
                         }
@@ -449,10 +452,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                         final ItemStack c = inv.getChestplate();
                         final ItemStack p = inv.getLeggings();
                         final ItemStack b = inv.getBoots();
-                        final net.minecraft.server.v1_8_R3.ItemStack head = CraftItemStack.asNMSCopy(inv.getHelmet());
-                        final net.minecraft.server.v1_8_R3.ItemStack chest = CraftItemStack.asNMSCopy(inv.getChestplate());
-                        final net.minecraft.server.v1_8_R3.ItemStack pants = CraftItemStack.asNMSCopy(inv.getLeggings());
-                        final net.minecraft.server.v1_8_R3.ItemStack boots = CraftItemStack.asNMSCopy(inv.getBoots());
+                        final net.minecraft.server.v1_9_R1.ItemStack head = CraftItemStack.asNMSCopy(inv.getHelmet());
+                        final net.minecraft.server.v1_9_R1.ItemStack chest = CraftItemStack.asNMSCopy(inv.getChestplate());
+                        final net.minecraft.server.v1_9_R1.ItemStack pants = CraftItemStack.asNMSCopy(inv.getLeggings());
+                        final net.minecraft.server.v1_9_R1.ItemStack boots = CraftItemStack.asNMSCopy(inv.getBoots());
                         final String finalName = name;
                         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
                             @Override

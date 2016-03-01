@@ -20,9 +20,11 @@ import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.commands.Commandmagic;
 import us.mcmagic.parkmanager.designstation.DesignStation;
 import us.mcmagic.parkmanager.handlers.*;
 import us.mcmagic.parkmanager.hotels.HotelManager;
+import us.mcmagic.parkmanager.show.Show;
 import us.mcmagic.parkmanager.utils.WarpUtil;
 
 import java.util.List;
@@ -38,13 +40,14 @@ public class PlayerInteract implements Listener {
     public static String queue = ChatColor.BLUE + "[Queue]";
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
+    public static String show = ChatColor.BLUE + "[Show]";
     public static String mcpro = ChatColor.GREEN + "[MCProHosting]";
     private FormattedMessage mcpromsg = new FormattedMessage("MCProHosting ").color(ChatColor.GREEN)
             .style(ChatColor.BOLD).then("is the ").color(ChatColor.AQUA)
             .then("World Leader in Minecraft Server Hosting! ").color(ChatColor.GREEN).style(ChatColor.ITALIC)
             .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
             .style(ChatColor.UNDERLINE).link("https://mcmagic.us/mcph").tooltip(ChatColor.DARK_AQUA +
-                    "Click to purchase a server using MCMagic's 25%-OFF Discount!");
+                    "Click to purchase a server using MCMagic's 15%-OFF Discount!");
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -54,11 +57,11 @@ public class PlayerInteract implements Listener {
         if (action.equals(Action.PHYSICAL)) {
             return;
         }
-        final ItemStack hand = player.getItemInHand();
+        final ItemStack hand = player.getInventory().getItemInMainHand();
         if (isArmor(hand)) {
             if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
-                player.setItemInHand(hand);
+                player.getInventory().setItemInMainHand(hand);
                 ArmorType type = getArmorType(hand);
                 PlayerInventory inv = player.getInventory();
                 switch (type) {
@@ -79,7 +82,7 @@ public class PlayerInteract implements Listener {
             }
         }
         if (action.name().toLowerCase().contains("block")) {
-            if (player.getItemInHand().getType().equals(Material.DIAMOND_AXE)) {
+            if (player.getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_AXE)) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
                     ParkManager.blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
@@ -96,6 +99,16 @@ public class PlayerInteract implements Listener {
                 Sign s = (Sign) event.getClickedBlock().getState();
                 if (s.getLine(0).equals(disposal)) {
                     player.openInventory(Bukkit.createInventory(player, 36, ChatColor.BLUE + "Disposal"));
+                    return;
+                }
+                if (s.getLine(0).equals(show)) {
+                    String show = ChatColor.stripColor(s.getLine(3));
+                    for (Show sh : Commandmagic.getShows()) {
+                        if (sh.getName().equals(show)) {
+                            sh.syncAudioForPlayer(player);
+                            player.sendMessage(ChatColor.GREEN + "Syncing your audio for " + show + "!");
+                        }
+                    }
                     return;
                 }
                 if (s.getLine(0).equals(warp)) {
@@ -224,21 +237,21 @@ public class PlayerInteract implements Listener {
         }
         PlayerInventory pi = player.getInventory();
         if (pi.getHeldItemSlot() == 5) {
-            if (pi.getItemInHand().getType().equals(Material.CHEST)) {
+            if (pi.getItemInMainHand().getType().equals(Material.CHEST)) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.BACKPACK);
                 return;
             }
         }
         if (pi.getHeldItemSlot() == 6) {
-            if (pi.getItemInHand().getType().equals(Material.WATCH)) {
+            if (pi.getItemInMainHand().getType().equals(Material.WATCH)) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.SHOWTIMES);
                 return;
             }
         }
         if (pi.getHeldItemSlot() == 8) {
-            if (pi.getItemInHand().getType().equals(ParkManager.bandUtil.getBandMaterial(data.getBandColor()))) {
+            if (pi.getItemInMainHand().getType().equals(ParkManager.bandUtil.getBandMaterial(data.getBandColor()))) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             }

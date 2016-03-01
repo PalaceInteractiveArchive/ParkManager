@@ -33,7 +33,7 @@ public class InventoryOpen implements Listener {
                     StructureModifier<BlockPosition> modifier = packet.getBlockPositionModifier();
                     Field field = modifier.getField(0);
                     field.setAccessible(true);
-                    net.minecraft.server.v1_8_R3.BlockPosition pos = (net.minecraft.server.v1_8_R3.BlockPosition)
+                    net.minecraft.server.v1_9_R1.BlockPosition pos = (net.minecraft.server.v1_9_R1.BlockPosition)
                             field.get(modifier.getTarget());
                     if (event.getPlayer().getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()).getType()
                             .equals(Material.ENDER_CHEST)) {

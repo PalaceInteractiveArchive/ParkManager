@@ -9,12 +9,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.utils.BandUtil;
-import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +67,7 @@ public class MainMenuClick {
                     pdata.setVisibility(true);
                     ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 }
-                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 return;
             case IRON_CHESTPLATE:
                 ParkManager.inventoryUtil.openWardrobeManagerPage(player, 1);

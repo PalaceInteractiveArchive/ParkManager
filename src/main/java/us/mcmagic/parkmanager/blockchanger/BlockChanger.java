@@ -16,13 +16,13 @@ import java.util.*;
  * Created by Marc on 3/8/15
  */
 public class BlockChanger implements Listener {
-    //private final PatcherAPI api;
     private List<UUID> debug = new ArrayList<>();
     private HashMap<String, Changer> changers = new HashMap<>();
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
+    /*
+    private final PatcherAPI api;
 
-        /*
     public BlockChanger() {
         api = new PatcherAPI();
         ConversionCache cache = new ConversionCache(api);
@@ -36,8 +36,6 @@ public class BlockChanger implements Listener {
                         try {
                             if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK)) {
                                 calculations.translateMapChunk(event.getPacket(), event.getPlayer());
-                            } else if (event.getPacketType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) {
-                                calculations.translateMapChunkBulk(event.getPacket(), event.getPlayer());
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

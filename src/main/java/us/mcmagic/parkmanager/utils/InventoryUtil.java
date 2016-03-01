@@ -1014,7 +1014,7 @@ public class InventoryUtil {
     }
 
     public void featureComingSoon(Player player) {
-        player.playSound(player.getLocation(), Sound.ITEM_BREAK, 100, 0);
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 100, 0);
         player.closeInventory();
         player.sendMessage(ChatColor.RED + "This feature is coming soon!");
     }

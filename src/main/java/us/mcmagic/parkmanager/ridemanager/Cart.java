@@ -1,14 +1,14 @@
 package us.mcmagic.parkmanager.ridemanager;
 
-import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
-import net.minecraft.server.v1_8_R3.EntityMinecartRideable;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R1.BlockMinecartTrackAbstract;
+import net.minecraft.server.v1_9_R1.EntityMinecartRideable;
+import net.minecraft.server.v1_9_R1.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 import us.mcmagic.parkmanager.ParkManager;
@@ -74,7 +74,7 @@ public class Cart extends EntityMinecartRideable {
         if (!e.isCancelled()) {
             CraftEntity entity = getBukkitEntity();
             ParticleUtil.spawnParticle(ParticleEffect.SMOKE, entity.getLocation().add(0, 0.3, 0), 0.1f, 0.1f, 0.1f, 0, 5);
-            entity.getWorld().playSound(getBukkitEntity().getLocation(), Sound.FIZZ, 2, 2);
+            entity.getWorld().playSound(getBukkitEntity().getLocation(), Sound.ENTITY_GENERIC_BURN, 2, 2);
             super.die();
         }
     }
@@ -147,7 +147,7 @@ public class Cart extends EntityMinecartRideable {
         return train;
     }
 
-    public static BlockMinecartTrackAbstract.EnumTrackPosition getTrackType(byte data) {
+    public BlockMinecartTrackAbstract.EnumTrackPosition getTrackType(byte data) {
         switch (data) {
             case 0:
                 return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_SOUTH;
@@ -174,7 +174,7 @@ public class Cart extends EntityMinecartRideable {
     }
 
     @Override
-    public EnumMinecartType s() {
+    public EnumMinecartType v() {
         return EnumMinecartType.RIDEABLE;
     }
 

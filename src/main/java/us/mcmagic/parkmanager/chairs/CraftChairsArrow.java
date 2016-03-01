@@ -1,8 +1,8 @@
 package us.mcmagic.parkmanager.chairs;
 
-import net.minecraft.server.v1_8_R3.EntityArrow;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArrow;
+import net.minecraft.server.v1_9_R1.EntityArrow;
+import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;

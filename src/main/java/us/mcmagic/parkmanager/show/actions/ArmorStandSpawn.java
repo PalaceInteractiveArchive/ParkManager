@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import us.mcmagic.parkmanager.show.Show;
+import us.mcmagic.parkmanager.show.handlers.ArmorData;
 import us.mcmagic.parkmanager.show.handlers.armorstand.ShowStand;
 
 /**
@@ -25,8 +26,14 @@ public class ArmorStandSpawn extends ShowAction {
             Bukkit.broadcast("ArmorStand with ID " + stand.getId() + " has spawned already", "arcade.bypass");
             return;
         }
-        stand.spawn();
         ArmorStand armor = loc.getWorld().spawn(loc, ArmorStand.class);
+        stand.spawn();
         stand.setStand(armor);
+        ArmorData data = stand.getArmorData();
+        armor.setHelmet(data.getHead());
+        armor.setChestplate(data.getChestplate());
+        armor.setLeggings(data.getLeggings());
+        armor.setBoots(data.getBoots());
+        armor.setBasePlate(false);
     }
 }

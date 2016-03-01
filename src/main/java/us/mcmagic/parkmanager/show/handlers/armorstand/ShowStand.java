@@ -1,6 +1,7 @@
 package us.mcmagic.parkmanager.show.handlers.armorstand;
 
 import org.bukkit.entity.ArmorStand;
+import us.mcmagic.parkmanager.show.handlers.ArmorData;
 
 /**
  * Created by Marc on 10/11/15
@@ -8,14 +9,16 @@ import org.bukkit.entity.ArmorStand;
 public class ShowStand {
     private int id;
     private boolean small;
+    private ArmorData armorData;
     private boolean hasSpawned = false;
     private ArmorStand stand;
     private Movement motion;
     private Position position;
 
-    public ShowStand(int id, boolean small) {
+    public ShowStand(int id, boolean small, ArmorData armorData) {
         this.id = id;
         this.small = small;
+        this.armorData = armorData;
     }
 
     public int getId() {
@@ -56,6 +59,10 @@ public class ShowStand {
 
     public Position getPosition() {
         return position;
+    }
+
+    public ArmorData getArmorData() {
+        return armorData;
     }
 
     public void despawn() {

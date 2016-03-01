@@ -4,8 +4,8 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
-import net.minecraft.server.v1_8_R3.WorldServer;
+import net.minecraft.server.v1_9_R1.PacketPlayInSteerVehicle;
+import net.minecraft.server.v1_9_R1.WorldServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,8 +13,8 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -188,7 +188,7 @@ public class RideManager implements Listener {
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
                 if (player.isInsideVehicle()) {
-                    net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftPlayer) player).getHandle().vehicle;
+                    net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftPlayer) player).getHandle().getVehicle();
                     Entity vehicle = player.getVehicle();
                     if (!(nmsEntity instanceof Cart) && !(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand)) {
                         return;
@@ -235,7 +235,7 @@ public class RideManager implements Listener {
                 }
                 Station station = new Station(s);
                 cart.setStation(station);
-                to.getWorld().playSound(to, Sound.FIZZ, 10, 2);
+                to.getWorld().playSound(to, Sound.ENTITY_GENERIC_BURN, 10, 2);
                 return;
             }
             if (type.equals(SignType.DESTROY)) {

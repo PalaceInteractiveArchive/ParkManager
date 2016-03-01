@@ -122,7 +122,7 @@ public class PackManager implements Listener {
         if (name.endsWith("(SELECTED)")) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have this selected!");
-            player.playSound(player.getLocation(), Sound.ITEM_BREAK, 100, 0);
+            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 100, 0);
             return;
         }
         if (event.getSlot() == 8) {
