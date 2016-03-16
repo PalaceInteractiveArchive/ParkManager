@@ -1,6 +1,6 @@
 package us.mcmagic.parkmanager.fastpasskiosk;
 
-import net.minecraft.server.v1_8_R3.MojangsonParseException;
+import net.minecraft.server.v1_9_R1.MojangsonParseException;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
