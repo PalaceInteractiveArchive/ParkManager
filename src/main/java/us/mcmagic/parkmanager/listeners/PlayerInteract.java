@@ -55,11 +55,11 @@ public class PlayerInteract implements Listener {
         if (action.equals(Action.PHYSICAL)) {
             return;
         }
-        final ItemStack hand = player.getInventory().getItemInMainHand();
+        final ItemStack hand = player.getInventory().getItemInHand();
         if (isArmor(hand)) {
             if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
-                player.getInventory().setItemInMainHand(hand);
+                player.getInventory().setItemInHand(hand);
                 ArmorType type = getArmorType(hand);
                 PlayerInventory inv = player.getInventory();
                 switch (type) {
@@ -80,7 +80,7 @@ public class PlayerInteract implements Listener {
             }
         }
         if (action.name().toLowerCase().contains("block")) {
-            if (player.getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_AXE)) {
+            if (player.getInventory().getItemInHand().getType().equals(Material.DIAMOND_AXE)) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
                     ParkManager.blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
@@ -225,21 +225,21 @@ public class PlayerInteract implements Listener {
         }
         PlayerInventory pi = player.getInventory();
         if (pi.getHeldItemSlot() == 5) {
-            if (pi.getItemInMainHand().getType().equals(Material.CHEST)) {
+            if (pi.getItemInHand().getType().equals(Material.CHEST)) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.BACKPACK);
                 return;
             }
         }
         if (pi.getHeldItemSlot() == 6) {
-            if (pi.getItemInMainHand().getType().equals(Material.WATCH)) {
+            if (pi.getItemInHand().getType().equals(Material.WATCH)) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.SHOWTIMES);
                 return;
             }
         }
         if (pi.getHeldItemSlot() == 8) {
-            if (pi.getItemInMainHand().getType().equals(ParkManager.bandUtil.getBandMaterial(data.getBandColor()))) {
+            if (pi.getItemInHand().getType().equals(ParkManager.bandUtil.getBandMaterial(data.getBandColor()))) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             }

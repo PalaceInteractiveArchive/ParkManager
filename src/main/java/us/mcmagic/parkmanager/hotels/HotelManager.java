@@ -423,7 +423,7 @@ public class HotelManager {
                 tp.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
                         " room has lapsed and you have been checked out. Please come stay with us again soon!");
                 expire.send(tp);
-                tp.playSound(tp.getLocation(), Sound.ENTITY_BLAZE_DEATH, 10f, 1f);
+                tp.playSound(tp.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
             } else {
                 tp.sendMessage(ChatColor.GREEN + "You have checked out of your room. Have a wonderful rest of your visit!");
             }

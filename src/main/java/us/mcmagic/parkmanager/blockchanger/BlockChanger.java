@@ -1,6 +1,9 @@
 package us.mcmagic.parkmanager.blockchanger;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,7 +12,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.utils.FileUtil;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -20,6 +26,39 @@ public class BlockChanger implements Listener {
     private HashMap<String, Changer> changers = new HashMap<>();
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
+
+        /*
+    public BlockChanger() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(),
+                ListenerPriority.HIGHEST, PacketType.Play.Server.MAP_CHUNK) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer container = event.getPacket();
+                StructureModifier<Integer> ints = container.getIntegers();
+                Chunk c = event.getPlayer().getWorld().getChunkAt(ints.read(0), ints.read(1));
+                for (int x = 0; x < 16; x++) {
+                    for (int y = 0; y < 256; y++) {
+                        for (int z = 0; z < 16; z++) {
+                            Block b = c.getBlock(x, y, z);
+                            if (isInside(b.getLocation(), changer)) {
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private boolean isInside(Location loc, Changer changer) {
+        Location loc1 = changer.getFirstLocation();
+        Location loc2 = changer.getSecondLocation();
+        int x = loc.getBlockX();
+        int y = loc.getBlockY();
+        int z = loc.getBlockZ();
+        return x >= loc1.getBlockX() && x <= loc2.getBlockX() && y >= loc1.getBlockY() && y <= loc2.getBlockY() &&
+                z >= loc1.getBlockX() && z <= loc2.getBlockZ();
+    }
+
     /*
     private final PatcherAPI api;
 
@@ -83,7 +122,7 @@ public class BlockChanger implements Listener {
             lookup.setBlockLookup(Material.LAPIS_BLOCK.getId(), glass);
             lookup.setBlockLookup(Material.IRON_BLOCK.getId(), glass);
         }
-    }*/
+    }
 
     @SuppressWarnings("deprecation")
     public void initialize() throws FileNotFoundException {
@@ -127,9 +166,10 @@ public class BlockChanger implements Listener {
          * Example:  name;x1;y1;z1;x2;y2;z2;stone,grass,dirt,etc.;35:15;bedrock
          * What does this do? Changes all stone,grass,dirt between loc1 and loc2
          * to black wool, only when a player is standing over a piece of bedrock.
-         */
+
         Bukkit.getLogger().info("Loaded " + changers.size() + " Changers!");
     }
+    */
 
     public void setSelection(int number, Player player, Location loc) {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Set Changer selection point " + (number + 1) + " to " + loc.getBlockX() +
@@ -206,11 +246,12 @@ public class BlockChanger implements Listener {
                     }
                 }
                 changers.clear();
+                /*
                 try {
                     initialize();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
         });
     }

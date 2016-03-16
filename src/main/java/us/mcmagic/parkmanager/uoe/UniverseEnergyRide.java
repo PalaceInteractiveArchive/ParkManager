@@ -1,11 +1,11 @@
 package us.mcmagic.parkmanager.uoe;
 
-import net.minecraft.server.v1_9_R1.WorldServer;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,12 +38,12 @@ public class UniverseEnergyRide {
             b.setType(Material.AIR);
             MovingBlock fallingBlock;
             fallingBlock = new MovingBlock(((CraftWorld) bloc.getWorld()).getHandle(), bloc.getX(), bloc.getY(),
-                    bloc.getZ(), net.minecraft.server.v1_9_R1.Block.getById(id).fromLegacyData(data), iX, iY, iZ,
+                    bloc.getZ(), net.minecraft.server.v1_8_R3.Block.getById(id).fromLegacyData(data), iX, iY, iZ,
                     (int) (x / iX), type, data);
             WorldServer realWorld = ((CraftWorld) loc1.getWorld()).getHandle();
             realWorld.addEntity(fallingBlock);
             if (type.name().toLowerCase().contains("stair")) {
-                if (fallingBlock.passengers != null) {
+                if (fallingBlock.passenger != null) {
                     continue;
                 }
                 for (Player tp : Bukkit.getOnlinePlayers()) {

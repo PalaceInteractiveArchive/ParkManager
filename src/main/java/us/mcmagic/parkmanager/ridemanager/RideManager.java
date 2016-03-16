@@ -4,21 +4,19 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import net.minecraft.server.v1_9_R1.PacketPlayInSteerVehicle;
-import net.minecraft.server.v1_9_R1.WorldServer;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import net.minecraft.server.v1_8_R3.EntityMinecartRideable;
+import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import us.mcmagic.parkmanager.ParkManager;
 
 import java.lang.reflect.Field;
@@ -32,8 +30,20 @@ import java.util.List;
 public class RideManager implements Listener {
     private List<Train> trains = new ArrayList<>();
     private List<BlockFace> faces = Arrays.asList(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
+    private List<Cart> carts = new ArrayList<>();
 
     public RideManager() {
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                for (Cart cart : new ArrayList<>(carts)) {
+                    double power = cart.getPower();
+                    cart.setSlowWhenEmpty(false);
+                    cart.setVelocity(cart.getVelocity().clone().normalize().multiply(power));
+                    cart.setMaxSpeed(power);
+                }
+            }
+        }, 0L, 1L);
         registerProtocolLibListener();
     }
 
@@ -41,9 +51,7 @@ public class RideManager implements Listener {
         if (!canSpawn(loc)) {
             return null;
         }
-        Cart cart = new Cart(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ());
-        WorldServer realWorld = ((CraftWorld) loc.getWorld()).getHandle();
-        return cart;
+        return spawn(loc, 0.1);
     }
 
     private boolean canSpawn(Location loc) {
@@ -89,19 +97,12 @@ public class RideManager implements Listener {
                         continue;
                     }
                     String[] list = s.getLine(1).split(" ");
-                    if (list.length == 3) {
+                    if (list.length == 2) {
                         double power = 0;
                         BlockFace direction;
                         int amount = 1;
                         try {
-                            direction = dirFromString(list[1]);
-                        } catch (Exception e) {
-                            s.setLine(3, ChatColor.RED + "Direction Error");
-                            s.update();
-                            return;
-                        }
-                        try {
-                            power += Double.parseDouble(list[2]);
+                            power += Double.parseDouble(list[1]);
                         } catch (Exception nfe) {
                             s.setLine(3, ChatColor.RED + "Number Error");
                             s.update();
@@ -130,10 +131,10 @@ public class RideManager implements Listener {
                             return;
                         }
                         if (amount == 1) {
-                            Cart cart = spawn(loc.add(0.5, 0, 0.5), power, direction);
+                            Cart cart = spawn(loc.add(0.5, 0, 0.5), power);
                             return;
                         }
-                        spawnTrain(loc.add(0.5, 0, 0.5), amount, power, direction);
+                        spawnTrain(loc.add(0.5, 0, 0.5), amount, power);
                     }
                 }
             }
@@ -142,26 +143,31 @@ public class RideManager implements Listener {
         }
     }
 
-    private void spawnTrain(Location loc, double amount, double power, BlockFace direction) {
+    private void spawnTrain(Location loc, double amount, double power) {
         List<Cart> carts = new ArrayList<>();
         double addX = 0;
         double addY = 0;
         double addZ = 0;
         for (int i = 0; i < amount; i++) {
             if (i == 0) {
-                Cart c = spawn(loc, power, direction);
+                Cart c = spawn(loc, power);
                 carts.add(c);
             }
         }
     }
 
-    private Cart spawn(Location loc, double power, BlockFace direction) {
+    private Cart spawn(Location loc, double power) {
         if (!canSpawn(loc)) {
             return null;
         }
-        Cart cart = new Cart(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), power, direction);
-        WorldServer realWorld = ((CraftWorld) loc.getWorld()).getHandle();
-        realWorld.addEntity(cart);
+        EntityMinecartRideable ent = new EntityMinecartRideable(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(),
+                loc.getY(), loc.getZ());
+        ((CraftWorld) loc.getWorld()).getHandle().addEntity(ent);
+        Cart cart = new Cart(((CraftServer) Bukkit.getServer()), ent);
+        cart.setSlowWhenEmpty(false);
+        cart.setVelocity(cart.getVelocity().clone().normalize().multiply(power));
+        cart.setMaxSpeed(power);
+        carts.add(cart);
         return cart;
     }
 
@@ -181,6 +187,10 @@ public class RideManager implements Listener {
         }
     }
 
+    @EventHandler
+    public void onVehicleMove(VehicleMoveEvent event) {
+    }
+
     private void registerProtocolLibListener() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(),
                 PacketType.Play.Client.STEER_VEHICLE) {
@@ -188,9 +198,8 @@ public class RideManager implements Listener {
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
                 if (player.isInsideVehicle()) {
-                    net.minecraft.server.v1_9_R1.Entity nmsEntity = ((CraftPlayer) player).getHandle().getVehicle();
                     Entity vehicle = player.getVehicle();
-                    if (!(nmsEntity instanceof Cart) && !(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand)) {
+                    if (!(vehicle instanceof FallingBlock) && !(vehicle instanceof ArmorStand) && !(vehicle instanceof Cart)) {
                         return;
                     }
                     if (event.getPacket().getHandle() instanceof PacketPlayInSteerVehicle) {
@@ -234,8 +243,8 @@ public class RideManager implements Listener {
                     return;
                 }
                 Station station = new Station(s);
-                cart.setStation(station);
-                to.getWorld().playSound(to, Sound.ENTITY_GENERIC_BURN, 10, 2);
+                cart.setStation(station);//ENTITY_GENERIC_BURN
+                to.getWorld().playSound(to, Sound.FIZZ, 10, 2);
                 return;
             }
             if (type.equals(SignType.DESTROY)) {

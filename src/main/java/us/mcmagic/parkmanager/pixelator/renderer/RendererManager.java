@@ -1,7 +1,9 @@
 package us.mcmagic.parkmanager.pixelator.renderer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -48,7 +50,8 @@ public class RendererManager extends Manager {
 
     private void loadRenderers() {
         this.renderers = new RendererList();
-
+        World w = Bukkit.getWorlds().get(0);
+        w.getEntitiesByClasses(org.bukkit.entity.ItemFrame.class);
         long now = System.currentTimeMillis();
         try (Connection connection = SqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT * FROM pixelator");

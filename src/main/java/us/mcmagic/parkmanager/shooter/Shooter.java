@@ -135,7 +135,7 @@ public class Shooter implements Listener {
             final int amount = getPoint(block.getType());
             if (amount > 0) {
                 final long time = System.currentTimeMillis();
-                player.playSound(snowball.getLocation(), Sound.BLOCK_NOTE_PLING, 10.0F, 1.0F);
+                player.playSound(snowball.getLocation(), Sound.NOTE_PLING, 10.0F, 1.0F);
                 player.setMetadata("shooter", new FixedMetadataValue(ParkManager.getInstance(),
                         player.getMetadata("shooter").get(0).asInt() + amount));
                 sendMessage(player, "+" + amount);

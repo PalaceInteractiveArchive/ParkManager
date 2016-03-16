@@ -1,8 +1,8 @@
 package us.mcmagic.parkmanager.utils;
 
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -103,7 +103,7 @@ public class BandUtil {
             return;
         }
         band.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 10f, 1f);
+        player.playSound(player.getLocation(), Sound.LEVEL_UP, 10f, 1f);
         Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
             @Override
             public void run() {

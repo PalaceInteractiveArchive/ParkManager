@@ -11,12 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.listeners.BlockEdit;
 import us.mcmagic.parkmanager.utils.SqlUtil;
 import us.mcmagic.parkmanager.watch.WatchTask;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

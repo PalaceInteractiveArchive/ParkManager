@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.TrigMath;
-import org.bukkit.craftbukkit.v1_9_R1.util.LongHash;
+import org.bukkit.craftbukkit.v1_8_R3.TrigMath;
+import org.bukkit.craftbukkit.v1_8_R3.util.LongHash;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 

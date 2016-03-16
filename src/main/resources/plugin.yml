@@ -1,6 +1,6 @@
 name: ParkManager
 author: MCMagicDev
-version: 2.1.7
+version: 2.1.8
 description: MCMagic Park Plugin
 main: us.mcmagic.parkmanager.ParkManager
 depend: [MCMagicCore, ProtocolLib, WorldEdit]

@@ -67,7 +67,7 @@ public class MainMenuClick {
                     pdata.setVisibility(true);
                     ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 }
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 return;
             case IRON_CHESTPLATE:
                 ParkManager.inventoryUtil.openWardrobeManagerPage(player, 1);

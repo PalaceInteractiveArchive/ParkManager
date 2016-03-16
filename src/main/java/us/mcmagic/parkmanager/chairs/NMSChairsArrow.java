@@ -1,13 +1,11 @@
 package us.mcmagic.parkmanager.chairs;
 
-import net.minecraft.server.v1_9_R1.Entity;
-import net.minecraft.server.v1_9_R1.EntityArrow;
-import net.minecraft.server.v1_9_R1.Item;
-import net.minecraft.server.v1_9_R1.ItemStack;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityArrow;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
 public class NMSChairsArrow extends EntityArrow {
 
@@ -25,10 +23,5 @@ public class NMSChairsArrow extends EntityArrow {
 
     @Override
     public void collide(Entity entity) {
-    }
-
-    @Override
-    protected ItemStack j() {
-        return new ItemStack(Item.getById(0));
     }
 }
