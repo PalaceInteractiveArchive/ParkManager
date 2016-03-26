@@ -26,7 +26,7 @@ public class Train {
 
     public void despawn() {
         for (Cart c : getCarts()) {
-            c.die();
+            c.remove();
         }
     }
 

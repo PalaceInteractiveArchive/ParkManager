@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -32,7 +33,6 @@ import us.mcmagic.parkmanager.queue.QueueManager;
 import us.mcmagic.parkmanager.queue.QueueRide;
 import us.mcmagic.parkmanager.queue.tot.TowerManager;
 import us.mcmagic.parkmanager.resourcepack.PackManager;
-import us.mcmagic.parkmanager.ridemanager.Cart;
 import us.mcmagic.parkmanager.ridemanager.RideManager;
 import us.mcmagic.parkmanager.shooter.MessageTimer;
 import us.mcmagic.parkmanager.shooter.Shooter;
@@ -207,8 +207,8 @@ public class ParkManager extends JavaPlugin implements Listener {
         chairManager.emptyAllData();
         for (World world : Bukkit.getWorlds()) {
             for (Entity e : world.getEntities()) {
-                if (e instanceof Cart) {
-                    ((Cart) e).die();
+                if (e instanceof Minecart) {
+                    e.remove();
                 }
             }
         }
@@ -516,7 +516,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         pm.registerEvents(fountainManager, this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         pm.registerEvents(new ChairListener(), this);
-        //pm.registerEvents(rideManager, this);
+        pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);
             pm.registerEvents(shooter, this);

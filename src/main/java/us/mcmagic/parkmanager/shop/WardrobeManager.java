@@ -1,13 +1,13 @@
 package us.mcmagic.parkmanager.shop;
 
-import net.minecraft.server.v1_9_R1.Item;
-import net.minecraft.server.v1_9_R1.MojangsonParseException;
-import net.minecraft.server.v1_9_R1.MojangsonParser;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.MojangsonParseException;
+import net.minecraft.server.v1_8_R3.MojangsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -60,22 +60,22 @@ public class WardrobeManager {
                 int bid = result.getInt("bid");
                 int bdata = result.getInt("bdata");
                 String bt = result.getString("boots");
-                net.minecraft.server.v1_9_R1.ItemStack h = new net.minecraft.server.v1_9_R1.ItemStack(Item.getById(hid), 1);
+                net.minecraft.server.v1_8_R3.ItemStack h = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(hid), 1);
                 h.setData(hdata);
                 if (!ht.equals("")) {
                     h.setTag(MojangsonParser.parse(ht));
                 }
-                net.minecraft.server.v1_9_R1.ItemStack s = new net.minecraft.server.v1_9_R1.ItemStack(Item.getById(cid), 1);
+                net.minecraft.server.v1_8_R3.ItemStack s = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(cid), 1);
                 s.setData(cdata);
                 if (!st.equals("")) {
                     s.setTag(MojangsonParser.parse(st));
                 }
-                net.minecraft.server.v1_9_R1.ItemStack l = new net.minecraft.server.v1_9_R1.ItemStack(Item.getById(lid), 1);
+                net.minecraft.server.v1_8_R3.ItemStack l = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(lid), 1);
                 l.setData(ldata);
                 if (!pt.equals("")) {
                     l.setTag(MojangsonParser.parse(pt));
                 }
-                net.minecraft.server.v1_9_R1.ItemStack b = new net.minecraft.server.v1_9_R1.ItemStack(Item.getById(bid), 1);
+                net.minecraft.server.v1_8_R3.ItemStack b = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(bid), 1);
                 b.setData(bdata);
                 if (!bt.equals("")) {
                     b.setTag(MojangsonParser.parse(bt));
@@ -192,7 +192,7 @@ public class WardrobeManager {
                                 c.getBootsID());
                     }
                 });
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                 return;
             }
@@ -209,7 +209,7 @@ public class WardrobeManager {
                                     c.getBootsID());
                         }
                     });
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
                 }
@@ -225,7 +225,7 @@ public class WardrobeManager {
                                     c.getBootsID());
                         }
                     });
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
                 }
@@ -241,7 +241,7 @@ public class WardrobeManager {
                                     c.getBootsID());
                         }
                     });
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
                 }
@@ -257,7 +257,7 @@ public class WardrobeManager {
                                     c.getBootsID());
                         }
                     });
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
                 }
@@ -266,7 +266,7 @@ public class WardrobeManager {
         }
         if (meta.getDisplayName().contains(ChatColor.STRIKETHROUGH.toString())) {
             player.sendMessage(ChatColor.RED + "You don't own that Outfit!");
-            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 25, 1);
+            player.playSound(player.getLocation(), Sound.ITEM_BREAK, 25, 1);
             return;
         }
         final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
@@ -308,7 +308,7 @@ public class WardrobeManager {
         if (o == null) {
             return;
         }
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
         PlayerData.Clothing c = data.getClothing();
         if (right) {
             c.setHead(o.getHead());

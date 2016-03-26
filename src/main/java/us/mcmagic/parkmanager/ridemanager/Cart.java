@@ -1,49 +1,38 @@
 package us.mcmagic.parkmanager.ridemanager;
 
-import net.minecraft.server.v1_9_R1.BlockMinecartTrackAbstract;
-import net.minecraft.server.v1_9_R1.EntityMinecartRideable;
-import net.minecraft.server.v1_9_R1.World;
+import net.minecraft.server.v1_8_R3.BlockMinecartTrackAbstract;
+import net.minecraft.server.v1_8_R3.EntityMinecartAbstract;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMinecart;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Minecart;
 import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 import us.mcmagic.parkmanager.ParkManager;
 
-import java.util.UUID;
-
 /**
  * Created by Marc on 4/1/15
  */
-public class Cart extends EntityMinecartRideable {
+public class Cart extends CraftMinecart implements Minecart {
     private Train train;
-    private UUID passenger;
     private boolean atStation = false;
     private Station station;
     private boolean slowdown = false;
     private boolean playerEnter = true;
     private double power = 0.1;
     private boolean ascending = false;
-    private RailRider railRider;
+    //private RailRider railRider;
     public BlockFace lastDirection;
 
-    public Cart(World world, double d0, double d1, double d2, double power, BlockFace dir) {
-        this(world, d0, d1, d2);
-        this.power = power;
-        lastDirection = dir;
+    public Cart(CraftServer server, EntityMinecartAbstract entity) {
+        super(server, entity);
     }
 
-    public Cart(World world, double d0, double d1, double d2) {
-        super(world, d0, d1, d2);
-        railRider = new RailRider(this);
-        lastDirection = BlockFace.NORTH;
-    }
-
-    @Override
     public void move(double x1, double y1, double z1) {
+        /*
         Bukkit.broadcastMessage(ChatColor.GREEN + "START" + locY);
         Location from = getLoc();
         Location to = railRider.next();
@@ -57,34 +46,29 @@ public class Cart extends EntityMinecartRideable {
         this.motX = v.getX();
         this.motY = v.getY();
         this.motZ = v.getZ();
-        */
         Bukkit.broadcastMessage(to.toString());
         setPosition(to.getX(), to.getY(), to.getZ());
         Bukkit.broadcastMessage(ChatColor.RED + "STOP " + locY);
-    }
-
-    public Location getLoc() {
-        return new Location(getWorld().getWorld(), locX, locY, locZ);
+        */
     }
 
     @Override
-    public void die() {
+    public void remove() {
         CartDestroyEvent e = new CartDestroyEvent(this);
         Bukkit.getPluginManager().callEvent(e);
         if (!e.isCancelled()) {
-            CraftEntity entity = getBukkitEntity();
-            ParticleUtil.spawnParticle(ParticleEffect.SMOKE, entity.getLocation().add(0, 0.3, 0), 0.1f, 0.1f, 0.1f, 0, 5);
-            entity.getWorld().playSound(getBukkitEntity().getLocation(), Sound.ENTITY_GENERIC_BURN, 2, 2);
-            super.die();
+            ParticleUtil.spawnParticle(ParticleEffect.SMOKE, getLocation().add(0, 0.3, 0), 0.1f, 0.1f, 0.1f, 0, 5);
+            getWorld().playSound(getLocation(), Sound.FIZZ, 2, 2);
         }
     }
 
-    public boolean hasPassenger() {
-        return passenger != null;
+    @Override
+    public EntityType getType() {
+        return EntityType.MINECART;
     }
 
-    public void setPassenger(UUID passenger) {
-        this.passenger = passenger;
+    public boolean hasPassenger() {
+        return getPassenger() != null;
     }
 
     public void setPower(double power) {
@@ -120,10 +104,6 @@ public class Cart extends EntityMinecartRideable {
                 }
             }, (long) (s.getLength() * 20));
         }
-    }
-
-    public UUID getPassenger() {
-        return passenger;
     }
 
     private void checkTrainNotNull() {
@@ -171,11 +151,6 @@ public class Cart extends EntityMinecartRideable {
                 return BlockMinecartTrackAbstract.EnumTrackPosition.NORTH_EAST;
         }
         return null;
-    }
-
-    @Override
-    public EnumMinecartType v() {
-        return EnumMinecartType.RIDEABLE;
     }
 
     public void setPlayerEnter(boolean playerEnter) {

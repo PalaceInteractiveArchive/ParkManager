@@ -107,7 +107,7 @@ public class StorageManager {
             for (int i = 0; i < 4; i++) {
                 cont[i] = hotbar[i];
             }
-            inv.setContents(cont);
+            inv.setContents(Arrays.copyOfRange(cont, 0, 36));
         }
         if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
             if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
@@ -141,7 +141,7 @@ public class StorageManager {
                 player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
                         " room has lapsed and you have been checked out. Please come stay with us again soon!");
                 manager.expire.send(player);
-                player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 10f, 1f);
+                player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
                 return;
             }
             if (room.getCurrentOccupant() != null &&

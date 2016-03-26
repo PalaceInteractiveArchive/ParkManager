@@ -1,12 +1,12 @@
 package us.mcmagic.parkmanager.show.actions;
 
 
-import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftCreature;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftCreature;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -61,7 +61,7 @@ public class NPCSpawnAction extends ShowAction {
             creature.setHealth(5000.0);
 
             if (Item != null) {
-                creature.getEquipment().setItemInMainHand(new ItemStack(Item));
+                creature.getEquipment().setItemInHand(new ItemStack(Item));
             }
         }
 

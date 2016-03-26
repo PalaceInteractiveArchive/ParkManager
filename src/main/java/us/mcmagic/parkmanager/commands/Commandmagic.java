@@ -1,17 +1,17 @@
 package us.mcmagic.parkmanager.commands;
 
-import net.minecraft.server.v1_9_R1.BlockPosition;
-import net.minecraft.server.v1_9_R1.MojangsonParseException;
-import net.minecraft.server.v1_9_R1.PacketPlayOutBlockChange;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_9_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -248,11 +248,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD
                                     + "--------------------------------------" + ChatColor.MAGIC + "------" +
                                     ChatColor.RESET + ChatColor.GOLD + "-");
-                            tp.playSound(tp.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100f, 0.75f);
+                            tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
                             Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
                                 @Override
                                 public void run() {
-                                    tp.playSound(tp.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100f, 1f);
+                                    tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 1f);
                                 }
                             }, 2L);
                         }
@@ -453,10 +453,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                         final ItemStack c = inv.getChestplate();
                         final ItemStack p = inv.getLeggings();
                         final ItemStack b = inv.getBoots();
-                        final net.minecraft.server.v1_9_R1.ItemStack head = CraftItemStack.asNMSCopy(inv.getHelmet());
-                        final net.minecraft.server.v1_9_R1.ItemStack chest = CraftItemStack.asNMSCopy(inv.getChestplate());
-                        final net.minecraft.server.v1_9_R1.ItemStack pants = CraftItemStack.asNMSCopy(inv.getLeggings());
-                        final net.minecraft.server.v1_9_R1.ItemStack boots = CraftItemStack.asNMSCopy(inv.getBoots());
+                        final net.minecraft.server.v1_8_R3.ItemStack head = CraftItemStack.asNMSCopy(inv.getHelmet());
+                        final net.minecraft.server.v1_8_R3.ItemStack chest = CraftItemStack.asNMSCopy(inv.getChestplate());
+                        final net.minecraft.server.v1_8_R3.ItemStack pants = CraftItemStack.asNMSCopy(inv.getLeggings());
+                        final net.minecraft.server.v1_8_R3.ItemStack boots = CraftItemStack.asNMSCopy(inv.getBoots());
                         final String finalName = name;
                         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
                             @Override
@@ -765,6 +765,45 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 helpMenu("queue", sender);
                 return true;
+            case "iasw": {
+                if (args.length == 6) {
+                    if (args[1].equalsIgnoreCase("sign")) {
+                        try {
+                            Integer x = Integer.parseInt(args[2]);
+                            Integer y = Integer.parseInt(args[3]);
+                            Integer z = Integer.parseInt(args[4]);
+                            Block b = Bukkit.getWorlds().get(0).getBlockAt(x, y, z);
+                            if (!b.getType().name().toLowerCase().contains("sign")) {
+                                sender.sendMessage(ChatColor.RED + "Please place a sign at the desired location!");
+                                return true;
+                            }
+                            Sign s = (Sign) b.getState();
+                            Player player = Bukkit.getPlayer(args[5]);
+                            if (player == null) {
+                                s.setLine(0, ChatColor.BLUE + "Goodbye!");
+                                s.setLine(1, "");
+                                s.setLine(2, "");
+                                s.setLine(3, "");
+                                s.update();
+                            } else {
+                                s.setLine(0, ChatColor.BLUE + "Goodbye");
+                                s.setLine(1, "");
+                                s.setLine(2, ChatColor.LIGHT_PURPLE + player.getName());
+                                s.setLine(3, "");
+                                s.update();
+                            }
+                            return true;
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage(ChatColor.RED + "Error formatting numbers!");
+                            return true;
+                        }
+                    }
+                    helpMenu("iasw", sender);
+                    return true;
+                }
+                helpMenu("iasw", sender);
+                return true;
+            }
             case "pin": {
                 if (args.length < 1) {
                     helpMenu("pin", sender);
@@ -855,6 +894,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic rc " + ChatColor.AQUA + "- Ride Counters");
                 sender.sendMessage(ChatColor.GREEN + "/magic schedule " + ChatColor.AQUA + "- Show Schedule");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit " + ChatColor.AQUA + "- Outfit Manager");
+                sender.sendMessage(ChatColor.GREEN + "/magic iasw " + ChatColor.AQUA + "- IASW Manager");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
                 break;
             case "fp":
@@ -935,6 +975,11 @@ public class Commandmagic implements Listener, CommandExecutor {
                         "- Pause station teleport");
                 sender.sendMessage(ChatColor.GREEN + "/magic queue [Queue] unpause " + ChatColor.AQUA +
                         "- Un-Pause station teleport");
+                break;
+            case "iasw":
+                sender.sendMessage(ChatColor.GREEN + "IASW Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic iasw sign x y z player " + ChatColor.AQUA +
+                        "- Create a Goodbye Sign at the given coordinates with a player's name on it");
                 break;
             case "ride":
                 sender.sendMessage(ChatColor.GREEN + "Ride Counter Commands:");

@@ -37,13 +37,13 @@ public class PlayerSettingsClick {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         switch (name) {
             case "Flash Effects":
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 data.setFlash(!data.getFlash());
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
                 ParkManager.bandUtil.setSetting(player.getUniqueId(), "flash", data.getFlash());
                 return;
             case "Player Visibility":
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 data.setVisibility(!data.getVisibility());
                 if (data.getVisibility()) {
                     ParkManager.vanishUtil.removeFromHideAll(player);
@@ -54,13 +54,13 @@ public class PlayerSettingsClick {
                 ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", data.getVisibility());
                 return;
             case "Park Loop Music":
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 data.setLoop(!data.getLoop());
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
                 ParkManager.bandUtil.setSetting(player.getUniqueId(), "parkloop", data.getLoop());
                 return;
             case "Friends Access Hotel Room":
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 data.setHotel(!data.getHotel());
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
                 ParkManager.bandUtil.setSetting(player.getUniqueId(), "hotel", data.getHotel());
