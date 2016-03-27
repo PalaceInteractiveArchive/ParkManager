@@ -12,11 +12,11 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.designstation.DesignStationClick;
 import us.mcmagic.parkmanager.magicband.*;
 import us.mcmagic.parkmanager.watch.WatchTask;
-import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 
 public class InventoryClick implements Listener {
 
@@ -69,16 +69,6 @@ public class InventoryClick implements Listener {
             ParkManager.packManager.handleClick(event);
             return;
         }
-        if (name.startsWith("Ride List")) {
-            event.setCancelled(true);
-            RideListClick.handle(event);
-            return;
-        }
-        if (name.startsWith("Attraction List")) {
-            event.setCancelled(true);
-            AttractionListClick.handle(event);
-            return;
-        }
         if (name.startsWith("Rooms in")) {
             event.setCancelled(true);
             HotelRoomMenuClick.handle(event);
@@ -95,6 +85,18 @@ public class InventoryClick implements Listener {
             return;
         }
         switch (name) {
+            case "Ride List":
+                event.setCancelled(true);
+                RideListClick.handle(event);
+                return;
+            case "Attraction List":
+                event.setCancelled(true);
+                AttractionListClick.handle(event);
+                return;
+            case "Meet & Greet List":
+                event.setCancelled(true);
+                MeetAndGreetListClick.handle(event);
+                return;
             case "Advent Calendar":
                 event.setCancelled(true);
                 AdventCalendarClick.handle(event);
@@ -135,7 +137,7 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 ParkMenuClick.handle(event);
                 return;
-            case "Rides and Attractions":
+            case "Rides and Meet & Greets":
                 event.setCancelled(true);
                 RideAttractionClick.handle(event);
                 return;
@@ -195,9 +197,9 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 WaitTimeClick.handle(event);
                 return;
-            case "Purchase FastPass":
+            case "FastPass Kiosk":
                 event.setCancelled(true);
-                FastPassMenuClick.handle(event);
+                ParkManager.fpKioskManager.handle(event);
                 return;
             case "Show Timetable":
                 event.setCancelled(true);

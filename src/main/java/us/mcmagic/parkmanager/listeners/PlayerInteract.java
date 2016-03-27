@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +34,7 @@ public class PlayerInteract implements Listener {
     public static String disposal = ChatColor.BLUE + "[Disposal]";
     public static String warp = ChatColor.BLUE + "[Warp]";
     public static String hotel = ChatColor.BLUE + "[Hotel]";
+    public static String suite = ChatColor.BLUE + "[Suite]";
     public static String designStation = ChatColor.BLUE + "[Design Station]";
     public static String shop = ChatColor.BLUE + "[Shop]";
     public static String queue = ChatColor.BLUE + "[Queue]";
@@ -125,37 +127,47 @@ public class PlayerInteract implements Listener {
                             + ChatColor.WHITE + "]");
                     return;
                 }
-                if (s.getLine(0).equals(hotel)) {
-                    String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
-                            + ChatColor.stripColor(s.getLine(1));
-                    HotelManager manager = ParkManager.hotelManager;
-                    HotelRoom room = manager.getRoom(roomName);
-                    if (room == null) {
-                        player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
-                        return;
-                    }
-                    if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                        ParkManager.inventoryUtil.openSpecificHotelRoomCheckoutPage(player, room);
-                    } else if (room.isOccupied() && !(room.getCurrentOccupant().equals(player.getUniqueId()))) {
-                        player.sendMessage(ChatColor.RED + "This room is already occupied!");
-                    } else {
-                        boolean playerOwnsRooms = false;
-                        for (HotelRoom r : manager.getHotelRooms()) {
-                            if (r.isOccupied() && r.getCurrentOccupant().equals(player.getUniqueId())) {
-                                playerOwnsRooms = true;
-                                break;
-                            }
-                        }
-                        if (playerOwnsRooms) {
-                            player.sendMessage(ChatColor.RED + "You cannot book more than one room at a time! " +
-                                    "You need to wait for your current reservation to lapse or check out by " +
-                                    "right-clicking the booked room's sign.");
+                if (ParkManager.hotelServer) {
+                    if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
+                        boolean suite = s.getLine(0).equals(this.suite);
+                        Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
+                        if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
+                            player.sendMessage(ChatColor.RED + "You must be a " + Rank.DVCMEMBER.getNameWithBrackets()
+                                    + ChatColor.RED + " or " + Rank.SHAREHOLDER.getNameWithBrackets() +
+                                    ChatColor.RED + " to stay in a Suite!");
                             return;
                         }
+                        String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
+                                + ChatColor.stripColor(s.getLine(1));
+                        HotelManager manager = ParkManager.hotelManager;
+                        HotelRoom room = manager.getRoom(roomName);
+                        if (room == null) {
+                            player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
+                            return;
+                        }
+                        if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                            ParkManager.inventoryUtil.openSpecificHotelRoomCheckoutPage(player, room);
+                        } else if (room.isOccupied() && !(room.getCurrentOccupant().equals(player.getUniqueId()))) {
+                            player.sendMessage(ChatColor.RED + "This room is already occupied!");
+                        } else {
+                            boolean playerOwnsRooms = false;
+                            for (HotelRoom r : manager.getHotelRooms()) {
+                                if (r.isOccupied() && r.getCurrentOccupant().equals(player.getUniqueId())) {
+                                    playerOwnsRooms = true;
+                                    break;
+                                }
+                            }
+                            if (playerOwnsRooms) {
+                                player.sendMessage(ChatColor.RED + "You cannot book more than one room at a time! " +
+                                        "You need to wait for your current reservation to lapse or check out by " +
+                                        "right-clicking the booked room's sign.");
+                                return;
+                            }
 
-                        ParkManager.inventoryUtil.openSpecificHotelRoomPage(player, manager.getRoom(roomName));
+                            ParkManager.inventoryUtil.openSpecificHotelRoomPage(player, manager.getRoom(roomName));
+                        }
+                        return;
                     }
-                    return;
                 }
                 if (s.getLine(0).equals(shop)) {
                     String shop = ChatColor.stripColor(s.getLine(1));
@@ -275,7 +287,19 @@ public class PlayerInteract implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
-        if (!event.getRightClicked().getType().equals(EntityType.ITEM_FRAME)) {
+        EntityType etype = event.getRightClicked().getType();
+        if (etype.equals(EntityType.ARMOR_STAND)) {
+            ArmorStand stand = (ArmorStand) event.getRightClicked();
+            if (!stand.hasMetadata("kiosk")) {
+                return;
+            }
+            event.setCancelled(true);
+            if (stand.getMetadata("kiosk").get(0).asBoolean()) {
+                ParkManager.fpKioskManager.openKiosk(player);
+            }
+            return;
+        }
+        if (!etype.equals(EntityType.ITEM_FRAME)) {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());

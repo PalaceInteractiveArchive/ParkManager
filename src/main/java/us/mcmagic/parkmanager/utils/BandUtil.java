@@ -13,9 +13,7 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.BandColor;
-import us.mcmagic.parkmanager.handlers.DataResponse;
-import us.mcmagic.parkmanager.handlers.PlayerData;
+import us.mcmagic.parkmanager.handlers.*;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -35,8 +33,8 @@ public class BandUtil {
 
     private void initialize() {
         FireworkEffectMeta bm = (FireworkEffectMeta) back.getItemMeta();
-        bm.setDisplayName(ChatColor.GREEN + "Back");//41, 106, 255
-        bm.setEffect(FireworkEffect.builder().withColor(Color.fromRGB(0, 153, 0)).build());
+        bm.setDisplayName(ChatColor.GREEN + "Back");
+        bm.setEffect(FireworkEffect.builder().withColor(Color.ORANGE).build());
         back.setItemMeta(bm);
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
             @Override
@@ -61,10 +59,14 @@ public class BandUtil {
                         continue;
                     }
                     ItemMeta meta = pinfo.getItemMeta();
+                    FastPassData data = ParkManager.getPlayerData(player.getUniqueId()).getFastPassData();
                     meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
                             ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
                             ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + response.getBalance(),
                             ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
+                            ChatColor.GREEN + "Slow FPs: " + ChatColor.YELLOW + data.getSlow(),
+                            ChatColor.GREEN + "Moderate FPs: " + ChatColor.YELLOW + data.getModerate(),
+                            ChatColor.GREEN + "Thrill FPs: " + ChatColor.YELLOW + data.getThrill(),
                             ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
                     pinfo.setItemMeta(meta);
                     inv.setItem(4, pinfo);
@@ -115,7 +117,8 @@ public class BandUtil {
     public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT friends,bandcolor,rank,namecolor,flash,visibility," +
-                    "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit FROM player_data WHERE uuid=?");
+                    "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,monthguest," +
+                    "monthdvc,monthshare,lastvote,vote FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
@@ -128,12 +131,16 @@ public class BandUtil {
                     friendlist.add(UUID.fromString(friend));
                 }
             }
+            FastPassData fpdata = new FastPassData(result.getInt("slow"), result.getInt("moderate"),
+                    result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"), result.getInt("tday"));
+            KioskData kioskData = new KioskData(result.getLong("vote"), result.getInt("lastvote"),
+                    result.getLong("monthguest"), result.getLong("monthguest"), result.getLong("monthguest"));
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
                     friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
-                    result.getInt("parkloop") == 1, result.getInt("hotel") == 1, result.getInt("fastpass"),
-                    result.getInt("dailyfp"), result.getInt("fpday"), result.getString("outfit"));
+                    result.getInt("parkloop") == 1, result.getInt("hotel") == 1, fpdata, kioskData,
+                    result.getString("outfit"));
             if (result.getInt("buildmode") == 1) {
                 ParkManager.storageManager.makeBuildMode.add(uuid);
             }

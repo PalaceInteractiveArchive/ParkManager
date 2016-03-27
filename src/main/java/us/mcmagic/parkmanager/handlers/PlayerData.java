@@ -26,9 +26,8 @@ public class PlayerData {
     private boolean visibility;
     private boolean loop;
     private boolean hotel;
-    private int fastpass;
-    private int dailyfp;
-    private int fpday;
+    private FastPassData fastPassData;
+    private KioskData kioskData;
     private Backpack backpack;
     private Locker locker;
     private HashMap<String, Integer> rideCounts = new HashMap<>();
@@ -37,9 +36,9 @@ public class PlayerData {
     private String outfitCode;
     private boolean inventorySet = false;
 
-    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends, boolean special,
-                      boolean flash, boolean visibility, boolean loop, boolean hotel, int fastpass, int dailyfp,
-                      int fpday, String outfitCode) {
+    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends,
+                      boolean special, boolean flash, boolean visibility, boolean loop, boolean hotel,
+                      FastPassData fastPassData, KioskData kioskData, String outfitCode) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -50,9 +49,8 @@ public class PlayerData {
         this.visibility = visibility;
         this.loop = loop;
         this.hotel = hotel;
-        this.fastpass = fastpass;
-        this.dailyfp = dailyfp;
-        this.fpday = fpday;
+        this.fastPassData = fastPassData;
+        this.kioskData = kioskData;
         this.purchases = purchases;
         this.outfitCode = outfitCode;
         Clothing c = new Clothing();
@@ -192,28 +190,12 @@ public class PlayerData {
         return hotel;
     }
 
-    public int getFastpass() {
-        return fastpass;
+    public FastPassData getFastPassData() {
+        return fastPassData;
     }
 
-    public void setFastpass(int fastpass) {
-        this.fastpass = fastpass;
-    }
-
-    public int getDailyfp() {
-        return dailyfp;
-    }
-
-    public void setDailyfp(int dailyfp) {
-        this.dailyfp = dailyfp;
-    }
-
-    public int getDay() {
-        return fpday;
-    }
-
-    public void setDay(int fpday) {
-        this.fpday = fpday;
+    public KioskData getKioskData() {
+        return kioskData;
     }
 
     public void setRideCounts(HashMap<String, Integer> rideCounts) {

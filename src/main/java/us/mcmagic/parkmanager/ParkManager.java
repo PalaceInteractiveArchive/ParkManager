@@ -23,12 +23,14 @@ import us.mcmagic.parkmanager.chairs.ChairManager;
 import us.mcmagic.parkmanager.chairs.IArrowFactory;
 import us.mcmagic.parkmanager.commands.*;
 import us.mcmagic.parkmanager.designstation.DesignStation;
+import us.mcmagic.parkmanager.fastpasskiosk.FPKioskManager;
 import us.mcmagic.parkmanager.handlers.*;
 import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.listeners.*;
 import us.mcmagic.parkmanager.parksounds.ParkSoundManager;
 import us.mcmagic.parkmanager.pixelator.Pixelator;
 import us.mcmagic.parkmanager.queue.QueueManager;
+import us.mcmagic.parkmanager.queue.QueueRide;
 import us.mcmagic.parkmanager.queue.tot.TowerManager;
 import us.mcmagic.parkmanager.resourcepack.PackManager;
 import us.mcmagic.parkmanager.ridemanager.RideManager;
@@ -56,8 +58,9 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static Stitch stitch;
     public static UniverseEnergyRide universeEnergyRide;
     public static List<Warp> warps = new ArrayList<>();
-    public static HashMap<Integer, List<Ride>> ridePages = new HashMap<>();
-    public static HashMap<Integer, List<Attraction>> attPages = new HashMap<>();
+    public static List<Ride> rides = new ArrayList<>();
+    public static List<Ride> attractions = new ArrayList<>();
+    public static List<Ride> meetandgreets = new ArrayList<>();
     public static Location spawn;
     public static Location hub;
     public static PlayerJoinAndLeave playerJoinAndLeave;
@@ -92,6 +95,7 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static ScheduleManager scheduleManager;
     public static WardrobeManager wardrobeManager;
     public static Pixelator pixelator;
+    public static FPKioskManager fpKioskManager;
 
     public void onEnable() {
         instance = this;
@@ -156,11 +160,13 @@ public class ParkManager extends JavaPlugin implements Listener {
         log("Initializing Rides...");
         setupRides();
         log("Rides Initialized!");
+        log("Initializing FastPass Kiosks...");
+        fpKioskManager = new FPKioskManager();
+        log("FastPass Kiosks Initialized!");
         log("Initializing Show Schedule...");
         scheduleManager = new ScheduleManager();
         log("Show Schedule Initialized!");
         //enablePixelator();
-        setupAttractions();
         if (config.getBoolean("show-server")) {
             // Show Ticker
             Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
@@ -255,7 +261,7 @@ public class ParkManager extends JavaPlugin implements Listener {
 
     public void setupFoodLocations() {
         foodLocations.clear();
-        YamlConfiguration config = FileUtil.menusYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         List<String> locations = config.getStringList("food-names");
         for (String location : locations) {
             String name = config
@@ -276,118 +282,83 @@ public class ParkManager extends JavaPlugin implements Listener {
     }
 
     public void setupRides() {
-        ridePages.clear();
-        YamlConfiguration config = FileUtil.menusYaml();
+        for (Ride r : getRides()) {
+            if (r.getQueue() != null) {
+                r.getQueue().ejectQueue();
+            }
+        }
+        rides.clear();
+        attractions.clear();
+        YamlConfiguration config = FileUtil.menuYaml();
         List<String> locations = config.getStringList("ride-names");
-        List<Ride> rides = new ArrayList<>();
-        for (String location : locations) {
-            String name = config
-                    .getString("ride." + location + ".name");
-            String warp = config
-                    .getString("ride." + location + ".warp");
-            int type = config.getInt("ride." + location + ".type");
+        for (String s : locations) {
+            String name = config.getString("ride." + s + ".name");
+            String warp = config.getString("ride." + s + ".warp");
+            int type = config.getInt("ride." + s + ".type");
             byte data;
-            if (config.contains("ride." + location + ".data")) {
-                data = (byte) config.getInt("ride." + location
-                        + ".data");
+            if (config.contains("ride." + s + ".data")) {
+                data = (byte) config.getInt("ride." + s + ".data");
             } else {
                 data = 0;
             }
-            Ride ride = new Ride(name, warp, type, data);
-            rides.add(ride);
-        }
-        int pages;
-        if (locations.isEmpty()) {
-            pages = 1;
-        } else {
-            pages = ((int) Math.ceil(locations.size() / 21)) + 1;
-        }
-        if (pages > 1) {
-            int i = 1;
-            int i2 = 1;
-            for (Ride ride : rides) {
-                if (i2 >= 22) {
-                    i++;
-                    i2 = 1;
-                }
-                if (i2 == 1) {
-                    ridePages.put(i, new ArrayList<Ride>());
-                    ridePages.get(i).add(ride);
-                } else {
-                    ridePages.get(i).add(ride);
-                }
-                i2++;
+            RideCategory category = RideCategory.fromString(config.getString("ride." + s + ".category"));
+            QueueRide queue = null;
+            if (config.getBoolean("ride." + s + ".has-queue")) {
+                queue = queueManager.createQueue(s, config);
             }
-        } else {
-            ridePages.put(1, rides);
-        }
-    }
-
-    private void setupAttractions() {
-        YamlConfiguration config = FileUtil.menusYaml();
-        List<String> locations = config.getStringList("attraction-names");
-        List<Attraction> attractions = new ArrayList<>();
-        for (String location : locations) {
-            String name = config
-                    .getString("attraction." + location + ".name");
-            String warp = config
-                    .getString("attraction." + location + ".warp");
-            int type = config.getInt("attraction." + location + ".type");
-            byte data;
-            if (config.contains("attraction." + location + ".data")) {
-                data = (byte) config.getInt("attraction." + location
-                        + ".data");
-            } else {
-                data = 0;
+            String otype = config.getString("ride." + s + ".otype");
+            if (otype.equalsIgnoreCase("ride")) {
+                Ride ride = new Ride(name, warp, type, data, category, queue, s, config.getBoolean("ride." + s + ".has-item"));
+                rides.add(ride);
+            } else if (otype.equalsIgnoreCase("attraction")) {
+                Ride attraction = new Ride(name, warp, type, data, category, queue, s, config.getBoolean("ride." + s + ".has-item"));
+                attractions.add(attraction);
+            } else if (otype.equalsIgnoreCase("meetandgreet")) {
+                Ride meetandgreet = new Ride(name, warp, type, data, RideCategory.SLOW, queue, s, true);
+                meetandgreets.add(meetandgreet);
             }
-            Attraction att = new Attraction(name, warp, type, data);
-            attractions.add(att);
-        }
-        int pages;
-        if (locations.isEmpty()) {
-            pages = 1;
-        } else {
-            pages = ((int) Math.ceil(locations.size() / 21)) + 1;
-        }
-        attPages.clear();
-        if (pages > 1) {
-            int i = 1;
-            int i2 = 1;
-            for (Attraction att : attractions) {
-                if (i2 >= 22) {
-                    i++;
-                    i2 = 1;
-                }
-                if (i2 == 1) {
-                    attPages.put(i, new ArrayList<Attraction>());
-                    attPages.get(i).add(att);
-                } else {
-                    attPages.get(i).add(att);
-                }
-                i2++;
-            }
-        } else {
-            attPages.put(1, attractions);
         }
     }
 
     public static Ride getRide(String name) {
-        for (Map.Entry<Integer, List<Ride>> rides : ridePages.entrySet()) {
-            for (Ride ride : rides.getValue()) {
-                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
-                    return ride;
-                }
+        for (Ride ride : getRides()) {
+            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
+                return ride;
             }
         }
         return null;
     }
 
-    public static Attraction getAttraction(String name) {
-        for (Map.Entry<Integer, List<Attraction>> attractions : attPages.entrySet()) {
-            for (Attraction ride : attractions.getValue()) {
-                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
-                    return ride;
-                }
+    public static Ride getRide2(String shortName) {
+        for (Ride ride : getRides()) {
+            if (ride.getShortName().equalsIgnoreCase(shortName)) {
+                return ride;
+            }
+        }
+        return null;
+    }
+
+    public static List<Ride> getRides() {
+        List<Ride> list = new ArrayList<>();
+        for (Ride ride : new ArrayList<>(rides)) {
+            list.add(ride);
+        }
+        return list;
+    }
+
+    public static Ride getAttraction(String name) {
+        for (Ride ride : new ArrayList<>(attractions)) {
+            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
+                return ride;
+            }
+        }
+        return null;
+    }
+
+    public static Ride getMeetAndGreet(String name) {
+        for (Ride ride : new ArrayList<>(meetandgreets)) {
+            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
+                return ride;
             }
         }
         return null;
@@ -479,7 +450,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         pm.registerEvents(fountainManager, this);
         pm.registerEvents(new PlayerCloseInventory(), this);
         pm.registerEvents(new ChairListener(), this);
-        pm.registerEvents(rideManager, this);
+        //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);
             pm.registerEvents(shooter, this);

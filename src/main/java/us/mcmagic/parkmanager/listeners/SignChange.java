@@ -38,11 +38,12 @@ public class SignChange implements Listener {
                 event.setLine(3, "");
                 return;
             }
-            if (l1.equalsIgnoreCase("[hotel]")) {
+            if (l1.equalsIgnoreCase("[hotel]") || l1.equalsIgnoreCase("[suite]")) {
                 if (!ParkManager.hotelServer) {
                     return;
                 }
-                event.setLine(0, PlayerInteract.hotel);
+                boolean suite = l1.equalsIgnoreCase("[suite]");
+                event.setLine(0, suite ? PlayerInteract.suite : PlayerInteract.hotel);
                 int roomNumber = Integer.parseInt(ChatColor.stripColor(event.getLine(1)));
                 String hotelName = ChatColor.stripColor(event.getLine(2));
                 int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace("$", "")));
@@ -50,7 +51,7 @@ public class SignChange implements Listener {
                 if (ParkManager.hotelManager.getRoom(fullRoomName) == null) {
                     Location loc = b.getLocation();
                     HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, "", 0, null, cost, null, 259200,
-                            loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                            loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), suite);
                     event.setLine(1, "" + ChatColor.GOLD + newRoom.getRoomNumber());
                     event.setLine(2, ChatColor.DARK_GREEN + event.getLine(2));
                     event.setLine(3, "" + ChatColor.GREEN + cost);

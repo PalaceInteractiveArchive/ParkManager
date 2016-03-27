@@ -6,8 +6,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.Attraction;
 import us.mcmagic.parkmanager.handlers.InventoryType;
+import us.mcmagic.parkmanager.handlers.Ride;
 import us.mcmagic.parkmanager.utils.BandUtil;
 
 /**
@@ -35,21 +35,10 @@ public class AttractionListClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (meta.getDisplayName().equals(ChatColor.RED + "Uh oh!")) {
             player.closeInventory();
-            player.sendMessage(ChatColor.RED + "Sorry, but there are no attractions setup on this server!");
+            player.sendMessage(ChatColor.RED + "Sorry, but there are no attractions on this server!");
             return;
         }
-        String invName = ChatColor.stripColor(event.getInventory().getName());
-        switch (name) {
-            case "Next Page":
-                ParkManager.inventoryUtil.openAttractionListPage(player,
-                        Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) + 1);
-                return;
-            case "Last Page":
-                ParkManager.inventoryUtil.openAttractionListPage(player,
-                        Integer.parseInt(invName.replaceAll("Attraction List Page ", "")) - 1);
-                return;
-        }
-        Attraction attraction = ParkManager.getAttraction(name);
+        Ride attraction = ParkManager.getAttraction(name);
         if (attraction == null) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "There was an error, please tell a Staff Member!");

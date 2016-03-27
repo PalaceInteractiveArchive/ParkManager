@@ -14,25 +14,27 @@ import us.mcmagic.mcmagiccore.particles.ParticleEffect;
 import us.mcmagic.mcmagiccore.particles.ParticleUtil;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.PlayerData;
+import us.mcmagic.parkmanager.handlers.Ride;
+import us.mcmagic.parkmanager.handlers.RideCategory;
 import us.mcmagic.parkmanager.listeners.PlayerInteract;
 import us.mcmagic.parkmanager.queue.tasks.NextRidersTask;
 import us.mcmagic.parkmanager.queue.tasks.QueueTask;
 import us.mcmagic.parkmanager.queue.tot.TowerPreShow;
+import us.mcmagic.parkmanager.queue.tot.TowerStation;
 import us.mcmagic.parkmanager.utils.FileUtil;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Marc on 6/23/15
  */
 public class QueueManager {
-    private Map<String, QueueRide> rides = new TreeMap<>();
     private List<QueueTask> tasks = new ArrayList<>();
 
     public QueueManager() {
-        initialize();
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -81,53 +83,78 @@ public class QueueManager {
         tasks.add(task);
     }
 
-    public void initialize() {
-        for (QueueRide ride : getRides()) {
-            ride.ejectQueue();
+    public QueueRide createQueue(String s, YamlConfiguration config) {
+        String name = config.getString("ride." + s + ".queue.name");
+        QueueRide ride = null;
+        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws")) {
+            switch (s) {
+                case "totpre": {
+                    Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),
+                            config.getDouble("ride." + s + ".queue.station1.y"), config.getDouble("ride." + s + ".queue.station1.z"),
+                            config.getInt("ride." + s + ".queue.station1.yaw"), config.getInt("ride." + s + ".queue.station1.pitch"));
+                    Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station2.x"),
+                            config.getDouble("ride." + s + ".queue.station2.y"), config.getDouble("ride." + s + ".queue.station2.z"),
+                            config.getInt("ride." + s + ".queue.station2.yaw"), config.getInt("ride." + s + ".queue.station2.pitch"));
+                    Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner1.x"),
+                            config.getInt("ride." + s + ".queue.spawner1.y"), config.getInt("ride." + s + ".queue.spawner1.z"));
+                    Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner2.x"),
+                            config.getInt("ride." + s + ".queue.spawner2.y"), config.getInt("ride." + s + ".queue.spawner2.z"));
+                    ride = new TowerPreShow(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
+                            spawner1, spawner2, config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue.amount"),
+                            config.getString("ride." + s + ".queue.warp"));
+                    break;
+                }
+                case "totstation": {
+                    Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),
+                            config.getDouble("ride." + s + ".queue.station1.y"), config.getDouble("ride." + s + ".queue.station1.z"),
+                            config.getInt("ride." + s + ".queue.station1.yaw"), config.getInt("ride." + s + ".queue.station1.pitch"));
+                    Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station2.x"),
+                            config.getDouble("ride." + s + ".queue.station2.y"), config.getDouble("ride." + s + ".queue.station2.z"),
+                            config.getInt("ride." + s + ".queue.station2.yaw"), config.getInt("ride." + s + ".queue.station2.pitch"));
+                    Location station3 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station3.x"),
+                            config.getDouble("ride." + s + ".queue.station3.y"), config.getDouble("ride." + s + ".queue.station3.z"),
+                            config.getInt("ride." + s + ".queue.station3.yaw"), config.getInt("ride." + s + ".queue.station3.pitch"));
+                    Location station4 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station4.x"),
+                            config.getDouble("ride." + s + ".queue.station4.y"), config.getDouble("ride." + s + ".queue.station4.z"),
+                            config.getInt("ride." + s + ".queue.station4.yaw"), config.getInt("ride." + s + ".queue.station4.pitch"));
+                    Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner1.x"),
+                            config.getInt("ride." + s + ".queue.spawner1.y"), config.getInt("ride." + s + ".queue.spawner1.z"));
+                    Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner2.x"),
+                            config.getInt("ride." + s + ".queue.spawner2.y"), config.getInt("ride." + s + ".queue.spawner2.z"));
+                    Location spawner3 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner3.x"),
+                            config.getInt("ride." + s + ".queue.spawner3.y"), config.getInt("ride." + s + ".queue.spawner3.z"));
+                    Location spawner4 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner4.x"),
+                            config.getInt("ride." + s + ".queue.spawner4.y"), config.getInt("ride." + s + ".queue.spawner4.z"));
+                    ride = new TowerStation(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
+                            station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("ride." + s + ".queue." + s
+                            + ".delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("ride." + s + ".queue." + s +
+                            ".warp"));
+                    break;
+                }
+            }
         }
-        rides.clear();
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/ParkManager/queue.yml"));
-        List<String> qs = config.getStringList("queues");
-        Collections.sort(qs);
-        for (String s : qs) {
-            String name = config.getString("queue." + s + ".name");
-            QueueRide ride;
-            if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws") && s.equals("totpre")) {
-                Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station1.x"),
-                        config.getDouble("queue." + s + ".station1.y"), config.getDouble("queue." + s + ".station1.z"),
-                        config.getInt("queue." + s + ".station1.yaw"), config.getInt("queue." + s + ".station1.pitch"));
-                Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station2.x"),
-                        config.getDouble("queue." + s + ".station2.y"), config.getDouble("queue." + s + ".station2.z"),
-                        config.getInt("queue." + s + ".station2.yaw"), config.getInt("queue." + s + ".station2.pitch"));
-                Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner1.x"),
-                        config.getInt("queue." + s + ".spawner1.y"), config.getInt("queue." + s + ".spawner1.z"));
-                Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner2.x"),
-                        config.getInt("queue." + s + ".spawner2.y"), config.getInt("queue." + s + ".spawner2.z"));
-                ride = new TowerPreShow(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
-                        spawner1, spawner2, config.getInt("queue." + s + ".delay"), config.getInt("queue." + s + ".amount"),
-                        config.getString("queue." + s + ".warp"));
-            } else {
-                Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("queue." + s + ".station.x"),
-                        config.getDouble("queue." + s + ".station.y"), config.getDouble("queue." + s + ".station.z"),
-                        config.getInt("queue." + s + ".station.yaw"), config.getInt("queue." + s + ".station.pitch"));
-                Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".spawner.x"),
-                        config.getInt("queue." + s + ".spawner.y"), config.getInt("queue." + s + ".spawner.z"));
-                ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', name), station, spawner,
-                        config.getInt("queue." + s + ".delay"), config.getInt("queue." + s +
-                        ".amount"), config.getString("queue." + s + ".warp"));
-            }
-            for (int i = 1; i <= config.getInt("queue." + s + ".sign-amount"); i++) {
-                ride.addSign(new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".sign." + i + ".x"),
-                        config.getInt("queue." + s + ".sign." + i + ".y"), config.getInt("queue." + s + ".sign." + i +
-                        ".z")), false);
-            }
-            for (int i = 1; i <= config.getInt("queue." + s + ".fpsign-amount"); i++) {
-                ride.addFPSign(new Location(Bukkit.getWorlds().get(0), config.getInt("queue." + s + ".fpsign." + i + ".x"),
-                        config.getInt("queue." + s + ".fpsign." + i + ".y"), config.getInt("queue." + s + ".fpsign." + i +
-                        ".z")), false);
-            }
-            rides.put(s, ride);
+        if (ride == null) {
+            Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station.x"),
+                    config.getDouble("ride." + s + ".queue.station.y"), config.getDouble("ride." + s + ".queue.station.z"),
+                    config.getInt("ride." + s + ".queue.station.yaw"), config.getInt("ride." + s + ".queue.station.pitch"));
+            Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner.x"),
+                    config.getInt("ride." + s + ".queue.spawner.y"), config.getInt("ride." + s + ".queue.spawner.z"));
+            ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', name), station, spawner,
+                    config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue..amount"),
+                    config.getString("ride." + s + ".queue.warp"), RideCategory.fromString(config.getString("ride." +
+                    s + ".category")), s);
         }
+        for (int i = 1; i <= config.getInt("ride." + s + ".queue.sign-amount"); i++) {
+            ride.addSign(new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.sign." + i + ".x"),
+                    config.getInt("ride." + s + ".queue.sign." + i + ".y"), config.getInt("ride." + s + ".queue.sign." + i +
+                    ".z")), false);
+        }
+        for (int i = 1; i <= config.getInt("ride." + s + ".queue.fpsign-amount"); i++) {
+            ride.addFPSign(new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.fpsign." + i + ".x"),
+                    config.getInt("ride." + s + ".queue.fpsign." + i + ".y"), config.getInt("ride." + s + ".queue.fpsign." + i +
+                    ".z")), false);
+        }
+        return ride;
     }
 
     public void createSign(SignChangeEvent event) {
@@ -159,71 +186,74 @@ public class QueueManager {
     public void deleteSign(Location loc) throws IOException {
         QueueRide ride = null;
         for (QueueRide r : getRides()) {
+            if (!r.getSigns().contains(loc)) {
+                continue;
+            }
             r.removeSign(loc);
             ride = r;
+            break;
         }
         if (ride == null) {
             return;
         }
-        String sn = null;
-        for (Map.Entry<String, QueueRide> entry : rides.entrySet()) {
-            if (entry.getValue().getName().equals(ride.getName())) {
-                sn = entry.getKey();
-                break;
-            }
-        }
-        if (sn == null) {
+        String s = ride.getShortName();
+        if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("sign-amount");
-        config.set("queue." + sn + ".sign", null);
+        config.set("ride." + s + ".queue.sign", null);
         List<Location> signs = ride.getSigns();
         for (int i = 1; i <= signs.size(); i++) {
             Location l = signs.get(i - 1);
-            config.set("queue." + sn + ".sign." + i + ".x", l.getBlockX());
-            config.set("queue." + sn + ".sign." + i + ".y", l.getBlockY());
-            config.set("queue." + sn + ".sign." + i + ".z", l.getBlockZ());
+            config.set("ride." + s + ".queue.sign." + i + ".x", l.getBlockX());
+            config.set("ride." + s + ".queue.sign." + i + ".y", l.getBlockY());
+            config.set("ride." + s + ".queue.sign." + i + ".z", l.getBlockZ());
         }
-        config.set("queue." + sn + ".sign-amount", signs.size());
-        config.save(FileUtil.queueFile());
+        config.set("ride." + s + ".queue.sign-amount", signs.size());
+        config.save(FileUtil.menuFile());
     }
 
     public void deleteFPSign(Location loc) throws IOException {
         QueueRide ride = null;
         for (QueueRide r : getRides()) {
-            r.removeSign(loc);
+            if (!r.getSigns().contains(loc)) {
+                continue;
+            }
+            r.removeFPSign(loc);
             ride = r;
+            break;
         }
         if (ride == null) {
             return;
         }
-        String sn = null;
-        for (Map.Entry<String, QueueRide> entry : rides.entrySet()) {
-            if (entry.getValue().getName().equals(ride.getName())) {
-                sn = entry.getKey();
-                break;
-            }
-        }
-        if (sn == null) {
+        String s = ride.getShortName();
+        if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("fpsign-amount");
-        config.set("queue." + sn + ".fpsign", null);
+        config.set("ride." + s + ".queue.fpsign", null);
         List<Location> signs = ride.getFPsigns();
         for (int i = 1; i <= signs.size(); i++) {
             Location l = signs.get(i - 1);
-            config.set("queue." + sn + ".fpsign." + i + ".x", l.getBlockX());
-            config.set("queue." + sn + ".fpsign." + i + ".y", l.getBlockY());
-            config.set("queue." + sn + ".fpsign." + i + ".z", l.getBlockZ());
+            config.set("ride." + s + ".queue.fpsign." + i + ".x", l.getBlockX());
+            config.set("ride." + s + ".queue.fpsign." + i + ".y", l.getBlockY());
+            config.set("ride." + s + ".queue.fpsign." + i + ".z", l.getBlockZ());
         }
-        config.set("queue." + sn + ".fpsign-amount", signs.size());
-        config.save(FileUtil.queueFile());
+        config.set("ride." + s + ".queue.fpsign-amount", signs.size());
+        config.save(FileUtil.menuFile());
     }
 
-    public QueueRide getRide(String line) {
-        return rides.get(line);
+    public QueueRide getRide(String shortName) {
+        QueueRide ride = null;
+        for (QueueRide r : getRides()) {
+            if (r.getShortName().equalsIgnoreCase(shortName)) {
+                ride = r;
+                break;
+            }
+        }
+        return ride;
     }
 
     public QueueRide getRide2(String name) {
@@ -251,6 +281,7 @@ public class QueueManager {
         }
         String rideName = s.getLine(2);
         QueueRide ride = getRide2(rideName);
+        Ride rideObject = ParkManager.getRide(ride.getShortName());
         if (ride == null) {
             return;
         }
@@ -272,8 +303,9 @@ public class QueueManager {
         }
         if (s.getLine(0).equals(PlayerInteract.fastpass)) {
             PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
-            if (data.getFastpass() <= 0) {
-                player.sendMessage(ChatColor.RED + "You do not have any FastPasses! Purchase them in your MagicBand.");
+            if (data.getFastPassData().getPass(ride.getCategory()) <= 0) {
+                player.sendMessage(ChatColor.RED + "You do not have any " + ChatColor.YELLOW +
+                        ride.getCategory().getName() + " FastPasses! " + ChatColor.RED + "You can claim one per day at FastPass Kiosks.");
                 return;
             }
             ride.joinFPQueue(player);
@@ -285,7 +317,14 @@ public class QueueManager {
     }
 
     public List<QueueRide> getRides() {
-        return new ArrayList<>(rides.values());
+        List<Ride> rides = ParkManager.getRides();
+        List<QueueRide> list = new ArrayList<>();
+        for (Ride ride : rides) {
+            if (ride.getQueue() != null) {
+                list.add(ride.getQueue());
+            }
+        }
+        return list;
     }
 
     public void leaveAllQueues(Player player) {
@@ -308,83 +347,59 @@ public class QueueManager {
     }
 
     public void setStation(QueueRide ride, Location loc) throws IOException {
-        String sname = null;
-        for (Map.Entry<String, QueueRide> entry : rides.entrySet()) {
-            if (entry.getValue().getName().equals(ride.getName())) {
-                sname = entry.getKey();
-                break;
-            }
-        }
-        if (sname == null) {
+        String s = ride.getShortName();
+        if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
-        config.set("queue." + sname + ".station.x", loc.getX());
-        config.set("queue." + sname + ".station.y", loc.getY());
-        config.set("queue." + sname + ".station.z", loc.getZ());
-        config.set("queue." + sname + ".station.yaw", loc.getYaw());
-        config.set("queue." + sname + ".station.pitch", loc.getPitch());
-        config.save(FileUtil.queueFile());
+        YamlConfiguration config = FileUtil.menuYaml();
+        config.set("ride." + s + ".queue.station.x", loc.getX());
+        config.set("ride." + s + ".queue.station.y", loc.getY());
+        config.set("ride." + s + ".queue.station.z", loc.getZ());
+        config.set("ride." + s + ".queue.station.yaw", loc.getYaw());
+        config.set("ride." + s + ".queue.station.pitch", loc.getPitch());
+        config.save(FileUtil.menuFile());
     }
 
     public void setSpawner(QueueRide ride, Location loc) throws IOException {
-        String sname = null;
-        for (Map.Entry<String, QueueRide> entry : rides.entrySet()) {
-            if (entry.getValue().getName().equals(ride.getName())) {
-                sname = entry.getKey();
-                break;
-            }
-        }
-        if (sname == null) {
+        String s = ride.getShortName();
+        if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
-        config.set("queue." + sname + ".spawner.x", loc.getBlockX());
-        config.set("queue." + sname + ".spawner.y", loc.getBlockY());
-        config.set("queue." + sname + ".spawner.z", loc.getBlockZ());
-        config.save(FileUtil.queueFile());
+        YamlConfiguration config = FileUtil.menuYaml();
+        config.set("ride." + s + ".queue.spawner.x", loc.getBlockX());
+        config.set("ride." + s + ".queue.spawner.y", loc.getBlockY());
+        config.set("ride." + s + ".queue.spawner.z", loc.getBlockZ());
+        config.save(FileUtil.menuFile());
     }
 
     public void addSign(QueueRide ride, Location loc) throws IOException {
-        String sname = null;
-        for (Map.Entry<String, QueueRide> entry : rides.entrySet()) {
-            if (entry.getValue().getName().equals(ride.getName())) {
-                sname = entry.getKey();
-                break;
-            }
-        }
-        if (sname == null) {
+        String s = ride.getShortName();
+        if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
-        int amount = config.getInt("queue." + sname + ".sign-amount");
+        YamlConfiguration config = FileUtil.menuYaml();
+        int amount = config.getInt("ride." + s + ".queue.sign-amount");
         int num = amount + 1;
-        config.set("queue." + sname + ".sign." + num + ".x", loc.getBlockX());
-        config.set("queue." + sname + ".sign." + num + ".y", loc.getBlockY());
-        config.set("queue." + sname + ".sign." + num + ".z", loc.getBlockZ());
-        config.set("queue." + sname + ".sign-amount", num);
-        config.save(FileUtil.queueFile());
+        config.set("ride." + s + ".queue.sign." + num + ".x", loc.getBlockX());
+        config.set("ride." + s + ".queue.sign." + num + ".y", loc.getBlockY());
+        config.set("ride." + s + ".queue.sign." + num + ".z", loc.getBlockZ());
+        config.set("ride." + s + ".queue.sign-amount", num);
+        config.save(FileUtil.menuFile());
     }
 
     public void addFPSign(QueueRide ride, Location loc) throws IOException {
-        String sname = null;
-        for (Map.Entry<String, QueueRide> entry : rides.entrySet()) {
-            if (entry.getValue().getName().equals(ride.getName())) {
-                sname = entry.getKey();
-                break;
-            }
-        }
-        if (sname == null) {
+        String s = ride.getShortName();
+        if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
-        int amount = config.getInt("queue." + sname + ".fpsign-amount");
+        YamlConfiguration config = FileUtil.menuYaml();
+        int amount = config.getInt("ride." + s + ".queue.fpsign-amount");
         int num = amount + 1;
-        config.set("queue." + sname + ".fpsign." + num + ".x", loc.getBlockX());
-        config.set("queue." + sname + ".fpsign." + num + ".y", loc.getBlockY());
-        config.set("queue." + sname + ".fpsign." + num + ".z", loc.getBlockZ());
-        config.set("queue." + sname + ".fpsign-amount", num);
-        config.save(FileUtil.queueFile());
+        config.set("ride." + s + ".queue.fpsign." + num + ".x", loc.getBlockX());
+        config.set("ride." + s + ".queue.fpsign." + num + ".y", loc.getBlockY());
+        config.set("ride." + s + ".queue.fpsign." + num + ".z", loc.getBlockZ());
+        config.set("ride." + s + ".queue.fpsign-amount", num);
+        config.save(FileUtil.menuFile());
     }
 
     public void particle(Player player, Location loc) {

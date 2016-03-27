@@ -14,6 +14,7 @@ public class ShowStand {
     private ArmorStand stand;
     private Movement motion;
     private Position position;
+    private Rotation rotation;
 
     public ShowStand(int id, boolean small, ArmorData armorData) {
         this.id = id;
@@ -53,12 +54,20 @@ public class ShowStand {
         this.position = position;
     }
 
+    public void setRotation(Rotation rotation) {
+        this.rotation = rotation;
+    }
+
     public Movement getMovement() {
         return motion;
     }
 
     public Position getPosition() {
         return position;
+    }
+
+    public Rotation getRotation() {
+        return rotation;
     }
 
     public ArmorData getArmorData() {

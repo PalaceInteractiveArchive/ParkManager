@@ -10,6 +10,7 @@ import us.mcmagic.mcmagiccore.title.TitleObject;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.Warp;
+import us.mcmagic.parkmanager.listeners.PlayerInteract;
 import us.mcmagic.parkmanager.utils.PlayerUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -83,7 +84,8 @@ public class HotelManager {
                         result.getString("roomWarp") : null), result.getInt("cost"),
                         result.getString("checkoutNotificationRecipient") != "" ?
                                 UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
-                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"));
+                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"),
+                        result.getInt("suite") == 1);
                 rooms.add(room);
             }
             result.close();
@@ -280,6 +282,7 @@ public class HotelManager {
                 continue;
             }
             Sign s = (Sign) b.getState();
+            s.setLine(0, room.isSuite() ? PlayerInteract.suite : PlayerInteract.hotel);
             s.setLine(1, "" + ChatColor.GOLD + room.getRoomNumber());
             s.setLine(2, ChatColor.DARK_GREEN + room.getHotelName());
             if (room.isOccupied()) {

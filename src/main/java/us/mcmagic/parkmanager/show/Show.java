@@ -218,6 +218,13 @@ public class Show {
                             actions.add(position);
                             break;
                         }
+                        case "rotate": {
+                            // yaw speed
+                            float yaw = Float.parseFloat(tokens[4]);
+                            double speed = Double.parseDouble(tokens[5]);
+                            actions.add(new ArmorStandRotate(this, time, stand, yaw, speed));
+                            break;
+                        }
                         case "despawn": {
                             ArmorStandDespawn despawn = new ArmorStandDespawn(this, time, stand);
                             actions.add(despawn);

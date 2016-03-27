@@ -38,14 +38,17 @@ public class RideAttractionClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
-            case "Rides":
-                ParkManager.inventoryUtil.openRideListPage(player, 1);
-                return;
             case "Wait Times":
                 ParkManager.inventoryUtil.openWaitTimes(player);
                 return;
+            case "Rides":
+                ParkManager.inventoryUtil.openRideList(player);
+                return;
+            case "Meet & Greets":
+                ParkManager.inventoryUtil.openMeetAndGreetList(player);
+                return;
             case "Attractions":
-                ParkManager.inventoryUtil.openAttractionListPage(player, 1);
+                ParkManager.inventoryUtil.openAttractionList(player);
         }
     }
 }

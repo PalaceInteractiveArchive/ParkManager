@@ -8,7 +8,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.handlers.FastPassData;
 import us.mcmagic.parkmanager.handlers.PlayerData;
+import us.mcmagic.parkmanager.handlers.RideCategory;
 import us.mcmagic.parkmanager.queue.tasks.QueueTask;
 import us.mcmagic.parkmanager.queue.tasks.SpawnBlockSetTask;
 import us.mcmagic.parkmanager.utils.DateUtil;
@@ -38,23 +40,31 @@ public class QueueRide {
     protected boolean frozen = false;
     private boolean fpoff = false;
     private boolean paused = false;
-    private List<UUID> FPQueue;
     private Integer timerID;
     private final Block spawnerBlock;
     public int timeToNextRide;
+    private RideCategory category;
+    private String shortName;
 
-    public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp) {
+    public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp,
+                     RideCategory category, String shortName) {
         this.name = name;
         this.station = station;
         this.spawner = spawner;
         this.delay = delay;
         this.amountOfRiders = amountOfRiders;
         this.warp = warp;
+        this.category = category;
+        this.shortName = shortName;
         this.spawnerBlock = spawner.getBlock();
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getShortName() {
+        return shortName;
     }
 
     public Location getStation() {
@@ -96,7 +106,7 @@ public class QueueRide {
 
     public void joinQueue(final Player player) {
         ParkManager.queueManager.leaveAllQueues(player);
-        if (queue.size() < 1 && timeToNextRide <= 0) {
+        if (queue.isEmpty() && timeToNextRide <= 0) {
             lastSpawn = getTime() - (delay - 10);
             timeToNextRide = 10;
             player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
@@ -182,6 +192,8 @@ public class QueueRide {
                 }
                 if (fps.contains(tp.getUniqueId())) {
                     chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                    tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                            getCategory().getName() + "FastPass!");
                 }
                 tp.teleport(getStation());
                 tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
@@ -207,13 +219,15 @@ public class QueueRide {
     }
 
     protected void chargeFastpass(final PlayerData data) {
-        data.setFastpass(data.getFastpass() - 1);
+        final FastPassData fpdata = data.getFastPassData();
+        fpdata.setPass(category, fpdata.getPass(category) - 1);
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
             @Override
             public void run() {
                 try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET fastpass=? WHERE uuid=?");
-                    sql.setInt(1, data.getFastpass());
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
+                            category.getSqlName() + "=? WHERE uuid=?");
+                    sql.setInt(1, fpdata.getPass(category));
                     sql.setString(2, data.getUniqueId().toString());
                     sql.execute();
                     sql.close();
@@ -458,4 +472,7 @@ public class QueueRide {
         return spawnerBlock;
     }
 
+    public RideCategory getCategory() {
+        return category;
+    }
 }

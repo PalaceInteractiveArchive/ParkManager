@@ -11,6 +11,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.handlers.Outfit;
@@ -19,8 +21,6 @@ import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.utils.BandUtil;
 import us.mcmagic.parkmanager.utils.FileUtil;
 import us.mcmagic.parkmanager.utils.WarpUtil;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.util.*;
 
@@ -134,17 +134,13 @@ public class ShopManager {
     public Inventory getMenu(Player player) {
         Inventory main = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop");
         main.setItem(22, BandUtil.getBackItem());
-        ItemStack fp = new ItemCreator(Material.CLAY_BRICK, ChatColor.GREEN + "FastPass Shop",
-                Arrays.asList(ChatColor.YELLOW + "Purchase FastPasses and use them", ChatColor.YELLOW +
-                        "on rides to join a shorter line!", ChatColor.RED + "Limit: 3 FP purchases per day"));
         ItemStack storage = new ItemCreator(Material.CHEST, ChatColor.GREEN + "Storage Shop",
                 Arrays.asList(ChatColor.YELLOW + "Purchase up to 3 extra rows in your ", ChatColor.AQUA + "Backpack " +
                         ChatColor.YELLOW + "and " + ChatColor.AQUA + "Locker " + ChatColor.YELLOW + "in this Shop!"));
         ItemStack custom = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Custom MagicBands",
                 Arrays.asList(ChatColor.YELLOW + "Select different MagicBands and ", ChatColor.YELLOW +
                         "find the one that is right for you!"));
-        main.setItem(2, fp);
-        main.setItem(4, storage);
+        main.setItem(2, storage);
         main.setItem(6, custom);
         if (shops.isEmpty()) {
             main.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "No shops are available!"));
