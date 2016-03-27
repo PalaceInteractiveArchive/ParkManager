@@ -15,9 +15,10 @@ public class Ride {
     private RideCategory category;
     private QueueRide queue;
     private String shortName;
+    private boolean item;
 
     public Ride(String displayName, String warp, int id, byte data, RideCategory category, QueueRide queue,
-                String shortName) {
+                String shortName, boolean item) {
         this.displayName = displayName;
         this.warp = warp;
         this.id = id;
@@ -25,6 +26,7 @@ public class Ride {
         this.category = category;
         this.queue = queue;
         this.shortName = shortName;
+        this.item = item;
     }
 
     public String getDisplayName() {
@@ -57,5 +59,9 @@ public class Ride {
 
     public String getShortName() {
         return shortName;
+    }
+
+    public boolean hasItem() {
+        return item;
     }
 }

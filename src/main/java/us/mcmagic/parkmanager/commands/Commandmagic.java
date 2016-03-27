@@ -1,6 +1,7 @@
 package us.mcmagic.parkmanager.commands;
 
 import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -830,7 +831,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                     return true;
                 }
                 Player player = ((Player) sender);
-                if (args[0].equalsIgnoreCase("create")) {
+                if (args[1].equalsIgnoreCase("create")) {
                     try {
                         ParkManager.fpKioskManager.create(player);
                     } catch (MojangsonParseException e) {

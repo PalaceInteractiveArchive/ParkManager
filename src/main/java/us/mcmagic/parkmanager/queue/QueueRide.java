@@ -106,7 +106,7 @@ public class QueueRide {
 
     public void joinQueue(final Player player) {
         ParkManager.queueManager.leaveAllQueues(player);
-        if (queue.size() < 1 && timeToNextRide <= 0) {
+        if (queue.isEmpty() && timeToNextRide <= 0) {
             lastSpawn = getTime() - (delay - 10);
             timeToNextRide = 10;
             player.sendMessage(ChatColor.GREEN + "The Queue is empty so we're going to wait " + ChatColor.AQUA + "" +
@@ -192,6 +192,8 @@ public class QueueRide {
                 }
                 if (fps.contains(tp.getUniqueId())) {
                     chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                    tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                            getCategory().getName() + "FastPass!");
                 }
                 tp.teleport(getStation());
                 tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);

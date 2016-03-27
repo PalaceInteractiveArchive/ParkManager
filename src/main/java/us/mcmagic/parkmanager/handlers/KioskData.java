@@ -4,19 +4,25 @@ package us.mcmagic.parkmanager.handlers;
  * Created by Marc on 2/20/16
  */
 public class KioskData {
-    private long lastVote;
+    private long vote;
+    private int lastVote;
     private long monthGuest;
     private long monthDVC;
     private long monthShare;
 
-    public KioskData(long lastVote, long monthGuest, long monthDVC, long monthShare) {
+    public KioskData(long vote, int lastVote, long monthGuest, long monthDVC, long monthShare) {
+        this.vote = vote;
         this.lastVote = lastVote;
         this.monthGuest = monthGuest;
         this.monthDVC = monthDVC;
         this.monthShare = monthShare;
     }
 
-    public long getLastVote() {
+    public long getVote() {
+        return vote;
+    }
+
+    public int getLastVote() {
         return lastVote;
     }
 
@@ -30,6 +36,10 @@ public class KioskData {
 
     public long getMonthShare() {
         return monthShare;
+    }
+
+    public void setVote(long vote) {
+        this.vote = vote;
     }
 
     public void setLastVote(int lastVote) {

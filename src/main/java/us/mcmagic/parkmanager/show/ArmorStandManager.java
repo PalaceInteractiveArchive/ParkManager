@@ -2,15 +2,13 @@ package us.mcmagic.parkmanager.show;
 
 import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.show.handlers.armorstand.Movement;
-import us.mcmagic.parkmanager.show.handlers.armorstand.Position;
-import us.mcmagic.parkmanager.show.handlers.armorstand.ShowStand;
-import us.mcmagic.parkmanager.show.handlers.armorstand.StandAction;
+import us.mcmagic.parkmanager.show.handlers.armorstand.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.List;
 public class ArmorStandManager {
     private List<ShowStand> move = new ArrayList<>();
     private List<ShowStand> pos = new ArrayList<>();
+    private List<ShowStand> rot = new ArrayList<>();
 
     public ArmorStandManager() {
         start();
@@ -55,8 +54,10 @@ public class ArmorStandManager {
                     switch (position.getPositionType()) {
                         case HEAD: {
                             EulerAngle cur = armor.getHeadPose();
-                            armor.setHeadPose(new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
-                                    cur.getZ() + motion.getZ()));
+                            EulerAngle newangle = new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
+                                    cur.getZ() + motion.getZ());
+                            System.out.println(newangle.getX() + " " + newangle.getY() + " " + newangle.getZ());
+                            armor.setHeadPose(newangle);
                             break;
                         }
                         case BODY: {
@@ -93,6 +94,18 @@ public class ArmorStandManager {
                     position.setDuration(position.getDuration() - 1);
                     if (position.getDuration() < 0) {
                         pos.remove(stand);
+                    }
+                }
+                for (ShowStand stand : new ArrayList<>(rot)) {
+                    ArmorStand armor = stand.getStand();
+                    Rotation r = stand.getRotation();
+                    Location loc = armor.getLocation().clone();
+                    armor.teleport(new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw() +
+                            r.getYaw(), loc.getPitch()));
+                    r.setDuration(r.getDuration() - 1);
+                    r.setDuration(r.getDuration() - 1);
+                    if (r.getDuration() < 0) {
+                        rot.remove(stand);
                     }
                 }
             }

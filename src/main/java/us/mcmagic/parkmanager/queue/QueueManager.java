@@ -126,8 +126,8 @@ public class QueueManager {
                     Location spawner4 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner4.x"),
                             config.getInt("ride." + s + ".queue.spawner4.y"), config.getInt("ride." + s + ".queue.spawner4.z"));
                     ride = new TowerStation(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
-                            station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("queue." + s
-                            + ".delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("queue." + s +
+                            station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("ride." + s + ".queue." + s
+                            + ".delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("ride." + s + ".queue." + s +
                             ".warp"));
                     break;
                 }
@@ -140,9 +140,9 @@ public class QueueManager {
             Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner.x"),
                     config.getInt("ride." + s + ".queue.spawner.y"), config.getInt("ride." + s + ".queue.spawner.z"));
             ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', name), station, spawner,
-                    config.getInt("ride." + s + ".queue.delay"), config.getInt("queue." + s +
-                    ".amount"), config.getString("ride." + s + ".queue.warp"),
-                    RideCategory.fromString(config.getString("ride." + s + ".queue.category")), s);
+                    config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue..amount"),
+                    config.getString("ride." + s + ".queue.warp"), RideCategory.fromString(config.getString("ride." +
+                    s + ".category")), s);
         }
         for (int i = 1; i <= config.getInt("ride." + s + ".queue.sign-amount"); i++) {
             ride.addSign(new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.sign." + i + ".x"),
@@ -200,7 +200,7 @@ public class QueueManager {
         if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("sign-amount");
         config.set("ride." + s + ".queue.sign", null);
         List<Location> signs = ride.getSigns();
@@ -211,7 +211,7 @@ public class QueueManager {
             config.set("ride." + s + ".queue.sign." + i + ".z", l.getBlockZ());
         }
         config.set("ride." + s + ".queue.sign-amount", signs.size());
-        config.save(FileUtil.queueFile());
+        config.save(FileUtil.menuFile());
     }
 
     public void deleteFPSign(Location loc) throws IOException {
@@ -231,7 +231,7 @@ public class QueueManager {
         if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("fpsign-amount");
         config.set("ride." + s + ".queue.fpsign", null);
         List<Location> signs = ride.getFPsigns();
@@ -242,7 +242,7 @@ public class QueueManager {
             config.set("ride." + s + ".queue.fpsign." + i + ".z", l.getBlockZ());
         }
         config.set("ride." + s + ".queue.fpsign-amount", signs.size());
-        config.save(FileUtil.queueFile());
+        config.save(FileUtil.menuFile());
     }
 
     public QueueRide getRide(String shortName) {
@@ -304,7 +304,8 @@ public class QueueManager {
         if (s.getLine(0).equals(PlayerInteract.fastpass)) {
             PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
             if (data.getFastPassData().getPass(ride.getCategory()) <= 0) {
-                player.sendMessage(ChatColor.RED + "You do not have any FastPasses! Purchase them in your MagicBand.");
+                player.sendMessage(ChatColor.RED + "You do not have any " + ChatColor.YELLOW +
+                        ride.getCategory().getName() + " FastPasses! " + ChatColor.RED + "You can claim one per day at FastPass Kiosks.");
                 return;
             }
             ride.joinFPQueue(player);
@@ -350,13 +351,13 @@ public class QueueManager {
         if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         config.set("ride." + s + ".queue.station.x", loc.getX());
         config.set("ride." + s + ".queue.station.y", loc.getY());
         config.set("ride." + s + ".queue.station.z", loc.getZ());
         config.set("ride." + s + ".queue.station.yaw", loc.getYaw());
         config.set("ride." + s + ".queue.station.pitch", loc.getPitch());
-        config.save(FileUtil.queueFile());
+        config.save(FileUtil.menuFile());
     }
 
     public void setSpawner(QueueRide ride, Location loc) throws IOException {
@@ -364,11 +365,11 @@ public class QueueManager {
         if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         config.set("ride." + s + ".queue.spawner.x", loc.getBlockX());
         config.set("ride." + s + ".queue.spawner.y", loc.getBlockY());
         config.set("ride." + s + ".queue.spawner.z", loc.getBlockZ());
-        config.save(FileUtil.queueFile());
+        config.save(FileUtil.menuFile());
     }
 
     public void addSign(QueueRide ride, Location loc) throws IOException {
@@ -376,14 +377,14 @@ public class QueueManager {
         if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("ride." + s + ".queue.sign-amount");
         int num = amount + 1;
         config.set("ride." + s + ".queue.sign." + num + ".x", loc.getBlockX());
         config.set("ride." + s + ".queue.sign." + num + ".y", loc.getBlockY());
         config.set("ride." + s + ".queue.sign." + num + ".z", loc.getBlockZ());
         config.set("ride." + s + ".queue.sign-amount", num);
-        config.save(FileUtil.queueFile());
+        config.save(FileUtil.menuFile());
     }
 
     public void addFPSign(QueueRide ride, Location loc) throws IOException {
@@ -391,14 +392,14 @@ public class QueueManager {
         if (s == null) {
             return;
         }
-        YamlConfiguration config = FileUtil.queueYaml();
+        YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("ride." + s + ".queue.fpsign-amount");
         int num = amount + 1;
         config.set("ride." + s + ".queue.fpsign." + num + ".x", loc.getBlockX());
         config.set("ride." + s + ".queue.fpsign." + num + ".y", loc.getBlockY());
         config.set("ride." + s + ".queue.fpsign." + num + ".z", loc.getBlockZ());
         config.set("ride." + s + ".queue.fpsign-amount", num);
-        config.save(FileUtil.queueFile());
+        config.save(FileUtil.menuFile());
     }
 
     public void particle(Player player, Location loc) {

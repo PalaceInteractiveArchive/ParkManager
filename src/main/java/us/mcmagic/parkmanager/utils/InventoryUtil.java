@@ -28,9 +28,8 @@ import java.util.*;
 
 public class InventoryUtil {
     //Main Menu Items
-    private ItemStack rna = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides and Attractions",
-            Arrays.asList(ChatColor.GREEN + "Ride or experience", ChatColor.GREEN + "an Attraction from",
-                    ChatColor.GREEN + "Walt Disney World!"));
+    private ItemStack rna = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides and Meet & Greets",
+            Arrays.asList(ChatColor.GREEN + "View Rides, Attractions, and", ChatColor.GREEN + "Meet & Greets you can visit!"));
     private ItemStack sne = new ItemCreator(Material.FIREWORK, ChatColor.GREEN + "Shows and Events",
             Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous " + ChatColor.AQUA +
                     "MCMagic " + ChatColor.GREEN + "Shows!"));
@@ -136,8 +135,9 @@ public class InventoryUtil {
             "Finding Nemo the Musical", new ArrayList<String>());
     private ItemStack times = new ItemCreator(Material.BOOK, ChatColor.GREEN + "Show Timetable");
     //Rides and Attractions
-    private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
     private ItemStack wait = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Wait Times");
+    private ItemStack ride = new ItemCreator(Material.MINECART, ChatColor.GREEN + "Rides");
+    private ItemStack mng = new ItemCreator(Material.INK_SACK, ChatColor.GREEN + "Meet & Greets");
     private ItemStack attraction = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Attractions");
     //Hotels and Resorts
     private ItemStack viewMyRooms = new ItemCreator(Material.BED, 1, ChatColor.GREEN + "Visit Your Hotel Room",
@@ -443,9 +443,10 @@ public class InventoryUtil {
                     return;
                 }
                 case RIDESANDATTRACTIONS: {
-                    Inventory rna = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rides and Attractions");
+                    Inventory rna = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rides and Meet & Greets");
+                    rna.setItem(4, wait);
                     rna.setItem(11, ride);
-                    rna.setItem(13, wait);
+                    rna.setItem(13, mng);
                     rna.setItem(15, attraction);
                     rna.setItem(22, BandUtil.getBackItem());
                     player.openInventory(rna);
@@ -904,84 +905,27 @@ public class InventoryUtil {
     }
 
     @SuppressWarnings("deprecation")
-    public void openAttractionListPage(Player player, int page) {
-        HashMap<Integer, List<Attraction>> al = ParkManager.attPages;
-        Inventory alist;
-        if (al.size() > 1) {
-            alist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Attraction List Page " + page);
-        } else {
-            alist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Attraction List");
-        }
-        if (al.isEmpty() || al.get(1).isEmpty()) {
+    public void openRideList(Player player) {
+        List<Ride> rides = ParkManager.rides;
+        Inventory rlist = Bukkit.createInventory(player, (rides.size() <= 7 ? 27 : (rides.size() <= 14 ? 36 :
+                (rides.size() <= 21 ? 45 : 54))), ChatColor.BLUE + "Ride List");
+        if (rides.isEmpty()) {
             ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
             ItemMeta itemMeta = empty.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
-            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no attraction setup",
-                    ChatColor.RED + "on this server!"));
-            empty.setItemMeta(itemMeta);
-            alist.setItem(13, empty);
-            alist.setItem(31, BandUtil.getBackItem());
-            player.openInventory(alist);
-            return;
-        }
-        List<Attraction> pageList = al.get(page);
-        List<ItemStack> items = new ArrayList<>();
-        for (Attraction attraction : pageList) {
-            ItemStack rideItem = new ItemStack(attraction.getId(), 1, attraction.getData());
-            ItemMeta itemMeta = rideItem.getItemMeta();
-            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', attraction.getDisplayName()));
-            rideItem.setItemMeta(itemMeta);
-            if (rideItem.getItemMeta() == null) {
-                continue;
-            }
-            items.add(rideItem);
-        }
-        int i = 10;
-        for (ItemStack item : items) {
-            if (i > 25) {
-                break;
-            }
-            alist.setItem(i, item);
-            if (i == 16) {
-                i += 3;
-            } else {
-                i++;
-            }
-        }
-        if (page > 1) {
-            alist.setItem(30, lastPage);
-        }
-        if (al.size() > page) {
-            alist.setItem(32, nextPage);
-        }
-        alist.setItem(31, BandUtil.getBackItem());
-        player.openInventory(alist);
-    }
-
-    @SuppressWarnings("deprecation")
-    public void openRideListPage(Player player, int page) {
-        HashMap<Integer, List<Ride>> rl = ParkManager.ridePages;
-        Inventory rlist;
-        if (rl.size() > 1) {
-            rlist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Ride List Page " + page);
-        } else {
-            rlist = Bukkit.createInventory(player, 36, ChatColor.BLUE + "Ride List");
-        }
-        if (rl.isEmpty() || rl.get(1).isEmpty()) {
-            ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
-            ItemMeta itemMeta = empty.getItemMeta();
-            itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
-            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no rides setup",
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no Rides",
                     ChatColor.RED + "on this server!"));
             empty.setItemMeta(itemMeta);
             rlist.setItem(13, empty);
-            rlist.setItem(31, BandUtil.getBackItem());
+            rlist.setItem(rlist.getSize() - 5, BandUtil.getBackItem());
             player.openInventory(rlist);
             return;
         }
-        List<Ride> pageList = rl.get(page);
         List<ItemStack> items = new ArrayList<>();
-        for (Ride ride : pageList) {
+        for (Ride ride : rides) {
+            if (!ride.hasItem()) {
+                continue;
+            }
             ItemStack rideItem = new ItemStack(ride.getId(), 1, ride.getData());
             ItemMeta itemMeta = rideItem.getItemMeta();
             itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName()));
@@ -993,7 +937,7 @@ public class InventoryUtil {
         }
         int i = 10;
         for (ItemStack item : items) {
-            if (i > 25) {
+            if (i > 43) {
                 break;
             }
             rlist.setItem(i, item);
@@ -1003,14 +947,96 @@ public class InventoryUtil {
                 i++;
             }
         }
-        if (page > 1) {
-            rlist.setItem(30, lastPage);
-        }
-        if (rl.size() > page) {
-            rlist.setItem(32, nextPage);
-        }
-        rlist.setItem(31, BandUtil.getBackItem());
+        rlist.setItem(rlist.getSize() - 5, BandUtil.getBackItem());
         player.openInventory(rlist);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void openAttractionList(Player player) {
+        List<Ride> attractions = ParkManager.attractions;
+        Inventory alist = Bukkit.createInventory(player, (attractions.size() <= 7 ? 27 : (attractions.size() <= 14 ? 36 :
+                (attractions.size() <= 21 ? 45 : 54))), ChatColor.BLUE + "Attraction List");
+        if (attractions.isEmpty()) {
+            ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemMeta itemMeta = empty.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no Attractions",
+                    ChatColor.RED + "on this server!"));
+            empty.setItemMeta(itemMeta);
+            alist.setItem(13, empty);
+            alist.setItem(alist.getSize() - 5, BandUtil.getBackItem());
+            player.openInventory(alist);
+            return;
+        }
+        List<ItemStack> items = new ArrayList<>();
+        for (Ride attraction : attractions) {
+            ItemStack rideItem = new ItemStack(attraction.getId(), 1, attraction.getData());
+            ItemMeta itemMeta = rideItem.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', attraction.getDisplayName()));
+            rideItem.setItemMeta(itemMeta);
+            if (rideItem.getItemMeta() == null) {
+                continue;
+            }
+            items.add(rideItem);
+        }
+        int i = 10;
+        for (ItemStack item : items) {
+            if (i > 43) {
+                break;
+            }
+            alist.setItem(i, item);
+            if (i == 16) {
+                i += 3;
+            } else {
+                i++;
+            }
+        }
+        alist.setItem(alist.getSize() - 5, BandUtil.getBackItem());
+        player.openInventory(alist);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void openMeetAndGreetList(Player player) {
+        List<Ride> meetandgreets = ParkManager.meetandgreets;
+        Inventory mlist = Bukkit.createInventory(player, (meetandgreets.size() <= 7 ? 27 : (meetandgreets.size() <= 14 ? 36 :
+                (meetandgreets.size() <= 21 ? 45 : 54))), ChatColor.BLUE + "Meet & Greet List");
+        if (meetandgreets.isEmpty()) {
+            ItemStack empty = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14);
+            ItemMeta itemMeta = empty.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.RED + "Uh oh!");
+            itemMeta.setLore(Arrays.asList(ChatColor.RED + "Sorry, but there", ChatColor.RED + "are no Meet & Greets",
+                    ChatColor.RED + "on this server!"));
+            empty.setItemMeta(itemMeta);
+            mlist.setItem(13, empty);
+            mlist.setItem(mlist.getSize() - 5, BandUtil.getBackItem());
+            player.openInventory(mlist);
+            return;
+        }
+        List<ItemStack> items = new ArrayList<>();
+        for (Ride mng : meetandgreets) {
+            ItemStack rideItem = new ItemStack(mng.getId(), 1, mng.getData());
+            ItemMeta itemMeta = rideItem.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', mng.getDisplayName()));
+            rideItem.setItemMeta(itemMeta);
+            if (rideItem.getItemMeta() == null) {
+                continue;
+            }
+            items.add(rideItem);
+        }
+        int i = 10;
+        for (ItemStack item : items) {
+            if (i > 43) {
+                break;
+            }
+            mlist.setItem(i, item);
+            if (i == 16) {
+                i += 3;
+            } else {
+                i++;
+            }
+        }
+        mlist.setItem(mlist.getSize() - 5, BandUtil.getBackItem());
+        player.openInventory(mlist);
     }
 
     public void featureComingSoon(Player player) {

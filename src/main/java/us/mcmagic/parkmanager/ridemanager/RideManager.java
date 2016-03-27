@@ -33,6 +33,7 @@ public class RideManager implements Listener {
     private List<Cart> carts = new ArrayList<>();
 
     public RideManager() {
+        /*
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -44,7 +45,7 @@ public class RideManager implements Listener {
                 }
             }
         }, 0L, 1L);
-        registerProtocolLibListener();
+        registerProtocolLibListener();*/
     }
 
     public Cart spawn(Location loc) {

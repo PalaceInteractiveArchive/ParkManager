@@ -10,6 +10,7 @@ import us.mcmagic.mcmagiccore.title.TitleObject;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.Warp;
+import us.mcmagic.parkmanager.listeners.PlayerInteract;
 import us.mcmagic.parkmanager.utils.PlayerUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -281,6 +282,7 @@ public class HotelManager {
                 continue;
             }
             Sign s = (Sign) b.getState();
+            s.setLine(0, room.isSuite() ? PlayerInteract.suite : PlayerInteract.hotel);
             s.setLine(1, "" + ChatColor.GOLD + room.getRoomNumber());
             s.setLine(2, ChatColor.DARK_GREEN + room.getHotelName());
             if (room.isOccupied()) {

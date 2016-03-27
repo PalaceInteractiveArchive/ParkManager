@@ -17,7 +17,6 @@ public class FileUtil {
     private static File configuration = new File("plugins/ParkManager/config.yml");
     private static File menus = new File("plugins/ParkManager/menus.yml");
     private static File packs = new File("plugins/ParkManager/packs.yml");
-    private static File queue = new File("plugins/ParkManager/queue.yml");
     private static File shops = new File("plugins/ParkManager/shops.yml");
     public static File SERVICE_ACCOUNT_PKCS12_FILE = new File("plugins/ParkManager/key.p12");
 
@@ -29,16 +28,12 @@ public class FileUtil {
         return configuration;
     }
 
-    public static File menusFile() {
+    public static File menuFile() {
         return menus;
     }
 
     public static File packsFile() {
         return packs;
-    }
-
-    public static File queueFile() {
-        return queue;
     }
 
     public static File shopsFile() {
@@ -49,16 +44,12 @@ public class FileUtil {
         return YamlConfiguration.loadConfiguration(configurationFile());
     }
 
-    public static YamlConfiguration menusYaml() {
-        return YamlConfiguration.loadConfiguration(menusFile());
+    public static YamlConfiguration menuYaml() {
+        return YamlConfiguration.loadConfiguration(menuFile());
     }
 
     public static YamlConfiguration packsYaml() {
         return YamlConfiguration.loadConfiguration(packsFile());
-    }
-
-    public static YamlConfiguration queueYaml() {
-        return YamlConfiguration.loadConfiguration(queueFile());
     }
 
     public static YamlConfiguration shopsYaml() {

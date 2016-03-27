@@ -131,7 +131,7 @@ public class PlayerInteract implements Listener {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(this.suite);
                         Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
-                        if (rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
+                        if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
                             player.sendMessage(ChatColor.RED + "You must be a " + Rank.DVCMEMBER.getNameWithBrackets()
                                     + ChatColor.RED + " or " + Rank.SHAREHOLDER.getNameWithBrackets() +
                                     ChatColor.RED + " to stay in a Suite!");
