@@ -178,7 +178,7 @@ public class FPKioskManager implements Listener {
                     "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
                     "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                     fpdata.getThrillDay(), "Thrill")));
-            ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 86400000) ? Material.NETHER_STAR :
+            ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
                     Material.IRON_INGOT, ChatColor.GREEN + "Vote for MCMagic!", Arrays.asList(ChatColor.GRAY +
                     "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
                     "5 Tokens!", voteLore(vote)));
@@ -222,7 +222,7 @@ public class FPKioskManager implements Listener {
                 "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
                 "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                 fpdata.getThrillDay(), "Thrill")));
-        ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 86400000) ? Material.NETHER_STAR :
+        ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
                 Material.IRON_INGOT, ChatColor.GREEN + "Vote for MCMagic!", Arrays.asList(ChatColor.GRAY +
                 "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
                 "5 Tokens!", voteLore(vote)));

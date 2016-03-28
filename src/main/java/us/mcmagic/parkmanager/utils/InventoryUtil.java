@@ -941,7 +941,7 @@ public class InventoryUtil {
                 break;
             }
             rlist.setItem(i, item);
-            if (i == 16) {
+            if (i % 9 == 7) {
                 i += 3;
             } else {
                 i++;
@@ -985,7 +985,7 @@ public class InventoryUtil {
                 break;
             }
             alist.setItem(i, item);
-            if (i == 16) {
+            if (i % 9 == 7) {
                 i += 3;
             } else {
                 i++;
@@ -1029,7 +1029,7 @@ public class InventoryUtil {
                 break;
             }
             mlist.setItem(i, item);
-            if (i == 16) {
+            if (i % 9 == 7) {
                 i += 3;
             } else {
                 i++;

@@ -38,7 +38,7 @@ public class MeetAndGreetListClick {
             player.sendMessage(ChatColor.RED + "Sorry, but there are no Meet & Greets on this server!");
             return;
         }
-        Ride meetandgreet = ParkManager.getAttraction(name);
+        Ride meetandgreet = ParkManager.getMeetAndGreet(name);
         if (meetandgreet == null) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "There was an error, please tell a Staff Member!");
