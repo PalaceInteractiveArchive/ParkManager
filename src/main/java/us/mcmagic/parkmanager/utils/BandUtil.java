@@ -134,7 +134,7 @@ public class BandUtil {
             FastPassData fpdata = new FastPassData(result.getInt("slow"), result.getInt("moderate"),
                     result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"), result.getInt("tday"));
             KioskData kioskData = new KioskData(result.getLong("vote"), result.getInt("lastvote"),
-                    result.getLong("monthguest"), result.getLong("monthguest"), result.getLong("monthguest"));
+                    result.getLong("monthguest"), result.getLong("monthdvc"), result.getLong("monthshare"));
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),

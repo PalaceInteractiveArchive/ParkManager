@@ -33,37 +33,19 @@ public class Commandmc implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "/mc [mute/unmute]");
             return true;
         }
-        String action = args[0];
-        if (action.equalsIgnoreCase("mute")) {
-            try {
-                ByteArrayOutputStream b = new ByteArrayOutputStream();
-                DataOutputStream d = new DataOutputStream(b);
-                d.writeUTF("ParkChatMute");
-                d.writeUTF(senderName);
-                if (sender instanceof Player) {
-                    ((Player) sender).sendPluginMessage(ParkManager.getInstance(), "BungeeCord", b.toByteArray());
-                } else {
-                    ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
-                            "BungeeCord", b.toByteArray());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream d = new DataOutputStream(b);
+            d.writeUTF("ParkChat" + (args[0].equalsIgnoreCase("mute") ? "Mute" : "Unmute"));
+            d.writeUTF(senderName);
+            if (sender instanceof Player) {
+                ((Player) sender).sendPluginMessage(ParkManager.getInstance(), "BungeeCord", b.toByteArray());
+            } else {
+                ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
+                        "BungeeCord", b.toByteArray());
             }
-        } else if (action.equalsIgnoreCase("unmute")) {
-            try {
-                ByteArrayOutputStream b = new ByteArrayOutputStream();
-                DataOutputStream d = new DataOutputStream(b);
-                d.writeUTF("ParkChatUnmute");
-                d.writeUTF(senderName);
-                if (sender instanceof Player) {
-                    ((Player) sender).sendPluginMessage(ParkManager.getInstance(), "BungeeCord", b.toByteArray());
-                } else {
-                    ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
-                            "BungeeCord", b.toByteArray());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         sender.sendMessage(ChatColor.RED + "/mc [mute/unmute]");
         return true;

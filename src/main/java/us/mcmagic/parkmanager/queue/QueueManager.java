@@ -318,8 +318,20 @@ public class QueueManager {
 
     public List<QueueRide> getRides() {
         List<Ride> rides = ParkManager.getRides();
+        List<Ride> attractions = ParkManager.getAttractions();
+        List<Ride> mngs = ParkManager.getMeetAndGreets();
+        List<Ride> finalList = new ArrayList<>();
+        for (Ride r : rides) {
+            finalList.add(r);
+        }
+        for (Ride r : attractions) {
+            finalList.add(r);
+        }
+        for (Ride r : mngs) {
+            finalList.add(r);
+        }
         List<QueueRide> list = new ArrayList<>();
-        for (Ride ride : rides) {
+        for (Ride ride : finalList) {
             if (ride.getQueue() != null) {
                 list.add(ride.getQueue());
             }

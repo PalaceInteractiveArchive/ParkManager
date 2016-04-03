@@ -7,7 +7,7 @@ import org.bukkit.Material;
  * Created by Marc on 10/29/15
  */
 public enum ShowType {
-    TBA(ChatColor.LIGHT_PURPLE + "TBA", Material.BARRIER),
+    TBA(ChatColor.LIGHT_PURPLE + "To Be Announced", Material.BARRIER),
     WISHES(ChatColor.AQUA + "Wishes", Material.BLAZE_ROD),
     IROE(ChatColor.GREEN + "IROE", Material.NETHER_STAR),
     HALLOWISHES(ChatColor.GOLD + "HalloWishes", Material.JACK_O_LANTERN),

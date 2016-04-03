@@ -164,43 +164,50 @@ public class FPKioskManager implements Listener {
         long vote = kioskData.getVote();
         int lastVote = kioskData.getLastVote();
         int today = new GregorianCalendar().get(Calendar.DAY_OF_YEAR);
-        if (fpdata.getSlowDay() == today || fpdata.getModerateDay() == today || fpdata.getThrillDay() == today ||
-                System.currentTimeMillis() - vote > 86400000) {
-            ItemStack fpslow = new ItemCreator(fpItem(fpdata.getSlow(), fpdata.getSlowDay()), ChatColor.GREEN +
-                    "FastPass - Slow", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
-                    "line of a " + ChatColor.YELLOW + "Slow " + ChatColor.GRAY + "ride!", fpLore(fpdata.getSlow(),
-                    fpdata.getSlowDay(), "Slow")));
-            ItemStack fpmod = new ItemCreator(fpItem(fpdata.getModerate(), fpdata.getModerateDay()), ChatColor.GREEN +
-                    "FastPass - Moderate", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
-                    "line of a " + ChatColor.YELLOW + "Moderate " + ChatColor.GRAY + "ride!", fpLore(fpdata.getModerate(),
-                    fpdata.getModerateDay(), "Moderate")));
-            ItemStack fpthr = new ItemCreator(fpItem(fpdata.getThrill(), fpdata.getThrillDay()), ChatColor.GREEN +
-                    "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
-                    "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
-                    fpdata.getThrillDay(), "Thrill")));
-            ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
-                    Material.IRON_INGOT, ChatColor.GREEN + "Vote for MCMagic!", Arrays.asList(ChatColor.GRAY +
-                    "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
-                    "5 Tokens!", voteLore(vote)));
-            ItemStack monthGuest = new ItemCreator(monthItem(kioskData.getMonthGuest()), ChatColor.GREEN +
-                    "Monthly Tokens - Guest", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
-                    ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthGuest())));
-            ItemStack monthDVC = new ItemCreator(monthItem(kioskData.getMonthDVC()), ChatColor.GREEN +
-                    "Monthly Tokens - DVC", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
-                    ChatColor.GRAY + "You must be " + Rank.DVCMEMBER.getNameWithBrackets() + ChatColor.GRAY + " or above",
-                    monthLore(kioskData.getMonthDVC())));
-            ItemStack monthShare = new ItemCreator(monthItem(kioskData.getMonthShare()), ChatColor.GREEN +
-                    "Monthly Tokens - Shareholder", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
-                    ChatColor.GRAY + "You must be " + Rank.SHAREHOLDER.getNameWithBrackets() + ChatColor.GRAY + " or above",
-                    monthLore(kioskData.getMonthShare())));
-            inv.setItem(10, fpslow);
-            inv.setItem(11, fpmod);
-            inv.setItem(12, fpthr);
-            inv.setItem(13, voteItem);
-            inv.setItem(14, monthGuest);
-            inv.setItem(15, monthDVC);
-            inv.setItem(16, monthShare);
-        }
+        Calendar cur = Calendar.getInstance();
+        Calendar lastG = Calendar.getInstance();
+        Calendar lastD = Calendar.getInstance();
+        Calendar lastS = Calendar.getInstance();
+        lastG.setTime(new Date(kioskData.getMonthGuest()));
+        lastD.setTime(new Date(kioskData.getMonthDVC()));
+        lastS.setTime(new Date(kioskData.getMonthShare()));
+        boolean sameYearG = lastG.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        boolean sameYearD = lastD.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        boolean sameYearS = lastS.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        ItemStack fpslow = new ItemCreator(fpItem(fpdata.getSlow(), fpdata.getSlowDay()), ChatColor.GREEN +
+                "FastPass - Slow", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
+                "line of a " + ChatColor.YELLOW + "Slow " + ChatColor.GRAY + "ride!", fpLore(fpdata.getSlow(),
+                fpdata.getSlowDay(), "Slow")));
+        ItemStack fpmod = new ItemCreator(fpItem(fpdata.getModerate(), fpdata.getModerateDay()), ChatColor.GREEN +
+                "FastPass - Moderate", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
+                "line of a " + ChatColor.YELLOW + "Moderate " + ChatColor.GRAY + "ride!", fpLore(fpdata.getModerate(),
+                fpdata.getModerateDay(), "Moderate")));
+        ItemStack fpthr = new ItemCreator(fpItem(fpdata.getThrill(), fpdata.getThrillDay()), ChatColor.GREEN +
+                "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
+                "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
+                fpdata.getThrillDay(), "Thrill")));
+        ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
+                Material.IRON_INGOT, ChatColor.GREEN + "Vote for MCMagic!", Arrays.asList(ChatColor.GRAY +
+                "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
+                "5 Tokens!", voteLore(vote)));
+        ItemStack monthGuest = new ItemCreator(monthItem(kioskData.getMonthGuest()), ChatColor.GREEN +
+                "Monthly Tokens - Guest", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
+                ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthGuest())));
+        ItemStack monthDVC = new ItemCreator(monthItem(kioskData.getMonthDVC()), ChatColor.GREEN +
+                "Monthly Tokens - DVC", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
+                ChatColor.GRAY + "You must be " + Rank.DVCMEMBER.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                monthLore(kioskData.getMonthDVC())));
+        ItemStack monthShare = new ItemCreator(monthItem(kioskData.getMonthShare()), ChatColor.GREEN +
+                "Monthly Tokens - Shareholder", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
+                ChatColor.GRAY + "You must be " + Rank.SHAREHOLDER.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                monthLore(kioskData.getMonthShare())));
+        inv.setItem(10, fpslow);
+        inv.setItem(11, fpmod);
+        inv.setItem(12, fpthr);
+        inv.setItem(13, voteItem);
+        inv.setItem(14, monthGuest);
+        inv.setItem(15, monthDVC);
+        inv.setItem(16, monthShare);
     }
 
     public void openKiosk(Player player) {
@@ -258,7 +265,8 @@ public class FPKioskManager implements Listener {
         Calendar cur = Calendar.getInstance();
         Calendar lastC = Calendar.getInstance();
         lastC.setTime(new Date(last));
-        if (lastC.get(Calendar.YEAR) != cur.get(Calendar.YEAR) && lastC.get(Calendar.MONTH) != cur.get(Calendar.MONTH)) {
+        boolean sameYear = lastC.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        if (!sameYear || (sameYear && lastC.get(Calendar.MONTH) != cur.get(Calendar.MONTH))) {
             return ChatColor.YELLOW + "Right-Click to Claim!";
         }
         return ChatColor.GOLD + "Claim again in " + timeToNextMonth();
@@ -276,7 +284,8 @@ public class FPKioskManager implements Listener {
         Calendar cur = Calendar.getInstance();
         Calendar lastC = Calendar.getInstance();
         lastC.setTime(new Date(last));
-        if (lastC.get(Calendar.YEAR) != cur.get(Calendar.YEAR) && lastC.get(Calendar.MONTH) != cur.get(Calendar.MONTH)) {
+        boolean sameYear = lastC.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        if (!sameYear || (sameYear && lastC.get(Calendar.MONTH) != cur.get(Calendar.MONTH))) {
             return Material.DIAMOND;
         }
         return Material.IRON_INGOT;

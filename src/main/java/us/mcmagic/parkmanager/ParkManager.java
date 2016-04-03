@@ -314,6 +314,7 @@ public class ParkManager extends JavaPlugin implements Listener {
                 Ride attraction = new Ride(name, warp, type, data, category, queue, s, config.getBoolean("ride." + s + ".has-item"));
                 attractions.add(attraction);
             } else if (otype.equalsIgnoreCase("meetandgreet")) {
+                queue.toggleFreeze();
                 Ride meetandgreet = new Ride(name, warp, type, data, RideCategory.SLOW, queue, s, true);
                 meetandgreets.add(meetandgreet);
             }
@@ -341,6 +342,22 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static List<Ride> getRides() {
         List<Ride> list = new ArrayList<>();
         for (Ride ride : new ArrayList<>(rides)) {
+            list.add(ride);
+        }
+        return list;
+    }
+
+    public static List<Ride> getAttractions() {
+        List<Ride> list = new ArrayList<>();
+        for (Ride ride : new ArrayList<>(attractions)) {
+            list.add(ride);
+        }
+        return list;
+    }
+
+    public static List<Ride> getMeetAndGreets() {
+        List<Ride> list = new ArrayList<>();
+        for (Ride ride : new ArrayList<>(meetandgreets)) {
             list.add(ride);
         }
         return list;
@@ -380,6 +397,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         Commandmagic magic = new Commandmagic();
         getCommand("autograph").setExecutor(new Commandautograph());
         getCommand("autograph").setAliases(Arrays.asList("a", "auto"));
+        getCommand("b").setExecutor(new Commandb());
         getCommand("back").setExecutor(new Commandback());
         getCommand("bc").setExecutor(new Commandbc());
         getCommand("build").setExecutor(new Commandbuild());
@@ -398,6 +416,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         getCommand("item").setExecutor(new Commanditem());
         getCommand("item").setAliases(Collections.singletonList("i"));
         getCommand("magic").setExecutor(magic);
+        getCommand("mc").setExecutor(new Commandmc());
         getCommand("more").setExecutor(new Commandmore());
         getCommand("msg").setExecutor(new Commandmsg());
         getCommand("msg").setAliases(Arrays.asList("tell", "t", "w", "whisper", "m"));
