@@ -19,9 +19,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.utils.FileUtil;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.util.*;
 
@@ -89,27 +89,19 @@ public class Shooter implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        ItemStack inHand = event.getPlayer().getItemInHand();
+        Player player = event.getPlayer();
+        ItemStack inHand = player.getItemInHand();
         ItemMeta meta = inHand.getItemMeta();
-        if (inHand == null) {
-            return;
-        }
-        if (event.getAction().equals(Action.PHYSICAL)) {
-            return;
-        }
-        if (meta == null) {
-            return;
-        }
-        if (meta.getDisplayName() == null) {
+        if (inHand == null || event.getAction().equals(Action.PHYSICAL) || meta == null ||
+                meta.getDisplayName() == null || !ingame.contains(player.getUniqueId())) {
             return;
         }
         String displayName = meta.getDisplayName();
         if (inHand.getType().equals(stack.getType())) {
             meta.getDisplayName().equals(stack.getItemMeta().getDisplayName());
-            event.getPlayer().launchProjectile(Snowball.class);
+            player.launchProjectile(Snowball.class);
             event.setCancelled(true);
         }
-        Player player = event.getPlayer();
         if (locations.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             Block block = locations.get(player.getUniqueId());
