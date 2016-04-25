@@ -64,10 +64,12 @@ public class FPKioskManager implements Listener {
                                 }
                             }
                             if (e != null) {
-                                if (e.getType().equals(EntityType.ARMOR_STAND) && e.getCustomName().equals("Kiosk")) {
-                                    event.setCancelled(true);
-                                    if (!firstOpenMenu.contains(uuid)) {
-                                        firstOpenMenu.add(uuid);
+                                if (e.getType().equals(EntityType.ARMOR_STAND) && e.getCustomName() != null) {
+                                    if (e.getCustomName().equals("Kiosk")) {
+                                        event.setCancelled(true);
+                                        if (!firstOpenMenu.contains(uuid)) {
+                                            firstOpenMenu.add(uuid);
+                                        }
                                     }
                                 }
                             }

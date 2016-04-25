@@ -33,4 +33,9 @@ public class ArmorData {
     public ItemStack getBoots() {
         return boots;
     }
+
+    @Override
+    public String toString() {
+        return head.toString() + " " + chestplate.toString() + " " + leggings.toString() + " " + boots.toString();
+    }
 }

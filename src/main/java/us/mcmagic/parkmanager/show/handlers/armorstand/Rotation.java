@@ -6,6 +6,7 @@ package us.mcmagic.parkmanager.show.handlers.armorstand;
 public class Rotation {
     private float yaw;
     private long duration;
+    private boolean handled = false;
 
     public Rotation(float yaw, double speed) {
         this.yaw = yaw;
@@ -22,5 +23,13 @@ public class Rotation {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public void handle() {
+        handled = true;
+    }
+
+    public boolean isHandled() {
+        return handled;
     }
 }

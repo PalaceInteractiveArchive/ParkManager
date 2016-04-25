@@ -1,8 +1,5 @@
 package us.mcmagic.parkmanager.show.actions;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,8 +31,8 @@ public class GlowAction extends ShowAction {
     @Override
     public void play() {
         for (Player tp : Bukkit.getOnlinePlayers()) {
-            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-            //new PacketPlayOutEntityEquipment(((CraftPlayer)tp).getHandle().getId(),1,new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(298),))
+//            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
+//            new PacketPlayOutEntityEquipment(((CraftPlayer)tp).getHandle().getId(),1,new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(298),));
             if (tp.getLocation().distance(loc) <= radius) {
                 tp.getInventory().setHelmet(helm);
             }

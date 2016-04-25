@@ -57,7 +57,6 @@ public class ArmorStandPosition extends ShowAction {
         double x = ((angle.getX() - a.getX()) / speed) / 20;
         double y = ((angle.getY() - a.getY()) / speed) / 20;
         double z = ((angle.getZ() - a.getZ()) / speed) / 20;
-        System.out.println("TEST" + x);
         Vector motion = new Vector(x, y, z);
         stand.setPosition(new Position(motion, speed, positionType));
         ParkManager.armorStandManager.addStand(stand, StandAction.POSITION);

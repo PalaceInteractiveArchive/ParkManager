@@ -142,9 +142,9 @@ public class Show {
                         continue;
                     }
                     Boolean small = Boolean.valueOf(tokens[2]);
-                    //ArmorStand 0 false skull:myHash,299(234,124,41),300,301
+                    //ArmorStand 0 false skull:myHash;299(234,124,41);300;301
                     ArmorData armorData = parseArmorData(tokens[3]);
-                    ShowStand stand = new ShowStand(id, small, null);
+                    ShowStand stand = new ShowStand(id, small, armorData);
                     standmap.put(id, stand);
                     continue;
                 }
@@ -162,6 +162,7 @@ public class Show {
                     if (text.length() > 1)
                         text = text.substring(0, text.length() - 1);
                     actions.add(new TextAction(this, time, text));
+                    continue;
                 }
                 // Music
                 if (tokens[1].contains("Music")) {
@@ -171,6 +172,7 @@ public class Show {
                     } catch (Exception e) {
                         invalidLines.put(strLine, "Invalid Material");
                     }
+                    continue;
                 }
                 // Pulse
                 if (tokens[1].contains("Pulse")) {
@@ -180,6 +182,7 @@ public class Show {
                         continue;
                     }
                     actions.add(new PulseAction(this, time, loc));
+                    continue;
                 }
                 // ArmorStand Movement
                 if (tokens[1].equals("ArmorStand")) {
@@ -211,8 +214,8 @@ public class Show {
                             // PositionType x,y,z time
                             Double speed = Double.parseDouble(tokens[6]);
                             String[] alist = tokens[5].split(",");
-                            EulerAngle angle = new EulerAngle(Double.parseDouble(alist[0]), Double.parseDouble(alist[1]),
-                                    Double.parseDouble(alist[2]));
+                            EulerAngle angle = new EulerAngle(rad(Double.parseDouble(alist[0])),
+                                    rad(Double.parseDouble(alist[1])), rad(Double.parseDouble(alist[2])));
                             ArmorStandPosition position = new ArmorStandPosition(this, time, stand,
                                     PositionType.fromString(tokens[4]), angle, speed);
                             actions.add(position);
@@ -572,6 +575,10 @@ public class Show {
         }
     }
 
+    private double rad(double v) {
+        return (v * Math.PI) / 180;
+    }
+
     @SuppressWarnings("deprecation")
     private ArmorData parseArmorData(String s) throws Exception {
         String[] list = s.split(";");
@@ -600,9 +607,9 @@ public class Show {
                     }
                     ItemStack temp = new ItemStack(type, 1, dam);
                     LeatherArmorMeta lam = (LeatherArmorMeta) temp.getItemMeta();
-                    String[] cls = color[1].split(",");
+                    String[] cls = color[1].replaceAll("[()]", "").split(",");
                     lam.setColor(Color.fromRGB(Integer.parseInt(cls[0]), Integer.parseInt(cls[1]),
-                            Integer.parseInt(cls[2].replace("\\)", ""))));
+                            Integer.parseInt(cls[2])));
                     temp.setItemMeta(lam);
                     switch (i) {
                         case 1:

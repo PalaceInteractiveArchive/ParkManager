@@ -1,9 +1,7 @@
 package us.mcmagic.parkmanager.show;
 
-import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
@@ -37,11 +35,26 @@ public class ArmorStandManager {
                     }
                     Movement movement = stand.getMovement();
                     Vector motion = movement.getMotion();
-                    Entity e = ((CraftArmorStand) armor).getHandle();
-                    e.motX = motion.getX();
-                    e.motY = motion.getY();
-                    e.motZ = motion.getZ();
-                    e.velocityChanged = true;
+                    Location loc = armor.getLocation();
+                    float yaw = loc.getYaw();
+                    float pitch = loc.getPitch();
+                    if (rot.contains(stand)) {
+                        for (ShowStand s2 : new ArrayList<>(rot)) {
+                            if (s2.getId() != stand.getId()) {
+                                continue;
+                            }
+                            Rotation r = s2.getRotation();
+                            r.handle();
+                            yaw += r.getYaw();
+                            r.setDuration(r.getDuration() - 1);
+                            if (r.getDuration() < 0) {
+                                rot.remove(s2);
+                            }
+                            break;
+                        }
+                    }
+                    armor.teleport(new Location(armor.getWorld(), loc.getX() + motion.getX(), loc.getY() + motion.getY(),
+                            loc.getZ() + motion.getZ(), yaw, pitch));
                     movement.setDuration(movement.getDuration() - 1);
                     if (movement.getDuration() < 0) {
                         move.remove(stand);
@@ -56,7 +69,6 @@ public class ArmorStandManager {
                             EulerAngle cur = armor.getHeadPose();
                             EulerAngle newangle = new EulerAngle(cur.getX() + motion.getX(), cur.getY() + motion.getY(),
                                     cur.getZ() + motion.getZ());
-                            System.out.println(newangle.getX() + " " + newangle.getY() + " " + newangle.getZ());
                             armor.setHeadPose(newangle);
                             break;
                         }
@@ -99,6 +111,9 @@ public class ArmorStandManager {
                 for (ShowStand stand : new ArrayList<>(rot)) {
                     ArmorStand armor = stand.getStand();
                     Rotation r = stand.getRotation();
+                    if (r.isHandled()) {
+                        continue;
+                    }
                     Location loc = armor.getLocation().clone();
                     armor.teleport(new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw() +
                             r.getYaw(), loc.getPitch()));
@@ -119,6 +134,9 @@ public class ArmorStandManager {
                 break;
             case POSITION:
                 pos.add(stand);
+                break;
+            case ROTATION:
+                rot.add(stand);
                 break;
         }
     }

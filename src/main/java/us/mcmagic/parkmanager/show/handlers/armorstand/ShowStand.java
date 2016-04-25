@@ -20,6 +20,7 @@ public class ShowStand {
         this.id = id;
         this.small = small;
         this.armorData = armorData;
+        this.hasSpawned = false;
     }
 
     public int getId() {
