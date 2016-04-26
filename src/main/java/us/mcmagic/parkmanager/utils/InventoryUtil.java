@@ -346,8 +346,8 @@ public class InventoryUtil {
                         player.openInventory(foodMenu);
                         // If even amount of items
                     } else {
-                        place++;
-                        int amount = 1;
+                        place = 14;
+                        int amount = 2;
                         for (FoodLocation loc : foodLocations) {
                             if (place > 16) {
                                 break;
