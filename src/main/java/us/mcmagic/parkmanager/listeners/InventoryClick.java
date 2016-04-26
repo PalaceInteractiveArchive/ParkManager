@@ -204,6 +204,10 @@ public class InventoryClick implements Listener {
             case "Show Timetable":
                 event.setCancelled(true);
                 ShowTimeClick.handle(event);
+                return;
+            case "Player Time":
+                event.setCancelled(true);
+                PlayerTimeClick.handle(event);
         }
     }
 

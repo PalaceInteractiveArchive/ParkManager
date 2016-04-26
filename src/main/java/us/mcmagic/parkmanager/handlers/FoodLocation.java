@@ -1,5 +1,8 @@
 package us.mcmagic.parkmanager.handlers;
 
+/**
+ * Created by Marc on 4/26/16
+ */
 public class FoodLocation {
     private String name;
     private String warp;

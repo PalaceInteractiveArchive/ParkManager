@@ -264,15 +264,12 @@ public class ParkManager extends JavaPlugin implements Listener {
         YamlConfiguration config = FileUtil.menuYaml();
         List<String> locations = config.getStringList("food-names");
         for (String location : locations) {
-            String name = config
-                    .getString("food." + location + ".name");
-            String warp = config
-                    .getString("food." + location + ".warp");
+            String name = config.getString("food." + location + ".name");
+            String warp = config.getString("food." + location + ".warp");
             int type = config.getInt("food." + location + ".type");
             byte data;
             if (config.contains("food." + location + ".data")) {
-                data = (byte) config.getInt("food." + location
-                        + ".data");
+                data = (byte) config.getInt("food." + location + ".data");
             } else {
                 data = 0;
             }

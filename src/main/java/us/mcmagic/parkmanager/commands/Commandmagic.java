@@ -941,13 +941,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                 return true;
             }
             case "reload":
-                ParkManager ma = ParkManager.getInstance();
+                ParkManager pm = ParkManager.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
                 SqlUtil.initialize();
-                ma.setupFirstJoinItems();
-                ma.setupFoodLocations();
+                pm.setupFirstJoinItems();
+                pm.setupFoodLocations();
+                pm.setupRides();
                 ParkManager.parkSoundManager.initialize();
-                ma.setupRides();
                 ParkManager.stitch.initialize();
                 ParkManager.scheduleManager.update();
                 ParkManager.itemUtil.initialize();
@@ -1015,7 +1015,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "Outfit Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit create [Name] " + ChatColor.AQUA +
                         "- Create new outfit based on what you are currently wearing");
-                sender.sendMessage(ChatColor.GREEN + "/magic outfit info [ID] " + ChatColor.AQUA + "- Info for an outfit");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit list " + ChatColor.AQUA + "- List all outfits");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit remove [ID] " + ChatColor.AQUA +
                         "- Remove outfit based on numeric ID");

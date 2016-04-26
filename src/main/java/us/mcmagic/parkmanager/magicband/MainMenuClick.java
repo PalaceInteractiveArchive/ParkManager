@@ -8,8 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
@@ -17,7 +15,6 @@ import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.utils.BandUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by Marc on 12/13/14
@@ -73,12 +70,7 @@ public class MainMenuClick {
                 ParkManager.inventoryUtil.openWardrobeManagerPage(player, 1);
                 return;
             case WATCH:
-                ItemStack time = new ItemStack(Material.WATCH);
-                ItemMeta tm = time.getItemMeta();
-                tm.setDisplayName(ChatColor.GREEN + "Current Time in EST");
-                tm.setLore(Collections.singletonList(ChatColor.YELLOW + ParkManager.bandUtil.currentTime()));
-                time.setItemMeta(tm);
-                inv.setItem(4, time);
+                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERTIME);
                 return;
             case GOLD_BOOTS:
                 ParkManager.shopManager.openMenu(player);
@@ -86,26 +78,8 @@ public class MainMenuClick {
             case POTATO_ITEM:
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.FOOD);
                 return;
-            case ENDER_PEARL:
-                player.closeInventory();
-                BungeeUtil.sendToServer(player, "Hub");
-                return;
             case NETHER_STAR:
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK);
-                return;
-            case FIREWORK_CHARGE:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
-                return;
-            case GLOWSTONE_DUST:
-                player.closeInventory();
-                BungeeUtil.sendToServer(player, "Arcade");
-                return;
-            case GRASS:
-                player.closeInventory();
-                BungeeUtil.sendToServer(player, "Creative");
-                return;
-            case CLAY_BRICK:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.FASTPASS);
         }
     }
 }

@@ -74,7 +74,7 @@ public class InventoryUtil {
             Collections.singletonList(ChatColor.GREEN + "/join Typhoon"));
     private ItemStack dcl = new ItemCreator(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line",
             Collections.singletonList(ChatColor.GREEN + "/join DCL"));
-    private ItemStack seasonal = new ItemCreator(Material.RED_ROSE, 1, (byte) 2, ChatColor.GREEN +
+    private ItemStack seasonal = new ItemCreator(Material.RED_ROSE, 1, (byte) 2, ChatColor.AQUA +
             "Seasonal", Arrays.asList(ChatColor.GREEN + "/join Seasonal"));
     //My Profile
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
@@ -262,15 +262,26 @@ public class InventoryUtil {
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             switch (inv) {
                 case MAINMENU: {
-                    Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE
-                            + player.getName() + "'s MagicBand");
+                    Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE + player.getName() + "'s MagicBand");
                     ItemStack playerInfo = HeadUtil.getPlayerHead(MCMagicCore.getUser(player.getUniqueId())
                             .getTextureHash(), ChatColor.GREEN + "My Profile");
                     ItemMeta im = playerInfo.getItemMeta();
                     im.setLore(Collections.singletonList(ChatColor.GRAY + "Loading..."));
                     playerInfo.setItemMeta(im);
+                    ItemStack ptime;
+                    if (rank.getRankId() >= Rank.SHAREHOLDER.getRankId()) {
+                        ptime = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Player Time",
+                                Arrays.asList(ChatColor.GREEN + "Change your time in", ChatColor.GREEN +
+                                        "your current Park"));
+                    } else {
+                        ptime = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Player Time",
+                                Arrays.asList(ChatColor.RED + "You must be a " + ChatColor.LIGHT_PURPLE + "Shareholder",
+                                        ChatColor.RED + "to use this feature!"));
+                    }
+                    main.setItem(2, hnr);
                     main.setItem(4, playerInfo);
-                    main.setItem(10, hnr);
+                    main.setItem(6, ptime);
+                    main.setItem(10, food);
                     main.setItem(11, sne);
                     main.setItem(12, rna);
                     main.setItem(13, parks);
@@ -303,7 +314,15 @@ public class InventoryUtil {
                 }
                 case FOOD: {
                     Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
+                    foodMenu.setItem(22, BandUtil.getBackItem());
                     List<FoodLocation> foodLocations = ParkManager.foodLocations;
+                    if (foodLocations.isEmpty()) {
+                        foodMenu.setItem(13, new ItemCreator(Material.STAINED_CLAY, 1, (byte) 14, ChatColor.RED +
+                                "Uh oh!", Arrays.asList(ChatColor.RED + "Sorry, but there are no",
+                                ChatColor.RED + "food locations on this server!")));
+                        player.openInventory(foodMenu);
+                        return;
+                    }
                     // If odd amount of items
                     int place = 13;
                     if (foodLocations.size() % 2 == 1) {
@@ -324,7 +343,6 @@ public class InventoryUtil {
                             }
                             amount++;
                         }
-                        foodMenu.setItem(22, BandUtil.getBackItem());
                         player.openInventory(foodMenu);
                         // If even amount of items
                     } else {
@@ -346,7 +364,6 @@ public class InventoryUtil {
                             }
                             amount++;
                         }
-                        foodMenu.setItem(22, BandUtil.getBackItem());
                         player.openInventory(foodMenu);
                     }
                     return;
@@ -715,6 +732,30 @@ public class InventoryUtil {
                     }
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
+                }
+                case PLAYERTIME: {
+                    if (rank.getRankId() < Rank.SHAREHOLDER.getRankId()) {
+                        player.closeInventory();
+                        player.sendMessage(ChatColor.RED + "You must be a " + Rank.SHAREHOLDER.getNameWithBrackets() +
+                                ChatColor.RED + " or above to use this!");
+                        return;
+                    }
+                    Inventory playerTime = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Player Time");
+                    long time = player.getPlayerTime() % 24000;
+                    List<String> current = Arrays.asList(ChatColor.YELLOW + "Currently Selected!");
+                    List<String> not = Arrays.asList(ChatColor.GRAY + "Click to Select!");
+                    playerTime.setItem(9, new ItemCreator(Material.STAINED_GLASS_PANE, ChatColor.GREEN + "Reset",
+                            Arrays.asList(ChatColor.GREEN + "Match Park Time")));
+                    playerTime.setItem(10, new ItemCreator(Material.WATCH, ChatColor.GREEN + "6AM", time == 0 ? current : not));
+                    playerTime.setItem(11, new ItemCreator(Material.WATCH, ChatColor.GREEN + "9AM", time == 3000 ? current : not));
+                    playerTime.setItem(12, new ItemCreator(Material.WATCH, ChatColor.GREEN + "12PM", time == 6000 ? current : not));
+                    playerTime.setItem(13, new ItemCreator(Material.WATCH, ChatColor.GREEN + "3PM", time == 9000 ? current : not));
+                    playerTime.setItem(14, new ItemCreator(Material.WATCH, ChatColor.GREEN + "6PM", time == 12000 ? current : not));
+                    playerTime.setItem(15, new ItemCreator(Material.WATCH, ChatColor.GREEN + "9PM", time == 15000 ? current : not));
+                    playerTime.setItem(16, new ItemCreator(Material.WATCH, ChatColor.GREEN + "12AM", time == 18000 ? current : not));
+                    playerTime.setItem(17, new ItemCreator(Material.WATCH, ChatColor.GREEN + "3AM", time == 21000 ? current : not));
+                    playerTime.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(playerTime);
                 }
             }
         } catch (Exception e) {
@@ -1095,7 +1136,7 @@ public class InventoryUtil {
             return;
         }
         for (Map.Entry<String, Integer> entry : counts.entrySet()) {
-            ItemStack stack = new ItemCreator(Material.MINECART, ChatColor.GREEN + entry.getKey(),
+            ItemStack stack = new ItemCreator(Material.MINECART, ChatColor.GREEN + entry.getKey().trim(),
                     Arrays.asList(ChatColor.YELLOW + "Rides: " + entry.getValue(), ChatColor.YELLOW + "Park: " +
                             MCMagicCore.getMCMagicConfig().serverName));
             inv.setItem(i, stack);
