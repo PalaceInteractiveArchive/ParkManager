@@ -19,11 +19,22 @@ public enum DropTower {
     }
 
     public TowerLayout randomizeLayout() {
-        return layout = new TowerLayout(getRandomBetween(89, 103), getRandomBetween(69, 85));
+        return layout = new TowerLayout(getRandomBetween(94, 104), getRandomBetween(68, 79));
     }
 
     private int getRandomBetween(int min, int max) {
         Random random = new Random();
         return random.nextInt(max - min + 1) + min;
+    }
+
+    public static DropTower fromString(String s) {
+        switch (s.toLowerCase()) {
+            case "echo":
+                return ECHO;
+            case "foxtrot":
+                return FOXTROT;
+            default:
+                return null;
+        }
     }
 }

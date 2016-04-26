@@ -6,6 +6,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,6 +32,8 @@ import us.mcmagic.parkmanager.blockchanger.Changer;
 import us.mcmagic.parkmanager.handlers.Outfit;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.queue.QueueRide;
+import us.mcmagic.parkmanager.queue.tot.DropTower;
+import us.mcmagic.parkmanager.queue.tot.TowerLayout;
 import us.mcmagic.parkmanager.show.Show;
 import us.mcmagic.parkmanager.show.ticker.TickEvent;
 import us.mcmagic.parkmanager.utils.SqlUtil;
@@ -41,6 +44,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -810,7 +814,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                     helpMenu("pin", sender);
                     return true;
                 }
-                String username = args[0];
+                String username = args[1];
                 Player tp = Bukkit.getPlayer(username);
                 if (tp == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
@@ -841,6 +845,99 @@ public class Commandmagic implements Listener, CommandExecutor {
                     return true;
                 }
                 helpMenu("fp", sender);
+                return true;
+            }
+            case "tot": {
+                if (!(sender instanceof Player || sender instanceof BlockCommandSender)) {
+                    sender.sendMessage(ChatColor.RED + "Only Players and Command Blocks can do this!");
+                    return true;
+                }
+                if (args.length != 3) {
+                    helpMenu("tot", sender);
+                    return true;
+                }
+                if (!args[1].equalsIgnoreCase("randomize")) {
+                    helpMenu("tot", sender);
+                    return true;
+                }
+                String tname = args[2];
+                DropTower tower = DropTower.fromString(tname);
+                TowerLayout layout = tower.randomizeLayout();
+                int high = layout.getHigh();
+                int low = layout.getLow();
+                World world = sender instanceof Player ? ((Player) sender).getWorld() :
+                        (sender instanceof BlockCommandSender ? ((BlockCommandSender) sender).getBlock().getWorld() : null);
+                if (world == null) {
+                    sender.sendMessage(ChatColor.RED + "Are you sure you're a Player or a Command Block?");
+                    return true;
+                }
+                int x1 = 0;
+                int z1 = 0;
+                int x2 = 0;
+                int z2 = 0;
+                switch (tower) {
+                    case ECHO:
+                        x1 = -188;
+                        z1 = -122;
+                        x2 = -189;
+                        z2 = -123;
+                        break;
+                    case FOXTROT:
+                        x1 = -178;
+                        z1 = -112;
+                        x2 = -179;
+                        z2 = -113;
+                        break;
+                }
+                DecimalFormat df = new DecimalFormat("#.##");
+                double topWait = (0.25 * new Random().nextDouble()) + 0.25;
+                double bottomWait = (0.25 * new Random().nextDouble()) + 0.25;
+                topWait = Double.parseDouble(df.format(topWait));
+                bottomWait = Double.parseDouble(df.format(bottomWait));
+                Block high1 = world.getBlockAt(x1, high, z1);
+                Block low1 = world.getBlockAt(x1, low, z1);
+                Block high2 = world.getBlockAt(x2, high, z2);
+                Block low2 = world.getBlockAt(x2, low, z2);
+                for (int i = 68; i <= 79; i++) {
+                    world.getBlockAt(x1, i, z1).setType(Material.AIR);
+                    world.getBlockAt(x2, i, z2).setType(Material.AIR);
+                }
+                for (int i = 94; i <= 104; i++) {
+                    world.getBlockAt(x1, i, z1).setType(Material.AIR);
+                    world.getBlockAt(x2, i, z2).setType(Material.AIR);
+                }
+                high1.setType(Material.WALL_SIGN);
+                high1.setData((byte) 2);
+                low1.setType(Material.WALL_SIGN);
+                low1.setData((byte) 2);
+                high2.setType(Material.WALL_SIGN);
+                high2.setData((byte) 5);
+                low2.setType(Material.WALL_SIGN);
+                low2.setData((byte) 5);
+                Sign high1Sign = (Sign) high1.getState();
+                Sign low1Sign = (Sign) low1.getState();
+                Sign high2Sign = (Sign) high2.getState();
+                Sign low2Sign = (Sign) low2.getState();
+                high1Sign.setLine(0, "[+train]");
+                high1Sign.setLine(1, "station");
+                high1Sign.setLine(2, topWait + "");
+                high1Sign.setLine(3, "backward");
+                high2Sign.setLine(0, "[+train]");
+                high2Sign.setLine(1, "station");
+                high2Sign.setLine(2, topWait + "");
+                high2Sign.setLine(3, "backward");
+                low1Sign.setLine(0, "[+train]");
+                low1Sign.setLine(1, "station 6");
+                low1Sign.setLine(2, bottomWait + "");
+                low1Sign.setLine(3, "backward");
+                low2Sign.setLine(0, "[+train]");
+                low2Sign.setLine(1, "station 6");
+                low2Sign.setLine(2, bottomWait + "");
+                low2Sign.setLine(3, "backward");
+                high1Sign.update();
+                high2Sign.update();
+                low1Sign.update();
+                low2Sign.update();
                 return true;
             }
             case "reload":
@@ -891,12 +988,18 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
                 sender.sendMessage(ChatColor.GREEN + "/magic show " + ChatColor.AQUA + "- Control a Show");
                 sender.sendMessage(ChatColor.GREEN + "/magic fp " + ChatColor.AQUA + "- Manage FastPass Kiosks");
-                sender.sendMessage(ChatColor.GREEN + "/magic pin " + ChatColor.AQUA + "- Pin Trading Command");
+                //sender.sendMessage(ChatColor.GREEN + "/magic pin " + ChatColor.AQUA + "- Pin Trading Command");
+                sender.sendMessage(ChatColor.GREEN + "/magic tot " + ChatColor.AQUA + "- Tower of Terror Randomizer");
                 sender.sendMessage(ChatColor.GREEN + "/magic rc " + ChatColor.AQUA + "- Ride Counters");
                 sender.sendMessage(ChatColor.GREEN + "/magic schedule " + ChatColor.AQUA + "- Show Schedule");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit " + ChatColor.AQUA + "- Outfit Manager");
                 sender.sendMessage(ChatColor.GREEN + "/magic iasw " + ChatColor.AQUA + "- IASW Manager");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
+                break;
+            case "tot":
+                sender.sendMessage(ChatColor.GREEN + "Tower of Terror Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic tot randomize [Echo/Foxtrot] " + ChatColor.AQUA +
+                        "- Randomize one of the towers");
                 break;
             case "fp":
                 sender.sendMessage(ChatColor.GREEN + "FastPass Kiosk Commands:");
