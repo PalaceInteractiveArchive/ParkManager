@@ -260,6 +260,7 @@ public class Show {
                     } catch (Exception ignored) {
                         invalidLines.put(strLine, "Invalid Glow Line");
                     }
+                    continue;
                 }
                 // Lightning
                 if (tokens[1].contains("Lightning")) {
@@ -269,6 +270,7 @@ public class Show {
                         continue;
                     }
                     actions.add(new LightningAction(this, time, loc));
+                    continue;
                 }
                 // NPC Spawn
                 if (tokens[1].contains("NPC")) {
@@ -343,6 +345,7 @@ public class Show {
                         }
                         actions.add(new NPCMoveAction(this, time, name, loc, speed));
                     }
+                    continue;
                 }
                 // Fake Block
                 if (tokens[1].contains("FakeBlock")) {
@@ -373,6 +376,7 @@ public class Show {
                         invalidLines.put(strLine,
                                 "Invalid Block ID or Block data");
                     }
+                    continue;
                 }
                 // Block
                 if (tokens[1].startsWith("Block")) {
@@ -401,6 +405,7 @@ public class Show {
                     } catch (Exception e) {
                         invalidLines.put(strLine, "Invalid Block ID or Block data");
                     }
+                    continue;
                 }
                 // Firework
                 if (tokens[1].contains("PowerFirework")) {
@@ -423,6 +428,7 @@ public class Show {
                         continue;
                     }
                     actions.add(new PowerFireworkAction(this, time, loc, motion, effectList));
+                    continue;
                 }
                 if (tokens[1].startsWith("Firework")) {
                     if (tokens.length != 7) {
@@ -483,6 +489,7 @@ public class Show {
                         continue;
                     }
                     actions.add(new FireworkAction(this, time, loc, effectList, power, dir, dirPower));
+                    continue;
                 }
                 // Schematic
                 if (tokens[1].contains("Schematic")) {
@@ -501,6 +508,7 @@ public class Show {
                     } else {
                         invalidLines.put(strLine, "Invalid X, Y, or Z Coordinates!");
                     }
+                    continue;
                 }
                 if (tokens[1].contains("Fountain")) {
                     Location loc = WorldUtil.strToLoc(world.getName() + "," + tokens[4]);
@@ -528,6 +536,7 @@ public class Show {
                         invalidLines.put(strLine, "Invalid Fountain Type");
                         e.printStackTrace();
                     }
+                    continue;
                 }
                 if (tokens[1].contains("Title")) {
                     // 0 Title title fadeIn fadeOut stay title...
@@ -541,6 +550,7 @@ public class Show {
                     if (text.length() > 1)
                         text = text.substring(0, text.length() - 1);
                     actions.add(new TitleAction(this, time, type, text, fadeIn, fadeOut, stay));
+                    continue;
                 }
                 if (tokens[1].contains("Particle")) {
                     // 0 Particle type x,y,z oX oY oZ speed amount
@@ -552,9 +562,14 @@ public class Show {
                     float speed = Float.parseFloat(tokens[7]);
                     int amount = Integer.parseInt(tokens[8]);
                     actions.add(new ParticleAction(this, time, effect, location, offsetX, offsetY, offsetZ, speed, amount));
+                    continue;
                 }
                 if (tokens[1].contains("AudioStart")) {
                     actions.add(new AudioStart(this, time, tokens[2]));
+                    continue;
+                }
+                if (tokens[1].contains("AudioSync")) {
+                    actions.add(new AudioSync(this, time, tokens[2], Float.valueOf(tokens[3])));
                 }
             }
             in.close();
