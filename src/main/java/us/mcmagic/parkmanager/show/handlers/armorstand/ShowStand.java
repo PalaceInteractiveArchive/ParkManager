@@ -3,6 +3,9 @@ package us.mcmagic.parkmanager.show.handlers.armorstand;
 import org.bukkit.entity.ArmorStand;
 import us.mcmagic.parkmanager.show.handlers.ArmorData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Marc on 10/11/15
  */
@@ -13,7 +16,7 @@ public class ShowStand {
     private boolean hasSpawned = false;
     private ArmorStand stand;
     private Movement motion;
-    private Position position;
+    private List<Position> positions = new ArrayList<>();
     private Rotation rotation;
 
     public ShowStand(int id, boolean small, ArmorData armorData) {
@@ -51,8 +54,12 @@ public class ShowStand {
         this.motion = motion;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void addPosition(Position position) {
+        this.positions.add(position);
+    }
+
+    public void removePosition(Position position) {
+        this.positions.remove(position);
     }
 
     public void setRotation(Rotation rotation) {
@@ -63,8 +70,8 @@ public class ShowStand {
         return motion;
     }
 
-    public Position getPosition() {
-        return position;
+    public List<Position> getPositions() {
+        return new ArrayList<>(positions);
     }
 
     public Rotation getRotation() {

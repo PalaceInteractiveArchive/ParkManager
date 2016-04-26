@@ -732,6 +732,7 @@ public class InventoryUtil {
                     }
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
+                    return;
                 }
                 case PLAYERTIME: {
                     if (rank.getRankId() < Rank.SHAREHOLDER.getRankId()) {
