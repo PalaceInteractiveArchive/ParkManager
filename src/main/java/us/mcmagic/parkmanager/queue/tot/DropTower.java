@@ -9,6 +9,7 @@ public enum DropTower {
     ECHO, FOXTROT;
 
     private TowerLayout layout;
+    private int count = 0;
 
     DropTower() {
         randomizeLayout();
@@ -19,7 +20,12 @@ public enum DropTower {
     }
 
     public TowerLayout randomizeLayout() {
+        count++;
         return layout = new TowerLayout(getRandomBetween(94, 104), getRandomBetween(68, 79));
+    }
+
+    public int getCount() {
+        return count;
     }
 
     private int getRandomBetween(int min, int max) {
@@ -36,5 +42,9 @@ public enum DropTower {
             default:
                 return null;
         }
+    }
+
+    public void resetCount() {
+        this.count = 0;
     }
 }

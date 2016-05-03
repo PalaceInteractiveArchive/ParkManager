@@ -21,7 +21,8 @@ public enum ShowType {
     SPECIAL(ChatColor.DARK_PURPLE + "Special Event", Material.DIAMOND),
     CA(ChatColor.RED + "Celebrate " + ChatColor.BLUE + "America", Material.BANNER),
     FITS(ChatColor.BLUE + "Fantasy in the Sky", Material.DIAMOND),
-    DAWM(ChatColor.GREEN + "Dream Along with Mickey", Material.INK_SACK),
+    SITS(ChatColor.GOLD + "Symphony in the Stars", Material.DIAMOND_SWORD),
+    MRFF(ChatColor.GOLD + "Mickey’s Royal Friendship Faire", Material.INK_SACK),
     JEDI(ChatColor.BLUE + "Jedi Training", Material.IRON_SWORD),
     SGE(ChatColor.BLUE + "Stitch's Great Escape", Material.INK_SACK, (byte) 6),
     FOTLK(ChatColor.YELLOW + "Festival of the Lion King", Material.INK_SACK, (byte) 3);
@@ -56,8 +57,6 @@ public enum ShowType {
         switch (name.toLowerCase()) {
             case "wishes":
                 return WISHES;
-            case "tba":
-                return TBA;
             case "iroe":
                 return IROE;
             case "halloween":
@@ -82,8 +81,8 @@ public enum ShowType {
                 return CA;
             case "fits":
                 return FITS;
-            case "dawm":
-                return DAWM;
+            case "sits":
+                return SITS;
             case "jedi":
                 return JEDI;
             case "sge":

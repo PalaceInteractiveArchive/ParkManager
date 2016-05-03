@@ -141,16 +141,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 }
                                 ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(blockChangeFirst);
                             }
-                            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (UUID uuid : uuids) {
-                                        Player tp = Bukkit.getPlayer(uuid);
-                                        if (tp == null) {
-                                            continue;
-                                        }
-                                        ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(blockChangeSecond);
+                            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                                for (UUID uuid : uuids) {
+                                    Player tp = Bukkit.getPlayer(uuid);
+                                    if (tp == null) {
+                                        continue;
                                     }
+                                    ((CraftPlayer) tp).getHandle().playerConnection.sendPacket(blockChangeSecond);
                                 }
                             }, 6L);
                             return true;
@@ -211,56 +208,48 @@ public class Commandmagic implements Listener, CommandExecutor {
                         }
                     }
                     final String finalRideName = rideName;
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
-                            HashMap<String, Integer> counts = data.getRideCounts();
-                            if (!counts.containsKey(finalRideName)) {
-                                counts.put(finalRideName, 1);
-                                try (Connection connection = SqlUtil.getConnection()) {
-                                    PreparedStatement sql = connection.prepareStatement("INSERT INTO ridecounter (uuid," +
-                                            " name, server) VALUES (?,?,?)");
-                                    sql.setString(1, tp.getUniqueId().toString());
-                                    sql.setString(2, finalRideName);
-                                    sql.setString(3, MCMagicCore.getMCMagicConfig().serverName);
-                                    sql.execute();
-                                    sql.close();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                counts.put(finalRideName, counts.remove(finalRideName) + 1);
-                                try (Connection connection = SqlUtil.getConnection()) {
-                                    PreparedStatement sql = connection.prepareStatement("UPDATE ridecounter SET " +
-                                            "count=count+1 WHERE uuid=? AND name=?");
-                                    sql.setString(1, tp.getUniqueId().toString());
-                                    sql.setString(2, finalRideName);
-                                    sql.execute();
-                                    sql.close();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
+                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                        PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
+                        HashMap<String, Integer> counts = data.getRideCounts();
+                        if (!counts.containsKey(finalRideName)) {
+                            counts.put(finalRideName, 1);
+                            try (Connection connection = SqlUtil.getConnection()) {
+                                PreparedStatement sql = connection.prepareStatement("INSERT INTO ridecounter (uuid," +
+                                        " name, server) VALUES (?,?,?)");
+                                sql.setString(1, tp.getUniqueId().toString());
+                                sql.setString(2, finalRideName);
+                                sql.setString(3, MCMagicCore.getMCMagicConfig().serverName);
+                                sql.execute();
+                                sql.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            data.setRideCounts(counts);
-                            sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " +
-                                    finalRideName);
-                            tp.sendMessage(ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD +
-                                    "--------------------------------------" + ChatColor.MAGIC + "------" +
-                                    ChatColor.RESET + ChatColor.GOLD + "-\n  " + ChatColor.YELLOW +
-                                    "       Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
-                                    "is now at " + ChatColor.GREEN + data.getRideCounts().get(finalRideName) + "\n" +
-                                    ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD
-                                    + "--------------------------------------" + ChatColor.MAGIC + "------" +
-                                    ChatColor.RESET + ChatColor.GOLD + "-");
-                            tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
-                            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 1f);
-                                }
-                            }, 2L);
+                        } else {
+                            counts.put(finalRideName, counts.remove(finalRideName) + 1);
+                            try (Connection connection = SqlUtil.getConnection()) {
+                                PreparedStatement sql = connection.prepareStatement("UPDATE ridecounter SET " +
+                                        "count=count+1 WHERE uuid=? AND name=?");
+                                sql.setString(1, tp.getUniqueId().toString());
+                                sql.setString(2, finalRideName);
+                                sql.execute();
+                                sql.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        data.setRideCounts(counts);
+                        sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " +
+                                finalRideName);
+                        tp.sendMessage(ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD +
+                                "--------------------------------------" + ChatColor.MAGIC + "------" +
+                                ChatColor.RESET + ChatColor.GOLD + "-\n  " + ChatColor.YELLOW +
+                                "       Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
+                                "is now at " + ChatColor.GREEN + data.getRideCounts().get(finalRideName) + "\n" +
+                                ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD
+                                + "--------------------------------------" + ChatColor.MAGIC + "------" +
+                                ChatColor.RESET + ChatColor.GOLD + "-");
+                        tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
+                        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 1f), 2L);
                     });
                     return true;
                 }
@@ -421,12 +410,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 break;
                             }
                             sender.sendMessage(ChatColor.GREEN + "Removed the Outfit with the ID " + id + "!");
-                            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    ParkManager.wardrobeManager.removeOutfit(id);
-                                }
-                            });
+                            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> ParkManager.wardrobeManager.removeOutfit(id));
                             break;
                         } else if (args[1].equalsIgnoreCase("info")) {
                             Integer id = Integer.parseInt(args[2]);
@@ -463,34 +447,31 @@ public class Commandmagic implements Listener, CommandExecutor {
                         final net.minecraft.server.v1_8_R3.ItemStack pants = CraftItemStack.asNMSCopy(inv.getLeggings());
                         final net.minecraft.server.v1_8_R3.ItemStack boots = CraftItemStack.asNMSCopy(inv.getBoots());
                         final String finalName = name;
-                        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                try (Connection conneciton = SqlUtil.getConnection()) {
-                                    PreparedStatement sql = conneciton.prepareStatement("INSERT INTO outfits (id,name," +
-                                            "hid,hdata,head,cid,cdata,chestplate,lid,ldata,leggings,bid,bdata,boots) " +
-                                            "VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                                    sql.setString(1, finalName);
-                                    sql.setInt(2, h.getTypeId());
-                                    sql.setInt(3, h.getData().getData());
-                                    sql.setString(4, head.getTag() == null ? "" : head.getTag().toString());
-                                    sql.setInt(5, c.getTypeId());
-                                    sql.setInt(6, c.getData().getData());
-                                    sql.setString(7, chest.getTag() == null ? "" : chest.getTag().toString());
-                                    sql.setInt(8, p.getTypeId());
-                                    sql.setInt(9, p.getData().getData());
-                                    sql.setString(10, pants.getTag() == null ? "" : pants.getTag().toString());
-                                    sql.setInt(11, b.getTypeId());
-                                    sql.setInt(12, b.getData().getData());
-                                    sql.setString(13, boots.getTag() == null ? "" : boots.getTag().toString());
-                                    sql.execute();
-                                    sql.close();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
-                                }
-                                ParkManager.wardrobeManager.initialize();
-                                player.sendMessage(ChatColor.GREEN + "Created outfit!");
+                        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                            try (Connection conneciton = SqlUtil.getConnection()) {
+                                PreparedStatement sql = conneciton.prepareStatement("INSERT INTO outfits (id,name," +
+                                        "hid,hdata,head,cid,cdata,chestplate,lid,ldata,leggings,bid,bdata,boots) " +
+                                        "VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                sql.setString(1, finalName);
+                                sql.setInt(2, h.getTypeId());
+                                sql.setInt(3, h.getData().getData());
+                                sql.setString(4, head.getTag() == null ? "" : head.getTag().toString());
+                                sql.setInt(5, c.getTypeId());
+                                sql.setInt(6, c.getData().getData());
+                                sql.setString(7, chest.getTag() == null ? "" : chest.getTag().toString());
+                                sql.setInt(8, p.getTypeId());
+                                sql.setInt(9, p.getData().getData());
+                                sql.setString(10, pants.getTag() == null ? "" : pants.getTag().toString());
+                                sql.setInt(11, b.getTypeId());
+                                sql.setInt(12, b.getData().getData());
+                                sql.setString(13, boots.getTag() == null ? "" : boots.getTag().toString());
+                                sql.execute();
+                                sql.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
+                            ParkManager.wardrobeManager.initialize();
+                            player.sendMessage(ChatColor.GREEN + "Created outfit!");
                         });
                         break;
                     }
@@ -567,19 +548,13 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     return true;
                                 }
                                 final List<Changer> l = ParkManager.blockChanger.getChangers();
-                                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        for (Player p : Bukkit.getOnlinePlayers()) {
-                                            for (Changer c : l) {
-                                                if (c.getFirstLocation().distance(p.getLocation()) < 75) {
-                                                    c.sendReverse(p);
-                                                }
-                                            }
-                                        }
-                                        ParkManager.blockChanger.removeChanger(changer.getName());
-                                        sender.sendMessage(ChatColor.GREEN + "Removed changer " + ChatColor.AQUA + args[2]);
+                                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        l.stream().filter(c -> c.getFirstLocation().distance(p.getLocation()) < 75)
+                                                .forEach(c -> c.sendReverse(p));
                                     }
+                                    ParkManager.blockChanger.removeChanger(changer.getName());
+                                    sender.sendMessage(ChatColor.GREEN + "Removed changer " + ChatColor.AQUA + args[2]);
                                 });
                                 return true;
                             case "info":
@@ -657,12 +632,9 @@ public class Commandmagic implements Listener, CommandExecutor {
                 if (args.length > 1) {
                     if (args[1].equalsIgnoreCase("reload")) {
                         sender.sendMessage(ChatColor.BLUE + "Reloading Show Schedule...");
-                        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                ParkManager.scheduleManager.update();
-                                sender.sendMessage(ChatColor.BLUE + "Show Schedule reloaded!");
-                            }
+                        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                            ParkManager.scheduleManager.update();
+                            sender.sendMessage(ChatColor.BLUE + "Show Schedule reloaded!");
                         });
                         return true;
                     }
@@ -856,88 +828,106 @@ public class Commandmagic implements Listener, CommandExecutor {
                     helpMenu("tot", sender);
                     return true;
                 }
-                if (!args[1].equalsIgnoreCase("randomize")) {
-                    helpMenu("tot", sender);
+                if (args[1].equalsIgnoreCase("reset")) {
+                    String tname = args[2];
+                    DropTower tower = DropTower.fromString(tname);
+                    if (tower == null) {
+                        helpMenu("tot", sender);
+                        return true;
+                    }
+                    tower.resetCount();
                     return true;
                 }
-                String tname = args[2];
-                DropTower tower = DropTower.fromString(tname);
-                TowerLayout layout = tower.randomizeLayout();
-                int high = layout.getHigh();
-                int low = layout.getLow();
-                World world = sender instanceof Player ? ((Player) sender).getWorld() :
-                        (sender instanceof BlockCommandSender ? ((BlockCommandSender) sender).getBlock().getWorld() : null);
-                if (world == null) {
-                    sender.sendMessage(ChatColor.RED + "Are you sure you're a Player or a Command Block?");
+                if (args[1].equalsIgnoreCase("randomize")) {
+                    String tname = args[2];
+                    DropTower tower = DropTower.fromString(tname);
+                    if (tower == null) {
+                        helpMenu("tot", sender);
+                        return true;
+                    }
+                    TowerLayout layout = tower.randomizeLayout();
+                    int high = layout.getHigh();
+                    int low = layout.getLow();
+                    World world = sender instanceof Player ? ((Player) sender).getWorld() :
+                            (sender instanceof BlockCommandSender ? ((BlockCommandSender) sender).getBlock().getWorld() : null);
+                    if (world == null) {
+                        sender.sendMessage(ChatColor.RED + "Are you sure you're a Player or a Command Block?");
+                        return true;
+                    }
+                    int x1 = 0;
+                    int z1 = 0;
+                    int x2 = 0;
+                    int z2 = 0;
+                    switch (tower) {
+                        case ECHO:
+                            x1 = -188;
+                            z1 = -122;
+                            x2 = -189;
+                            z2 = -123;
+                            break;
+                        case FOXTROT:
+                            x1 = -178;
+                            z1 = -112;
+                            x2 = -179;
+                            z2 = -113;
+                            break;
+                    }
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    double topWait = (0.25 * new Random().nextDouble()) + 0.25;
+                    double bottomWait = (0.25 * new Random().nextDouble()) + 0.25;
+                    topWait = Double.parseDouble(df.format(topWait));
+                    bottomWait = Double.parseDouble(df.format(bottomWait));
+                    Block high1 = world.getBlockAt(x1, high, z1);
+                    Block low1 = world.getBlockAt(x1, low, z1);
+                    Block high2 = world.getBlockAt(x2, high, z2);
+                    Block low2 = world.getBlockAt(x2, low, z2);
+                    for (int i = 68; i <= 79; i++) {
+                        world.getBlockAt(x1, i, z1).setType(Material.AIR);
+                        world.getBlockAt(x2, i, z2).setType(Material.AIR);
+                    }
+                    for (int i = 94; i <= 104; i++) {
+                        world.getBlockAt(x1, i, z1).setType(Material.AIR);
+                        world.getBlockAt(x2, i, z2).setType(Material.AIR);
+                    }
+                    int count = tower.getCount();
+                    if (count == 2 || count > 10) {
+                        return true;
+                    }
+                    high1.setType(Material.WALL_SIGN);
+                    high1.setData((byte) 2);
+                    low1.setType(Material.WALL_SIGN);
+                    low1.setData((byte) 2);
+                    high2.setType(Material.WALL_SIGN);
+                    high2.setData((byte) 5);
+                    low2.setType(Material.WALL_SIGN);
+                    low2.setData((byte) 5);
+                    Sign high1Sign = (Sign) high1.getState();
+                    Sign low1Sign = (Sign) low1.getState();
+                    Sign high2Sign = (Sign) high2.getState();
+                    Sign low2Sign = (Sign) low2.getState();
+                    high1Sign.setLine(0, "[+train]");
+                    high1Sign.setLine(1, "station");
+                    high1Sign.setLine(2, topWait + "");
+                    high1Sign.setLine(3, "backward");
+                    high2Sign.setLine(0, "[+train]");
+                    high2Sign.setLine(1, "station");
+                    high2Sign.setLine(2, topWait + "");
+                    high2Sign.setLine(3, "backward");
+                    low1Sign.setLine(0, "[+train]");
+                    low1Sign.setLine(1, "station 6");
+                    low1Sign.setLine(2, bottomWait + "");
+                    low1Sign.setLine(3, "backward");
+                    low2Sign.setLine(0, "[+train]");
+                    low2Sign.setLine(1, "station 6");
+                    low2Sign.setLine(2, bottomWait + "");
+                    low2Sign.setLine(3, "backward");
+                    high1Sign.update();
+                    high2Sign.update();
+                    low1Sign.update();
+                    low2Sign.update();
                     return true;
                 }
-                int x1 = 0;
-                int z1 = 0;
-                int x2 = 0;
-                int z2 = 0;
-                switch (tower) {
-                    case ECHO:
-                        x1 = -188;
-                        z1 = -122;
-                        x2 = -189;
-                        z2 = -123;
-                        break;
-                    case FOXTROT:
-                        x1 = -178;
-                        z1 = -112;
-                        x2 = -179;
-                        z2 = -113;
-                        break;
-                }
-                DecimalFormat df = new DecimalFormat("#.##");
-                double topWait = (0.25 * new Random().nextDouble()) + 0.25;
-                double bottomWait = (0.25 * new Random().nextDouble()) + 0.25;
-                topWait = Double.parseDouble(df.format(topWait));
-                bottomWait = Double.parseDouble(df.format(bottomWait));
-                Block high1 = world.getBlockAt(x1, high, z1);
-                Block low1 = world.getBlockAt(x1, low, z1);
-                Block high2 = world.getBlockAt(x2, high, z2);
-                Block low2 = world.getBlockAt(x2, low, z2);
-                for (int i = 68; i <= 79; i++) {
-                    world.getBlockAt(x1, i, z1).setType(Material.AIR);
-                    world.getBlockAt(x2, i, z2).setType(Material.AIR);
-                }
-                for (int i = 94; i <= 104; i++) {
-                    world.getBlockAt(x1, i, z1).setType(Material.AIR);
-                    world.getBlockAt(x2, i, z2).setType(Material.AIR);
-                }
-                high1.setType(Material.WALL_SIGN);
-                high1.setData((byte) 2);
-                low1.setType(Material.WALL_SIGN);
-                low1.setData((byte) 2);
-                high2.setType(Material.WALL_SIGN);
-                high2.setData((byte) 5);
-                low2.setType(Material.WALL_SIGN);
-                low2.setData((byte) 5);
-                Sign high1Sign = (Sign) high1.getState();
-                Sign low1Sign = (Sign) low1.getState();
-                Sign high2Sign = (Sign) high2.getState();
-                Sign low2Sign = (Sign) low2.getState();
-                high1Sign.setLine(0, "[+train]");
-                high1Sign.setLine(1, "station");
-                high1Sign.setLine(2, topWait + "");
-                high1Sign.setLine(3, "backward");
-                high2Sign.setLine(0, "[+train]");
-                high2Sign.setLine(1, "station");
-                high2Sign.setLine(2, topWait + "");
-                high2Sign.setLine(3, "backward");
-                low1Sign.setLine(0, "[+train]");
-                low1Sign.setLine(1, "station 6");
-                low1Sign.setLine(2, bottomWait + "");
-                low1Sign.setLine(3, "backward");
-                low2Sign.setLine(0, "[+train]");
-                low2Sign.setLine(1, "station 6");
-                low2Sign.setLine(2, bottomWait + "");
-                low2Sign.setLine(3, "backward");
-                high1Sign.update();
-                high2Sign.update();
-                low1Sign.update();
-                low2Sign.update();
+                helpMenu("tot", sender);
                 return true;
             }
             case "reload":
