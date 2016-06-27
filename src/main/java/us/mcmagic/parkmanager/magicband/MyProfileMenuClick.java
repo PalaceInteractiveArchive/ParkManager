@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.utils.BandUtil;
-import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,9 +46,7 @@ public class MyProfileMenuClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Make a Donation!":
-                for (String msg : donatemsgs) {
-                    player.sendMessage(msg);
-                }
+                donatemsgs.forEach(player::sendMessage);
                 player.closeInventory();
                 return;
             case "Website":
@@ -59,6 +57,9 @@ public class MyProfileMenuClick {
                 return;
             case "Locker":
                 player.openInventory(player.getEnderChest());
+                return;
+            case "Achievements":
+                ParkManager.inventoryUtil.openAchievementPage(player, 1);
                 return;
             case "Ride Counter":
                 ParkManager.inventoryUtil.openRideCounter(player);

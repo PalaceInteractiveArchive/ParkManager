@@ -12,7 +12,7 @@ public class Position {
 
     public Position(Vector motion, double speed, PositionType type) {
         this.motion = motion;
-        this.duration = (long) speed * 20;
+        this.duration = (long) speed;
         this.type = type;
     }
 

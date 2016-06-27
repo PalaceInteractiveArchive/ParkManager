@@ -26,6 +26,7 @@ import us.mcmagic.parkmanager.utils.WorldUtil;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Show {
     private World world;
@@ -36,7 +37,7 @@ public class Show {
     private HashMap<String, FireworkEffect> effectMap;
     private HashMap<String, String> invalidLines;
     private HashMap<String, ShowNPC> npcMap;
-    private HashMap<Integer, ShowStand> standmap = new HashMap<>();
+    private HashMap<String, ShowStand> standmap = new HashMap<>();
     private int npcTick = 0;
     private long lastPlayerListUpdate = System.currentTimeMillis();
     private List<UUID> nearbyPlayers = new ArrayList<>();
@@ -51,11 +52,8 @@ public class Show {
         npcMap = new HashMap<>();
         loadActions(file, 0);
         startTime = System.currentTimeMillis();
-        for (Player tp : Bukkit.getOnlinePlayers()) {
-            if (tp.getLocation().distance(loc) <= radius) {
-                nearbyPlayers.add(tp.getUniqueId());
-            }
-        }
+        nearbyPlayers.addAll(Bukkit.getOnlinePlayers().stream().filter(tp -> tp.getLocation().distance(loc) <= radius)
+                .map(Player::getUniqueId).collect(Collectors.toList()));
     }
 
     private void loadActions(File file, long addTime) {
@@ -132,11 +130,7 @@ public class Show {
                 // ArmorStand Ids
                 if (tokens[0].equals("ArmorStand")) {
                     // ArmorStand id small
-                    Integer id = Integer.parseInt(tokens[1]);
-                    if (id == null) {
-                        invalidLines.put(strLine, "Invalid ArmorStand ID - Must be an Integer!");
-                        continue;
-                    }
+                    String id = tokens[1];
                     if (standmap.get(id) != null) {
                         invalidLines.put(strLine, "ArmorStand with the ID " + id + " already exists!");
                         continue;
@@ -187,7 +181,7 @@ public class Show {
                 // ArmorStand Movement
                 if (tokens[1].equals("ArmorStand")) {
                     // Show ArmorStand id action param
-                    Integer id = Integer.parseInt(tokens[2]);
+                    String id = tokens[2];
                     ShowStand stand = standmap.get(id);
                     if (stand == null) {
                         invalidLines.put(strLine, "No ArmorStand exists with the ID " + id);
@@ -698,12 +692,8 @@ public class Show {
         if (System.currentTimeMillis() - lastPlayerListUpdate < 10000) {
             return new ArrayList<>(nearbyPlayers);
         }
-        List<UUID> list = new ArrayList<>();
-        for (Player tp : Bukkit.getOnlinePlayers()) {
-            if (tp.getLocation().distance(loc) <= radius) {
-                list.add(tp.getUniqueId());
-            }
-        }
+        List<UUID> list = Bukkit.getOnlinePlayers().stream().filter(tp -> tp.getLocation().distance(loc) <= radius)
+                .map(Player::getUniqueId).collect(Collectors.toList());
         lastPlayerListUpdate = System.currentTimeMillis();
         nearbyPlayers = list;
         return list;
@@ -724,9 +714,7 @@ public class Show {
         }
         npcTick = (npcTick + 1) % 5;
         if (npcTick == 0) {
-            for (ShowNPC npc : npcMap.values()) {
-                npc.move();
-            }
+            npcMap.values().forEach(us.mcmagic.parkmanager.show.handlers.ShowNPC::move);
         }
         List<ShowAction> list = new ArrayList<>(actions);
         for (ShowAction action : list) {
@@ -905,12 +893,7 @@ public class Show {
             return;
         }
         area.triggerPlayer(tp);
-        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                area.sync(((System.currentTimeMillis() - musicTime + 300) / 1000), tp);
-            }
-        }, 20L);
+        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> area.sync(((System.currentTimeMillis() - musicTime + 300) / 1000), tp), 20L);
     }
 
     public HashMap<String, ShowNPC> getNPCMap() {

@@ -73,7 +73,6 @@ public class RendererManager extends Manager {
         } catch (Exception var9) {
             this.plugin.getLogger().warning("Error getting Pixelators from Database!");
         }
-
         int var10 = this.renderers.size();
         this.plugin.getLogger().info(var10 + " renderer" + (var10 == 1 ? "" : "s") + " loaded in " + (System.currentTimeMillis() - now) + "ms");
     }

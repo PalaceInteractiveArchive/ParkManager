@@ -11,8 +11,10 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.achievements.MagicAchievement;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.designstation.DesignStation;
 import us.mcmagic.parkmanager.handlers.*;
@@ -25,6 +27,7 @@ import us.mcmagic.parkmanager.storage.Locker;
 import us.mcmagic.parkmanager.storage.StorageSize;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InventoryUtil {
     //Main Menu Items
@@ -80,6 +83,7 @@ public class InventoryUtil {
     private ItemStack dvc = new ItemCreator(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
     private ItemStack web = new ItemCreator(Material.REDSTONE, ChatColor.GREEN + "Website");
     private ItemStack locker = new ItemCreator(Material.ENDER_CHEST, ChatColor.GREEN + "Locker");
+    private ItemStack ach = new ItemCreator(Material.NETHER_STAR, ChatColor.GREEN + "Achievements");
     private ItemStack rc = new ItemCreator(Material.EMERALD, ChatColor.GREEN + "Ride Counter");
     private ItemStack mumble = new ItemCreator(Material.COMPASS, ChatColor.GREEN + "Mumble");
     private ItemStack packs = new ItemCreator(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs");
@@ -91,19 +95,19 @@ public class InventoryUtil {
     private ItemStack nameChange = new ItemCreator(Material.JUKEBOX, ChatColor.GREEN + "Change Name Color");
     //Customize Name
     private ItemStack redBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.RED + "Red",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack orangeBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.GOLD + "Orange",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack yellowBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.YELLOW + "Yellow",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack greenBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Green",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack blueBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.BLUE + "Blue",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack purpleBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.DARK_PURPLE + "Purple",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack pinkBand = new ItemCreator(Material.FIREWORK_CHARGE, ChatColor.LIGHT_PURPLE + "Pink",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack s1Band;
     private ItemStack s2Band;
     private ItemStack s3Band;
@@ -111,19 +115,19 @@ public class InventoryUtil {
     private ItemStack s5Band;
     //Customize Color
     private ItemStack red = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Red",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack orange = new ItemCreator(Material.WOOL, 1, (byte) 1, ChatColor.GOLD + "Orange",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack yellow = new ItemCreator(Material.WOOL, 1, (byte) 4, ChatColor.YELLOW + "Yellow",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack green = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Green",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack darkGreen = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.DARK_GREEN + "Dark Green",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack blue = new ItemCreator(Material.WOOL, 1, (byte) 11, ChatColor.BLUE + "Blue",
-            new ArrayList<String>());
+            new ArrayList<>());
     private ItemStack purple = new ItemCreator(Material.WOOL, 1, (byte) 10, ChatColor.DARK_PURPLE + "Purple",
-            new ArrayList<String>());
+            new ArrayList<>());
     //Shows and Events
     private ItemStack fant = new ItemCreator(Material.DIAMOND_HELMET, ChatColor.BLUE + "Fantasmic!");
     private ItemStack iroe = new ItemCreator(Material.MONSTER_EGG, ChatColor.GREEN + "IROE");
@@ -132,7 +136,7 @@ public class InventoryUtil {
     private ItemStack msep = new ItemCreator(Material.GLOWSTONE_DUST, ChatColor.YELLOW +
             "Main Street Electrical Parade");
     private ItemStack fntm = new ItemCreator(Material.RAW_FISH, 1, (byte) 2, ChatColor.GOLD +
-            "Finding Nemo the Musical", new ArrayList<String>());
+            "Finding Nemo the Musical", new ArrayList<>());
     private ItemStack times = new ItemCreator(Material.BOOK, ChatColor.GREEN + "Show Timetable");
     //Rides and Attractions
     private ItemStack wait = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Wait Times");
@@ -154,9 +158,9 @@ public class InventoryUtil {
     private ItemStack su = new ItemStack(Material.BANNER);
     //Storage
     private ItemStack loadingPack = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
-            "Loading Backpack...", new ArrayList<String>());
+            "Loading Backpack...", new ArrayList<>());
     private ItemStack loadingLocker = new ItemCreator(Material.STAINED_CLAY, 1, (byte) 3, ChatColor.DARK_AQUA +
-            "Loading Locker...", new ArrayList<String>());
+            "Loading Locker...", new ArrayList<>());
 
 
     public InventoryUtil() {
@@ -245,15 +249,15 @@ public class InventoryUtil {
         this.su.setItemMeta(bsu);
         //MagicBands
         s1Band = new ItemCreator(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL1),
-                ChatColor.BLUE + "Holiday Band", new ArrayList<String>());
+                ChatColor.BLUE + "Holiday Band", new ArrayList<>());
         s2Band = new ItemCreator(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL2),
-                ChatColor.RED + "Big Hero 6", new ArrayList<String>());
+                ChatColor.RED + "Big Hero 6", new ArrayList<>());
         s3Band = new ItemCreator(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL3),
-                ChatColor.GRAY + "Haunted Mansion", new ArrayList<String>());
+                ChatColor.GRAY + "Haunted Mansion", new ArrayList<>());
         s4Band = new ItemCreator(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL4),
-                ChatColor.DARK_AQUA + "Sorcerer Mickey", new ArrayList<String>());
+                ChatColor.DARK_AQUA + "Sorcerer Mickey", new ArrayList<>());
         s5Band = new ItemCreator(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL5),
-                ChatColor.LIGHT_PURPLE + "Princess", new ArrayList<String>());
+                ChatColor.LIGHT_PURPLE + "Princess", new ArrayList<>());
     }
 
     public void openInventory(final Player player, InventoryType inv) {
@@ -373,6 +377,7 @@ public class InventoryUtil {
                     pmenu.setItem(10, web);
                     pmenu.setItem(11, dvc);
                     pmenu.setItem(12, packs);
+                    pmenu.setItem(13, ach);
                     pmenu.setItem(14, rc);
                     pmenu.setItem(15, prefs);
                     pmenu.setItem(16, mumble);
@@ -479,12 +484,7 @@ public class InventoryUtil {
                 }
                 case MYHOTELROOMS: {
                     Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
-                    List<HotelRoom> rooms = new ArrayList<>();
-                    for (HotelRoom room : ParkManager.hotelManager.getHotelRooms()) {
-                        if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                            rooms.add(room);
-                        }
-                    }
+                    List<HotelRoom> rooms = ParkManager.hotelManager.getHotelRooms().stream().filter(room -> room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())).collect(Collectors.toList());
                     int roomItemPlacement = 13 - ((rooms.size() - 1) / 2);
                     for (HotelRoom room : rooms) {
                         ItemStack roomItem = new ItemCreator(Material.BED, 1);
@@ -514,11 +514,8 @@ public class InventoryUtil {
                 case HOTELS: {
                     Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
                     List<String> availableHotels = new ArrayList<>();
-                    for (HotelRoom room : ParkManager.hotelManager.getHotelRooms()) {
-                        if (!availableHotels.contains(room.getHotelName())) {
-                            availableHotels.add(room.getHotelName());
-                        }
-                    }
+                    ParkManager.hotelManager.getHotelRooms().stream().filter(room -> !availableHotels
+                            .contains(room.getHotelName())).forEach(room -> availableHotels.add(room.getHotelName()));
                     int hotelItemPlacement = 10;
                     for (String hotel : availableHotels) {
                         ItemStack hotelItem = new ItemCreator(Material.BED, 1);
@@ -578,50 +575,6 @@ public class InventoryUtil {
                     DesignStation.openPickModelInventory(player);
                     return;
                 }
-                /*
-                case FASTPASS: {
-                    Inventory fp = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Purchase FastPass");
-                    fp.setItem(22, BandUtil.getBackItem());
-                    int current = data.getFastpass();
-                    if (current >= 3) {
-                        ItemStack max = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
-                                "You can only have up to 3 FastPasses at one time!");
-                        fp.setItem(13, max);
-                        player.openInventory(fp);
-                        return;
-                    }
-                    int daily = data.getDailyfp();
-                    int day = data.getDay();
-                    long timestamp = new Date().getTime();
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(timestamp);
-                    int curday = cal.get(Calendar.DAY_OF_YEAR);
-                    if (curday > day) {
-                        data.setDailyfp(0);
-                        daily = 0;
-                    }
-                    if (daily >= 3) {
-                        ItemStack max = new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED +
-                                "You can purchase 3 FastPasses each day!");
-                        fp.setItem(13, max);
-                        player.openInventory(fp);
-                        return;
-                    }
-                    ItemStack info = new ItemCreator(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "You currently have " +
-                            ChatColor.AQUA + current + ChatColor.GREEN + " Fastpass" + (current == 1 ? "" : "es"),
-                            new ArrayList<String>());
-                    ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes",
-                            Arrays.asList(ChatColor.DARK_AQUA + "Click to purchase a", ChatColor.DARK_AQUA +
-                                            "FastPass for " + ChatColor.GREEN + "$50.",
-                                    ChatColor.DARK_AQUA + "This cannot be undone!"));
-                    ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No",
-                            Collections.singletonList(ChatColor.DARK_AQUA + "Click to return to the Shop Menu"));
-                    fp.setItem(4, info);
-                    fp.setItem(11, yes);
-                    fp.setItem(15, no);
-                    player.openInventory(fp);
-                    return;
-                }*/
                 case STORAGE: {
                     Inventory storage = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Storage Upgrade");
                     StorageSize packSize = data.getBackpack().getSize();
@@ -695,11 +648,7 @@ public class InventoryUtil {
                     s.setItem(7, su);
                     List<ScheduledShow> shows = ParkManager.scheduleManager.getShows();
                     List<String> times = new ArrayList<>();
-                    for (ScheduledShow show : shows) {
-                        if (!times.contains(show.getTime())) {
-                            times.add(show.getTime());
-                        }
-                    }
+                    shows.stream().filter(show -> !times.contains(show.getTime())).forEach(show -> times.add(show.getTime()));
                     HashMap<String, Integer> timeMap = new HashMap<>();
                     int i = 9;
                     for (String st : times) {
@@ -728,7 +677,7 @@ public class InventoryUtil {
                             continue;
                         }
                         s.setItem(place, new ItemCreator(type.getType(), 1, type.getData(), type.getName(),
-                                new ArrayList<String>()));
+                                new ArrayList<>()));
                     }
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
@@ -876,12 +825,7 @@ public class InventoryUtil {
 
     public void openHotelRoomListPage(final Player player, String hotelName) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rooms in " + hotelName);
-        List<HotelRoom> availableHotelRooms = new ArrayList<>();
-        for (HotelRoom room : ParkManager.hotelManager.getHotelRooms()) {
-            if (room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()) {
-                availableHotelRooms.add(room);
-            }
-        }
+        List<HotelRoom> availableHotelRooms = ParkManager.hotelManager.getHotelRooms().stream().filter(room -> room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()).collect(Collectors.toList());
         List<HotelRoom> sortedHotelRooms = new ArrayList<>();
         while (availableHotelRooms.size() > 0) {
             HotelRoom smallest = availableHotelRooms.get(0);
@@ -1148,6 +1092,52 @@ public class InventoryUtil {
             }
         }
         inv.setItem(49, BandUtil.getBackItem());
+        player.openInventory(inv);
+    }
+
+    public void openAchievementPage(Player player, int page) {
+        List<MagicAchievement> achievements = MCMagicCore.achievementManager.getAchievements();
+        int size = achievements.size();
+        if (size < 46) {
+            page = 1;
+        } else if (size < (45 * (page - 1) + 1)) {
+            page -= 1;
+        }
+        List<MagicAchievement> list = achievements.subList(page > 1 ? (45 * (page - 1)) : 0, (size - (45 * (page - 1)))
+                > 45 ? (45 * page) : size);
+        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Achievements Page " + page);
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        int place = 0;
+        for (MagicAchievement ach : list) {
+            if (place >= 45) {
+                break;
+            }
+            if (user.hasAchievement(ach.getId())) {
+                inv.setItem(place, new ItemCreator(Material.STAINED_CLAY, 1, (byte) 5, ChatColor.GREEN +
+                        ach.getDisplayName(), Arrays.asList(ChatColor.GRAY + "" + ChatColor.ITALIC + ach.getDescription())));
+            } else {
+                inv.setItem(place, new ItemCreator(Material.STAINED_CLAY, 1, (byte) 4, ChatColor.RED +
+                        ach.getDisplayName(), Arrays.asList(ChatColor.GRAY + "" + ChatColor.ITALIC + "?")));
+            }
+            place++;
+        }
+        if (page > 1) {
+            inv.setItem(48, lastPage);
+        }
+        inv.setItem(49, BandUtil.getBackItem());
+        int maxPage = 1;
+        int n = size;
+        while (true) {
+            if (n - 45 > 0) {
+                n -= 45;
+                maxPage += 1;
+            } else {
+                break;
+            }
+        }
+        if (size > 45 && page < maxPage) {
+            inv.setItem(50, nextPage);
+        }
         player.openInventory(inv);
     }
 }

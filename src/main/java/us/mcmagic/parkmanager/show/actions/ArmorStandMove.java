@@ -31,11 +31,11 @@ public class ArmorStandMove extends ShowAction {
             return;
         }
         Location l = stand.getStand().getLocation();
-        double x = ((loc.getX() - l.getX()) / (speed * 20));
-        double y = ((loc.getY() - l.getY()) / (speed * 20));
-        double z = ((loc.getZ() - l.getZ()) / (speed * 20));
+        double x = ((float) (((float) (loc.getX() - l.getX())) / (20 * speed)));
+        double y = ((float) (((float) (loc.getY() - l.getY())) / (20 * speed)));
+        double z = ((float) (((float) (loc.getZ() - l.getZ())) / (20 * speed)));
         Vector motion = new Vector(x, y, z);
-        stand.setMotion(new Movement(motion, speed));
+        stand.setMotion(new Movement(motion, speed * 20));
         ParkManager.armorStandManager.addStand(stand, StandAction.MOVE);
     }
 }

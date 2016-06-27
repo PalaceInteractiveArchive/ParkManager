@@ -10,7 +10,7 @@ public class Rotation {
 
     public Rotation(float yaw, double speed) {
         this.yaw = yaw;
-        this.duration = (long) speed * 20;
+        this.duration = (long) speed;
     }
 
     public float getYaw() {

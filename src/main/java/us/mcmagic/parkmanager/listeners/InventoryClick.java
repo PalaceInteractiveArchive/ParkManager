@@ -59,6 +59,11 @@ public class InventoryClick implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (name.startsWith("Achievements Page ")) {
+            event.setCancelled(true);
+            AchievementClick.handle(event);
+            return;
+        }
         if (name.startsWith("Wardrobe Manager Page")) {
             event.setCancelled(true);
             ParkManager.wardrobeManager.handle(event);

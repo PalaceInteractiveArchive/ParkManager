@@ -11,7 +11,7 @@ public class Movement {
 
     public Movement(Vector motion, double speed) {
         this.motion = motion;
-        this.duration = (long) speed * 20;
+        this.duration = (long) speed;
     }
 
     public long getDuration() {

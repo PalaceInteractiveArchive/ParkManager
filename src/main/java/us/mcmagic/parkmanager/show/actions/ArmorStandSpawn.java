@@ -35,6 +35,8 @@ public class ArmorStandSpawn extends ShowAction {
         armor.setArms(true);
         armor.setBasePlate(false);
         armor.setGravity(false);
+        armor.setSmall(stand.isSmall());
+
         try {
             EntityArmorStand nmsStand = ((CraftArmorStand) armor).getHandle();
             Field f = nmsStand.getClass().getDeclaredField("bi");

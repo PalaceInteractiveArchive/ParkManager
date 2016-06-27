@@ -21,7 +21,7 @@ public enum DropTower {
 
     public TowerLayout randomizeLayout() {
         count++;
-        return layout = new TowerLayout(getRandomBetween(94, 104), getRandomBetween(68, 79));
+        return layout = new TowerLayout(getRandomBetween(91, 101), getRandomBetween(68, 79));
     }
 
     public int getCount() {

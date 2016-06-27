@@ -2,10 +2,10 @@ package us.mcmagic.parkmanager.bb8;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftVillager;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPig;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * Created by Marc on 4/27/16
  */
 public class BB8 implements Listener {
-    private Villager ai_entity;
+    private Pig ai_entity;
     private int timerid;
     private int tick;
     private Location destination;
@@ -40,14 +40,14 @@ public class BB8 implements Listener {
         mode = 0;
         animating = false;
         Bukkit.getPluginManager().registerEvents(this, ParkManager.getInstance());
-        ai_entity = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
+        ai_entity = (Pig) loc.getWorld().spawnEntity(loc, EntityType.PIG);
         ai_entity.setBreed(false);
         ((CraftEntity) ai_entity).getHandle().b(true);
         ai_entity.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
         model_body = new VirtualArmorStand(loc, false);
-        model_body.setHelmet(new ItemStack(Material.SPONGE));
+        model_body.setHelmet(new ItemStack(Material.SHEARS, 1, (short) 2));
         model_head = new VirtualArmorStand(loc, false);
-        model_head.setHelmet(new ItemStack(Material.SPONGE, 1, (short) 1));
+        model_head.setHelmet(new ItemStack(Material.SHEARS, 1, (short) 1));
         timerid = Bukkit.getScheduler().scheduleSyncRepeatingTask(ParkManager.getInstance(), this::tick, 1L, 1L);
         last_loc = loc.clone();
         BB8Manager.get().registerDroid(this);
@@ -166,7 +166,7 @@ public class BB8 implements Listener {
 
     private void tick() {
         if (ai_entity == null || ai_entity.isDead()) {
-            ai_entity = (Villager) model_head.getLocation().getWorld().spawnEntity(model_head.getLocation(), EntityType.VILLAGER);
+            ai_entity = (Pig) model_head.getLocation().getWorld().spawnEntity(model_head.getLocation(), EntityType.PIG);
             ai_entity.setBreed(false);
             ((CraftEntity) ai_entity).getHandle().b(true);
         }
@@ -176,7 +176,7 @@ public class BB8 implements Listener {
             navigate(destination, false);
         }
         model_body.teleport(ai_entity.getLocation().clone().add(0, -0.8125, 0));
-        model_head.teleport(ai_entity.getLocation().clone().add(0, -0.8125 + 0.5625, 0));
+        model_head.teleport(ai_entity.getLocation().clone().add(0, -0.3125, 0));
         float pitch = (float) (ai_entity.getLocation().distance(last_loc) / (Math.PI * 1.125) * 360.0d) + model_body.getHeadPos()[1];
         while (pitch >= 360) pitch -= 360;
         while (pitch < 0) pitch += 360;
@@ -240,7 +240,7 @@ public class BB8 implements Listener {
             target = PosRotUtils.closestGround(ai_entity.getLocation().clone().add(loc.clone().toVector().subtract(ai_entity.getLocation().clone().toVector()).normalize().multiply(10.0)));
         }
         if (tick % 20 == 0 && target != null) {
-            ((CraftVillager) ai_entity).getHandle().getNavigation().a(target.getX(), target.getY(), target.getZ(), 0.75);
+            ((CraftPig) ai_entity).getHandle().getNavigation().a(target.getX(), target.getY(), target.getZ(), 0.75);
         }
     }
 

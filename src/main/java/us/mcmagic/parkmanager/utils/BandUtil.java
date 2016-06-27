@@ -36,41 +36,38 @@ public class BandUtil {
         bm.setDisplayName(ChatColor.GREEN + "Back");
         bm.setEffect(FireworkEffect.builder().withColor(Color.ORANGE).build());
         back.setItemMeta(bm);
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (Map.Entry<UUID, DataResponse> entry : new HashSet<>(dataResponses.entrySet())) {
-                    DataResponse response = dataResponses.remove(entry.getKey());
-                    User user = MCMagicCore.getUser(entry.getKey());
-                    if (user == null) {
-                        continue;
-                    }
-                    Player player = Bukkit.getPlayer(user.getUniqueId());
-                    if (player == null) {
-                        continue;
-                    }
-                    Rank rank = user.getRank();
-                    Inventory inv = player.getOpenInventory().getTopInventory();
-                    if (inv == null) {
-                        continue;
-                    }
-                    ItemStack pinfo = inv.getItem(4);
-                    if (pinfo == null) {
-                        continue;
-                    }
-                    ItemMeta meta = pinfo.getItemMeta();
-                    FastPassData data = ParkManager.getPlayerData(player.getUniqueId()).getFastPassData();
-                    meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
-                            ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
-                            ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + response.getBalance(),
-                            ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
-                            ChatColor.GREEN + "Slow FPs: " + ChatColor.YELLOW + data.getSlow(),
-                            ChatColor.GREEN + "Moderate FPs: " + ChatColor.YELLOW + data.getModerate(),
-                            ChatColor.GREEN + "Thrill FPs: " + ChatColor.YELLOW + data.getThrill(),
-                            ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
-                    pinfo.setItemMeta(meta);
-                    inv.setItem(4, pinfo);
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            for (Map.Entry<UUID, DataResponse> entry : new HashSet<>(dataResponses.entrySet())) {
+                DataResponse response = dataResponses.remove(entry.getKey());
+                User user = MCMagicCore.getUser(entry.getKey());
+                if (user == null) {
+                    continue;
                 }
+                Player player = Bukkit.getPlayer(user.getUniqueId());
+                if (player == null) {
+                    continue;
+                }
+                Rank rank = user.getRank();
+                Inventory inv = player.getOpenInventory().getTopInventory();
+                if (inv == null) {
+                    continue;
+                }
+                ItemStack pinfo = inv.getItem(4);
+                if (pinfo == null) {
+                    continue;
+                }
+                ItemMeta meta = pinfo.getItemMeta();
+                FastPassData data = ParkManager.getPlayerData(player.getUniqueId()).getFastPassData();
+                meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
+                        ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
+                        ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + response.getBalance(),
+                        ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
+                        ChatColor.GREEN + "Slow FPs: " + ChatColor.YELLOW + data.getSlow(),
+                        ChatColor.GREEN + "Moderate FPs: " + ChatColor.YELLOW + data.getModerate(),
+                        ChatColor.GREEN + "Thrill FPs: " + ChatColor.YELLOW + data.getThrill(),
+                        ChatColor.GREEN + "Online Time: " + ChatColor.YELLOW + response.getOnlineTime()));
+                pinfo.setItemMeta(meta);
+                inv.setItem(4, pinfo);
             }
         }, 0L, 10L);
     }
@@ -106,12 +103,7 @@ public class BandUtil {
         }
         band.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 10f, 1f);
-        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                band.removeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL);
-            }
-        }, 10L);
+        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> band.removeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL), 10L);
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
@@ -157,12 +149,18 @@ public class BandUtil {
             pur.close();
             data.setPurchases(purch);
             HashMap<String, Integer> rides = new HashMap<>();
-            PreparedStatement counts = connection.prepareStatement("SELECT name,count from ridecounter WHERE uuid=? AND server=?");
+            PreparedStatement counts = connection.prepareStatement("SELECT name from ride_counter WHERE uuid=? AND server=?");
             counts.setString(1, uuid.toString());
             counts.setString(2, MCMagicCore.getMCMagicConfig().serverName);
             ResultSet results = counts.executeQuery();
             while (results.next()) {
-                rides.put(results.getString("name"), results.getInt("count"));
+                String name = results.getString("name");
+                if (rides.containsKey(name)) {
+                    int amount = rides.remove(name);
+                    rides.put(name, amount + 1);
+                } else {
+                    rides.put(name, 1);
+                }
             }
             results.close();
             counts.close();
@@ -177,18 +175,15 @@ public class BandUtil {
     }
 
     public void setSetting(final UUID uuid, final String name, final boolean value) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
-                    sql.setInt(1, value ? 1 : 0);
-                    sql.setString(2, uuid.toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
+                sql.setInt(1, value ? 1 : 0);
+                sql.setString(2, uuid.toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }
@@ -212,22 +207,19 @@ public class BandUtil {
     public void setBandColor(final Player player, final BandColor color) {
         final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
-                    sql.setString(1, color.getName());
-                    sql.setString(2, player.getUniqueId().toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                data.setBandColor(color);
-                data.setSpecial(color.getName().startsWith("s"));
-                giveBandToPlayer(player);
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
+                sql.setString(1, color.getName());
+                sql.setString(2, player.getUniqueId().toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+            data.setBandColor(color);
+            data.setSpecial(color.getName().startsWith("s"));
+            giveBandToPlayer(player);
         });
     }
 
@@ -237,20 +229,17 @@ public class BandUtil {
         data.setBandColor(getBandColor(name));
         data.setSpecial(getBandColor(name).getName().startsWith("s"));
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() + "MagicBand!");
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
-                    sql.setString(1, name);
-                    sql.setString(2, player.getUniqueId().toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                giveBandToPlayer(player);
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
+                sql.setString(1, name);
+                sql.setString(2, player.getUniqueId().toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+            giveBandToPlayer(player);
         });
     }
 
@@ -285,13 +274,10 @@ public class BandUtil {
             return;
         }
         final UUID uuid = player.getUniqueId();
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                DataResponse response = new DataResponse(uuid, MCMagicCore.economy.getBalance(uuid),
-                        MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid)));
-                dataResponses.put(uuid, response);
-            }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            DataResponse response = new DataResponse(uuid, MCMagicCore.economy.getBalance(uuid),
+                    MCMagicCore.economy.getTokens(uuid), DateUtil.formatDateDiff(getOnlineTime(uuid)));
+            dataResponses.put(uuid, response);
         });
     }
 
@@ -320,20 +306,17 @@ public class BandUtil {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         data.setBandName(color);
         player.sendMessage(ChatColor.GREEN + "You have changed the name color of your " + data.getBandName() + "MagicBand!");
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE uuid=?");
-                    sql.setString(1, getBandNameColor(color));
-                    sql.setString(2, player.getUniqueId().toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                giveBandToPlayer(player);
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE uuid=?");
+                sql.setString(1, getBandNameColor(color));
+                sql.setString(2, player.getUniqueId().toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+            giveBandToPlayer(player);
         });
     }
 

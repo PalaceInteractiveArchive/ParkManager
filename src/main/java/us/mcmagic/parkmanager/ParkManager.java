@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -51,6 +50,7 @@ import us.mcmagic.parkmanager.watch.WatchTask;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ParkManager extends JavaPlugin implements Listener {
     public static List<FoodLocation> foodLocations = new ArrayList<>();
@@ -206,11 +206,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         warps.clear();
         chairManager.emptyAllData();
         for (World world : Bukkit.getWorlds()) {
-            for (Entity e : world.getEntities()) {
-                if (e instanceof Minecart) {
-                    e.remove();
-                }
-            }
+            world.getEntities().stream().filter(e -> e instanceof Minecart).forEach(org.bukkit.entity.Entity::remove);
         }
         //pixelator.rendererManager.disable();
     }
@@ -279,11 +275,7 @@ public class ParkManager extends JavaPlugin implements Listener {
     }
 
     public void setupRides() {
-        for (Ride r : getRides()) {
-            if (r.getQueue() != null) {
-                r.getQueue().ejectQueue();
-            }
-        }
+        getRides().stream().filter(r -> r.getQueue() != null).forEach(r -> r.getQueue().ejectQueue());
         rides.clear();
         attractions.clear();
         YamlConfiguration config = FileUtil.menuYaml();
@@ -337,26 +329,17 @@ public class ParkManager extends JavaPlugin implements Listener {
     }
 
     public static List<Ride> getRides() {
-        List<Ride> list = new ArrayList<>();
-        for (Ride ride : new ArrayList<>(rides)) {
-            list.add(ride);
-        }
+        List<Ride> list = new ArrayList<>(rides).stream().collect(Collectors.toList());
         return list;
     }
 
     public static List<Ride> getAttractions() {
-        List<Ride> list = new ArrayList<>();
-        for (Ride ride : new ArrayList<>(attractions)) {
-            list.add(ride);
-        }
+        List<Ride> list = new ArrayList<>(attractions).stream().collect(Collectors.toList());
         return list;
     }
 
     public static List<Ride> getMeetAndGreets() {
-        List<Ride> list = new ArrayList<>();
-        for (Ride ride : new ArrayList<>(meetandgreets)) {
-            list.add(ride);
-        }
+        List<Ride> list = new ArrayList<>(meetandgreets).stream().collect(Collectors.toList());
         return list;
     }
 
@@ -396,6 +379,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         getCommand("autograph").setAliases(Arrays.asList("a", "auto"));
         getCommand("b").setExecutor(new Commandb());
         getCommand("back").setExecutor(new Commandback());
+        //getCommand("bb8").setExecutor(new Commandbb8());
         getCommand("bc").setExecutor(new Commandbc());
         getCommand("build").setExecutor(new Commandbuild());
         getCommand("day").setExecutor(new Commandday());

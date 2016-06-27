@@ -33,23 +33,21 @@ import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
+    private Rank newHWSRank = Rank.INTERN;
 
     public PlayerJoinAndLeave() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (Map.Entry<UUID, Long> entry : new HashMap<>(needInvSet).entrySet()) {
-                    UUID uuid = entry.getKey();
-                    Long time = entry.getValue();
-                    if (time + 5000 <= System.currentTimeMillis()) {
-                        needInvSet.remove(uuid);
-                        Player tp = Bukkit.getPlayer(uuid);
-                        if (tp == null) {
-                            continue;
-                        }
-                        tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
-                        ParkManager.storageManager.downloadInventory(uuid);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
+            for (Map.Entry<UUID, Long> entry : new HashMap<>(needInvSet).entrySet()) {
+                UUID uuid = entry.getKey();
+                Long time = entry.getValue();
+                if (time + 5000 <= System.currentTimeMillis()) {
+                    needInvSet.remove(uuid);
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp == null) {
+                        continue;
                     }
+                    tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
+                    ParkManager.storageManager.downloadInventory(uuid);
                 }
             }
         }, 0L, 20L);
@@ -82,8 +80,8 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         if (MCMagicCore.getMCMagicConfig().serverName.equals("NewHWS")) {
-            if (user.getRank().getRankId() < Rank.DVCMEMBER.getRankId()) {
-                event.setKickMessage(ChatColor.RED + "You must be the " + Rank.DVCMEMBER.getNameWithBrackets()
+            if (user.getRank().getRankId() < newHWSRank.getRankId()) {
+                event.setKickMessage(ChatColor.RED + "You must be the " + newHWSRank.getNameWithBrackets()
                         + ChatColor.RED + " rank or above to preview NewHWS!");
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -100,6 +98,27 @@ public class PlayerJoinAndLeave implements Listener {
         try {
             final Player player = event.getPlayer();
             final User user = MCMagicCore.getUser(player.getUniqueId());
+            user.giveAchievement(0);
+            switch (MCMagicCore.getMCMagicConfig().serverName) {
+                case "MK":
+                    user.giveAchievement(3);
+                    break;
+                case "Epcot":
+                    user.giveAchievement(4);
+                    break;
+                case "HWS":
+                    user.giveAchievement(5);
+                    break;
+                case "AK":
+                    user.giveAchievement(6);
+                    break;
+                case "Typhoon":
+                    user.giveAchievement(7);
+                    break;
+                case "DCL":
+                    user.giveAchievement(8);
+                    break;
+            }
             if (!needInvSet.containsKey(player.getUniqueId())) {
                 needInvSet.put(player.getUniqueId(), System.currentTimeMillis());
             }
@@ -133,15 +152,11 @@ public class PlayerJoinAndLeave implements Listener {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
             ParkManager.vanishUtil.login(player);
-            if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId() &&
-                    !MCMagicCore.getMCMagicConfig().serverName.equals("NewHWS")) {
+            if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
                 Commandvanish.vanish(player.getUniqueId());
-                for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                        tp.hidePlayer(player);
-                    }
-                }
             }
+            Bukkit.getOnlinePlayers().stream().filter(tp -> MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId()
+                    < Rank.SPECIALGUEST.getRankId()).forEach(tp -> tp.hidePlayer(player));
             if (ParkManager.ttcServer) {
                 if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                     if (player.getLocation().distance(ParkManager.spawn) <= 5) {
@@ -162,31 +177,28 @@ public class PlayerJoinAndLeave implements Listener {
             inv.setLeggings(c.getPants());
             inv.setBoots(c.getBoots());
             setInventory(player, false);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(ParkManager.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    if (!ParkManager.hotelServer) {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(ParkManager.getInstance(), () -> {
+                if (!ParkManager.hotelServer) {
+                    return;
+                }
+                HotelManager manager = ParkManager.hotelManager;
+                for (HotelRoom room : manager.getHotelRooms()) {
+                    if (room.getCheckoutNotificationRecipient() != null &&
+                            room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
+                        room.setCheckoutNotificationRecipient(null);
+                        room.setCheckoutTime(0);
+                        manager.updateHotelRoom(room);
+                        manager.updateRooms();
+                        player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
+                                " room has lapsed and you have been checked out. Please come stay with us again soon!");
+                        manager.expire.send(player);
+                        player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
                         return;
                     }
-                    HotelManager manager = ParkManager.hotelManager;
-                    for (HotelRoom room : manager.getHotelRooms()) {
-                        if (room.getCheckoutNotificationRecipient() != null &&
-                                room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
-                            room.setCheckoutNotificationRecipient(null);
-                            room.setCheckoutTime(0);
-                            manager.updateHotelRoom(room);
-                            manager.updateRooms();
-                            player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
-                                    " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                            manager.expire.send(player);
-                            player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
-                            return;
-                        }
-                        if (room.getCurrentOccupant() != null &&
-                                room.getCurrentOccupant().equals(player.getUniqueId()) &&
-                                room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                            manager.checkout(room, true);
-                        }
+                    if (room.getCurrentOccupant() != null &&
+                            room.getCurrentOccupant().equals(player.getUniqueId()) &&
+                            room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+                        manager.checkout(room, true);
                     }
                 }
             }, 20L);

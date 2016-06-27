@@ -40,5 +40,4 @@ public class BB8Manager {
     public ArrayList<BB8> getAllDroids() {
         return new ArrayList<>(droids);
     }
-
 }

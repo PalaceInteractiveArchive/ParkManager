@@ -6,12 +6,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.utils.SqlUtil;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
 import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.permissions.Rank;
+import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.utils.SqlUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -143,6 +144,8 @@ public class AutographManager {
         giveBook(tp);
         tp.sendMessage(MCMagicCore.getUser(player.getUniqueId()).getRank().getTagColor() + player.getName() +
                 ChatColor.GREEN + " has signed your Autograph Book!");
+        User user = MCMagicCore.getUser(tp.getUniqueId());
+        user.giveAchievement(1);
         player.sendMessage(ChatColor.GREEN + "You signed " + tp.getName() + "'s Autograph Book!");
         active.remove(player.getUniqueId());
     }
@@ -163,17 +166,14 @@ public class AutographManager {
                 .color(ChatColor.GREEN).then("Click here to Deny").color(ChatColor.RED).command("/autograph deny")
                 .tooltip(ChatColor.RED + "Click to Deny!");
         msg.send(target);
-        map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                if (!map.containsKey(sender.getUniqueId())) {
-                    return;
-                }
-                map.remove(sender.getUniqueId());
-                sender.sendMessage(ChatColor.RED + "Your Autograph Request to " + name2 + ChatColor.RED +
-                        " has timed out!");
-                target.sendMessage(name + "'s " + ChatColor.RED + "Autograph Request sent to you has timed out!");
+        map2.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+            if (!map.containsKey(sender.getUniqueId())) {
+                return;
             }
+            map.remove(sender.getUniqueId());
+            sender.sendMessage(ChatColor.RED + "Your Autograph Request to " + name2 + ChatColor.RED +
+                    " has timed out!");
+            target.sendMessage(name + "'s " + ChatColor.RED + "Autograph Request sent to you has timed out!");
         }, 400L).getTaskId());
         map3.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
             int i = 20;
@@ -270,28 +270,25 @@ public class AutographManager {
             player.sendMessage(ChatColor.RED + "You can't remove this page!");
             return;
         }
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                List<Signature> autos = getSignatures(player.getUniqueId());
-                if (autos.size() < num - 1) {
-                    player.sendMessage(ChatColor.RED + "You do not have a " + ChatColor.YELLOW + "Page #" + num +
-                            ChatColor.RED + " in your Autograph Book!");
-                    return;
-                }
-                Signature remove = autos.get(num - 2);
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("DELETE FROM autographs WHERE id=?");
-                    sql.setInt(1, remove.getId());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                setBook(player.getUniqueId());
-                giveBook(player);
-                player.sendMessage(ChatColor.GREEN + "You removed the Autograph on " + ChatColor.YELLOW + "Page #" + num);
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            List<Signature> autos = getSignatures(player.getUniqueId());
+            if (autos.size() < num - 1) {
+                player.sendMessage(ChatColor.RED + "You do not have a " + ChatColor.YELLOW + "Page #" + num +
+                        ChatColor.RED + " in your Autograph Book!");
+                return;
             }
+            Signature remove = autos.get(num - 2);
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("DELETE FROM autographs WHERE id=?");
+                sql.setInt(1, remove.getId());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            setBook(player.getUniqueId());
+            giveBook(player);
+            player.sendMessage(ChatColor.GREEN + "You removed the Autograph on " + ChatColor.YELLOW + "Page #" + num);
         });
     }
 

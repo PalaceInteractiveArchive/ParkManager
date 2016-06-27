@@ -24,7 +24,6 @@ import us.mcmagic.parkmanager.commands.Commandmagic;
 import us.mcmagic.parkmanager.designstation.DesignStation;
 import us.mcmagic.parkmanager.handlers.*;
 import us.mcmagic.parkmanager.hotels.HotelManager;
-import us.mcmagic.parkmanager.show.Show;
 import us.mcmagic.parkmanager.utils.WarpUtil;
 
 import java.util.List;
@@ -103,12 +102,10 @@ public class PlayerInteract implements Listener {
                 }
                 if (s.getLine(0).equals(show)) {
                     String show = ChatColor.stripColor(s.getLine(3));
-                    for (Show sh : Commandmagic.getShows()) {
-                        if (sh.getName().equals(show)) {
-                            sh.syncAudioForPlayer(player);
-                            player.sendMessage(ChatColor.GREEN + "Syncing your audio for " + show + "!");
-                        }
-                    }
+                    Commandmagic.getShows().stream().filter(sh -> sh.getName().equals(show)).forEach(sh -> {
+                        sh.syncAudioForPlayer(player);
+                        player.sendMessage(ChatColor.GREEN + "Syncing your audio for " + show + "!");
+                    });
                     return;
                 }
                 if (s.getLine(0).equals(warp)) {

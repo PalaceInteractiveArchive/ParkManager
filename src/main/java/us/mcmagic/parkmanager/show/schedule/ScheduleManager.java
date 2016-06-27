@@ -19,12 +19,7 @@ public class ScheduleManager {
     private List<ScheduledShow> shows = new ArrayList<>();
 
     public ScheduleManager() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }, 0L, 36000L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), this::update, 0L, 36000L);
     }
 
     public void update() {

@@ -210,46 +210,32 @@ public class Commandmagic implements Listener, CommandExecutor {
                     final String finalRideName = rideName;
                     Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
                         PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
-                        HashMap<String, Integer> counts = data.getRideCounts();
-                        if (!counts.containsKey(finalRideName)) {
-                            counts.put(finalRideName, 1);
-                            try (Connection connection = SqlUtil.getConnection()) {
-                                PreparedStatement sql = connection.prepareStatement("INSERT INTO ridecounter (uuid," +
-                                        " name, server) VALUES (?,?,?)");
-                                sql.setString(1, tp.getUniqueId().toString());
-                                sql.setString(2, finalRideName);
-                                sql.setString(3, MCMagicCore.getMCMagicConfig().serverName);
-                                sql.execute();
-                                sql.close();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            counts.put(finalRideName, counts.remove(finalRideName) + 1);
-                            try (Connection connection = SqlUtil.getConnection()) {
-                                PreparedStatement sql = connection.prepareStatement("UPDATE ridecounter SET " +
-                                        "count=count+1 WHERE uuid=? AND name=?");
-                                sql.setString(1, tp.getUniqueId().toString());
-                                sql.setString(2, finalRideName);
-                                sql.execute();
-                                sql.close();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+                        HashMap<String, Integer> rides = data.getRideCounts();
+                        try (Connection connection = SqlUtil.getConnection()) {
+                            PreparedStatement sql = connection.prepareStatement("INSERT INTO ride_counter (uuid, name, server, time) VALUES (?,?,?,?)");
+                            sql.setString(1, tp.getUniqueId().toString());
+                            sql.setString(2, finalRideName);
+                            sql.setString(3, MCMagicCore.getMCMagicConfig().serverName);
+                            sql.setInt(4, (int) (System.currentTimeMillis() / 1000));
+                            sql.execute();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        data.setRideCounts(counts);
+                        if (rides.containsKey(finalRideName)) {
+                            int amount = rides.remove(finalRideName);
+                            rides.put(finalRideName, amount + 1);
+                        } else {
+                            rides.put(finalRideName, 1);
+                        }
+                        data.setRideCounts(rides);
                         sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " +
                                 finalRideName);
-                        tp.sendMessage(ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD +
-                                "--------------------------------------" + ChatColor.MAGIC + "------" +
-                                ChatColor.RESET + ChatColor.GOLD + "-\n  " + ChatColor.YELLOW +
-                                "       Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
-                                "is now at " + ChatColor.GREEN + data.getRideCounts().get(finalRideName) + "\n" +
-                                ChatColor.GOLD + "-" + ChatColor.MAGIC + "------" + ChatColor.RESET + ChatColor.GOLD
-                                + "--------------------------------------" + ChatColor.MAGIC + "------" +
-                                ChatColor.RESET + ChatColor.GOLD + "-");
+                        tp.sendMessage(ChatColor.GREEN + "--------------" + ChatColor.GOLD + "" + ChatColor.BOLD +
+                                "Ride Counter" + ChatColor.GREEN + "-------------\n" + ChatColor.YELLOW +
+                                "Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
+                                "is now at " + ChatColor.AQUA + data.getRideCounts().get(finalRideName) +
+                                ChatColor.GREEN + "\n----------------------------------------");
                         tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
-                        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 1f), 2L);
                     });
                     return true;
                 }
@@ -792,7 +778,6 @@ public class Commandmagic implements Listener, CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return true;
                 }
-                //TODO: Finish this
                 sender.sendMessage(ChatColor.RED + "TODO");
                 helpMenu("pin", sender);
                 return true;
@@ -885,7 +870,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                         world.getBlockAt(x1, i, z1).setType(Material.AIR);
                         world.getBlockAt(x2, i, z2).setType(Material.AIR);
                     }
-                    for (int i = 94; i <= 104; i++) {
+                    for (int i = 91; i <= 101; i++) {
                         world.getBlockAt(x1, i, z1).setType(Material.AIR);
                         world.getBlockAt(x2, i, z2).setType(Material.AIR);
                     }

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Marc on 10/11/15
  */
 public class ShowStand {
-    private int id;
+    private String id;
     private boolean small;
     private ArmorData armorData;
     private boolean hasSpawned = false;
@@ -19,14 +19,14 @@ public class ShowStand {
     private List<Position> positions = new ArrayList<>();
     private Rotation rotation;
 
-    public ShowStand(int id, boolean small, ArmorData armorData) {
+    public ShowStand(String id, boolean small, ArmorData armorData) {
         this.id = id;
         this.small = small;
         this.armorData = armorData;
         this.hasSpawned = false;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

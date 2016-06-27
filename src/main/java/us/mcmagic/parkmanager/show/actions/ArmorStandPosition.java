@@ -54,11 +54,11 @@ public class ArmorStandPosition extends ShowAction {
                 a = stand.getStand().getRightLegPose();
                 break;
         }
-        double x = ((angle.getX() - a.getX()) / speed) / 20;
-        double y = ((angle.getY() - a.getY()) / speed) / 20;
-        double z = ((angle.getZ() - a.getZ()) / speed) / 20;
+        double x = ((float) (((float) (angle.getX() - a.getX())) / (20 * speed)));
+        double y = ((float) (((float) (angle.getY() - a.getY())) / (20 * speed)));
+        double z = ((float) (((float) (angle.getZ() - a.getZ())) / (20 * speed)));
         Vector motion = new Vector(x, y, z);
-        stand.addPosition(new Position(motion, speed, positionType));
+        stand.addPosition(new Position(motion, speed * 20, positionType));
         ParkManager.armorStandManager.addStand(stand, StandAction.POSITION);
     }
 }

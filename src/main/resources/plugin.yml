@@ -1,6 +1,6 @@
 name: ParkManager
 author: MCMagicDev
-version: 2.2.6
+version: 2.2.7
 description: MCMagic Park Plugin
 main: us.mcmagic.parkmanager.ParkManager
 depend: [MCMagicCore, ProtocolLib, WorldEdit]
@@ -11,6 +11,10 @@ commands:
       permission-message: §4Please notify a Cast Member that you can’t do this.
    b:
       description: Perform a Cross-Server Broadcast.
+      permission: arcade.bypass
+      permission-message: §4Please notify a Cast Member that you can’t do this.
+   bb8:
+      description: BB8!
       permission: arcade.bypass
       permission-message: §4Please notify a Cast Member that you can’t do this.
    mc:
@@ -37,10 +41,10 @@ commands:
       description: Set time to noon
       permission: mcmagic.time.set
       permission-message: §cOnly Cast Members can use this command!
-   #pixel:
-   #   description: Pixelator Command
-   #   permission: arcade.bypass
-   #   permission-message: §cOnly Cast Members can use this command!
+   pixel:
+      description: Pixelator Command
+      permission: arcade.bypass
+      permission-message: §cOnly Cast Members can use this command!
    warp:
       description: Warp Command
       permission: mcmagic.warp

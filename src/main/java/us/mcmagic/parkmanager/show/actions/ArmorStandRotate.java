@@ -31,7 +31,7 @@ public class ArmorStandRotate extends ShowAction {
         }
         ArmorStand armor = stand.getStand();
         float yaw = (float) (((armor.getLocation().getYaw() + this.yaw) / speed) / 20);
-        stand.setRotation(new Rotation(yaw, speed));
+        stand.setRotation(new Rotation(yaw, speed * 20));
         ParkManager.armorStandManager.addStand(stand, StandAction.ROTATION);
     }
 }
