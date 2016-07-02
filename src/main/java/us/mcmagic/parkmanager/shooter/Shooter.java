@@ -97,8 +97,7 @@ public class Shooter implements Listener {
             return;
         }
         String displayName = meta.getDisplayName();
-        if (inHand.getType().equals(stack.getType())) {
-            meta.getDisplayName().equals(stack.getItemMeta().getDisplayName());
+        if (inHand.getType().equals(stack.getType()) && meta.getDisplayName().equals(stack.getItemMeta().getDisplayName())) {
             player.launchProjectile(Snowball.class);
             event.setCancelled(true);
         }
@@ -133,11 +132,9 @@ public class Shooter implements Listener {
                 sendMessage(player, "+" + amount);
                 player.sendBlockChange(loc, Material.REDSTONE_BLOCK, (byte) 0);
                 locations.put(time, block);
-                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                    public void run() {
-                        locations.remove(time);
-                        player.sendBlockChange(loc, getMaterial(amount), (byte) 0);
-                    }
+                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                    locations.remove(time);
+                    player.sendBlockChange(loc, getMaterial(amount), (byte) 0);
                 }, 100L);
             }
 

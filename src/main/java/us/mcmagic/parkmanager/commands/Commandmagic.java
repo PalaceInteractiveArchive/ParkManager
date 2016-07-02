@@ -5,6 +5,7 @@ import net.minecraft.server.v1_8_R3.MojangsonParseException;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockChange;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -915,6 +916,118 @@ public class Commandmagic implements Listener, CommandExecutor {
                 helpMenu("tot", sender);
                 return true;
             }
+            case "tsm": {
+                if (ParkManager.toyStoryMania == null) {
+                    sender.sendMessage(ChatColor.RED + "Shooter is Disabled!");
+                    return true;
+                }
+                switch (args.length) {
+                    case 3: {
+                        if (args[1].equalsIgnoreCase("add")) {
+                            Player player = PlayerUtil.findPlayer(args[2]);
+                            if (player == null) {
+                                sender.sendMessage(ChatColor.RED + "Could not find Player!");
+                                return true;
+                            }
+                            ParkManager.toyStoryMania.join(player);
+                            return true;
+                        }
+                        if (args[1].equalsIgnoreCase("remove")) {
+                            Player player = PlayerUtil.findPlayer(args[2]);
+                            if (player == null) {
+                                sender.sendMessage(ChatColor.RED + "Could not find Player!");
+                                return true;
+                            }
+                            PlayerInventory inv = player.getInventory();
+                            if (!ParkManager.toyStoryMania.isInGame(player)) {
+                                return true;
+                            }
+                            ParkManager.toyStoryMania.done(player);
+                            return true;
+                        }
+                        helpMenu("tsm", sender);
+                        break;
+                    }
+                    case 4: {
+                        if (args[1].equalsIgnoreCase("randomize")) {
+                            Location loc1 = WorldUtil.strToLoc("hws," + args[2]);
+                            Location loc2 = WorldUtil.strToLoc("hws," + args[3]);
+                            if (loc2.getBlockX() < loc1.getBlockX()) {
+                                final int x = loc1.getBlockX();
+                                loc1.setX(loc2.getBlockX());
+                                loc2.setX(x);
+                            }
+                            if (loc2.getBlockY() < loc1.getBlockY()) {
+                                final int y = loc1.getBlockY();
+                                loc1.setY(loc2.getBlockY());
+                                loc2.setY(y);
+                            }
+                            if (loc2.getBlockZ() < loc1.getBlockZ()) {
+                                final int z = loc1.getBlockZ();
+                                loc1.setZ(loc2.getBlockZ());
+                                loc2.setZ(z);
+                            }
+                            ParkManager.toyStoryMania.randomize(loc1, loc2);
+                            return true;
+                        }
+                        if (args[1].equalsIgnoreCase("reset")) {
+                            Location loc1 = WorldUtil.strToLoc("hws," + args[2]);
+                            Location loc2 = WorldUtil.strToLoc("hws," + args[3]);
+                            if (loc2.getBlockX() < loc1.getBlockX()) {
+                                final int x = loc1.getBlockX();
+                                loc1.setX(loc2.getBlockX());
+                                loc2.setX(x);
+                            }
+                            if (loc2.getBlockY() < loc1.getBlockY()) {
+                                final int y = loc1.getBlockY();
+                                loc1.setY(loc2.getBlockY());
+                                loc2.setY(y);
+                            }
+                            if (loc2.getBlockZ() < loc1.getBlockZ()) {
+                                final int z = loc1.getBlockZ();
+                                loc1.setZ(loc2.getBlockZ());
+                                loc2.setZ(z);
+                            }
+                            ParkManager.toyStoryMania.reset(loc1, loc2);
+                            return true;
+                        }
+                        helpMenu("tsm", sender);
+                        break;
+                    }
+                    case 5: {
+                        if (args[1].equalsIgnoreCase("map")) {
+                            Location loc1 = WorldUtil.strToLoc("hws," + args[2]);
+                            Location loc2 = WorldUtil.strToLoc("hws," + args[3]);
+                            if (loc2.getBlockX() < loc1.getBlockX()) {
+                                final int x = loc1.getBlockX();
+                                loc1.setX(loc2.getBlockX());
+                                loc2.setX(x);
+                            }
+                            if (loc2.getBlockY() < loc1.getBlockY()) {
+                                final int y = loc1.getBlockY();
+                                loc1.setY(loc2.getBlockY());
+                                loc2.setY(y);
+                            }
+                            if (loc2.getBlockZ() < loc1.getBlockZ()) {
+                                final int z = loc1.getBlockZ();
+                                loc1.setZ(loc2.getBlockZ());
+                                loc2.setZ(z);
+                            }
+                            Location chest = WorldUtil.strToLoc("hws," + args[4]);
+                            if (!chest.getBlock().getType().equals(Material.CHEST)) {
+                                sender.sendMessage(ChatColor.RED + "No chest at " + chest.getBlockX() + "," +
+                                        chest.getBlockY() + "," + chest.getBlockZ() + ",");
+                                return true;
+                            }
+                            ParkManager.toyStoryMania.setMap(loc1, loc2, (Chest) chest.getBlock().getState());
+                        }
+                        helpMenu("tsm", sender);
+                        break;
+                    }
+                }
+                helpMenu("tsm", sender);
+                return true;
+            }
             case "reload":
                 ParkManager pm = ParkManager.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
@@ -969,7 +1082,19 @@ public class Commandmagic implements Listener, CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + "/magic schedule " + ChatColor.AQUA + "- Show Schedule");
                 sender.sendMessage(ChatColor.GREEN + "/magic outfit " + ChatColor.AQUA + "- Outfit Manager");
                 sender.sendMessage(ChatColor.GREEN + "/magic iasw " + ChatColor.AQUA + "- IASW Manager");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm " + ChatColor.AQUA + "- Toy Story Mania Game");
                 sender.sendMessage(ChatColor.GREEN + "/magic uoe " + ChatColor.AQUA + "- Features for Universe of Energy");
+                break;
+            case "tsm":
+                sender.sendMessage(ChatColor.GREEN + "Toy Story Mania Commands:");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm add [Name] " + ChatColor.AQUA + "- Add player to game");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm remove [Name] " + ChatColor.AQUA + "- Remove player from game");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm randomize x1,y1,z1 x2,y2,z2 " + ChatColor.AQUA +
+                        "- Randomize game screen in an area");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm reset x1,y1,z1 x2,y2,z2 " + ChatColor.AQUA +
+                        "- Set all screens in the area to black");
+                sender.sendMessage(ChatColor.GREEN + "/magic tsm map x1,y1,z1 x2,y2,z2 xC,yC,zC " + ChatColor.AQUA +
+                        "- Copy maps from a chest to item frames");
                 break;
             case "tot":
                 sender.sendMessage(ChatColor.GREEN + "Tower of Terror Commands:");

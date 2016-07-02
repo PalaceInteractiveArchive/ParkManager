@@ -33,7 +33,7 @@ import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
-    private Rank newHWSRank = Rank.INTERN;
+    private Rank newHWSRank = Rank.SHAREHOLDER;
 
     public PlayerJoinAndLeave() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {

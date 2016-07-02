@@ -44,6 +44,7 @@ import us.mcmagic.parkmanager.show.schedule.ScheduleManager;
 import us.mcmagic.parkmanager.show.ticker.Ticker;
 import us.mcmagic.parkmanager.stitch.Stitch;
 import us.mcmagic.parkmanager.storage.StorageManager;
+import us.mcmagic.parkmanager.tsm.ToyStoryMania;
 import us.mcmagic.parkmanager.uoe.UniverseEnergyRide;
 import us.mcmagic.parkmanager.utils.*;
 import us.mcmagic.parkmanager.watch.WatchTask;
@@ -96,6 +97,7 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static WardrobeManager wardrobeManager;
     public static Pixelator pixelator;
     public static FPKioskManager fpKioskManager;
+    public static ToyStoryMania toyStoryMania;
 
     public void onEnable() {
         instance = this;
@@ -458,6 +460,8 @@ public class ParkManager extends JavaPlugin implements Listener {
         }
         if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws")) {
             pm.registerEvents(new TowerManager(Bukkit.getWorlds().get(0)), this);
+            toyStoryMania = new ToyStoryMania();
+            pm.registerEvents(toyStoryMania, this);
         }
     }
 }

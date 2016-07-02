@@ -36,32 +36,23 @@ public class HotelManager {
     }
 
     private void initialize() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (HotelRoom room : hotelRooms) {
-                    if (room.getCheckoutNotificationRecipient() != null) {
-                        UUID uuid = room.getCheckoutNotificationRecipient();
-                        Player tp = Bukkit.getPlayer(uuid);
-                        if (tp != null && tp.isOnline()) {
-                            checkout(room, true);
-                        }
-                    }
-                }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> hotelRooms.stream()
+                .filter(room -> room.getCheckoutNotificationRecipient() != null).forEach(room -> {
+            UUID uuid = room.getCheckoutNotificationRecipient();
+            Player tp = Bukkit.getPlayer(uuid);
+            if (tp != null && tp.isOnline()) {
+                checkout(room, true);
             }
-        }, 10L, 6000L);
+        }), 10L, 6000L);
         if (!ParkManager.hotelServer) {
             return;
         }
         refreshRooms();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (HotelRoom room : hotelRooms) {
-                    if (room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                        checkout(room, true);
-                        return;
-                    }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
+            for (HotelRoom room : hotelRooms) {
+                if (room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
+                    checkout(room, true);
+                    return;
                 }
             }
         }, 0L, 6000L);
@@ -298,14 +289,13 @@ public class HotelManager {
         if (!ParkManager.hotelServer) {
             return;
         }
-        for (HotelRoom room : hotelRooms) {
-            if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) && room.getCheckoutTime() != 0) {
-                room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
-                room.setCurrentOccupant(null);
-                room.setCheckoutTime(0);
-                updateHotelRoom(room);
-            }
-        }
+        hotelRooms.stream().filter(room -> room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) &&
+                room.getCheckoutTime() != 0).forEach(room -> {
+            room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
+            room.setCurrentOccupant(null);
+            room.setCheckoutTime(0);
+            updateHotelRoom(room);
+        });
     }
 
     public Block getDoorFromSign(Block b) {
@@ -407,6 +397,7 @@ public class HotelManager {
         player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for $" + room.getCost() +
                 "!");
         player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
+        MCMagicCore.getUser(player.getUniqueId()).giveAchievement(10);
     }
 
     public void checkout(HotelRoom room, boolean lapsed) {

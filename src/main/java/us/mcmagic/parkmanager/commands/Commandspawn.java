@@ -1,5 +1,6 @@
 package us.mcmagic.parkmanager.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,6 +21,14 @@ public class Commandspawn implements CommandExecutor {
                 if (tp == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                 }
+                if (tp.isInsideVehicle()) {
+                    tp.getVehicle().eject();
+                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                        ParkManager.teleportUtil.log(tp, tp.getLocation());
+                        tp.teleport(ParkManager.spawn);
+                    }, 10L);
+                    return true;
+                }
                 ParkManager.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(ParkManager.spawn);
                 return true;
@@ -28,13 +37,8 @@ public class Commandspawn implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws") &&
-                MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-            player.sendMessage(ChatColor.RED + "Sorry, you can't use this command in NewHWS!");
-            return true;
-        }
         if (args.length == 1) {
-            if (player.hasPermission("spawn.other")) {
+            if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
                 Player tp = PlayerUtil.findPlayer(args[0]);
                 if (tp == null) {
                     player.sendMessage(ChatColor.RED + "Player not found!");
@@ -42,6 +46,14 @@ public class Commandspawn implements CommandExecutor {
                 ParkManager.queueManager.leaveAllQueues(tp);
                 if (ParkManager.shooter != null) {
                     ParkManager.shooter.warp(tp);
+                }
+                if (tp.isInsideVehicle()) {
+                    tp.getVehicle().eject();
+                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                        ParkManager.teleportUtil.log(tp, tp.getLocation());
+                        tp.teleport(ParkManager.spawn);
+                    }, 10L);
+                    return true;
                 }
                 ParkManager.teleportUtil.log(tp, tp.getLocation());
                 tp.teleport(ParkManager.spawn);
@@ -51,6 +63,14 @@ public class Commandspawn implements CommandExecutor {
         ParkManager.queueManager.leaveAllQueues(player);
         if (ParkManager.shooter != null) {
             ParkManager.shooter.warp(player);
+        }
+        if (player.isInsideVehicle()) {
+            player.getVehicle().eject();
+            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                ParkManager.teleportUtil.log(player, player.getLocation());
+                player.teleport(ParkManager.spawn);
+            }, 10L);
+            return true;
         }
         ParkManager.teleportUtil.log(player, player.getLocation());
         player.teleport(ParkManager.spawn);

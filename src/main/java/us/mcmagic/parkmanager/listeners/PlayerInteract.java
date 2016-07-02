@@ -251,6 +251,7 @@ public class PlayerInteract implements Listener {
             if (pi.getItemInHand().getType().equals(ParkManager.bandUtil.getBandMaterial(data.getBandColor()))) {
                 event.setCancelled(true);
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+                MCMagicCore.getUser(player.getUniqueId()).giveAchievement(2);
             }
         }
     }

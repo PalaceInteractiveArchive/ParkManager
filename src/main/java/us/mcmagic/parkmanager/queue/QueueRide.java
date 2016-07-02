@@ -26,7 +26,7 @@ import java.util.*;
  * Created by Marc on 6/24/15
  */
 public class QueueRide {
-    private List<UUID> queue = new ArrayList<>();
+    protected List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
     protected final String name;
     private Location station;
@@ -39,10 +39,10 @@ public class QueueRide {
     private List<Location> fpsigns = new ArrayList<>();
     protected boolean frozen = false;
     private boolean fpoff = false;
-    private boolean paused = false;
+    protected boolean paused = false;
     private Integer timerID;
     private final Block spawnerBlock;
-    public int timeToNextRide;
+    public int timeToNextRide = 0;
     private RideCategory category;
     private String shortName;
 
@@ -221,19 +221,16 @@ public class QueueRide {
     protected void chargeFastpass(final PlayerData data) {
         final FastPassData fpdata = data.getFastPassData();
         fpdata.setPass(category, fpdata.getPass(category) - 1);
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
-                            category.getSqlName() + "=? WHERE uuid=?");
-                    sql.setInt(1, fpdata.getPass(category));
-                    sql.setString(2, data.getUniqueId().toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
+                        category.getSqlName() + "=? WHERE uuid=?");
+                sql.setInt(1, fpdata.getPass(category));
+                sql.setString(2, data.getUniqueId().toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

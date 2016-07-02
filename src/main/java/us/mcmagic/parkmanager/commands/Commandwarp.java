@@ -18,6 +18,7 @@ import us.mcmagic.parkmanager.utils.WarpUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Commandwarp implements CommandExecutor {
 
@@ -48,15 +49,12 @@ public class Commandwarp implements CommandExecutor {
                     }
                     if (tp.isInsideVehicle()) {
                         tp.getVehicle().eject();
-                        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                ParkManager.teleportUtil.log(tp, tp.getLocation());
-                                tp.teleport(loc);
-                                tp.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                        + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                        + ChatColor.WHITE + "]");
-                            }
+                        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                            ParkManager.teleportUtil.log(tp, tp.getLocation());
+                            tp.teleport(loc);
+                            tp.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                    + ChatColor.WHITE + "]");
                         }, 10L);
                         return true;
                     }
@@ -143,16 +141,13 @@ public class Commandwarp implements CommandExecutor {
                 if (player.isInsideVehicle()) {
                     player.getVehicle().eject();
                     final boolean finalMsg = msg;
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            ParkManager.teleportUtil.log(player, player.getLocation());
-                            player.teleport(loc);
-                            if (finalMsg) {
-                                player.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                        + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                        + ChatColor.WHITE + "]");
-                            }
+                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                        ParkManager.teleportUtil.log(player, player.getLocation());
+                        player.teleport(loc);
+                        if (finalMsg) {
+                            player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                    + ChatColor.WHITE + "]");
                         }
                     }, 10L);
                     return true;
@@ -210,15 +205,12 @@ public class Commandwarp implements CommandExecutor {
                         + ChatColor.GREEN + w + ChatColor.WHITE + "]");
                 if (tp.isInsideVehicle()) {
                     tp.getVehicle().eject();
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            ParkManager.teleportUtil.log(tp, tp.getLocation());
-                            tp.teleport(loc);
-                            tp.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                    + ChatColor.WHITE + "]");
-                        }
+                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                        ParkManager.teleportUtil.log(tp, tp.getLocation());
+                        tp.teleport(loc);
+                        tp.sendMessage(ChatColor.BLUE + "You have arrived at "
+                                + ChatColor.WHITE + "[" + ChatColor.GREEN + w
+                                + ChatColor.WHITE + "]");
                     }, 10L);
                     return true;
                 }
@@ -244,15 +236,8 @@ public class Commandwarp implements CommandExecutor {
         List<Warp> warps = ParkManager.getWarps();
         List<Warp> list = new ArrayList<>();
         String server = MCMagicCore.getMCMagicConfig().serverName;
-        for (Warp w : warps) {
-            if (w.getServer().equalsIgnoreCase(server)) {
-                list.add(w);
-            }
-        }
-        List<String> nlist = new ArrayList<>();
-        for (Warp w : list) {
-            nlist.add(w.getName());
-        }
+        list.addAll(warps.stream().filter(w -> w.getServer().equalsIgnoreCase(server)).collect(Collectors.toList()));
+        List<String> nlist = list.stream().map(Warp::getName).collect(Collectors.toList());
         Collections.sort(nlist);
         if (nlist.size() < (page - 1) * 20 && page != 1) {
             page = 1;
@@ -285,10 +270,7 @@ public class Commandwarp implements CommandExecutor {
 
     public static void listWarps(Player player, int page) {
         List<Warp> warps = ParkManager.getWarps();
-        List<String> nlist = new ArrayList<>();
-        for (Warp w : warps) {
-            nlist.add(w.getName());
-        }
+        List<String> nlist = warps.stream().map(Warp::getName).collect(Collectors.toList());
         Collections.sort(nlist);
         if (nlist.size() < (page - 1) * 20 && page != 1) {
             page = 1;

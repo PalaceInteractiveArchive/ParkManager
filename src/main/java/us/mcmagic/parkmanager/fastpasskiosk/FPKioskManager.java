@@ -77,32 +77,25 @@ public class FPKioskManager implements Listener {
                     } else {
                         openMenu.remove(event.getPlayer().getUniqueId());
                     }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (Exception ignored) {
                 }
             }
         });
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (UUID uuid : new ArrayList<>(firstOpenMenu)) {
-                    Player tp = Bukkit.getPlayer(uuid);
-                    if (tp != null) {
-                        firstOpenMenu.remove(uuid);
-                        openKiosk(tp);
-                        openMenu.add(uuid);
-                    }
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            for (UUID uuid : new ArrayList<>(firstOpenMenu)) {
+                Player tp = Bukkit.getPlayer(uuid);
+                if (tp != null) {
+                    firstOpenMenu.remove(uuid);
+                    openKiosk(tp);
+                    openMenu.add(uuid);
                 }
             }
         }, 0L, 1L);
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (UUID uuid : new ArrayList<>(openMenu)) {
-                    Player tp = Bukkit.getPlayer(uuid);
-                    if (tp != null) {
-                        updateKioskMenu(tp);
-                    }
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            for (UUID uuid : new ArrayList<>(openMenu)) {
+                Player tp = Bukkit.getPlayer(uuid);
+                if (tp != null) {
+                    updateKioskMenu(tp);
                 }
             }
         }, 0L, 20L);
@@ -466,21 +459,18 @@ public class FPKioskManager implements Listener {
     }
 
     private void updateMonthlyData(final UUID uuid, final KioskData data) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET monthguest=?," +
-                            "monthdvc=?,monthshare=? WHERE uuid=?");
-                    sql.setLong(1, data.getMonthGuest());
-                    sql.setLong(2, data.getMonthDVC());
-                    sql.setLong(3, data.getMonthShare());
-                    sql.setString(4, uuid.toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET monthguest=?," +
+                        "monthdvc=?,monthshare=? WHERE uuid=?");
+                sql.setLong(1, data.getMonthGuest());
+                sql.setLong(2, data.getMonthDVC());
+                sql.setLong(3, data.getMonthShare());
+                sql.setString(4, uuid.toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }
@@ -491,47 +481,41 @@ public class FPKioskManager implements Listener {
             return;
         }
         final PlayerData data = ParkManager.getPlayerData(uuid);
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("SELECT vote,lastvote from player_data WHERE uuid=?");
-                    sql.setString(1, uuid.toString());
-                    ResultSet result = sql.executeQuery();
-                    if (!result.next()) {
-                        return;
-                    }
-                    KioskData kioskData = data.getKioskData();
-                    kioskData.setVote(result.getLong("vote"));
-                    kioskData.setLastVote(result.getInt("lastvote"));
-                    result.close();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("SELECT vote,lastvote from player_data WHERE uuid=?");
+                sql.setString(1, uuid.toString());
+                ResultSet result = sql.executeQuery();
+                if (!result.next()) {
+                    return;
                 }
+                KioskData kioskData = data.getKioskData();
+                kioskData.setVote(result.getLong("vote"));
+                kioskData.setLastVote(result.getInt("lastvote"));
+                result.close();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }
 
     private void updateFPData(final UUID uuid, final FastPassData fastPassData) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET slow=?,moderate=?," +
-                            "thrill=?,sday=?,mday=?,tday=? WHERE uuid=?");
-                    sql.setInt(1, fastPassData.getSlow());
-                    sql.setInt(2, fastPassData.getModerate());
-                    sql.setInt(3, fastPassData.getThrill());
-                    sql.setInt(4, fastPassData.getSlowDay());
-                    sql.setInt(5, fastPassData.getModerateDay());
-                    sql.setInt(6, fastPassData.getThrillDay());
-                    sql.setString(7, uuid.toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET slow=?,moderate=?," +
+                        "thrill=?,sday=?,mday=?,tday=? WHERE uuid=?");
+                sql.setInt(1, fastPassData.getSlow());
+                sql.setInt(2, fastPassData.getModerate());
+                sql.setInt(3, fastPassData.getThrill());
+                sql.setInt(4, fastPassData.getSlowDay());
+                sql.setInt(5, fastPassData.getModerateDay());
+                sql.setInt(6, fastPassData.getThrillDay());
+                sql.setString(7, uuid.toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

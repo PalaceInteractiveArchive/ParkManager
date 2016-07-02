@@ -2,12 +2,10 @@ package us.mcmagic.parkmanager.queue.tot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import us.mcmagic.parkmanager.handlers.RideCategory;
 import us.mcmagic.parkmanager.queue.QueueRide;
-import us.mcmagic.parkmanager.queue.tasks.SpawnBlockSetTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,17 +81,6 @@ public class TowerStation extends QueueRide {
     }
 
     @Override
-    public void spawn() {
-        if (frozen) {
-            return;
-        }
-        lastSpawn = getTime();
-        timeToNextRide = delay;
-        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis(), Material.REDSTONE_BLOCK));
-        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
-    }
-
-    @Override
     public Block getSpawnerBlock() {
         switch (stationNumber) {
             case 1:
@@ -109,10 +96,19 @@ public class TowerStation extends QueueRide {
     }
 
     private void changeStation() {
-        if (stationNumber >= 4) {
-            stationNumber = 1;
-        } else {
-            stationNumber++;
+        switch (stationNumber) {
+            case 1:
+                stationNumber = 4;
+                break;
+            case 2:
+                stationNumber = 4;
+                break;
+            case 3:
+                stationNumber = 4;
+                break;
+            case 4:
+                stationNumber = 3;
+                break;
         }
     }
 

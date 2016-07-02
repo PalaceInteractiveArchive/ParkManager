@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marc on 6/23/15
@@ -35,46 +36,40 @@ public class QueueManager {
     private List<QueueTask> tasks = new ArrayList<>();
 
     public QueueManager() {
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (QueueRide ride : getRides()) {
-                    ride.updateSigns();
-                    List<UUID> q = ride.getQueue();
-                    List<UUID> fp = ride.getFPQueue();
-                    if (ride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
-                        addTask(new NextRidersTask(ride, System.currentTimeMillis()));
-                    } else {
-                        if (ride.timeToNextRide > 0) {
-                            ride.timeToNextRide -= 1;
-                        }
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            for (QueueRide ride : getRides()) {
+                ride.updateSigns();
+                List<UUID> q = ride.getQueue();
+                List<UUID> fp = ride.getFPQueue();
+                if (ride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
+                    addTask(new NextRidersTask(ride, System.currentTimeMillis()));
+                } else {
+                    if (ride.timeToNextRide > 0) {
+                        ride.timeToNextRide -= 1;
                     }
-                    for (UUID uuid : q) {
-                        ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
-                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
-                                ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
-                    }
-                    for (UUID uuid : fp) {
-                        ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
-                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
-                                ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
-                    }
+                }
+                for (UUID uuid : q) {
+                    ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
+                            (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
+                            ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
+                }
+                for (UUID uuid : fp) {
+                    ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
+                            (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
+                            ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
                 }
             }
         }, 20L, 20L);
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                int i = 0;
-                for (QueueTask task : new ArrayList<>(tasks)) {
-                    if (System.currentTimeMillis() <= task.getTime()) {
-                        i++;
-                        continue;
-                    }
-                    task.execute();
-                    tasks.remove(i);
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            int i = 0;
+            for (QueueTask task : new ArrayList<>(tasks)) {
+                if (System.currentTimeMillis() <= task.getTime()) {
                     i++;
+                    continue;
                 }
+                task.execute();
+                tasks.remove(i);
+                i++;
             }
         }, 0L, 1L);
     }
@@ -126,9 +121,9 @@ public class QueueManager {
                     Location spawner4 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner4.x"),
                             config.getInt("ride." + s + ".queue.spawner4.y"), config.getInt("ride." + s + ".queue.spawner4.z"));
                     ride = new TowerStation(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
-                            station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("ride." + s + ".queue." + s
-                            + ".delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("ride." + s + ".queue." + s +
-                            ".warp"));
+                            station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("ride." + s +
+                            ".queue.delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("ride."
+                            + s + ".queue.warp"));
                     break;
                 }
             }
@@ -320,31 +315,16 @@ public class QueueManager {
         List<Ride> rides = ParkManager.getRides();
         List<Ride> attractions = ParkManager.getAttractions();
         List<Ride> mngs = ParkManager.getMeetAndGreets();
-        List<Ride> finalList = new ArrayList<>();
-        for (Ride r : rides) {
-            finalList.add(r);
-        }
-        for (Ride r : attractions) {
-            finalList.add(r);
-        }
-        for (Ride r : mngs) {
-            finalList.add(r);
-        }
-        List<QueueRide> list = new ArrayList<>();
-        for (Ride ride : finalList) {
-            if (ride.getQueue() != null) {
-                list.add(ride.getQueue());
-            }
-        }
+        List<Ride> finalList = rides.stream().collect(Collectors.toList());
+        finalList.addAll(attractions.stream().collect(Collectors.toList()));
+        finalList.addAll(mngs.stream().collect(Collectors.toList()));
+        List<QueueRide> list = finalList.stream().filter(ride -> ride.getQueue() != null).map(Ride::getQueue)
+                .collect(Collectors.toList());
         return list;
     }
 
     public void leaveAllQueues(Player player) {
-        for (QueueRide ride : getRides()) {
-            if (ride.isQueued(player.getUniqueId())) {
-                ride.leaveQueue(player);
-            }
-        }
+        getRides().stream().filter(ride -> ride.isQueued(player.getUniqueId())).forEach(ride -> ride.leaveQueue(player));
     }
 
     public void silentLeaveAllQueues(Player player) {

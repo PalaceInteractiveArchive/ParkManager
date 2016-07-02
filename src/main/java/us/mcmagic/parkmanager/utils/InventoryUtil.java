@@ -681,6 +681,7 @@ public class InventoryUtil {
                     }
                     s.setItem(49, BandUtil.getBackItem());
                     player.openInventory(s);
+                    MCMagicCore.getUser(player.getUniqueId()).giveAchievement(11);
                     return;
                 }
                 case PLAYERTIME: {
