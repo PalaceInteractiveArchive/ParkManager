@@ -159,6 +159,10 @@ public class ToyStoryMania implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler
     public void onEntityDamageEntity(EntityDamageByEntityEvent event) {
+        if (event.getDamager().getType().equals(EntityType.PLAYER) && sessions.containsKey(event.getDamager().getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
         if (!event.getDamager().getType().equals(EntityType.SNOWBALL) ||
                 !event.getEntity().getType().equals(EntityType.ITEM_FRAME)) {
             return;

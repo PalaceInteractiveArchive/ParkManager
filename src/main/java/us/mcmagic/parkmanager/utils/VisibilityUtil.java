@@ -3,12 +3,12 @@ package us.mcmagic.parkmanager.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.commands.Commandvanish;
-import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.commands.Commandvanish;
+import us.mcmagic.parkmanager.handlers.PlayerData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,29 +22,26 @@ public class VisibilityUtil {
         if (!ParkManager.ttcServer) {
             return;
         }
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                final Location spawn = ParkManager.spawn;
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    User user = MCMagicCore.getUser(player.getUniqueId());
-                    if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
-                        continue;
-                    }
-                    final UUID uuid = player.getUniqueId();
-                    final Location loc = player.getLocation();
-                    boolean inRegion = loc.distance(spawn) <= 5;
-                    List<UUID> hidden = getSpawnHide();
-                    boolean contains = hidden.contains(uuid);
-                    if (!inRegion && contains) {
-                        hidden.remove(uuid);
-                        spawnHide.remove(uuid);
-                        showPlayerForOthers(player);
-                    } else if (inRegion && !contains) {
-                        hidden.add(uuid);
-                        spawnHide.add(uuid);
-                        hidePlayerForOthers(player);
-                    }
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            final Location spawn = ParkManager.spawn;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                User user = MCMagicCore.getUser(player.getUniqueId());
+                if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
+                    continue;
+                }
+                final UUID uuid = player.getUniqueId();
+                final Location loc = player.getLocation();
+                boolean inRegion = loc.distance(spawn) <= 5;
+                List<UUID> hidden = getSpawnHide();
+                boolean contains = hidden.contains(uuid);
+                if (!inRegion && contains) {
+                    hidden.remove(uuid);
+                    spawnHide.remove(uuid);
+                    showPlayerForOthers(player);
+                } else if (inRegion && !contains) {
+                    hidden.add(uuid);
+                    spawnHide.add(uuid);
+                    hidePlayerForOthers(player);
                 }
             }
         }, 0L, 20L);

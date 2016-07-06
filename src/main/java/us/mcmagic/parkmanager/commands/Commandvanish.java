@@ -60,16 +60,14 @@ public class Commandvanish implements CommandExecutor {
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
                 StringBuilder list = new StringBuilder();
-                for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (hidden.contains(tp.getUniqueId())) {
-                        if (list.length() > 0) {
-                            list.append(ChatColor.DARK_AQUA);
-                            list.append(", ");
-                        }
-                        list.append(ChatColor.AQUA);
-                        list.append(tp.getName());
+                Bukkit.getOnlinePlayers().stream().filter(tp -> hidden.contains(tp.getUniqueId())).forEach(tp -> {
+                    if (list.length() > 0) {
+                        list.append(ChatColor.DARK_AQUA);
+                        list.append(", ");
                     }
-                }
+                    list.append(ChatColor.AQUA);
+                    list.append(tp.getName());
+                });
                 list.insert(0, "Vanished: ");
                 list.insert(0, ChatColor.DARK_AQUA);
                 player.sendMessage(list.toString());

@@ -26,14 +26,13 @@ import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.hotels.HotelManager;
-import us.mcmagic.parkmanager.utils.WarpUtil;
 import us.mcmagic.parkmanager.watch.WatchTask;
 
 import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
-    private Rank newHWSRank = Rank.SHAREHOLDER;
+    private Rank newHWSRank = Rank.DVCMEMBER;
 
     public PlayerJoinAndLeave() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
@@ -107,6 +106,7 @@ public class PlayerJoinAndLeave implements Listener {
                     user.giveAchievement(4);
                     break;
                 case "HWS":
+                case "DHS":
                     user.giveAchievement(5);
                     break;
                 case "AK":
@@ -138,15 +138,10 @@ public class PlayerJoinAndLeave implements Listener {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setAllowFlight(user.getRank().getRankId() >= Rank.INTERN.getRankId());
             }
-            if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws") &&
-                    user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-                player.teleport(WarpUtil.findWarp("sharehws").getLocation());
+            if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
+                player.performCommand("spawn");
             } else {
-                if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
-                    player.performCommand("spawn");
-                } else {
-                    warpToNearestWarp(player);
-                }
+                warpToNearestWarp(player);
             }
             for (String msg : ParkManager.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
