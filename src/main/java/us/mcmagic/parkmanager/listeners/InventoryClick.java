@@ -64,6 +64,16 @@ public class InventoryClick implements Listener {
             AchievementClick.handle(event);
             return;
         }
+        if (name.startsWith("Food Menu Page ")) {
+            event.setCancelled(true);
+            FoodMenuClick.handle(event);
+            return;
+        }
+        if (name.startsWith("Ride Counter Page ")) {
+            event.setCancelled(true);
+            RideCounterClick.handle(event);
+            return;
+        }
         if (name.startsWith("Wardrobe Manager Page")) {
             event.setCancelled(true);
             ParkManager.wardrobeManager.handle(event);
@@ -118,10 +128,6 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 ShowEventClick.handle(event);
                 return;
-            case "Ride Counter":
-                event.setCancelled(true);
-                RideCounterClick.handle(event);
-                return;
             case "Customize Menu":
                 event.setCancelled(true);
                 CustomizeMenuClick.handle(event);
@@ -145,10 +151,6 @@ public class InventoryClick implements Listener {
             case "Rides and Meet & Greets":
                 event.setCancelled(true);
                 RideAttractionClick.handle(event);
-                return;
-            case "Food Menu":
-                event.setCancelled(true);
-                FoodMenuClick.handle(event);
                 return;
             case "Special Edition MagicBands":
                 event.setCancelled(true);

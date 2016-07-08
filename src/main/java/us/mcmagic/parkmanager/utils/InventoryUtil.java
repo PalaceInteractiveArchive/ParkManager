@@ -1068,31 +1068,95 @@ public class InventoryUtil {
         player.openInventory(inv);
     }
 
-    public void openRideCounter(Player player) {
-        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride Counter");
+    public void openRideCounterPage(Player player, int page) {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
-        int i = 10;
-        HashMap<String, Integer> counts = data.getRideCounts();
-        if (counts.isEmpty()) {
-            ItemStack empty = new ItemCreator(Material.WOOL, 1, (byte) 4, ChatColor.RED + "Uh oh!",
-                    Arrays.asList(ChatColor.RED + "Looks like you haven't", ChatColor.RED + "gone on any rides recently."));
-            inv.setItem(22, empty);
-            inv.setItem(49, BandUtil.getBackItem());
-            player.openInventory(inv);
-            return;
+        List<RideCount> rides = new ArrayList<>(data.getRideCounts().values());
+        int size = rides.size();
+        if (size < 46) {
+            page = 1;
+        } else if (size < (45 * (page - 1) + 1)) {
+            page -= 1;
         }
-        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
-            ItemStack stack = new ItemCreator(Material.MINECART, ChatColor.GREEN + entry.getKey().trim(),
-                    Arrays.asList(ChatColor.YELLOW + "Rides: " + entry.getValue(), ChatColor.YELLOW + "Park: " +
-                            MCMagicCore.getMCMagicConfig().serverName));
-            inv.setItem(i, stack);
-            if (i == 16 || i == 25 || i == 34 || i == 43) {
-                i += 3;
-            } else {
-                i++;
+        List<RideCount> list = rides.subList(page > 1 ? (45 * (page - 1)) : 0, (size - (45 * (page - 1))) > 45 ?
+                (45 * page) : size);
+        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Ride Counter Page " + page);
+        User user = MCMagicCore.getUser(player.getUniqueId());
+        int place = 0;
+        for (RideCount ride : list) {
+            if (place >= 45) {
+                break;
             }
+            inv.setItem(place, new ItemCreator(Material.MINECART, ChatColor.GREEN + ride.getName(),
+                    Arrays.asList(ChatColor.YELLOW + "Rides: " + ride.getCount(), ChatColor.YELLOW + "Park: " + ride.getServer())));
+            place++;
+        }
+        if (page > 1) {
+            inv.setItem(48, lastPage);
         }
         inv.setItem(49, BandUtil.getBackItem());
+        int maxPage = 1;
+        int n = size;
+        while (true) {
+            if (n - 45 > 0) {
+                n -= 45;
+                maxPage += 1;
+            } else {
+                break;
+            }
+        }
+        if (size > 45 && page < maxPage) {
+            inv.setItem(50, nextPage);
+        }
+        player.openInventory(inv);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void openFoodMenuPage(Player player, int page) {
+        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        List<FoodLocation> foodLocations = ParkManager.foodLocations;
+        int size = foodLocations.size();
+        if (size < 8) {
+            page = 1;
+        } else if (size < (7 * (page - 1) + 1)) {
+            page -= 1;
+        }
+        List<FoodLocation> list = foodLocations.subList(page > 1 ? (7 * (page - 1)) : 0, (size - (7 * (page - 1))) > 7 ?
+                (7 * page) : size);
+        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu Page " + page);
+        int place = 10;
+        int i = 0;
+        for (FoodLocation loc : list) {
+            i++;
+            if (place > 16) {
+                break;
+            }
+            try {
+                inv.setItem(place, new ItemCreator(Material.getMaterial(loc.getType()), 1, loc.getData(),
+                        ChatColor.translateAlternateColorCodes('&', loc.getName()),
+                        Collections.singletonList(ChatColor.GREEN + "/warp " + loc.getWarp())));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().severe("Error loading food item " + i);
+            }
+            place++;
+        }
+        if (page > 1) {
+            inv.setItem(21, lastPage);
+        }
+        inv.setItem(22, BandUtil.getBackItem());
+        int maxPage = 1;
+        int n = size;
+        while (true) {
+            if (n - 7 > 0) {
+                n -= 7;
+                maxPage += 1;
+            } else {
+                break;
+            }
+        }
+        if (size > 7 && page < maxPage) {
+            inv.setItem(23, nextPage);
+        }
         player.openInventory(inv);
     }
 

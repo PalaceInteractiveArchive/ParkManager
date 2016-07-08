@@ -32,6 +32,7 @@ import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.blockchanger.Changer;
 import us.mcmagic.parkmanager.handlers.Outfit;
 import us.mcmagic.parkmanager.handlers.PlayerData;
+import us.mcmagic.parkmanager.handlers.RideCount;
 import us.mcmagic.parkmanager.queue.QueueRide;
 import us.mcmagic.parkmanager.queue.tot.DropTower;
 import us.mcmagic.parkmanager.queue.tot.TowerLayout;
@@ -211,7 +212,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                     final String finalRideName = rideName;
                     Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
                         PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
-                        HashMap<String, Integer> rides = data.getRideCounts();
+                        TreeMap<String, RideCount> rides = data.getRideCounts();
                         try (Connection connection = SqlUtil.getConnection()) {
                             PreparedStatement sql = connection.prepareStatement("INSERT INTO ride_counter (uuid, name, server, time) VALUES (?,?,?,?)");
                             sql.setString(1, tp.getUniqueId().toString());
@@ -223,10 +224,19 @@ public class Commandmagic implements Listener, CommandExecutor {
                             e.printStackTrace();
                         }
                         if (rides.containsKey(finalRideName)) {
-                            int amount = rides.remove(finalRideName);
-                            rides.put(finalRideName, amount + 1);
+                            rides.get(finalRideName).addCount(1);
                         } else {
-                            rides.put(finalRideName, 1);
+                            rides.put(finalRideName, new RideCount(finalRideName, MCMagicCore.getMCMagicConfig().serverName));
+                        }
+                        User user = MCMagicCore.getUser(tp.getUniqueId());
+                        if (rides.size() >= 30) {
+                            user.giveAchievement(15);
+                        } else if (rides.size() >= 20) {
+                            user.giveAchievement(14);
+                        } else if (rides.size() >= 10) {
+                            user.giveAchievement(13);
+                        } else if (rides.size() >= 1) {
+                            user.giveAchievement(12);
                         }
                         data.setRideCounts(rides);
                         sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " +
@@ -234,7 +244,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                         tp.sendMessage(ChatColor.GREEN + "--------------" + ChatColor.GOLD + "" + ChatColor.BOLD +
                                 "Ride Counter" + ChatColor.GREEN + "-------------\n" + ChatColor.YELLOW +
                                 "Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
-                                "is now at " + ChatColor.AQUA + data.getRideCounts().get(finalRideName) +
+                                "is now at " + ChatColor.AQUA + data.getRideCounts().get(finalRideName).getCount() +
                                 ChatColor.GREEN + "\n----------------------------------------");
                         tp.playSound(tp.getLocation(), Sound.SUCCESSFUL_HIT, 100f, 0.75f);
                     });

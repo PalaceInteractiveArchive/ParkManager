@@ -62,7 +62,7 @@ public class MyProfileMenuClick {
                 ParkManager.inventoryUtil.openAchievementPage(player, 1);
                 return;
             case "Ride Counter":
-                ParkManager.inventoryUtil.openRideCounter(player);
+                ParkManager.inventoryUtil.openRideCounterPage(player, 1);
                 return;
             case "Resource/Audio Packs":
                 ParkManager.packManager.openMenu(player);

@@ -148,18 +148,17 @@ public class BandUtil {
             purr.close();
             pur.close();
             data.setPurchases(purch);
-            HashMap<String, Integer> rides = new HashMap<>();
-            PreparedStatement counts = connection.prepareStatement("SELECT name from ride_counter WHERE uuid=? AND server=?");
+            TreeMap<String, RideCount> rides = new TreeMap<>();
+            PreparedStatement counts = connection.prepareStatement("SELECT name,server from ride_counter WHERE uuid=? ORDER BY server DESC");
             counts.setString(1, uuid.toString());
-            counts.setString(2, MCMagicCore.getMCMagicConfig().serverName);
             ResultSet results = counts.executeQuery();
             while (results.next()) {
                 String name = results.getString("name");
-                if (rides.containsKey(name)) {
-                    int amount = rides.remove(name);
-                    rides.put(name, amount + 1);
+                String server = results.getString("server");
+                if (rides.containsKey(name) && rides.get(name).getServer().equalsIgnoreCase(server)) {
+                    rides.get(name).addCount(1);
                 } else {
-                    rides.put(name, 1);
+                    rides.put(name, new RideCount(name, server));
                 }
             }
             results.close();

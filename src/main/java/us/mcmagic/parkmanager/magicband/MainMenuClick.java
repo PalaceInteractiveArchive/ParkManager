@@ -43,8 +43,8 @@ public class MainMenuClick {
                     ParkManager.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
                 } else {
                     Inventory hotel = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Visit Hotels and Resorts?");
-                    hotel.setItem(11, new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes", new ArrayList<String>()));
-                    hotel.setItem(15, new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No", new ArrayList<String>()));
+                    hotel.setItem(11, new ItemCreator(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes", new ArrayList<>()));
+                    hotel.setItem(15, new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.GREEN + "No", new ArrayList<>()));
                     hotel.setItem(22, BandUtil.getBackItem());
                     player.openInventory(hotel);
                 }
@@ -76,7 +76,7 @@ public class MainMenuClick {
                 ParkManager.shopManager.openMenu(player);
                 return;
             case POTATO_ITEM:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.FOOD);
+                ParkManager.inventoryUtil.openFoodMenuPage(player, 1);
                 return;
             case NETHER_STAR:
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK);

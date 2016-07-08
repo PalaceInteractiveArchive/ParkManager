@@ -116,6 +116,19 @@ public class PlayerJoinAndLeave implements Listener {
             ParkManager.userCache.remove(player.getUniqueId());
             ParkManager.userCache.put(player.getUniqueId(), player.getName());
             PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+            if (!user.hasAchievement(12) && !data.getRideCounts().isEmpty()) {
+                int size = data.getRideCounts().size();
+                user.giveAchievement(12);
+                if (size >= 10) {
+                    user.giveAchievement(13);
+                }
+                if (size >= 20) {
+                    user.giveAchievement(14);
+                }
+                if (size >= 30) {
+                    user.giveAchievement(15);
+                }
+            }
             if (!data.getVisibility()) {
                 ParkManager.vanishUtil.addToHideAll(player);
             }

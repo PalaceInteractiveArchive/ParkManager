@@ -8,8 +8,8 @@ import us.mcmagic.parkmanager.storage.Backpack;
 import us.mcmagic.parkmanager.storage.Locker;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -30,7 +30,7 @@ public class PlayerData {
     private KioskData kioskData;
     private Backpack backpack;
     private Locker locker;
-    private HashMap<String, Integer> rideCounts = new HashMap<>();
+    private TreeMap<String, RideCount> rideCounts = new TreeMap<>();
     private List<Integer> purchases;
     private Clothing clothing;
     private String outfitCode;
@@ -158,8 +158,8 @@ public class PlayerData {
         purchases.add(id);
     }
 
-    public HashMap<String, Integer> getRideCounts() {
-        return new HashMap<>(rideCounts);
+    public TreeMap<String, RideCount> getRideCounts() {
+        return new TreeMap<>(rideCounts);
     }
 
     public void setBandName(ChatColor color) {
@@ -198,7 +198,7 @@ public class PlayerData {
         return kioskData;
     }
 
-    public void setRideCounts(HashMap<String, Integer> rideCounts) {
+    public void setRideCounts(TreeMap<String, RideCount> rideCounts) {
         this.rideCounts = rideCounts;
     }
 

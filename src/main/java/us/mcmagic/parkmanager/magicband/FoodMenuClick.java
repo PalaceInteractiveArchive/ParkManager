@@ -1,8 +1,10 @@
 package us.mcmagic.parkmanager.magicband;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.FoodLocation;
 import us.mcmagic.parkmanager.handlers.InventoryType;
@@ -16,18 +18,38 @@ public class FoodMenuClick {
     @SuppressWarnings("deprecation")
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
+        if (item == null) {
+            return;
+        }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
             ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
         }
+        if (item.getItemMeta() == null) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta.getDisplayName() == null) {
+            return;
+        }
+        String inv = ChatColor.stripColor(event.getInventory().getName());
+        int page = Integer.parseInt(inv.replaceAll("Food Menu Page ", ""));
+        String name = ChatColor.stripColor(meta.getDisplayName());
+        if (name.equals("Next Page")) {
+            ParkManager.inventoryUtil.openFoodMenuPage(player, page + 1);
+            return;
+        }
+        if (name.equals("Last Page")) {
+            ParkManager.inventoryUtil.openFoodMenuPage(player, page - 1);
+            return;
+        }
         for (FoodLocation loc : ParkManager.foodLocations) {
-            if (item.getTypeId() == loc.getType()) {
-                if (item.getData().getData() == loc.getData()) {
-                    player.closeInventory();
-                    player.performCommand("warp " + loc.getWarp());
-                    return;
-                }
+            if (item.getTypeId() == loc.getType() && item.getData().getData() == loc.getData() &&
+                    name.equalsIgnoreCase(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', loc.getName())))) {
+                player.closeInventory();
+                player.performCommand("warp " + loc.getWarp());
+                return;
             }
         }
     }
