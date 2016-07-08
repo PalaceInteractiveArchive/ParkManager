@@ -81,7 +81,7 @@ public class QueueManager {
     public QueueRide createQueue(String s, YamlConfiguration config) {
         String name = config.getString("ride." + s + ".queue.name");
         QueueRide ride = null;
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws")) {
+        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("dhs")) {
             switch (s) {
                 case "totpre": {
                     Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),

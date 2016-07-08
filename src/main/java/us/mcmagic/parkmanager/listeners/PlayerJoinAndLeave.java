@@ -32,7 +32,6 @@ import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
-    private Rank newHWSRank = Rank.DVCMEMBER;
 
     public PlayerJoinAndLeave() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
@@ -77,14 +76,6 @@ public class PlayerJoinAndLeave implements Listener {
         if (user == null) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
-        }
-        if (MCMagicCore.getMCMagicConfig().serverName.equals("NewHWS")) {
-            if (user.getRank().getRankId() < newHWSRank.getRankId()) {
-                event.setKickMessage(ChatColor.RED + "You must be the " + newHWSRank.getNameWithBrackets()
-                        + ChatColor.RED + " rank or above to preview NewHWS!");
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
         }
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
@@ -136,7 +127,7 @@ public class PlayerJoinAndLeave implements Listener {
                 player.setAllowFlight(true);
             } else {
                 player.setGameMode(GameMode.ADVENTURE);
-                player.setAllowFlight(user.getRank().getRankId() >= Rank.INTERN.getRankId());
+                player.setAllowFlight(user.getRank().getRankId() >= Rank.EARNINGMYEARS.getRankId());
             }
             if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");

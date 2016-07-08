@@ -5,8 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.PlayerUtil;
 import us.mcmagic.parkmanager.utils.TpaUtil;
 
@@ -22,11 +20,6 @@ public class Commandtpa implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws") &&
-                MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
-            player.sendMessage(ChatColor.RED + "Sorry, you can't use this command in NewHWS!");
-            return true;
-        }
         if (args.length != 1) {
             player.sendMessage(ChatColor.RED + "/tpa [Player]");
             return true;

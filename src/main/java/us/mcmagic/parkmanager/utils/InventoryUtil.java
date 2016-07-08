@@ -69,8 +69,8 @@ public class InventoryUtil {
             Collections.singletonList(ChatColor.GREEN + "/join MK"));
     private ItemStack epcot = new ItemCreator(Material.SNOW_BALL, ChatColor.AQUA + "Epcot",
             Collections.singletonList(ChatColor.GREEN + "/join Epcot"));
-    private ItemStack hws = new ItemCreator(Material.JUKEBOX, ChatColor.AQUA + "Hollywood Studios",
-            Collections.singletonList(ChatColor.GREEN + "/join HWS"));
+    private ItemStack dhs = new ItemCreator(Material.JUKEBOX, ChatColor.AQUA + "Hollywood Studios",
+            Collections.singletonList(ChatColor.GREEN + "/join DHS"));
     private ItemStack ak = new ItemCreator(Material.SAPLING, 1, (byte) 5, ChatColor.AQUA + "Animal Kingdom",
             Collections.singletonList(ChatColor.GREEN + "/join AK"));
     private ItemStack tl = new ItemCreator(Material.WATER_BUCKET, ChatColor.AQUA + "Typhoon Lagoon",
@@ -307,7 +307,7 @@ public class InventoryUtil {
                     park.setItem(6, creative);
                     park.setItem(10, mk);
                     park.setItem(11, epcot);
-                    park.setItem(12, hws);
+                    park.setItem(12, dhs);
                     park.setItem(13, ak);
                     park.setItem(14, tl);
                     park.setItem(15, dcl);

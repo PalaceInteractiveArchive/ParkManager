@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.utils.BandUtil;
-import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
 
 /**
  * Created by Marc on 12/15/14
@@ -62,7 +62,7 @@ public class ParkMenuClick {
             case "Hollywood Studios":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Hollywood Studios...");
-                BungeeUtil.sendToServer(player, "HWS");
+                BungeeUtil.sendToServer(player, "DHS");
                 return;
             case "Animal Kingdom":
                 player.closeInventory();

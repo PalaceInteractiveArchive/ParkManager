@@ -84,42 +84,36 @@ public class Commandbuild implements CommandExecutor {
                 pack.addItem(i);
             }
             inv.clear();
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    ParkManager.autographManager.setBook(player.getUniqueId());
-                    ParkManager.playerJoinAndLeave.setInventory(player, true);
-                    if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() > Rank.INTERN.getRankId()) {
-                        if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
-                            inv.setItem(0, new ItemStack(Material.COMPASS));
-                        }
+            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                ParkManager.autographManager.setBook(player.getUniqueId());
+                ParkManager.playerJoinAndLeave.setInventory(player, true);
+                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() > Rank.EARNINGMYEARS.getRankId()) {
+                    if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
+                        inv.setItem(0, new ItemStack(Material.COMPASS));
                     }
-                    if (!ParkManager.storageManager.getBuildModeHotbars().containsKey(player.getUniqueId())) {
-                        return;
+                }
+                if (!ParkManager.storageManager.getBuildModeHotbars().containsKey(player.getUniqueId())) {
+                    return;
+                }
+                for (ItemStack i : ParkManager.storageManager.removeHotbar(player.getUniqueId())) {
+                    if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
+                            i.getType().equals(Material.COMPASS)) {
+                        continue;
                     }
-                    for (ItemStack i : ParkManager.storageManager.removeHotbar(player.getUniqueId())) {
-                        if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
-                                i.getType().equals(Material.COMPASS)) {
-                            continue;
-                        }
-                        inv.addItem(i);
-                    }
+                    inv.addItem(i);
                 }
             });
         }
         player.closeInventory();
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE uuid=?");
-                    sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);
-                    sql.setString(2, player.getUniqueId().toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE uuid=?");
+                sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);
+                sql.setString(2, player.getUniqueId().toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
         return true;

@@ -43,45 +43,39 @@ public class StorageManager {
     public List<UUID> makeBuildMode = new ArrayList<>();
 
     public StorageManager() {
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (UUID uuid : new ArrayList<>(loadingPack)) {
-                    PlayerData data = ParkManager.getPlayerData(uuid);
-                    if (data.getBackpack() != null) {
-                        Player tp = Bukkit.getPlayer(uuid);
-                        if (tp == null) {
-                            continue;
-                        }
-                        if (tp.getOpenInventory() != null &&
-                                tp.getOpenInventory().getTopInventory().getName().contains("Loading")) {
-                            loadingPack.remove(uuid);
-                            ParkManager.inventoryUtil.openInventory(tp, InventoryType.BACKPACK);
-                        }
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            for (UUID uuid : new ArrayList<>(loadingPack)) {
+                PlayerData data = ParkManager.getPlayerData(uuid);
+                if (data.getBackpack() != null) {
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp == null) {
+                        continue;
+                    }
+                    if (tp.getOpenInventory() != null &&
+                            tp.getOpenInventory().getTopInventory().getName().contains("Loading")) {
+                        loadingPack.remove(uuid);
+                        ParkManager.inventoryUtil.openInventory(tp, InventoryType.BACKPACK);
                     }
                 }
-                for (UUID uuid : new ArrayList<>(loadingLocker)) {
-                    PlayerData data = ParkManager.getPlayerData(uuid);
-                    if (data.getBackpack() != null) {
-                        Player tp = Bukkit.getPlayer(uuid);
-                        if (tp == null) {
-                            continue;
-                        }
-                        if (tp.getOpenInventory() != null &&
-                                tp.getOpenInventory().getTopInventory().getName().contains("Loading")) {
-                            loadingLocker.remove(uuid);
-                            ParkManager.inventoryUtil.openInventory(tp, InventoryType.LOCKER);
-                        }
+            }
+            for (UUID uuid : new ArrayList<>(loadingLocker)) {
+                PlayerData data = ParkManager.getPlayerData(uuid);
+                if (data.getBackpack() != null) {
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp == null) {
+                        continue;
+                    }
+                    if (tp.getOpenInventory() != null &&
+                            tp.getOpenInventory().getTopInventory().getName().contains("Loading")) {
+                        loadingLocker.remove(uuid);
+                        ParkManager.inventoryUtil.openInventory(tp, InventoryType.LOCKER);
                     }
                 }
             }
         }, 0L, 10L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (Player tp : Bukkit.getOnlinePlayers()) {
-                    update(tp);
-                }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
+            for (Player tp : Bukkit.getOnlinePlayers()) {
+                update(tp);
             }
         }, 0L, 6000L);
     }
@@ -109,17 +103,12 @@ public class StorageManager {
             }
             inv.setContents(Arrays.copyOfRange(cont, 0, 36));
         }
-        if (user.getRank().getRankId() > Rank.INTERN.getRankId()) {
+        if (user.getRank().getRankId() > Rank.EARNINGMYEARS.getRankId()) {
             if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                 inv.setItem(0, new ItemStack(Material.COMPASS));
             }
             if (makeBuildMode.remove(player.getUniqueId())) {
-                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        player.performCommand("build");
-                    }
-                }, 20L);
+                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> player.performCommand("build"), 20L);
             }
         } else {
             inv.remove(Material.COMPASS);
@@ -341,25 +330,22 @@ public class StorageManager {
         loadingLocker.remove(player.getUniqueId());
         final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         final boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final long time = System.currentTimeMillis();
-                    update(player, data, build);
-                    if (Bukkit.getOnlinePlayers().size() > 0) {
-                        ByteArrayOutputStream b = new ByteArrayOutputStream();
-                        DataOutputStream out = new DataOutputStream(b);
-                        out.writeUTF("Uploaded");
-                        out.writeUTF(player.getUniqueId().toString());
-                        ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
-                                "BungeeCord", b.toByteArray());
-                    }
-                    removeHotbar(player.getUniqueId());
-                    //System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
-                } catch (IOException e) {
-                    e.printStackTrace();
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try {
+                final long time = System.currentTimeMillis();
+                update(player, data, build);
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    ByteArrayOutputStream b = new ByteArrayOutputStream();
+                    DataOutputStream out = new DataOutputStream(b);
+                    out.writeUTF("Uploaded");
+                    out.writeUTF(player.getUniqueId().toString());
+                    ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
+                            "BungeeCord", b.toByteArray());
                 }
+                removeHotbar(player.getUniqueId());
+                //System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }
@@ -448,18 +434,15 @@ public class StorageManager {
     }
 
     public void setValue(final UUID uuid, final String key, final String value) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = SqlUtil.getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE storage SET " + key + "=? WHERE uuid=?");
-                    sql.setString(1, value);
-                    sql.setString(2, uuid.toString());
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = SqlUtil.getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("UPDATE storage SET " + key + "=? WHERE uuid=?");
+                sql.setString(1, value);
+                sql.setString(2, uuid.toString());
+                sql.execute();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

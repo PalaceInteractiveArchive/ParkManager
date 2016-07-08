@@ -458,7 +458,7 @@ public class ParkManager extends JavaPlugin implements Listener {
             pm.registerEvents(shooter, this);
             MessageTimer.start();
         }
-        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("newhws")) {
+        if (MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("dhs")) {
             pm.registerEvents(new TowerManager(Bukkit.getWorlds().get(0)), this);
             toyStoryMania = new ToyStoryMania();
             pm.registerEvents(toyStoryMania, this);

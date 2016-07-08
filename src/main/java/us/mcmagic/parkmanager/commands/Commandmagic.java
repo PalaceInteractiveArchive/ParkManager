@@ -950,8 +950,8 @@ public class Commandmagic implements Listener, CommandExecutor {
                     }
                     case 4: {
                         if (args[1].equalsIgnoreCase("randomize")) {
-                            Location loc1 = WorldUtil.strToLoc("hws," + args[2]);
-                            Location loc2 = WorldUtil.strToLoc("hws," + args[3]);
+                            Location loc1 = WorldUtil.strToLoc("dhs," + args[2]);
+                            Location loc2 = WorldUtil.strToLoc("dhs," + args[3]);
                             if (loc2.getBlockX() < loc1.getBlockX()) {
                                 final int x = loc1.getBlockX();
                                 loc1.setX(loc2.getBlockX());
@@ -971,8 +971,8 @@ public class Commandmagic implements Listener, CommandExecutor {
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("reset")) {
-                            Location loc1 = WorldUtil.strToLoc("hws," + args[2]);
-                            Location loc2 = WorldUtil.strToLoc("hws," + args[3]);
+                            Location loc1 = WorldUtil.strToLoc("dhs," + args[2]);
+                            Location loc2 = WorldUtil.strToLoc("dhs," + args[3]);
                             if (loc2.getBlockX() < loc1.getBlockX()) {
                                 final int x = loc1.getBlockX();
                                 loc1.setX(loc2.getBlockX());
@@ -996,8 +996,8 @@ public class Commandmagic implements Listener, CommandExecutor {
                     }
                     case 5: {
                         if (args[1].equalsIgnoreCase("map")) {
-                            Location loc1 = WorldUtil.strToLoc("hws," + args[2]);
-                            Location loc2 = WorldUtil.strToLoc("hws," + args[3]);
+                            Location loc1 = WorldUtil.strToLoc("dhs," + args[2]);
+                            Location loc2 = WorldUtil.strToLoc("dhs," + args[3]);
                             if (loc2.getBlockX() < loc1.getBlockX()) {
                                 final int x = loc1.getBlockX();
                                 loc1.setX(loc2.getBlockX());
@@ -1013,7 +1013,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 loc1.setZ(loc2.getBlockZ());
                                 loc2.setZ(z);
                             }
-                            Location chest = WorldUtil.strToLoc("hws," + args[4]);
+                            Location chest = WorldUtil.strToLoc("dhs," + args[4]);
                             if (!chest.getBlock().getType().equals(Material.CHEST)) {
                                 sender.sendMessage(ChatColor.RED + "No chest at " + chest.getBlockX() + "," +
                                         chest.getBlockY() + "," + chest.getBlockZ() + ",");

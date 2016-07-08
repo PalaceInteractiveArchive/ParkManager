@@ -117,8 +117,8 @@ public class Commandwarp implements CommandExecutor {
                 }
             }
             if (warp.getName().toLowerCase().startsWith("staff")) {
-                if (rank.getRankId() < Rank.INTERN.getRankId()) {
-                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.INTERN.getNameWithBrackets()
+                if (rank.getRankId() < Rank.EARNINGMYEARS.getRankId()) {
+                    player.sendMessage(ChatColor.RED + "You must be the " + Rank.EARNINGMYEARS.getNameWithBrackets()
                             + ChatColor.RED + " rank or above to use this warp!");
                     return true;
                 }
@@ -175,7 +175,7 @@ public class Commandwarp implements CommandExecutor {
                 return true;
             }
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
-            if (rank.getRankId() < Rank.INTERN.getRankId()) {
+            if (rank.getRankId() < Rank.EARNINGMYEARS.getRankId()) {
                 player.performCommand("warp " + args[0]);
                 return true;
             }
