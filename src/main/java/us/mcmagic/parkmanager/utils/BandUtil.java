@@ -108,20 +108,13 @@ public class BandUtil {
 
     public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT friends,bandcolor,rank,namecolor,flash,visibility," +
+            PreparedStatement sql = connection.prepareStatement("SELECT bandcolor,rank,namecolor,flash,visibility," +
                     "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,monthguest," +
                     "monthdvc,monthshare,lastvote,vote FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
                 return null;
-            }
-            List<UUID> friendlist = new ArrayList<>();
-            if (!result.getString("friends").equals("")) {
-                String[] friends = result.getString("friends").split(" ");
-                for (String friend : friends) {
-                    friendlist.add(UUID.fromString(friend));
-                }
             }
             FastPassData fpdata = new FastPassData(result.getInt("slow"), result.getInt("moderate"),
                     result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"), result.getInt("tday"));
@@ -130,7 +123,7 @@ public class BandUtil {
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
             PlayerData data = new PlayerData(uuid, result.getString("rank").equals("dvc"),
                     getBandNameColor(result.getString("namecolor")), getBandColor(result.getString("bandcolor")),
-                    friendlist, special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
+                    special, result.getInt("flash") == 1, result.getInt("visibility") == 1,
                     result.getInt("parkloop") == 1, result.getInt("hotel") == 1, fpdata, kioskData,
                     result.getString("outfit"));
             if (result.getInt("buildmode") == 1) {
@@ -138,6 +131,21 @@ public class BandUtil {
             }
             result.close();
             sql.close();
+            List<UUID> friendlist = new ArrayList<>();
+            PreparedStatement fri = connection.prepareStatement("SELECT sender,receiver FROM friends WHERE (sender=? OR receiver=?) AND status=1");
+            fri.setString(1, uuid.toString());
+            fri.setString(2, uuid.toString());
+            ResultSet frir = sql.executeQuery();
+            while (frir.next()) {
+                if (frir.getString("sender").equalsIgnoreCase(uuid.toString())) {
+                    friendlist.add(UUID.fromString(frir.getString("receiver")));
+                } else {
+                    friendlist.add(UUID.fromString(frir.getString("sender")));
+                }
+            }
+            frir.close();
+            fri.close();
+            data.setFriendList(friendlist);
             List<Integer> purch = new ArrayList<>();
             PreparedStatement pur = connection.prepareStatement("SELECT item FROM purchases WHERE uuid=?");
             pur.setString(1, uuid.toString());

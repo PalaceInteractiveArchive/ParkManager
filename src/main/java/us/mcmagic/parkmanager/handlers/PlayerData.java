@@ -36,9 +36,9 @@ public class PlayerData {
     private String outfitCode;
     private boolean inventorySet = false;
 
-    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, List<UUID> friends,
-                      boolean special, boolean flash, boolean visibility, boolean loop, boolean hotel,
-                      FastPassData fastPassData, KioskData kioskData, String outfitCode) {
+    public PlayerData(UUID uuid, boolean dvc, ChatColor bandName, BandColor bandColor, boolean special, boolean flash,
+                      boolean visibility, boolean loop, boolean hotel, FastPassData fastPassData, KioskData kioskData,
+                      String outfitCode) {
         this.uuid = uuid;
         this.dvc = dvc;
         this.bandName = bandName;
@@ -238,6 +238,10 @@ public class PlayerData {
 
     public void setClothing(Clothing clothing) {
         this.clothing = clothing;
+    }
+
+    public void setFriendList(List<UUID> friendList) {
+        this.friends = friendList;
     }
 
     public class Clothing {
