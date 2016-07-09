@@ -135,7 +135,7 @@ public class BandUtil {
             PreparedStatement fri = connection.prepareStatement("SELECT sender,receiver FROM friends WHERE (sender=? OR receiver=?) AND status=1");
             fri.setString(1, uuid.toString());
             fri.setString(2, uuid.toString());
-            ResultSet frir = sql.executeQuery();
+            ResultSet frir = fri.executeQuery();
             while (frir.next()) {
                 if (frir.getString("sender").equalsIgnoreCase(uuid.toString())) {
                     friendlist.add(UUID.fromString(frir.getString("receiver")));
