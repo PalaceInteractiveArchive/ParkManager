@@ -54,13 +54,13 @@ public class MainMenuClick {
                 if (data == 5) {
                     player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
                     player.closeInventory();
-                    ParkManager.vanishUtil.addToHideAll(player);
+                    ParkManager.visibilityUtil.addToHideAll(player);
                     pdata.setVisibility(false);
                     ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 } else {
                     player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
-                    ParkManager.vanishUtil.removeFromHideAll(player);
+                    ParkManager.visibilityUtil.removeFromHideAll(player);
                     pdata.setVisibility(true);
                     ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
                 }

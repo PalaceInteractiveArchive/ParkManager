@@ -89,7 +89,7 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static QueueManager queueManager;
     public static AutographManager autographManager;
     public static StorageManager storageManager;
-    public static VisibilityUtil vanishUtil;
+    public static VisibilityUtil visibilityUtil;
     public static Shooter shooter = null;
     public static ChairManager chairManager;
     public static IArrowFactory chairFactory;
@@ -118,7 +118,7 @@ public class ParkManager extends JavaPlugin implements Listener {
         bandUtil = new BandUtil();
         storageManager = new StorageManager();
         inventoryUtil = new InventoryUtil();
-        vanishUtil = new VisibilityUtil();
+        visibilityUtil = new VisibilityUtil();
         teleportUtil = new TeleportUtil();
         itemUtil = new ItemUtil();
         blockChanger = new BlockChanger();

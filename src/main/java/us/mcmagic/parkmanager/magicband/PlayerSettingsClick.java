@@ -46,9 +46,9 @@ public class PlayerSettingsClick {
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 data.setVisibility(!data.getVisibility());
                 if (data.getVisibility()) {
-                    ParkManager.vanishUtil.removeFromHideAll(player);
+                    ParkManager.visibilityUtil.removeFromHideAll(player);
                 } else {
-                    ParkManager.vanishUtil.addToHideAll(player);
+                    ParkManager.visibilityUtil.addToHideAll(player);
                 }
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
                 ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", data.getVisibility());

@@ -130,7 +130,7 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             if (!data.getVisibility()) {
-                ParkManager.vanishUtil.addToHideAll(player);
+                ParkManager.visibilityUtil.addToHideAll(player);
             }
             for (PotionEffect type : player.getActivePotionEffects()) {
                 player.removePotionEffect(type.getType());
@@ -150,12 +150,10 @@ public class PlayerJoinAndLeave implements Listener {
             for (String msg : ParkManager.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
-            ParkManager.vanishUtil.login(player);
+            ParkManager.visibilityUtil.login(player);
             if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
                 Commandvanish.vanish(player.getUniqueId());
             }
-            Bukkit.getOnlinePlayers().stream().filter(tp -> MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId()
-                    < Rank.SPECIALGUEST.getRankId()).forEach(tp -> tp.hidePlayer(player));
             if (ParkManager.ttcServer) {
                 if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                     if (player.getLocation().distance(ParkManager.spawn) <= 5) {
@@ -176,10 +174,10 @@ public class PlayerJoinAndLeave implements Listener {
             inv.setLeggings(c.getPants());
             inv.setBoots(c.getBoots());
             setInventory(player, false);
+            if (!ParkManager.hotelServer) {
+                return;
+            }
             Bukkit.getScheduler().runTaskLaterAsynchronously(ParkManager.getInstance(), () -> {
-                if (!ParkManager.hotelServer) {
-                    return;
-                }
                 HotelManager manager = ParkManager.hotelManager;
                 for (HotelRoom room : manager.getHotelRooms()) {
                     if (room.getCheckoutNotificationRecipient() != null &&
@@ -292,7 +290,7 @@ public class PlayerJoinAndLeave implements Listener {
         ParkManager.parkSoundManager.logout(player);
         ParkManager.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         ParkManager.stitch.logout(player);
-        ParkManager.vanishUtil.logout(player);
+        ParkManager.visibilityUtil.logout(player);
         WatchTask.removeFromMessage(player.getUniqueId());
         Commandvanish.unvanish(player.getUniqueId());
         ParkManager.blockChanger.logout(player);

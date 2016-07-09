@@ -291,7 +291,7 @@ public class InventoryUtil {
                     main.setItem(13, parks);
                     main.setItem(14, shop);
                     main.setItem(15, ward);
-                    if (ParkManager.vanishUtil.isInHideAll(player.getUniqueId())) {
+                    if (ParkManager.visibilityUtil.isInHideAll(player.getUniqueId())) {
                         main.setItem(16, toggleon);
                     } else {
                         main.setItem(16, toggleoff);
