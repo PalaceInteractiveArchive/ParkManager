@@ -943,7 +943,9 @@ public class Commandmagic implements Listener, CommandExecutor {
                             if (BlockEdit.isInBuildMode(player.getUniqueId())) {
                                 player.performCommand("build");
                                 Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> ParkManager.toyStoryMania.join(player), 20L);
+                                return true;
                             }
+                            ParkManager.toyStoryMania.join(player);
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
