@@ -1,5 +1,6 @@
 package us.mcmagic.parkmanager.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -50,21 +51,21 @@ public class Commandwarp implements CommandExecutor {
                         ParkManager.toyStoryMania.done(tp);
                     }
                     if (tp.isInsideVehicle()) {
-                        tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
+                        tp.eject();
+                        sender.sendMessage(ChatColor.BLUE + tp.getName() + " has arrived at " + ChatColor.WHITE +
+                                "[" + ChatColor.GREEN + w + ChatColor.WHITE + "]");
+                        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> tp.teleport(warp.getLocation()), 10L);
                         return true;
                     }
                     ParkManager.teleportUtil.log(tp, tp.getLocation());
                     tp.teleport(warp.getLocation());
-                    tp.sendMessage(ChatColor.BLUE + "You have arrived at "
-                            + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                            + ChatColor.WHITE + "]");
-                    sender.sendMessage(ChatColor.BLUE + tp.getName()
-                            + " has arrived at " + ChatColor.WHITE + "["
-                            + ChatColor.GREEN + w + ChatColor.WHITE + "]");
+                    tp.sendMessage(ChatColor.BLUE + "You have arrived at " + ChatColor.WHITE + "[" +
+                            ChatColor.GREEN + w + ChatColor.WHITE + "]");
+                    sender.sendMessage(ChatColor.BLUE + tp.getName() + " has arrived at " + ChatColor.WHITE + "[" +
+                            ChatColor.GREEN + w + ChatColor.WHITE + "]");
                     return true;
                 } else {
-                    WarpUtil.crossServerWarp(tp.getUniqueId(), w,
-                            targetServer);
+                    WarpUtil.crossServerWarp(tp.getUniqueId(), w, targetServer);
                     return true;
                 }
             }

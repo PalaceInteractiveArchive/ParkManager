@@ -46,8 +46,11 @@ public class EntityDamage implements Listener {
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
                 Player player = (Player) damager;
-                if (ParkManager.toyStoryMania.isInGame(player)) {
-                    return;
+                if (ParkManager.toyStoryMania != null) {
+                    if (ParkManager.toyStoryMania.isInGame(player)) {
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
                 User user = MCMagicCore.getUser(player.getUniqueId());
                 if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
