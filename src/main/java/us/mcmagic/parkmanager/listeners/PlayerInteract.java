@@ -303,7 +303,6 @@ public class PlayerInteract implements Listener {
         User user = MCMagicCore.getUser(player.getUniqueId());
         if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
             if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You must be in Build Mode to modify Item Frames!");
                 event.setCancelled(true);
             }
         }
