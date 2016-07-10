@@ -70,17 +70,6 @@ public class TowerPreShow extends QueueRide {
     }
 
     @Override
-    public void spawn() {
-        if (frozen) {
-            return;
-        }
-        lastSpawn = getTime();
-        timeToNextRide = delay;
-        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis(), Material.REDSTONE_BLOCK));
-        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
-    }
-
-    @Override
     public Block getSpawnerBlock() {
         switch (stationNumber) {
             case 1:

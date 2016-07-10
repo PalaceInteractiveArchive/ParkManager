@@ -193,7 +193,7 @@ public class QueueRide {
                 if (fps.contains(tp.getUniqueId())) {
                     chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
                     tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
-                            getCategory().getName() + "FastPass!");
+                            getCategory().getName() + " FastPass!");
                 }
                 tp.teleport(getStation());
                 tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
@@ -210,6 +210,8 @@ public class QueueRide {
             }
             if (fps.contains(tp.getUniqueId())) {
                 chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                        getCategory().getName() + " FastPass!");
             }
             tp.teleport(getStation());
             tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
@@ -266,8 +268,8 @@ public class QueueRide {
         }
         lastSpawn = getTime();
         timeToNextRide = delay;
-        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis(), Material.REDSTONE_BLOCK));
-        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 500, Material.AIR));
+        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 1000, Material.REDSTONE_BLOCK));
+        addTask(new SpawnBlockSetTask(this, System.currentTimeMillis() + 5000, Material.AIR));
     }
 
     protected void addTask(QueueTask task) {

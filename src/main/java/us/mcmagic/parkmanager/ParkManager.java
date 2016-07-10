@@ -419,9 +419,6 @@ public class ParkManager extends JavaPlugin implements Listener {
         getCommand("spawn").setExecutor(new Commandspawn());
         getCommand("top").setExecutor(new Commandtop());
         getCommand("tp").setExecutor(new Commandtp());
-        getCommand("tpa").setExecutor(new Commandtpa());
-        getCommand("tpaccept").setExecutor(new Commandtpaccept());
-        getCommand("tpdeny").setExecutor(new Commandtpdeny());
         getCommand("uwarp").setExecutor(new Commanduwarp());
         getCommand("vanish").setExecutor(new Commandvanish());
         getCommand("vanish").setAliases(Collections.singletonList("v"));

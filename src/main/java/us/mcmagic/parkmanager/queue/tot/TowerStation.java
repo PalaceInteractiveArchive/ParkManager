@@ -1,9 +1,11 @@
 package us.mcmagic.parkmanager.queue.tot;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.RideCategory;
 import us.mcmagic.parkmanager.queue.QueueRide;
 
@@ -54,6 +56,31 @@ public class TowerStation extends QueueRide {
         }
         changeStation();
         List<UUID> fullList = getQueue();
+        List<UUID> fps = getFPQueue();
+        if (fps.size() > fullList.size()) {
+            int place = 1;
+            for (int i = 0; i < fullList.size(); i++) {
+                if (place > i) {
+                    break;
+                }
+                fullList.add(place, fps.remove(i));
+                place += 2;
+            }
+            for (UUID uuid : fps) {
+                fullList.add(uuid);
+            }
+        } else {
+            int place = 1;
+            if (fullList.isEmpty()) {
+                fullList = fps;
+                fps.clear();
+            } else {
+                for (UUID uuid : fps) {
+                    fullList.add(place, uuid);
+                    place += 2;
+                }
+            }
+        }
         Location loc = getStation(stationNumber);
         if (fullList.size() >= amountOfRiders) {
             for (int i = 0; i < amountOfRiders; i++) {
@@ -61,6 +88,11 @@ public class TowerStation extends QueueRide {
                 if (tp == null) {
                     i--;
                     continue;
+                }
+                if (fps.contains(tp.getUniqueId())) {
+                    chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                    tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                            getCategory().getName() + " FastPass!");
                 }
                 tp.teleport(loc);
                 leaveQueueSilent(tp);
@@ -73,6 +105,11 @@ public class TowerStation extends QueueRide {
             Player tp = Bukkit.getPlayer(uuid);
             if (tp == null) {
                 continue;
+            }
+            if (fps.contains(tp.getUniqueId())) {
+                chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                        getCategory().getName() + " FastPass!");
             }
             tp.teleport(loc);
             leaveQueueSilent(tp);

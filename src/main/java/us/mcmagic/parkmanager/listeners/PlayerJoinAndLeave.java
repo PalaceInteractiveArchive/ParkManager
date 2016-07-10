@@ -152,7 +152,7 @@ public class PlayerJoinAndLeave implements Listener {
             }
             ParkManager.visibilityUtil.login(player);
             if (user.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
-                Commandvanish.vanish(player.getUniqueId());
+                Commandvanish.vanish(player);
             }
             if (ParkManager.ttcServer) {
                 if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {

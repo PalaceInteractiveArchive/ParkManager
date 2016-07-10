@@ -1,6 +1,5 @@
 package us.mcmagic.parkmanager.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,11 +21,7 @@ public class Commandspawn implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                 }
                 if (tp.isInsideVehicle()) {
-                    tp.getVehicle().eject();
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                        ParkManager.teleportUtil.log(tp, tp.getLocation());
-                        tp.teleport(ParkManager.spawn);
-                    }, 10L);
+                    tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return true;
                 }
                 ParkManager.teleportUtil.log(tp, tp.getLocation());
@@ -47,12 +42,11 @@ public class Commandspawn implements CommandExecutor {
                 if (ParkManager.shooter != null) {
                     ParkManager.shooter.warp(tp);
                 }
+                if (ParkManager.toyStoryMania != null) {
+                    ParkManager.toyStoryMania.done(tp);
+                }
                 if (tp.isInsideVehicle()) {
-                    tp.getVehicle().eject();
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                        ParkManager.teleportUtil.log(tp, tp.getLocation());
-                        tp.teleport(ParkManager.spawn);
-                    }, 10L);
+                    tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return true;
                 }
                 ParkManager.teleportUtil.log(tp, tp.getLocation());
@@ -64,12 +58,11 @@ public class Commandspawn implements CommandExecutor {
         if (ParkManager.shooter != null) {
             ParkManager.shooter.warp(player);
         }
+        if (ParkManager.toyStoryMania != null) {
+            ParkManager.toyStoryMania.done(player);
+        }
         if (player.isInsideVehicle()) {
-            player.getVehicle().eject();
-            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                ParkManager.teleportUtil.log(player, player.getLocation());
-                player.teleport(ParkManager.spawn);
-            }, 10L);
+            player.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
             return true;
         }
         ParkManager.teleportUtil.log(player, player.getLocation());

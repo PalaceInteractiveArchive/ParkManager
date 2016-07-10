@@ -28,19 +28,15 @@ public class Commanddelay implements CommandExecutor {
             double y = Double.parseDouble(args[2]);
             double z = Double.parseDouble(args[3]);
             final Location loc = new Location(Bukkit.getWorlds().get(0), x, y, z);
+            if (!loc.getChunk().isLoaded()) {
+                loc.getChunk().load();
+            }
             final Block b = loc.getBlock();
             long delay = (long) (20 * (Double.parseDouble(args[0])));
-            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(),
-                    new Runnable() {
-                        public void run() {
-                            b.setType(Material.REDSTONE_BLOCK);
-                            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                                public void run() {
-                                    b.setType(Material.AIR);
-                                }
-                            }, 20L);
-                        }
-                    }, delay);
+            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                b.setType(Material.REDSTONE_BLOCK);
+                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> b.setType(Material.AIR), 20L);
+            }, delay);
             return true;
         }
         sender.sendMessage(ChatColor.RED + "/delay [delay] x y z");

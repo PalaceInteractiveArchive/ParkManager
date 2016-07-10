@@ -21,7 +21,7 @@ public class Commandhelpop implements CommandExecutor {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 for (Player tp : Bukkit.getOnlinePlayers()) {
-                    if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                    if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() >= Rank.EARNINGMYEARS.getRankId()) {
                         tp.sendMessage(ChatColor.DARK_RED + "[CM CHAT] " + ChatColor.GRAY + player.getName() + ": " +
                                 ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', message));
                     }
@@ -29,7 +29,7 @@ public class Commandhelpop implements CommandExecutor {
                 return true;
             }
             for (Player tp : Bukkit.getOnlinePlayers()) {
-                if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+                if (MCMagicCore.getUser(tp.getUniqueId()).getRank().getRankId() >= Rank.EARNINGMYEARS.getRankId()) {
                     tp.sendMessage(ChatColor.DARK_RED + "[CM CHAT] " + ChatColor.GRAY + "Console" + ": " +
                             ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', message));
                 }

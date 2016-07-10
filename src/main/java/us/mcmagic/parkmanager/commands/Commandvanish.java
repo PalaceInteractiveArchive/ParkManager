@@ -84,9 +84,23 @@ public class Commandvanish implements CommandExecutor {
         return true;
     }
 
-    public static void vanish(UUID uuid) {
-        if (!hidden.contains(uuid)) {
-            hidden.add(uuid);
+    public static void vanish(Player player) {
+        if (!hidden.contains(player.getUniqueId())) {
+            hidden.add(player.getUniqueId());
+        }
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            User user = MCMagicCore.getUser(tp.getUniqueId());
+            if (user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                tp.hidePlayer(player);
+            }
+        }
+        player.sendMessage(ChatColor.DARK_AQUA + "You have vanished. Poof.");
+        for (Player tp : Bukkit.getOnlinePlayers()) {
+            User user = MCMagicCore.getUser(tp.getUniqueId());
+            if (user.getRank().getRankId() > Rank.SPECIALGUEST.getRankId() &&
+                    !tp.getUniqueId().equals(player.getUniqueId())) {
+                tp.sendMessage(ChatColor.YELLOW + player.getName() + " has vanished. Poof.");
+            }
         }
     }
 

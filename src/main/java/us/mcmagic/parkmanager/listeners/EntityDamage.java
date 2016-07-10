@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
+import us.mcmagic.parkmanager.ParkManager;
 
 /**
  * Created by Marc on 4/12/15
@@ -45,6 +46,9 @@ public class EntityDamage implements Listener {
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
                 Player player = (Player) damager;
+                if (ParkManager.toyStoryMania.isInGame(player)) {
+                    return;
+                }
                 User user = MCMagicCore.getUser(player.getUniqueId());
                 if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
                     if (!BlockEdit.isInBuildMode(player.getUniqueId())) {

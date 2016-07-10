@@ -1,6 +1,5 @@
 package us.mcmagic.parkmanager.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,12 +22,15 @@ public class Commandhub implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return true;
                 }
+                ParkManager.queueManager.leaveAllQueues(tp);
+                if (ParkManager.shooter != null) {
+                    ParkManager.shooter.warp(tp);
+                }
+                if (ParkManager.toyStoryMania != null) {
+                    ParkManager.toyStoryMania.done(tp);
+                }
                 if (tp.isInsideVehicle()) {
-                    tp.getVehicle().eject();
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                        ParkManager.teleportUtil.log(tp, tp.getLocation());
-                        tp.teleport(ParkManager.hub);
-                    }, 10L);
+                    tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return true;
                 }
                 ParkManager.teleportUtil.log(tp, tp.getLocation());
@@ -42,12 +44,11 @@ public class Commandhub implements CommandExecutor {
         if (ParkManager.shooter != null) {
             ParkManager.shooter.warp(player);
         }
+        if (ParkManager.toyStoryMania != null) {
+            ParkManager.toyStoryMania.done(player);
+        }
         if (player.isInsideVehicle()) {
-            player.getVehicle().eject();
-            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                ParkManager.teleportUtil.log(player, player.getLocation());
-                player.teleport(ParkManager.hub);
-            }, 10L);
+            player.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
             return true;
         }
         ParkManager.teleportUtil.log(player, player.getLocation());

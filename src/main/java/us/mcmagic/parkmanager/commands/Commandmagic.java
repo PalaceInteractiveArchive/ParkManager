@@ -33,6 +33,7 @@ import us.mcmagic.parkmanager.blockchanger.Changer;
 import us.mcmagic.parkmanager.handlers.Outfit;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.handlers.RideCount;
+import us.mcmagic.parkmanager.listeners.BlockEdit;
 import us.mcmagic.parkmanager.queue.QueueRide;
 import us.mcmagic.parkmanager.queue.tot.DropTower;
 import us.mcmagic.parkmanager.queue.tot.TowerLayout;
@@ -939,7 +940,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                                 sender.sendMessage(ChatColor.RED + "Could not find Player!");
                                 return true;
                             }
-                            ParkManager.toyStoryMania.join(player);
+                            if (BlockEdit.isInBuildMode(player.getUniqueId())) {
+                                player.performCommand("build");
+                                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> ParkManager.toyStoryMania.join(player), 20L);
+                            }
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {

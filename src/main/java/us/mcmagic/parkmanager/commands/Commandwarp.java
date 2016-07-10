@@ -1,6 +1,5 @@
 package us.mcmagic.parkmanager.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -47,15 +46,11 @@ public class Commandwarp implements CommandExecutor {
                     if (ParkManager.shooter != null) {
                         ParkManager.shooter.warp(tp);
                     }
+                    if (ParkManager.toyStoryMania != null) {
+                        ParkManager.toyStoryMania.done(tp);
+                    }
                     if (tp.isInsideVehicle()) {
-                        tp.getVehicle().eject();
-                        Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                            ParkManager.teleportUtil.log(tp, tp.getLocation());
-                            tp.teleport(loc);
-                            tp.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                    + ChatColor.WHITE + "]");
-                        }, 10L);
+                        tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                         return true;
                     }
                     ParkManager.teleportUtil.log(tp, tp.getLocation());
@@ -139,17 +134,7 @@ public class Commandwarp implements CommandExecutor {
                     }
                 }
                 if (player.isInsideVehicle()) {
-                    player.getVehicle().eject();
-                    final boolean finalMsg = msg;
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                        ParkManager.teleportUtil.log(player, player.getLocation());
-                        player.teleport(loc);
-                        if (finalMsg) {
-                            player.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                    + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                    + ChatColor.WHITE + "]");
-                        }
-                    }, 10L);
+                    player.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return true;
                 }
                 ParkManager.teleportUtil.log(player, player.getLocation());
@@ -204,14 +189,7 @@ public class Commandwarp implements CommandExecutor {
                         + " has arrived at " + ChatColor.WHITE + "["
                         + ChatColor.GREEN + w + ChatColor.WHITE + "]");
                 if (tp.isInsideVehicle()) {
-                    tp.getVehicle().eject();
-                    Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
-                        ParkManager.teleportUtil.log(tp, tp.getLocation());
-                        tp.teleport(loc);
-                        tp.sendMessage(ChatColor.BLUE + "You have arrived at "
-                                + ChatColor.WHITE + "[" + ChatColor.GREEN + w
-                                + ChatColor.WHITE + "]");
-                    }, 10L);
+                    tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return true;
                 }
                 ParkManager.teleportUtil.log(tp, tp.getLocation());
