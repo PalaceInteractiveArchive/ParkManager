@@ -31,40 +31,54 @@ public class BlockChanger implements Listener {
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
 
-
+/*
     @SuppressWarnings("deprecation")
     public BlockChanger() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(),
                 ListenerPriority.HIGHEST, PacketType.Play.Server.MAP_CHUNK) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                PacketContainer container = event.getPacket();
-                StructureModifier<Integer> ints = container.getIntegers();
-                Chunk c = event.getPlayer().getWorld().getChunkAt(ints.read(0), ints.read(1));
-                ChunkSection[] sections = ((CraftChunk) c).getHandle().getSections();
-                for (ChunkSection s : sections) {
-                    for (int x = 0; x < 16; x++) {
-                        for (int y = s.getYPosition(); y < (s.getYPosition() + 15); y++) {
-                            for (int z = 0; z < 16; z++) {
-                                Block b = c.getBlock(x, y, z);
-                                IBlockData data = s.getType(x, y, z);
-                                net.minecraft.server.v1_8_R3.Block.getById(0);
-                                int id = data.getBlock().getId(data.getBlock());
-                                Material type = Material.getMaterial(id);
-                                for (Changer changer : getChangers()) {
-                                    if (isInside(b.getLocation(), changer)) {
-                                        Material to = changer.getTo();
-                                        s.setType(x, y, z, net.minecraft.server.v1_8_R3.Block.getById(to.getId())
-                                                .fromLegacyData(to.getMaxDurability()));
+                try {
+                    PacketContainer container = event.getPacket();
+                    StructureModifier<Integer> ints = container.getIntegers();
+                    Chunk c = event.getPlayer().getWorld().getChunkAt(ints.read(0), ints.read(1));
+                    ChunkSection[] sections = ((CraftChunk) c).getHandle().getSections();
+                    for (ChunkSection s : sections) {
+                        if (s == null) {
+                            continue;
+                        }
+                        for (int x = 0; x < 16; x++) {
+                            int y2 = 0;
+                            for (int y = s.getYPosition(); y < (s.getYPosition() + 15); y++) {
+                                for (int z = 0; z < 16; z++) {
+                                    Block b = c.getBlock(x, y, z);
+                                    IBlockData data = s.getType(x, y2, z);
+                                    net.minecraft.server.v1_8_R3.Block.getById(0);
+                                    int id = data.getBlock().getId(data.getBlock());
+                                    Material type = Material.getMaterial(id);
+                                    for (Changer changer : getChangers()) {
+                                        if (isInside(b.getLocation(), changer)) {
+                                            Material to = changer.getTo();
+                                            s.setType(x, y2, z, net.minecraft.server.v1_8_R3.Block.getById(to.getId())
+                                                    .fromLegacyData(to.getMaxDurability()));
+                                        }
                                     }
                                 }
+                                y2++;
                             }
                         }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
-    }
+        try {
+            initialize();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }*/
 
     private boolean isInside(Location loc, Changer changer) {
         Location loc1 = changer.getFirstLocation();
@@ -78,6 +92,7 @@ public class BlockChanger implements Listener {
 
     @SuppressWarnings("deprecation")
     public void initialize() throws FileNotFoundException {
+        // name;x1;y1;z1;x2;y2;z2;from;to;trigger
         Scanner scanner = new Scanner(new FileReader(FileUtil.blockchangerFile()));
         while (scanner.hasNextLine()) {
             String[] args = scanner.nextLine().split(";");
