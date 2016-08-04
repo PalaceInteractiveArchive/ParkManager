@@ -1,10 +1,17 @@
 package us.mcmagic.parkmanager.blockchanger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
+import net.minecraft.server.v1_8_R3.ChunkSection;
+import net.minecraft.server.v1_8_R3.IBlockData;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,10 +19,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.utils.FileUtil;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -27,7 +31,8 @@ public class BlockChanger implements Listener {
     private HashMap<UUID, List<Location>> selections = new HashMap<>();
     private List<UUID> delay = new ArrayList<>();
 
-        /*
+
+    @SuppressWarnings("deprecation")
     public BlockChanger() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(),
                 ListenerPriority.HIGHEST, PacketType.Play.Server.MAP_CHUNK) {
@@ -36,11 +41,23 @@ public class BlockChanger implements Listener {
                 PacketContainer container = event.getPacket();
                 StructureModifier<Integer> ints = container.getIntegers();
                 Chunk c = event.getPlayer().getWorld().getChunkAt(ints.read(0), ints.read(1));
-                for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < 256; y++) {
-                        for (int z = 0; z < 16; z++) {
-                            Block b = c.getBlock(x, y, z);
-                            if (isInside(b.getLocation(), changer)) {
+                ChunkSection[] sections = ((CraftChunk) c).getHandle().getSections();
+                for (ChunkSection s : sections) {
+                    for (int x = 0; x < 16; x++) {
+                        for (int y = s.getYPosition(); y < (s.getYPosition() + 15); y++) {
+                            for (int z = 0; z < 16; z++) {
+                                Block b = c.getBlock(x, y, z);
+                                IBlockData data = s.getType(x, y, z);
+                                net.minecraft.server.v1_8_R3.Block.getById(0);
+                                int id = data.getBlock().getId(data.getBlock());
+                                Material type = Material.getMaterial(id);
+                                for (Changer changer : getChangers()) {
+                                    if (isInside(b.getLocation(), changer)) {
+                                        Material to = changer.getTo();
+                                        s.setType(x, y, z, net.minecraft.server.v1_8_R3.Block.getById(to.getId())
+                                                .fromLegacyData(to.getMaxDurability()));
+                                    }
+                                }
                             }
                         }
                     }
@@ -57,6 +74,46 @@ public class BlockChanger implements Listener {
         int z = loc.getBlockZ();
         return x >= loc1.getBlockX() && x <= loc2.getBlockX() && y >= loc1.getBlockY() && y <= loc2.getBlockY() &&
                 z >= loc1.getBlockX() && z <= loc2.getBlockZ();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void initialize() throws FileNotFoundException {
+        Scanner scanner = new Scanner(new FileReader(FileUtil.blockchangerFile()));
+        while (scanner.hasNextLine()) {
+            String[] args = scanner.nextLine().split(";");
+            try {
+                String name = args[0];
+                World world = Bukkit.getWorlds().get(0);
+                Location loc1 = new Location(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]),
+                        Integer.parseInt(args[3]));
+                Location loc2 = new Location(world, Integer.parseInt(args[4]), Integer.parseInt(args[5]),
+                        Integer.parseInt(args[6]));
+                String[] mats = args[7].split(",");
+                HashMap<Material, Byte> from = blocksFromString(args[7]);
+                for (String s : mats) {
+                    String[] list = s.split(":");
+                    if (list.length == 1) {
+                        from.put(Material.getMaterial(Integer.parseInt(list[0])), null);
+                    } else {
+                        from.put(Material.getMaterial(Integer.parseInt(list[0])), Byte.valueOf(list[1]));
+                    }
+                }
+                String[] l2 = args[8].split(":");
+                Material to;
+                Byte toData;
+                if (l2.length == 1) {
+                    to = Material.getMaterial(Integer.parseInt(l2[0]));
+                    toData = (byte) 0;
+                } else {
+                    to = Material.getMaterial(Integer.parseInt(l2[0]));
+                    toData = Byte.valueOf(l2[1]);
+                }
+                Material sender = Material.getMaterial(Integer.parseInt(args[9]));
+                changers.put(name, new Changer(name, loc1, loc2, from, to, toData, sender));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /*
@@ -122,52 +179,6 @@ public class BlockChanger implements Listener {
             lookup.setBlockLookup(Material.LAPIS_BLOCK.getId(), glass);
             lookup.setBlockLookup(Material.IRON_BLOCK.getId(), glass);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    public void initialize() throws FileNotFoundException {
-        Scanner scanner = new Scanner(new FileReader(FileUtil.blockchangerFile()));
-        while (scanner.hasNextLine()) {
-            String[] args = scanner.nextLine().split(";");
-            try {
-                String name = args[0];
-                World world = Bukkit.getWorlds().get(0);
-                Location loc1 = new Location(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-                        Integer.parseInt(args[3]));
-                Location loc2 = new Location(world, Integer.parseInt(args[4]), Integer.parseInt(args[5]),
-                        Integer.parseInt(args[6]));
-                String[] mats = args[7].split(",");
-                HashMap<Material, Byte> from = blocksFromString(args[7]);
-                for (String s : mats) {
-                    String[] list = s.split(":");
-                    if (list.length == 1) {
-                        from.put(Material.getMaterial(Integer.parseInt(list[0])), null);
-                    } else {
-                        from.put(Material.getMaterial(Integer.parseInt(list[0])), Byte.valueOf(list[1]));
-                    }
-                }
-                String[] l2 = args[8].split(":");
-                Material to;
-                Byte toData;
-                if (l2.length == 1) {
-                    to = Material.getMaterial(Integer.parseInt(l2[0]));
-                    toData = (byte) 0;
-                } else {
-                    to = Material.getMaterial(Integer.parseInt(l2[0]));
-                    toData = Byte.valueOf(l2[1]);
-                }
-                Material sender = Material.getMaterial(Integer.parseInt(args[9]));
-                changers.put(name, new Changer(name, loc1, loc2, from, to, toData, sender));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        /**
-         * Example:  name;x1;y1;z1;x2;y2;z2;stone,grass,dirt,etc.;35:15;bedrock
-         * What does this do? Changes all stone,grass,dirt between loc1 and loc2
-         * to black wool, only when a player is standing over a piece of bedrock.
-
-        Bukkit.getLogger().info("Loaded " + changers.size() + " Changers!");
     }
     */
 
@@ -235,24 +246,18 @@ public class BlockChanger implements Listener {
         }
         debug.clear();
         delay.clear();
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    for (Changer changer : changers.values()) {
-                        if (changer.getFirstLocation().distance(player.getLocation()) < 75) {
-                            changer.sendReverse(player);
-                        }
-                    }
-                }
-                changers.clear();
-                /*
-                try {
-                    initialize();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }*/
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                changers.values().stream().filter(changer -> changer.getFirstLocation()
+                        .distance(player.getLocation()) < 75).forEach(changer -> changer.sendReverse(player));
             }
+            changers.clear();
+            /*
+            try {
+                initialize();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }*/
         });
     }
 
@@ -277,16 +282,9 @@ public class BlockChanger implements Listener {
             return true;
         }
         debug.add(uuid);
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                for (Changer changer : changers.values()) {
-                    if (isClose(player, changer.getFirstLocation(), changer.getSecondLocation())) {
-                        changer.sendReverse(player);
-                    }
-                }
-            }
-        });
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () ->
+                changers.values().stream().filter(changer -> isClose(player, changer.getFirstLocation(),
+                        changer.getSecondLocation())).forEach(changer -> changer.sendReverse(player)));
         return false;
     }
 
