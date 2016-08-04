@@ -276,25 +276,23 @@ public class PlayerJoinAndLeave implements Listener {
             player.getVehicle().eject();
         }
         if (ParkManager.hotelServer) {
-            HotelManager manager = ParkManager.hotelManager;
-            for (HotelRoom room : manager.getHotelRooms()) {
-                if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                    manager.closeDoor(room);
-                    break;
-                }
-            }
+            ParkManager.hotelManager.closeDoor(player);
         }
         BlockEdit.logout(player.getUniqueId());
         ParkManager.queueManager.silentLeaveAllQueues(player);
         ParkManager.autographManager.logout(player);
         ParkManager.parkSoundManager.logout(player);
         ParkManager.bandUtil.cancelLoadPlayerData(player.getUniqueId());
-        ParkManager.stitch.logout(player);
         ParkManager.visibilityUtil.logout(player);
         WatchTask.removeFromMessage(player.getUniqueId());
         Commandvanish.unvanish(player.getUniqueId());
         ParkManager.blockChanger.logout(player);
-        DesignStation.removePlayerVehicle(player.getUniqueId());
+        if (MCMagicCore.getMCMagicConfig().serverName.equals("MK")) {
+            ParkManager.stitch.logout(player);
+        }
+        if (MCMagicCore.getMCMagicConfig().serverName.equals("Epcot")) {
+            DesignStation.removePlayerVehicle(player.getUniqueId());
+        }
         ParkManager.playerData.remove(player.getUniqueId());
     }
 

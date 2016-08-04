@@ -51,7 +51,8 @@ public class HotelRoomMenuClick {
             return;
         }
         if (MCMagicCore.economy.getBalance(player.getUniqueId()) >= room.getCost()) {
-            MCMagicCore.economy.addBalance(player.getUniqueId(), -room.getCost());
+            MCMagicCore.economy.addBalance(player.getUniqueId(), -room.getCost(), room.getHotelName() + " #" +
+                    room.getRoomNumber());
             manager.rentRoom(room, player);
         } else {
             player.closeInventory();

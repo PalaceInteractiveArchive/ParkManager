@@ -1,9 +1,7 @@
 package us.mcmagic.parkmanager.storage;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -14,10 +12,8 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.HotelRoom;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.handlers.PlayerData;
-import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.listeners.BlockEdit;
 import us.mcmagic.parkmanager.utils.SqlUtil;
 
@@ -73,11 +69,8 @@ public class StorageManager {
                 }
             }
         }, 0L, 10L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
-            for (Player tp : Bukkit.getOnlinePlayers()) {
-                update(tp);
-            }
-        }, 0L, 6000L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () ->
+                Bukkit.getOnlinePlayers().forEach(this::update), 0L, 6000L);
     }
 
     public void downloadInventory(UUID uuid) {
@@ -116,29 +109,6 @@ public class StorageManager {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         data.setBackpack(pack);
         data.setLocker(locker);
-        if (!ParkManager.hotelServer) {
-            return;
-        }
-        HotelManager manager = ParkManager.hotelManager;
-        for (HotelRoom room : manager.getHotelRooms()) {
-            if (room.getCheckoutNotificationRecipient() != null &&
-                    room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
-                room.setCheckoutNotificationRecipient(null);
-                room.setCheckoutTime(0);
-                manager.updateHotelRoom(room);
-                manager.updateRooms();
-                player.sendMessage(ChatColor.GREEN + "Your reservation of the " + room.getName() +
-                        " room has lapsed and you have been checked out. Please come stay with us again soon!");
-                manager.expire.send(player);
-                player.playSound(player.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
-                return;
-            }
-            if (room.getCurrentOccupant() != null &&
-                    room.getCurrentOccupant().equals(player.getUniqueId()) &&
-                    room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                manager.checkout(room, true);
-            }
-        }
         player.getInventory().remove(Material.MINECART);
     }
 

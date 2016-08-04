@@ -30,6 +30,7 @@ public class HotelManager {
     public TitleObject expire = new TitleObject(ChatColor.RED + "Your Hotel Room Expired",
             TitleObject.TitleType.SUBTITLE).setFadeIn(40).setStay(60).setFadeOut(40);
     private List<HotelRoom> hotelRooms = new ArrayList<>();
+    private List<HotelRoom> closeDoors = new ArrayList<>();
 
     public HotelManager() {
         initialize();
@@ -38,12 +39,12 @@ public class HotelManager {
     private void initialize() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> hotelRooms.stream()
                 .filter(room -> room.getCheckoutNotificationRecipient() != null).forEach(room -> {
-            UUID uuid = room.getCheckoutNotificationRecipient();
-            Player tp = Bukkit.getPlayer(uuid);
-            if (tp != null && tp.isOnline()) {
-                checkout(room, true);
-            }
-        }), 10L, 6000L);
+                    UUID uuid = room.getCheckoutNotificationRecipient();
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp != null && tp.isOnline()) {
+                        checkout(room, true);
+                    }
+                }), 10L, 6000L);
         if (!ParkManager.hotelServer) {
             return;
         }
@@ -56,6 +57,12 @@ public class HotelManager {
                 }
             }
         }, 0L, 6000L);
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            for (HotelRoom room : new ArrayList<>(closeDoors)) {
+                closeDoor(room);
+                closeDoors.remove(room);
+            }
+        }, 0L, 5L);
     }
 
     public List<HotelRoom> getHotelRooms() {
@@ -212,25 +219,6 @@ public class HotelManager {
             sql.setString(4, room.getCheckoutNotificationRecipient() == null ? "" : room.getCheckoutNotificationRecipient().toString());
             sql.setString(5, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
             sql.setString(6, room.getName());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void addRoomWithoutCheckingExistance(HotelRoom room) {
-        try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms values(0,?,?,?,?,?,?,?,?,?)");
-            sql.setString(1, room.getHotelName());
-            sql.setInt(2, room.getRoomNumber());
-            sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");
-            sql.setLong(4, room.getCheckoutTime());
-            sql.setString(5, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
-            sql.setInt(6, room.getCost());
-            sql.setString(7, room.getCheckoutNotificationRecipient() != null ? room.getCheckoutNotificationRecipient().toString() : "");
-            sql.setString(8, room.getName());
-            sql.setLong(9, room.getStayLength());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -397,17 +385,19 @@ public class HotelManager {
         player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for $" + room.getCost() +
                 "!");
         player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
+        ParkManager.logActivity(player, "Reserve Hotel Room", room.getHotelName() + " #" + room.getRoomNumber());
         MCMagicCore.getUser(player.getUniqueId()).giveAchievement(10);
     }
 
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        if (ParkManager.hotelServer) {
-            closeDoor(room);
+        if (ParkManager.hotelServer && room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
+            closeDoors.add(room);
         }
         room.setCheckoutTime(0);
         if (tp != null) {
-            if (room.getWarp() != null && ParkManager.hotelServer) {
+            if (room.getWarp() != null && ParkManager.hotelServer &&
+                    room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
                 Warp w = room.getWarp();
                 if (tp.getLocation().distance(w.getLocation()) < 25) {
                     tp.teleport(w.getLocation());
@@ -418,13 +408,15 @@ public class HotelManager {
                         " room has lapsed and you have been checked out. Please come stay with us again soon!");
                 expire.send(tp);
                 tp.playSound(tp.getLocation(), Sound.BLAZE_DEATH, 10f, 1f);
+                ParkManager.logActivity(tp, "Hotel Room Checkout", "Reservation Expired");
             } else {
                 tp.sendMessage(ChatColor.GREEN + "You have checked out of your room. Have a wonderful rest of your visit!");
+                ParkManager.logActivity(tp, "Hotel Room Checkout", "Manual Checkout");
             }
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
         }
-        if (!lapsed && ParkManager.hotelServer) {
+        if (!lapsed && ParkManager.hotelServer && room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
             Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
             Material type = b.getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
@@ -437,5 +429,14 @@ public class HotelManager {
         room.setOccupantName(null);
         updateHotelRoom(room);
         updateRooms();
+    }
+
+    public void closeDoor(Player player) {
+        for (HotelRoom room : getHotelRooms()) {
+            if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                closeDoors.add(room);
+                break;
+            }
+        }
     }
 }

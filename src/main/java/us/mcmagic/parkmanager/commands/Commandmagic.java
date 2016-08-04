@@ -203,6 +203,10 @@ public class Commandmagic implements Listener, CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "Player not found!");
                         return true;
                     }
+                    if (!tp.isInsideVehicle()) {
+                        sender.sendMessage(ChatColor.RED + "This player is not in a vehicle!");
+                        return true;
+                    }
                     String rideName = "";
                     for (int i = 3; i < args.length; i++) {
                         rideName += args[i];

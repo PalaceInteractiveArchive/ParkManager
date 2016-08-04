@@ -50,6 +50,9 @@ import us.mcmagic.parkmanager.utils.*;
 import us.mcmagic.parkmanager.watch.WatchTask;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -331,18 +334,15 @@ public class ParkManager extends JavaPlugin implements Listener {
     }
 
     public static List<Ride> getRides() {
-        List<Ride> list = new ArrayList<>(rides).stream().collect(Collectors.toList());
-        return list;
+        return new ArrayList<>(rides).stream().collect(Collectors.toList());
     }
 
     public static List<Ride> getAttractions() {
-        List<Ride> list = new ArrayList<>(attractions).stream().collect(Collectors.toList());
-        return list;
+        return new ArrayList<>(attractions).stream().collect(Collectors.toList());
     }
 
     public static List<Ride> getMeetAndGreets() {
-        List<Ride> list = new ArrayList<>(meetandgreets).stream().collect(Collectors.toList());
-        return list;
+        return new ArrayList<>(meetandgreets).stream().collect(Collectors.toList());
     }
 
     public static Ride getAttraction(String name) {
@@ -373,6 +373,18 @@ public class ParkManager extends JavaPlugin implements Listener {
 
     public static void addWarp(Warp warp) {
         warps.add(warp);
+    }
+
+    public static void logActivity(Player player, String activity, String description) {
+        try (Connection connection = SqlUtil.getConnection()) {
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO activity (uuid, action, description) VALUES (?,?,?)");
+            sql.setString(1, player.getUniqueId().toString());
+            sql.setString(2, activity);
+            sql.setString(3, description);
+            sql.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void registerCommands() {
