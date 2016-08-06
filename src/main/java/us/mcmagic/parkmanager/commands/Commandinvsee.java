@@ -18,7 +18,7 @@ public class Commandinvsee implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        if (args.length == 3) {
+        if (args.length == 2) {
             Player tp = PlayerUtil.findPlayer(args[0]);
             if (tp == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
@@ -31,11 +31,13 @@ public class Commandinvsee implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Now looking in "
                             + tp.getName() + "'s Backpack!");
                     player.openInventory(data.getBackpack().getInventory());
+                    return true;
                 }
                 case "locker": {
                     player.sendMessage(ChatColor.GREEN + "Now looking in "
                             + tp.getName() + "'s Locker!");
                     player.openInventory(data.getLocker().getInventory());
+                    return true;
                 }
             }
             player.sendMessage(ChatColor.GREEN + "Now looking in "
