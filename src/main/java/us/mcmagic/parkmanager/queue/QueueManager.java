@@ -37,39 +37,47 @@ public class QueueManager {
 
     public QueueManager() {
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
-            for (QueueRide ride : getRides()) {
-                ride.updateSigns();
-                List<UUID> q = ride.getQueue();
-                List<UUID> fp = ride.getFPQueue();
-                if (ride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
-                    addTask(new NextRidersTask(ride, System.currentTimeMillis()));
-                } else {
-                    if (ride.timeToNextRide > 0) {
-                        ride.timeToNextRide -= 1;
+            try {
+                for (QueueRide ride : getRides()) {
+                    ride.updateSigns();
+                    List<UUID> q = ride.getQueue();
+                    List<UUID> fp = ride.getFPQueue();
+                    if (ride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
+                        addTask(new NextRidersTask(ride, System.currentTimeMillis()));
+                    } else {
+                        if (ride.timeToNextRide > 0) {
+                            ride.timeToNextRide -= 1;
+                        }
+                    }
+                    for (UUID uuid : q) {
+                        ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
+                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
+                                ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
+                    }
+                    for (UUID uuid : fp) {
+                        ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
+                                (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
+                                ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
                     }
                 }
-                for (UUID uuid : q) {
-                    ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
-                            (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
-                            ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
-                }
-                for (UUID uuid : fp) {
-                    ActionBarManager.sendMessage(Bukkit.getPlayer(uuid), ChatColor.GREEN + "You're #" +
-                            (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
-                            ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }, 20L, 20L);
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
-            int i = 0;
-            for (QueueTask task : new ArrayList<>(tasks)) {
-                if (System.currentTimeMillis() <= task.getTime()) {
+            try {
+                int i = 0;
+                for (QueueTask task : new ArrayList<>(tasks)) {
+                    if (System.currentTimeMillis() <= task.getTime()) {
+                        i++;
+                        continue;
+                    }
+                    task.execute();
+                    tasks.remove(i);
                     i++;
-                    continue;
                 }
-                task.execute();
-                tasks.remove(i);
-                i++;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }, 0L, 1L);
     }

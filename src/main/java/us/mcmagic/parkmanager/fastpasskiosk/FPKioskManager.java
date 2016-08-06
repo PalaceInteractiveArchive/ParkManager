@@ -390,7 +390,7 @@ public class FPKioskManager implements Listener {
                     break;
                 }
                 int voteSite = 1;
-                if (kioskData.getLastVote() + 1 <= 7) {
+                if (kioskData.getLastVote() + 1 <= 4) {
                     voteSite = kioskData.getLastVote() + 1;
                 }
                 String link = "http://vote.mcmagic.us/?" + voteSite;

@@ -26,7 +26,6 @@ import us.mcmagic.parkmanager.fastpasskiosk.FPKioskManager;
 import us.mcmagic.parkmanager.handlers.*;
 import us.mcmagic.parkmanager.hotels.HotelManager;
 import us.mcmagic.parkmanager.listeners.*;
-import us.mcmagic.parkmanager.parksounds.ParkSoundManager;
 import us.mcmagic.parkmanager.pixelator.Pixelator;
 import us.mcmagic.parkmanager.queue.QueueManager;
 import us.mcmagic.parkmanager.queue.QueueRide;
@@ -45,7 +44,6 @@ import us.mcmagic.parkmanager.show.ticker.Ticker;
 import us.mcmagic.parkmanager.stitch.Stitch;
 import us.mcmagic.parkmanager.storage.StorageManager;
 import us.mcmagic.parkmanager.tsm.ToyStoryMania;
-import us.mcmagic.parkmanager.uoe.UniverseEnergyRide;
 import us.mcmagic.parkmanager.utils.*;
 import us.mcmagic.parkmanager.watch.WatchTask;
 
@@ -57,10 +55,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ParkManager extends JavaPlugin implements Listener {
+    public static ParkManager instance;
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
     public static Stitch stitch;
-    public static UniverseEnergyRide universeEnergyRide;
+    //public static UniverseEnergyRide universeEnergyRide;
     public static List<Warp> warps = new ArrayList<>();
     public static List<Ride> rides = new ArrayList<>();
     public static List<Ride> attractions = new ArrayList<>();
@@ -75,12 +74,9 @@ public class ParkManager extends JavaPlugin implements Listener {
     public static FountainManager fountainManager;
     public static TeleportUtil teleportUtil;
     public static List<String> joinMessages = config.getStringList("join-messages");
-    public static Map<Integer, Integer> firstJoinItems = new HashMap<>();
     public static Map<UUID, String> userCache = new HashMap<>();
     public static boolean ttcServer;
-    public static ParkManager instance;
     public static BlockChanger blockChanger;
-    public static ParkSoundManager parkSoundManager;
     public static PackManager packManager;
     public static BandUtil bandUtil;
     public static RideManager rideManager;
@@ -105,18 +101,13 @@ public class ParkManager extends JavaPlugin implements Listener {
     public void onEnable() {
         instance = this;
         SqlUtil.initialize();
-        log("Initializing Ride Manager...");
+        log("Initializing ParkManager...");
         rideManager = new RideManager();
-        log("Ride Manager Initialized!");
         stitch = new Stitch();
-        log("Initializing Pack Manager...");
         packManager = new PackManager();
-        log("Pack Manager Initialized!");
-        universeEnergyRide = new UniverseEnergyRide();
+        //universeEnergyRide = new UniverseEnergyRide();
         autographManager = new AutographManager();
-        log("Initializing Queue Manager...");
         queueManager = new QueueManager();
-        log("Queue Manager Initialized!");
         ttcServer = MCMagicCore.getMCMagicConfig().serverName.contains("TTC");
         bandUtil = new BandUtil();
         storageManager = new StorageManager();
@@ -125,7 +116,6 @@ public class ParkManager extends JavaPlugin implements Listener {
         teleportUtil = new TeleportUtil();
         itemUtil = new ItemUtil();
         blockChanger = new BlockChanger();
-        parkSoundManager = new ParkSoundManager();
         armorStandManager = new ArmorStandManager();
         chairManager = new ChairManager();
         wardrobeManager = new WardrobeManager();
@@ -149,28 +139,15 @@ public class ParkManager extends JavaPlugin implements Listener {
             }
         }*/
         warps.clear();
-        setupFirstJoinItems();
-        log("Initializing Warps...");
         WarpUtil.refreshWarps();
-        log("Warps Initialized!");
         shopManager = new ShopManager();
         String sn = MCMagicCore.getMCMagicConfig().serverName;
         hotelServer = sn.equals("Resorts") || sn.equals("DCL");
-        log("Initializing Hotel Rooms...");
         hotelManager = new HotelManager();
-        log("Hotel Rooms Initialized!");
-        log("Initializing Food Locations...");
         setupFoodLocations();
-        log("Food Locations Initialized!");
-        log("Initializing Rides...");
         setupRides();
-        log("Rides Initialized!");
-        log("Initializing FastPass Kiosks...");
         fpKioskManager = new FPKioskManager();
-        log("FastPass Kiosks Initialized!");
-        log("Initializing Show Schedule...");
         scheduleManager = new ScheduleManager();
-        log("Show Schedule Initialized!");
         //enablePixelator();
         if (config.getBoolean("show-server")) {
             // Show Ticker
@@ -192,11 +169,11 @@ public class ParkManager extends JavaPlugin implements Listener {
         spawnOnJoin = getConfig().getBoolean("spawn-on-join");
         crossServerInv = getConfig().getBoolean("transfer-inventories");
         packManager.initialize();
-        parkSoundManager.initialize();
         DesignStation.initialize();
         long curr = System.currentTimeMillis();
         long time = (curr % 1000) / 50;
         Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
+        log("ParkManager Initialized!");
     }
 
     private void log(String s) {
@@ -226,19 +203,6 @@ public class ParkManager extends JavaPlugin implements Listener {
 
     public static void clearWarps() {
         warps.clear();
-    }
-
-    public void setupFirstJoinItems() {
-        firstJoinItems.clear();
-        FileConfiguration config = getConfig();
-        for (String s : config.getStringList("first-join-items")) {
-            String[] items = s.split(" ");
-            try {
-                firstJoinItems.put(Integer.parseInt(items[0]),
-                        Integer.parseInt(items[1]));
-            } catch (NumberFormatException ignored) {
-            }
-        }
     }
 
     public void setHub(Location loc) {
@@ -451,10 +415,12 @@ public class ParkManager extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerGameModeChange(), this);
         pm.registerEvents(new FoodLevel(), this);
         pm.registerEvents(new PlayerDropItem(), this);
-        pm.registerEvents(stitch, this);
+        if (MCMagicCore.getMCMagicConfig().serverName.equals("MK")) {
+            pm.registerEvents(stitch, this);
+        }
         pm.registerEvents(new PlayerInteract(), this);
         pm.registerEvents(new EntityDamage(), this);
-        pm.registerEvents(blockChanger, this);
+        //pm.registerEvents(blockChanger, this);
         pm.registerEvents(packManager, this);
         pm.registerEvents(new InventoryOpen(), this);
         fountainManager = new FountainManager();

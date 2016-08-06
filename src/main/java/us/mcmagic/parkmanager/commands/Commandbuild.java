@@ -14,6 +14,7 @@ import org.bukkit.inventory.PlayerInventory;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.listeners.BlockEdit;
 import us.mcmagic.parkmanager.utils.SqlUtil;
 import us.mcmagic.parkmanager.watch.WatchTask;
@@ -34,7 +35,12 @@ public class Commandbuild implements CommandExecutor {
             return true;
         }
         final Player player = (Player) sender;
+        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         WatchTask.removeFromMessage(player.getUniqueId());
+        if (data == null || data.getBackpack() == null || data.getBackpack().getInventory() == null
+                || data.getBackpack().getInventory().getContents() == null) {
+            return true;
+        }
         if (BlockEdit.toggleBuildMode(player.getUniqueId())) {
             player.sendMessage(ChatColor.GREEN + "You are now in " + ChatColor.YELLOW + "" + ChatColor.BOLD +
                     "Build Mode!");

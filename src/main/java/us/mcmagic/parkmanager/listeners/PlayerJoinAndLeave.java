@@ -35,11 +35,13 @@ public class PlayerJoinAndLeave implements Listener {
 
     public PlayerJoinAndLeave() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
-            for (Map.Entry<UUID, Long> entry : new HashMap<>(needInvSet).entrySet()) {
-                UUID uuid = entry.getKey();
+            HashMap<UUID, Long> localMap = getPartOfMap(needInvSet, 5);
+            for (Map.Entry<UUID, Long> entry : new HashMap<>(localMap).entrySet()) {
                 Long time = entry.getValue();
                 if (time + 5000 <= System.currentTimeMillis()) {
-                    needInvSet.remove(uuid);
+                    UUID uuid = entry.getKey();
+                    needInvSet.remove(entry.getKey());
+                    localMap.remove(entry.getKey());
                     Player tp = Bukkit.getPlayer(uuid);
                     if (tp == null) {
                         continue;
@@ -49,6 +51,37 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
         }, 0L, 20L);
+        /*Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
+            for (Map.Entry<UUID, Long> entry : new HashMap<>(needInvSet).entrySet()) {
+                needInvSet.remove(entry.getKey());
+                UUID uuid = entry.getKey();
+                Long time = entry.getValue();
+                if (time + 5000 <= System.currentTimeMillis()) {
+                    Player tp = Bukkit.getPlayer(uuid);
+                    if (tp == null) {
+                        continue;
+                    }
+                    tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
+                    ParkManager.storageManager.downloadInventory(uuid);
+                }
+            }
+        }, 0L, 20L);*/
+    }
+
+    private HashMap<UUID, Long> getPartOfMap(HashMap<UUID, Long> map, int amount) {
+        if (map.size() < amount) {
+            return new HashMap<>(map);
+        }
+        HashMap<UUID, Long> temp = new HashMap<>();
+        int i = 0;
+        for (Map.Entry<UUID, Long> entry : map.entrySet()) {
+            if (i >= amount) {
+                break;
+            }
+            temp.put(entry.getKey(), entry.getValue());
+            i++;
+        }
+        return temp;
     }
 
     @EventHandler
@@ -96,7 +129,6 @@ public class PlayerJoinAndLeave implements Listener {
                 case "Epcot":
                     user.giveAchievement(4);
                     break;
-                case "HWS":
                 case "DHS":
                     user.giveAchievement(5);
                     break;
@@ -113,7 +145,6 @@ public class PlayerJoinAndLeave implements Listener {
             if (!needInvSet.containsKey(player.getUniqueId())) {
                 needInvSet.put(player.getUniqueId(), System.currentTimeMillis());
             }
-            ParkManager.userCache.remove(player.getUniqueId());
             ParkManager.userCache.put(player.getUniqueId(), player.getName());
             PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
             if (!user.hasAchievement(12) && !data.getRideCounts().isEmpty()) {
@@ -135,12 +166,18 @@ public class PlayerJoinAndLeave implements Listener {
             for (PotionEffect type : player.getActivePotionEffects()) {
                 player.removePotionEffect(type.getType());
             }
+            GameMode mode = player.getGameMode();
             if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
                 player.setGameMode(GameMode.SURVIVAL);
-                player.setAllowFlight(true);
+                if (!player.getAllowFlight()) {
+                    player.setAllowFlight(true);
+                }
             } else {
                 player.setGameMode(GameMode.ADVENTURE);
-                player.setAllowFlight(user.getRank().getRankId() >= Rank.EARNINGMYEARS.getRankId());
+                boolean fly = user.getRank().getRankId() >= Rank.EARNINGMYEARS.getRankId();
+                if (player.getAllowFlight() != fly) {
+                    player.setAllowFlight(fly);
+                }
             }
             if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");
@@ -168,11 +205,18 @@ public class PlayerJoinAndLeave implements Listener {
             }
             final PlayerInventory inv = player.getInventory();
             PlayerData.Clothing c = data.getClothing();
-            inv.clear();
-            inv.setHelmet(c.getHead());
-            inv.setChestplate(c.getShirt());
-            inv.setLeggings(c.getPants());
-            inv.setBoots(c.getBoots());
+            if (c.getHead() != null) {
+                inv.setHelmet(c.getHead());
+            }
+            if (c.getShirt() != null) {
+                inv.setChestplate(c.getShirt());
+            }
+            if (c.getPants() != null) {
+                inv.setLeggings(c.getPants());
+            }
+            if (c.getBoots() != null) {
+                inv.setBoots(c.getBoots());
+            }
             setInventory(player, false);
             if (!ParkManager.hotelServer) {
                 return;
@@ -281,7 +325,6 @@ public class PlayerJoinAndLeave implements Listener {
         BlockEdit.logout(player.getUniqueId());
         ParkManager.queueManager.silentLeaveAllQueues(player);
         ParkManager.autographManager.logout(player);
-        ParkManager.parkSoundManager.logout(player);
         ParkManager.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         ParkManager.visibilityUtil.logout(player);
         WatchTask.removeFromMessage(player.getUniqueId());

@@ -257,7 +257,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                 }
                 helpMenu("ride", sender);
                 return true;
-            case "uoe":
+            /*case "uoe":
                 if (args.length == 4) {
                     if (args[1].equalsIgnoreCase("eject")) {
                         try {
@@ -305,7 +305,7 @@ public class Commandmagic implements Listener, CommandExecutor {
                     return true;
                 }
                 helpMenu("uoe", sender);
-                return true;
+                return true;*/
             case "sge":
                 switch (args.length) {
                     case 2:
@@ -1052,10 +1052,8 @@ public class Commandmagic implements Listener, CommandExecutor {
                 ParkManager pm = ParkManager.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
                 SqlUtil.initialize();
-                pm.setupFirstJoinItems();
                 pm.setupFoodLocations();
                 pm.setupRides();
-                ParkManager.parkSoundManager.initialize();
                 ParkManager.stitch.initialize();
                 ParkManager.scheduleManager.update();
                 ParkManager.itemUtil.initialize();
