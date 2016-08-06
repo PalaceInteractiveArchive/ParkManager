@@ -49,6 +49,7 @@ import us.mcmagic.parkmanager.watch.WatchTask;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -340,7 +341,9 @@ public class ParkManager extends JavaPlugin implements Listener {
     }
 
     public static void logActivity(Player player, String activity, String description) {
-        try (Connection connection = SqlUtil.getConnection()) {
+        try (Connection connection = DriverManager.getConnection(MCMagicCore.getMCMagicConfig().sqlConnectionUrl
+                        .replace("MainServer", "mymcmagic"), MCMagicCore.getMCMagicConfig().sqlUser,
+                MCMagicCore.getMCMagicConfig().sqlPassword)) {
             PreparedStatement sql = connection.prepareStatement("INSERT INTO activity (uuid, action, description) VALUES (?,?,?)");
             sql.setString(1, player.getUniqueId().toString());
             sql.setString(2, activity);

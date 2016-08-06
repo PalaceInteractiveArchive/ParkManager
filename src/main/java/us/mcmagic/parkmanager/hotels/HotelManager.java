@@ -391,7 +391,7 @@ public class HotelManager {
 
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        if (ParkManager.hotelServer && room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
+        if (ParkManager.hotelServer && room.getWarp().getWorld().getUID().equals(Bukkit.getWorlds().get(0).getUID())) {
             closeDoors.add(room);
         }
         room.setCheckoutTime(0);
