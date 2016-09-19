@@ -18,7 +18,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
@@ -32,7 +31,6 @@ import us.mcmagic.parkmanager.utils.SqlUtil;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -156,8 +154,6 @@ public class FPKioskManager implements Listener {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         FastPassData fpdata = data.getFastPassData();
         KioskData kioskData = data.getKioskData();
-        long vote = kioskData.getVote();
-        int lastVote = kioskData.getLastVote();
         int today = new GregorianCalendar().get(Calendar.DAY_OF_YEAR);
         Calendar cur = Calendar.getInstance();
         Calendar lastG = Calendar.getInstance();
@@ -181,10 +177,10 @@ public class FPKioskManager implements Listener {
                 "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
                 "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                 fpdata.getThrillDay(), "Thrill")));
-        ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
-                Material.IRON_INGOT, ChatColor.GREEN + "Vote for MCMagic!", Arrays.asList(ChatColor.GRAY +
-                "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
-                "5 Tokens!", voteLore(vote)));
+        ItemStack website = new ItemCreator(Material.NETHER_STAR, ChatColor.GREEN + "Visit our website!",
+                Arrays.asList(ChatColor.GRAY + "Check out our website at" + ChatColor.AQUA + "mcmagic.us",
+                        ChatColor.GRAY + "for news, posts and " + ChatColor.AQUA + "MyMCMagic! " + ChatColor.GRAY +
+                                "" + ChatColor.ITALIC + "(Coming Soon)"));
         ItemStack monthGuest = new ItemCreator(monthItem(kioskData.getMonthGuest()), ChatColor.GREEN +
                 "Monthly Tokens - Guest", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
                 ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthGuest())));
@@ -199,7 +195,7 @@ public class FPKioskManager implements Listener {
         inv.setItem(10, fpslow);
         inv.setItem(11, fpmod);
         inv.setItem(12, fpthr);
-        inv.setItem(13, voteItem);
+        inv.setItem(13, website);
         inv.setItem(14, monthGuest);
         inv.setItem(15, monthDVC);
         inv.setItem(16, monthShare);
@@ -209,8 +205,6 @@ public class FPKioskManager implements Listener {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         FastPassData fpdata = data.getFastPassData();
         KioskData kioskData = data.getKioskData();
-        long vote = kioskData.getVote();
-        int lastVote = kioskData.getLastVote();
         Inventory inv = Bukkit.createInventory(player, 27, ChatColor.BLUE + "FastPass Kiosk");
         ItemStack fpslow = new ItemCreator(fpItem(fpdata.getSlow(), fpdata.getSlowDay()), ChatColor.GREEN +
                 "FastPass - Slow", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
@@ -224,10 +218,10 @@ public class FPKioskManager implements Listener {
                 "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
                 "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                 fpdata.getThrillDay(), "Thrill")));
-        ItemStack voteItem = new ItemCreator((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
-                Material.IRON_INGOT, ChatColor.GREEN + "Vote for MCMagic!", Arrays.asList(ChatColor.GRAY +
-                "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
-                "5 Tokens!", voteLore(vote)));
+        ItemStack website = new ItemCreator(Material.NETHER_STAR, ChatColor.GREEN + "Visit our website!",
+                Arrays.asList(ChatColor.GRAY + "Check out our website at" + ChatColor.AQUA + "mcmagic.us",
+                        ChatColor.GRAY + "for news, posts and " + ChatColor.AQUA + "MyMCMagic! " + ChatColor.GRAY +
+                                "" + ChatColor.ITALIC + "(Coming Soon)"));
         ItemStack monthGuest = new ItemCreator(monthItem(kioskData.getMonthGuest()), ChatColor.GREEN +
                 "Monthly Tokens - Guest", Arrays.asList(ChatColor.GRAY + "Claim your monthly 50 Tokens!",
                 ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthGuest())));
@@ -242,18 +236,11 @@ public class FPKioskManager implements Listener {
         inv.setItem(10, fpslow);
         inv.setItem(11, fpmod);
         inv.setItem(12, fpthr);
-        inv.setItem(13, voteItem);
+        inv.setItem(13, website);
         inv.setItem(14, monthGuest);
         inv.setItem(15, monthDVC);
         inv.setItem(16, monthShare);
         player.openInventory(inv);
-    }
-
-    private String voteLore(long vote) {
-        if (System.currentTimeMillis() - vote > 43200000) {
-            return ChatColor.YELLOW + "Right-Click to Vote!";
-        }
-        return ChatColor.GOLD + "You already voted in the past 12 hours!";
     }
 
     private String monthLore(long last) {
@@ -311,10 +298,10 @@ public class FPKioskManager implements Listener {
     private String timeToNextMonth() {
         Calendar cur = Calendar.getInstance();
         cur.setTimeInMillis(new Date().getTime());
-        int lastDayOfMonth = 0;
         MonthOfYear month = MonthOfYear.getFromNumber(cur.get(Calendar.MONTH));
         int days = month.getDays();
-        if (month.equals(MonthOfYear.FEBRUARY) && cur.get(Calendar.YEAR) % 4 == 0) {
+        boolean leap = cur.get(Calendar.YEAR) % 4 == 0;
+        if (month.equals(MonthOfYear.FEBRUARY) && leap) {
             days += 1;
         }
         int d = days - (cur.get(Calendar.DAY_OF_MONTH) + 1);
@@ -384,26 +371,6 @@ public class FPKioskManager implements Listener {
                 }
                 break;
             }
-            case 13: {
-                if (System.currentTimeMillis() - kioskData.getVote() <= 43200000) {
-                    player.sendMessage(ChatColor.RED + "You already voted in the past 12 hours!");
-                    break;
-                }
-                int voteSite = 1;
-                if (kioskData.getLastVote() + 1 <= 4) {
-                    voteSite = kioskData.getLastVote() + 1;
-                }
-                String link = "http://vote.mcmagic.us/?" + voteSite;
-                FormattedMessage msg = new FormattedMessage("To vote for us, ").color(ChatColor.GREEN)
-                        .then("click here!").color(ChatColor.AQUA).style(ChatColor.BOLD, ChatColor.UNDERLINE)
-                        .link(link).tooltip(ChatColor.GREEN + "Click to visit " + link).then(" You will receive ")
-                        .color(ChatColor.GREEN).then("5 Tokens").color(ChatColor.GOLD).style(ChatColor.BOLD)
-                        .then(" after you vote.").color(ChatColor.GREEN);
-                msg.send(player);
-                player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1f, 1f);
-                player.closeInventory();
-                break;
-            }
             case 14: {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date(kioskData.getMonthGuest()));
@@ -468,31 +435,6 @@ public class FPKioskManager implements Listener {
                 sql.setLong(3, data.getMonthShare());
                 sql.setString(4, uuid.toString());
                 sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public void updateKioskData(final UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) {
-            return;
-        }
-        final PlayerData data = ParkManager.getPlayerData(uuid);
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = SqlUtil.getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("SELECT vote,lastvote from player_data WHERE uuid=?");
-                sql.setString(1, uuid.toString());
-                ResultSet result = sql.executeQuery();
-                if (!result.next()) {
-                    return;
-                }
-                KioskData kioskData = data.getKioskData();
-                kioskData.setVote(result.getLong("vote"));
-                kioskData.setLastVote(result.getInt("lastvote"));
-                result.close();
                 sql.close();
             } catch (SQLException e) {
                 e.printStackTrace();

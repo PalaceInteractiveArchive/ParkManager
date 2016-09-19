@@ -83,12 +83,10 @@ public class Commandwarp implements CommandExecutor {
                 return true;
             }
             final String w = args[0];
-            Warp warp;
-            if (WarpUtil.findWarp(w) == null) {
+            Warp warp = WarpUtil.findWarp(w);
+            if (warp == null) {
                 player.sendMessage(ChatColor.RED + "Warp not found!");
                 return true;
-            } else {
-                warp = WarpUtil.findWarp(w);
             }
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
             if (warp.getName().toLowerCase().startsWith("dvc")) {

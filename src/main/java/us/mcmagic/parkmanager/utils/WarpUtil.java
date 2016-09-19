@@ -1,15 +1,13 @@
 package us.mcmagic.parkmanager.utils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.dashboard.packets.parks.PacketRefreshWarps;
+import us.mcmagic.parkmanager.dashboard.packets.parks.PacketWarp;
+import us.mcmagic.parkmanager.handlers.Warp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,17 +75,8 @@ public class WarpUtil {
     }
 
     public static void crossServerWarp(final UUID uuid, final String warp, final String server) {
-        try {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            out.writeUTF("MagicWarp");
-            out.writeUTF(uuid.toString());
-            out.writeUTF(server);
-            out.writeUTF(warp);
-            Bukkit.getPlayer(uuid).sendPluginMessage(ParkManager.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (IOException e) {
-            Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "There was a problem joining that server!");
-        }
+        PacketWarp packet = new PacketWarp(uuid, warp, server);
+        MCMagicCore.dashboardConnection.send(packet);
     }
 
     public synchronized static List<Warp> getWarps() {
@@ -165,22 +154,13 @@ public class WarpUtil {
         return null;
     }
 
-    public synchronized static void updateWarps() {
-        try {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            out.writeUTF("UpdateWarps");
-            out.writeUTF(MCMagicCore.getMCMagicConfig().serverName);
-            Bukkit.getServer().sendPluginMessage(ParkManager.getInstance(), "BungeeCord", b.toByteArray());
-        } catch (IOException e) {
-            Bukkit.getServer().getLogger().severe("There was an error contacting the Bungee server to update Warps!");
-        }
+    public static void updateWarps() {
+        PacketRefreshWarps packet = new PacketRefreshWarps(MCMagicCore.getMCMagicConfig().instanceName);
+        MCMagicCore.dashboardConnection.send(packet);
     }
 
     public synchronized static void refreshWarps() {
         ParkManager.clearWarps();
-        for (Warp warp : WarpUtil.getWarps()) {
-            ParkManager.addWarp(warp);
-        }
+        getWarps().forEach(ParkManager::addWarp);
     }
 }

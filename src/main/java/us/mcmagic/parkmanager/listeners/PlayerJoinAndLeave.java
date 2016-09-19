@@ -47,7 +47,7 @@ public class PlayerJoinAndLeave implements Listener {
                         continue;
                     }
                     tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
-                    ParkManager.storageManager.downloadInventory(uuid);
+                    ParkManager.storageManager.downloadInventory(uuid, true);
                 }
             }
         }, 0L, 20L);
@@ -204,6 +204,7 @@ public class PlayerJoinAndLeave implements Listener {
                 }
             }
             final PlayerInventory inv = player.getInventory();
+            clearArmor(inv);
             PlayerData.Clothing c = data.getClothing();
             if (c.getHead() != null) {
                 inv.setHelmet(c.getHead());
@@ -246,6 +247,14 @@ public class PlayerJoinAndLeave implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void clearArmor(PlayerInventory inv) {
+        ItemStack air = new ItemStack(Material.AIR);
+        inv.setHelmet(air);
+        inv.setChestplate(air);
+        inv.setLeggings(air);
+        inv.setBoots(air);
     }
 
     public void setInventory(Player player, boolean book) {
@@ -341,5 +350,9 @@ public class PlayerJoinAndLeave implements Listener {
 
     public void setInventory(UUID uuid) {
         needInvSet.remove(uuid);
+    }
+
+    public boolean isSet(UUID uuid) {
+        return !needInvSet.containsKey(uuid);
     }
 }

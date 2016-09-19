@@ -20,14 +20,12 @@ public class Commanddelwarp implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Warp not found!");
                 return true;
             }
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                public void run() {
-                    ParkManager.removeWarp(warp);
-                    WarpUtil.removeWarp(warp);
-                    WarpUtil.updateWarps();
-                    sender.sendMessage(ChatColor.GRAY + "Warp " + w
-                            + " has been removed.");
-                }
+            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                ParkManager.removeWarp(warp);
+                WarpUtil.removeWarp(warp);
+                WarpUtil.updateWarps();
+                sender.sendMessage(ChatColor.GRAY + "Warp " + w
+                        + " has been removed.");
             });
             return true;
         }

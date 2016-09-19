@@ -12,6 +12,7 @@ import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.mcmagiccore.player.User;
 import us.mcmagic.parkmanager.ParkManager;
+import us.mcmagic.parkmanager.dashboard.packets.parks.PacketInventoryStatus;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.listeners.BlockEdit;
@@ -19,7 +20,6 @@ import us.mcmagic.parkmanager.utils.SqlUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,20 +73,27 @@ public class StorageManager {
                 Bukkit.getOnlinePlayers().forEach(this::update), 0L, 6000L);
     }
 
-    public void downloadInventory(UUID uuid) {
+    public void downloadInventory(UUID uuid, boolean force) {
+        if (ParkManager.playerJoinAndLeave.isSet(uuid) && !force) {
+            return;
+        }
+        ParkManager.playerJoinAndLeave.setInventory(uuid);
         final Player player = Bukkit.getPlayer(uuid);
         User user = MCMagicCore.getUser(uuid);
         if (player == null || user == null) {
             return;
         }
-        ParkManager.playerJoinAndLeave.setInventory(player.getUniqueId());
         final PlayerInventory inv = player.getInventory();
         Backpack pack = ParkManager.storageManager.getBackpack(player);
-        pack.getInventory().remove(Material.MINECART);
-        pack.getInventory().remove(Material.SNOW_BALL);
         Locker locker = ParkManager.storageManager.getLocker(player);
-        locker.getInventory().remove(Material.MINECART);
-        locker.getInventory().remove(Material.SNOW_BALL);
+        Inventory p = pack.getInventory();
+        Inventory l = locker.getInventory();
+        p.remove(Material.MINECART);
+        p.remove(Material.SNOW_BALL);
+        p.remove(Material.EGG);
+        l.remove(Material.MINECART);
+        l.remove(Material.SNOW_BALL);
+        l.remove(Material.EGG);
         final ItemStack[] hotbar = ParkManager.storageManager.getHotbar(player);
         ParkManager.playerJoinAndLeave.setInventory(player, true);
         if (hotbar != null) {
@@ -301,22 +308,12 @@ public class StorageManager {
         final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         final boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try {
-                final long time = System.currentTimeMillis();
-                update(player, data, build);
-                if (Bukkit.getOnlinePlayers().size() > 0) {
-                    ByteArrayOutputStream b = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(b);
-                    out.writeUTF("Uploaded");
-                    out.writeUTF(player.getUniqueId().toString());
-                    ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
-                            "BungeeCord", b.toByteArray());
-                }
-                removeHotbar(player.getUniqueId());
-                //System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            final long time = System.currentTimeMillis();
+            update(player, data, build);
+            PacketInventoryStatus packet = new PacketInventoryStatus(player.getUniqueId(), 0);
+            MCMagicCore.dashboardConnection.send(packet);
+            removeHotbar(player.getUniqueId());
+            //System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
         });
     }
 

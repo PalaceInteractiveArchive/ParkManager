@@ -21,6 +21,7 @@ import us.mcmagic.parkmanager.chairs.ChairListener;
 import us.mcmagic.parkmanager.chairs.ChairManager;
 import us.mcmagic.parkmanager.chairs.IArrowFactory;
 import us.mcmagic.parkmanager.commands.*;
+import us.mcmagic.parkmanager.dashboard.PacketListener;
 import us.mcmagic.parkmanager.designstation.DesignStation;
 import us.mcmagic.parkmanager.fastpasskiosk.FPKioskManager;
 import us.mcmagic.parkmanager.handlers.*;
@@ -125,7 +126,6 @@ public class ParkManager extends JavaPlugin implements Listener {
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessage());
         saveConfig();
         FileUtil.setupConfig();
         /*
@@ -409,28 +409,27 @@ public class ParkManager extends JavaPlugin implements Listener {
     public void registerListeners() {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(this, this);
+        pm.registerEvents(new BlockEdit(), this);
         pm.registerEvents(new ChatListener(), this);
+        pm.registerEvents(new ChunkUnload(), this);
+        pm.registerEvents(new EntityDamage(), this);
+        pm.registerEvents(new FoodLevel(), this);
+        pm.registerEvents(new InventoryClick(), this);
+        pm.registerEvents(new InventoryOpen(), this);
+        pm.registerEvents(new PlayerCloseInventory(), this);
+        pm.registerEvents(new PlayerDropItem(), this);
+        pm.registerEvents(new PlayerGameModeChange(), this);
+        pm.registerEvents(new PlayerInteract(), this);
         pm.registerEvents(playerJoinAndLeave, this);
         pm.registerEvents(new SignChange(), this);
-        pm.registerEvents(new ChunkUnload(), this);
-        pm.registerEvents(new BlockEdit(), this);
-        pm.registerEvents(new InventoryClick(), this);
-        pm.registerEvents(new PlayerGameModeChange(), this);
-        pm.registerEvents(new FoodLevel(), this);
-        pm.registerEvents(new PlayerDropItem(), this);
+        pm.registerEvents(new ChairListener(), this);
+        fountainManager = new FountainManager();
+        pm.registerEvents(fountainManager, this);
+        pm.registerEvents(new PacketListener(), this);
+        pm.registerEvents(packManager, this);
         if (MCMagicCore.getMCMagicConfig().serverName.equals("MK")) {
             pm.registerEvents(stitch, this);
         }
-        pm.registerEvents(new PlayerInteract(), this);
-        pm.registerEvents(new EntityDamage(), this);
-        //pm.registerEvents(blockChanger, this);
-        pm.registerEvents(packManager, this);
-        pm.registerEvents(new InventoryOpen(), this);
-        fountainManager = new FountainManager();
-        pm.registerEvents(fountainManager, this);
-        pm.registerEvents(new PlayerCloseInventory(), this);
-        pm.registerEvents(new ChairListener(), this);
-        //pm.registerEvents(rideManager, this);
         if (getConfig().getBoolean("shooter-enabled")) {
             shooter = new Shooter(this);
             pm.registerEvents(shooter, this);
@@ -441,5 +440,7 @@ public class ParkManager extends JavaPlugin implements Listener {
             toyStoryMania = new ToyStoryMania();
             pm.registerEvents(toyStoryMania, this);
         }
+        //pm.registerEvents(blockChanger, this);
+        //pm.registerEvents(rideManager, this);
     }
 }

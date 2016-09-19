@@ -6,11 +6,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.parkmanager.ParkManager;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.parkmanager.dashboard.packets.parks.PacketBroadcast;
 
 /**
  * Created by Marc on 2/19/16
@@ -28,21 +25,12 @@ public class Commandb implements CommandExecutor {
             for (String arg : args) {
                 message += arg + " ";
             }
-            try {
-                ByteArrayOutputStream b = new ByteArrayOutputStream();
-                DataOutputStream d = new DataOutputStream(b);
-                d.writeUTF("ServerBroadcast");
-                d.writeUTF(sender.getName());
-                d.writeUTF(message);
-                if (sender instanceof Player) {
-                    ((Player) sender).sendPluginMessage(ParkManager.getInstance(), "BungeeCord", b.toByteArray());
-                } else {
-                    ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(ParkManager.getInstance(),
-                            "BungeeCord", b.toByteArray());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            String source = sender.getName();
+            if (!(sender instanceof Player)) {
+                source = "Console on " + MCMagicCore.getMCMagicConfig().instanceName;
             }
+            PacketBroadcast packet = new PacketBroadcast(message, source);
+            MCMagicCore.dashboardConnection.send(packet);
             return true;
         }
         sender.sendMessage(ChatColor.RED + "/b [Message]");

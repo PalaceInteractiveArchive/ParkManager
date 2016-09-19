@@ -23,6 +23,7 @@ import us.mcmagic.parkmanager.utils.FileUtil;
 import us.mcmagic.parkmanager.utils.WarpUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marc on 5/29/15
@@ -41,10 +42,7 @@ public class ShopManager {
         YamlConfiguration config = FileUtil.shopsYaml();
         shops.clear();
         for (String s : config.getStringList("shops")) {
-            List<String> lore = new ArrayList<>();
-            for (String ss : config.getStringList("items." + s + ".lore")) {
-                lore.add(ChatColor.translateAlternateColorCodes('&', ss));
-            }
+            List<String> lore = config.getStringList("items." + s + ".lore").stream().map(ss -> ChatColor.translateAlternateColorCodes('&', ss)).collect(Collectors.toList());
             List<ShopItem> items = new ArrayList<>();
             List<OutfitItem> outfits = new ArrayList<>();
             for (String i : config.getStringList("shop." + s + ".items")) {
@@ -64,9 +62,7 @@ public class ShopManager {
                         ".currency")));
                 items.add(item);
             }
-            for (Integer i : config.getIntegerList("shop." + s + ".outfits")) {
-                outfits.add(new OutfitItem(i, config.getInt("outfits." + i + ".cost")));
-            }
+            outfits.addAll(config.getIntegerList("shop." + s + ".outfits").stream().map(i -> new OutfitItem(i, config.getInt("outfits." + i + ".cost"))).collect(Collectors.toList()));
             Warp warp = WarpUtil.findWarp(config.getString("shop." + s + ".warp"));
             if (warp == null) {
                 continue;
@@ -184,12 +180,7 @@ public class ShopManager {
             openWardrobe(player, shop);
             return;
         }
-        List<ShopItem> items = new ArrayList<>();
-        for (ShopItem item : shop.getItems()) {
-            if (item.getCategory().equals(category)) {
-                items.add(item);
-            }
-        }
+        List<ShopItem> items = shop.getItems().stream().filter(item -> item.getCategory().equals(category)).collect(Collectors.toList());
         String title = ChatColor.GREEN + "Shop - " + shop.getName() + ChatColor.GREEN + " - " + category.getName();
         if (title.length() > 32) {
             title = title.substring(0, 32);
@@ -335,12 +326,7 @@ public class ShopManager {
                 purchaseOutfit(player, shop, name, event);
                 return;
             }
-            List<ShopItem> items = new ArrayList<>();
-            for (ShopItem item : shop.getItems()) {
-                if (item.getCategory().equals(category)) {
-                    items.add(item);
-                }
-            }
+            List<ShopItem> items = shop.getItems().stream().filter(item -> item.getCategory().equals(category)).collect(Collectors.toList());
             ShopItem item = null;
             for (ShopItem i : items) {
                 if (ChatColor.stripColor(i.getDisplayName()).equalsIgnoreCase(name)) {
@@ -364,9 +350,7 @@ public class ShopManager {
 
     private void purchaseOutfit(Player player, Shop shop, String name, InventoryClickEvent event) {
         List<OutfitItem> items = new ArrayList<>();
-        for (OutfitItem item : shop.getOutfits()) {
-            items.add(item);
-        }
+        items.addAll(shop.getOutfits());
         Outfit ou = null;
         OutfitItem item = null;
         for (Outfit o : ParkManager.wardrobeManager.getOutfits()) {
@@ -463,12 +447,7 @@ public class ShopManager {
                     ChatColor.GREEN + "!");
             player.closeInventory();
             data.addPurchase(o.getId());
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    ParkManager.wardrobeManager.purchaseOutfit(player, o.getId());
-                }
-            });
+            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> ParkManager.wardrobeManager.purchaseOutfit(player, o.getId()));
         }
     }
 
@@ -482,7 +461,7 @@ public class ShopManager {
             ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
                     Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
             ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",
-                    new ArrayList<String>());
+                    new ArrayList<>());
             inv.setItem(4, name);
             inv.setItem(11, no);
             inv.setItem(15, yes);
@@ -501,7 +480,7 @@ public class ShopManager {
             ItemStack yes = new ItemCreator(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
                     Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
             ItemStack no = new ItemCreator(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",
-                    new ArrayList<String>());
+                    new ArrayList<>());
             inv.setItem(4, name);
             inv.setItem(11, no);
             inv.setItem(15, yes);

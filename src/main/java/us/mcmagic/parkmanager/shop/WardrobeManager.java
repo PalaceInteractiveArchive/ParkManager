@@ -185,13 +185,8 @@ public class WardrobeManager {
                 c.setShirtID(0);
                 c.setPantsID(0);
                 c.setBootsID(0);
-                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        setOutfitCode(player, c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," +
-                                c.getBootsID());
-                    }
-                });
+                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                        "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                 ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                 return;
@@ -202,13 +197,8 @@ public class WardrobeManager {
                     final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setHead(null);
                     c.setHeadID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            setOutfitCode(player, c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," +
-                                    c.getBootsID());
-                        }
-                    });
+                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                            "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
@@ -218,13 +208,8 @@ public class WardrobeManager {
                     final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setShirt(null);
                     c.setShirtID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            setOutfitCode(player, c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," +
-                                    c.getBootsID());
-                        }
-                    });
+                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                            "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
@@ -234,13 +219,8 @@ public class WardrobeManager {
                     final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setPants(null);
                     c.setPantsID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            setOutfitCode(player, c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," +
-                                    c.getBootsID());
-                        }
-                    });
+                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                            "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
@@ -250,13 +230,8 @@ public class WardrobeManager {
                     final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setBoots(null);
                     c.setBootsID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            setOutfitCode(player, c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," +
-                                    c.getBootsID());
-                        }
-                    });
+                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                            "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.NOTE_PLING, 100, 2);
                     ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
                     break;
@@ -347,12 +322,7 @@ public class WardrobeManager {
             String code = c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID();
             data.setClothing(c);
             data.setOutfitCode(code);
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    setOutfitCode(player, data.getOutfitCode());
-                }
-            });
+            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, data.getOutfitCode()));
             return;
         }
         switch (type) {
@@ -401,12 +371,7 @@ public class WardrobeManager {
         String code = c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID();
         data.setClothing(c);
         data.setOutfitCode(code);
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                setOutfitCode(player, data.getOutfitCode());
-            }
-        });
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, data.getOutfitCode()));
     }
 
     private boolean equals(ItemStack head, ItemStack item) {

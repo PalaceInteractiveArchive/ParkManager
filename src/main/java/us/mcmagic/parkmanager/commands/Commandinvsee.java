@@ -25,7 +25,7 @@ public class Commandinvsee implements CommandExecutor {
                 return true;
             }
             String type = args[1];
-            PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+            PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
             switch (type.toLowerCase()) {
                 case "backpack": {
                     player.sendMessage(ChatColor.GREEN + "Now looking in "
