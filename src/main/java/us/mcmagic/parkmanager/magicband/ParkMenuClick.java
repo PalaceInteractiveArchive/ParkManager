@@ -5,7 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.mcmagiccore.bungee.BungeeUtil;
+import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.dashboard.packets.dashboard.PacketSendToServer;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.utils.BandUtil;
@@ -37,52 +38,52 @@ public class ParkMenuClick {
             case "Transportation and Ticket Center":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "TTC...");
-                BungeeUtil.sendToServer(player, "TTC");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "TTC"));
                 return;
             case "Creative":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Creative...");
-                BungeeUtil.sendToServer(player, "Creative");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "Creative"));
                 return;
             case "Arcade":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Arcade...");
-                BungeeUtil.sendToServer(player, "Arcade");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "Arcade"));
                 return;
             case "Magic Kingdom":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Magic Kingdom...");
-                BungeeUtil.sendToServer(player, "MK");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "MK"));
                 return;
             case "Epcot":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Epcot...");
-                BungeeUtil.sendToServer(player, "Epcot");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "Epcot"));
                 return;
             case "Hollywood Studios":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Hollywood Studios...");
-                BungeeUtil.sendToServer(player, "DHS");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "DHS"));
                 return;
             case "Animal Kingdom":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Animal Kingdom...");
-                BungeeUtil.sendToServer(player, "AK");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "AK"));
                 return;
             case "Typhoon Lagoon":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Typhoon Lagoon...");
-                BungeeUtil.sendToServer(player, "Typhoon");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "Typhoon"));
                 return;
             case "Disney Cruise Line":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Disney Cruise Line...");
-                BungeeUtil.sendToServer(player, "DCL");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "DCL"));
                 return;
             case "Seasonal":
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Seasonal...");
-                BungeeUtil.sendToServer(player, "Seasonal");
+                MCMagicCore.dashboardConnection.send(new PacketSendToServer(player.getUniqueId(), "Seasonal"));
                 return;
             default:
                 player.closeInventory();

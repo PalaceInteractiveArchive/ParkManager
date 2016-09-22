@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.mcmagiccore.MCMagicCore;
+import us.mcmagic.mcmagiccore.chat.formattedmessage.FormattedMessage;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
@@ -178,7 +179,7 @@ public class FPKioskManager implements Listener {
                 "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                 fpdata.getThrillDay(), "Thrill")));
         ItemStack website = new ItemCreator(Material.NETHER_STAR, ChatColor.GREEN + "Visit our website!",
-                Arrays.asList(ChatColor.GRAY + "Check out our website at" + ChatColor.AQUA + "mcmagic.us",
+                Arrays.asList(ChatColor.GRAY + "Check out our website at " + ChatColor.AQUA + "mcmagic.us",
                         ChatColor.GRAY + "for news, posts and " + ChatColor.AQUA + "MyMCMagic! " + ChatColor.GRAY +
                                 "" + ChatColor.ITALIC + "(Coming Soon)"));
         ItemStack monthGuest = new ItemCreator(monthItem(kioskData.getMonthGuest()), ChatColor.GREEN +
@@ -219,7 +220,7 @@ public class FPKioskManager implements Listener {
                 "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                 fpdata.getThrillDay(), "Thrill")));
         ItemStack website = new ItemCreator(Material.NETHER_STAR, ChatColor.GREEN + "Visit our website!",
-                Arrays.asList(ChatColor.GRAY + "Check out our website at" + ChatColor.AQUA + "mcmagic.us",
+                Arrays.asList(ChatColor.GRAY + "Check out our website at " + ChatColor.AQUA + "mcmagic.us",
                         ChatColor.GRAY + "for news, posts and " + ChatColor.AQUA + "MyMCMagic! " + ChatColor.GRAY +
                                 "" + ChatColor.ITALIC + "(Coming Soon)"));
         ItemStack monthGuest = new ItemCreator(monthItem(kioskData.getMonthGuest()), ChatColor.GREEN +
@@ -369,6 +370,15 @@ public class FPKioskManager implements Listener {
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1f);
                     updateFPData(player.getUniqueId(), fpd);
                 }
+                break;
+            }
+            case 13: {
+                FormattedMessage msg = new FormattedMessage("\nClick to visit our website\n").color(ChatColor.YELLOW)
+                        .style(ChatColor.BOLD).tooltip(ChatColor.GREEN + "Click to visit https://mcmagic.us")
+                        .link("https://mcmagic.us");
+                msg.send(player);
+                player.closeInventory();
+                player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 1, 1);
                 break;
             }
             case 14: {
