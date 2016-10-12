@@ -188,7 +188,7 @@ public class HotelManager {
             return;
         }
         try (Connection connection = MCMagicCore.permSqlUtil.getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms values(0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms (hotelName,roomNumber,currentOccupant,occupantName,checkoutTime,roomWarp,cost,checkoutNotificationRecipient,name,stayLength,x,z,y) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
             sql.setString(1, room.getHotelName());
             sql.setInt(2, room.getRoomNumber());
             sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");

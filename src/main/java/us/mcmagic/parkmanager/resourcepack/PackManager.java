@@ -55,12 +55,7 @@ public class PackManager implements Listener {
         if (preferred.equals("none")) {
             player.sendMessage(ChatColor.GREEN + "Please select a Resource Pack. If you do not want one, select " +
                     ChatColor.RED + "Disabled.");
-            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    openMenu(player);
-                }
-            }, 20L);
+            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> openMenu(player), 20L);
             return;
         }
         if (preferred.equalsIgnoreCase("disabled")) {
@@ -87,12 +82,7 @@ public class PackManager implements Listener {
             ResourcePack pack = MCMagicCore.resourceManager.getPack(preferred);
             if (pack == null) {
                 player.sendMessage(ChatColor.RED + "Your selected Resource Pack is not available. Please select a new one.");
-                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        openMenu(player);
-                    }
-                }, 20L);
+                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> openMenu(player), 20L);
                 return;
             }
             MCMagicCore.resourceManager.sendPack(player, pack.getName());
