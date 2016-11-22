@@ -47,13 +47,19 @@ public class PlayerInteract implements Listener {
             .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
             .style(ChatColor.UNDERLINE).link("https://mcmagic.us/mcph").tooltip(ChatColor.DARK_AQUA +
                     "Click to purchase a server using MCMagic's 15%-OFF Discount!");
+    private boolean dl = MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("disneyland") ||
+            MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("dlr");
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         Action action = event.getAction();
+        Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
         if (action.equals(Action.PHYSICAL)) {
+            if (dl && rank.getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                event.setCancelled(true);
+            }
             return;
         }
         final ItemStack hand = player.getInventory().getItemInHand();
@@ -81,7 +87,8 @@ public class PlayerInteract implements Listener {
             }
         }
         if (action.name().toLowerCase().contains("block")) {
-            if (player.getInventory().getItemInHand().getType().equals(Material.DIAMOND_AXE)) {
+            if (player.getInventory().getItemInHand().getType().equals(Material.DIAMOND_AXE) &&
+                    rank.getRankId() >= Rank.KNIGHT.getRankId()) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
                     ParkManager.blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
@@ -92,7 +99,7 @@ public class PlayerInteract implements Listener {
                 return;
             }
         }
-        if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (action.equals(Action.RIGHT_CLICK_BLOCK) && !(dl && rank.getRankId() < Rank.SPECIALGUEST.getRankId())) {
             Material type = event.getClickedBlock().getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
@@ -127,11 +134,9 @@ public class PlayerInteract implements Listener {
                 if (ParkManager.hotelServer) {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(this.suite);
-                        Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
                         if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
-                            player.sendMessage(ChatColor.RED + "You must be a " + Rank.DVCMEMBER.getNameWithBrackets()
-                                    + ChatColor.RED + " or " + Rank.SHAREHOLDER.getNameWithBrackets() +
-                                    ChatColor.RED + " to stay in a Suite!");
+                            player.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getNameWithBrackets()
+                                    + ChatColor.RED + " or above to stay in a Suite!");
                             return;
                         }
                         String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
@@ -189,7 +194,8 @@ public class PlayerInteract implements Listener {
                         return;
                     }
                 }
-            } else if (type.name().toLowerCase().contains("_door") && !type.name().toLowerCase().contains("trap")) {
+            } else if (type.name().toLowerCase().contains("_door") && !type.name().toLowerCase().contains("trap") &&
+                    !(dl && rank.getRankId() < Rank.SPECIALGUEST.getRankId())) {
                 HotelManager manager = ParkManager.hotelManager;
                 HotelRoom room = manager.getRoomFromDoor(event.getClickedBlock(), player);
                 if (room != null) {
@@ -254,6 +260,9 @@ public class PlayerInteract implements Listener {
                 MCMagicCore.getUser(player.getUniqueId()).giveAchievement(2);
             }
         }
+        if (dl && MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+            event.setCancelled(true);
+        }
     }
 
     private ArmorType getArmorType(ItemStack item) {
@@ -301,7 +310,7 @@ public class PlayerInteract implements Listener {
             return;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+        if (user.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
             if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
             }

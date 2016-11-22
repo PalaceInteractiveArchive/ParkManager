@@ -1,6 +1,6 @@
 name: ParkManager
 author: MCMagicDev
-version: 2.4.1
+version: 1.1-palace
 description: MCMagic Park Plugin
 main: us.mcmagic.parkmanager.ParkManager
 depend: [MCMagicCore, ProtocolLib, WorldEdit]
@@ -24,27 +24,27 @@ commands:
    magic:
       description: New Command :O
       permission: arcade.bypass
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    tp:
       description: Default teleport command
       permission: mcmagic.tp
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    day:
       description: Set time to day
       permission: mcmagic.time.set
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    night:
       description: Set time to night
       permission: mcmagic.time.set
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    noon:
       description: Set time to noon
       permission: mcmagic.time.set
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    pixel:
       description: Pixelator Command
       permission: arcade.bypass
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    warp:
       description: Warp Command
       permission: mcmagic.warp
@@ -136,22 +136,22 @@ commands:
       permission: mcmagic.head
       permission-message: §cOnly Staff Members can use this command!
    helpop:
-      description: Change a player's time!
+      description: Staff chat
       permission: mcmagic.tp
       permission-message: §cOnly Staff Members can use this command!
       aliases: [ac]
    bc:
       description: Broadcast a message!
       permission: mcmagic.bc
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    top:
       description: Usefull for Helopoh!
       permission: mcmagic.top
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    msg:
       description: Messaging for Command Blocks
       permission: mcmagic.msg
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
       aliases: [tell, t, w, whisper, m]
    autograph:
       description: Default Autograph Command
@@ -178,12 +178,12 @@ commands:
    back:
       description: Teleport to your most recent location
       permission: arcade.bypass
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    nv:
       description: Give/take infinite Night Vision
       permission: arcade.bypass
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!
    build:
       description: Enter/leave Build Mode
       permission: arcade.bypass
-      permission-message: §cOnly Cast Members can use this command!
+      permission-message: §cOnly Staff Members can use this command!

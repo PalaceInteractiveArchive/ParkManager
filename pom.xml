@@ -6,11 +6,11 @@
 
     <groupId>us.mcmagic</groupId>
     <artifactId>ParkManager</artifactId>
-    <version>2.4.1</version>
+    <version>1.1-palace</version>
     <repositories>
         <repository>
             <id>mcmagic</id>
-            <url>http://198.24.160.154:81/nexus/content/repositories/releases/</url>
+            <url>http://198.24.160.106:81/nexus/content/repositories/releases/</url>
         </repository>
         <repository>
             <id>md_5</id>
@@ -34,9 +34,10 @@
         <dependency>
             <groupId>us.mcmagic</groupId>
             <artifactId>mcmagiccore</artifactId>
-            <version>3.0.1</version>
+            <version>1.0-palace</version>
             <type>jar</type>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>/Users/Marc/IdeaProjects/MCMagicCore/target/MCMagicCore-1.0-palace.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.comphenix</groupId>

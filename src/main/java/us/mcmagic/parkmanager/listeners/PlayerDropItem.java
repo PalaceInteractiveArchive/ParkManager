@@ -15,7 +15,7 @@ public class PlayerDropItem implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+        if (user.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
             event.setCancelled(true);
             return;
         }

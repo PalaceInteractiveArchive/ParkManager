@@ -33,7 +33,7 @@ public class Commandspawn implements CommandExecutor {
         }
         Player player = (Player) sender;
         if (args.length == 1) {
-            if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+            if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() >= Rank.KNIGHT.getRankId()) {
                 Player tp = PlayerUtil.findPlayer(args[0]);
                 if (tp == null) {
                     player.sendMessage(ChatColor.RED + "Player not found!");

@@ -28,7 +28,7 @@ public class BlockEdit implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+        if (user.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
             event.setCancelled(true);
             return;
         } else {
@@ -87,7 +87,7 @@ public class BlockEdit implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+        if (user.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
             event.setCancelled(true);
         } else {
             if (!isInBuildMode(player.getUniqueId())) {

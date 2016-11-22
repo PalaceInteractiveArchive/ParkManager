@@ -273,13 +273,13 @@ public class InventoryUtil {
                     im.setLore(Collections.singletonList(ChatColor.GRAY + "Loading..."));
                     playerInfo.setItemMeta(im);
                     ItemStack ptime;
-                    if (rank.getRankId() >= Rank.SHAREHOLDER.getRankId()) {
+                    if (rank.getRankId() >= Rank.NOBLE.getRankId()) {
                         ptime = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Player Time",
                                 Arrays.asList(ChatColor.GREEN + "Change your time in", ChatColor.GREEN +
                                         "your current Park"));
                     } else {
                         ptime = new ItemCreator(Material.WATCH, ChatColor.GREEN + "Player Time",
-                                Arrays.asList(ChatColor.RED + "You must be a " + ChatColor.LIGHT_PURPLE + "Shareholder",
+                                Arrays.asList(ChatColor.RED + "You must be a " + Rank.NOBLE.getNameWithBrackets(),
                                         ChatColor.RED + "to use this feature!"));
                     }
                     main.setItem(2, hnr);
@@ -448,7 +448,7 @@ public class InventoryUtil {
                 }
                 case SPECIALCOLOR: {
                     Inventory special = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Special Edition MagicBands");
-                    if (rank.equals(Rank.GUEST)) {
+                    if (rank.equals(Rank.SETTLER)) {
                         special.setItem(13, new ItemCreator(Material.REDSTONE_BLOCK, ChatColor.RED + "DVC Members only!"
                                 , Arrays.asList(ChatColor.RED + "Sorry, but you have", ChatColor.RED + "to be a DVC Member",
                                 ChatColor.RED + "to use Special Edition", ChatColor.RED + "MagicBand Designs!")));
@@ -685,9 +685,9 @@ public class InventoryUtil {
                     return;
                 }
                 case PLAYERTIME: {
-                    if (rank.getRankId() < Rank.SHAREHOLDER.getRankId()) {
+                    if (rank.getRankId() < Rank.NOBLE.getRankId()) {
                         player.closeInventory();
-                        player.sendMessage(ChatColor.RED + "You must be a " + Rank.SHAREHOLDER.getNameWithBrackets() +
+                        player.sendMessage(ChatColor.RED + "You must be a " + Rank.NOBLE.getNameWithBrackets() +
                                 ChatColor.RED + " or above to use this!");
                         return;
                     }

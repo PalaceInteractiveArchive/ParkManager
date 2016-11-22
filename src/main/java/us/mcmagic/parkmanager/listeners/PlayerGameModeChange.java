@@ -35,7 +35,7 @@ public class PlayerGameModeChange implements Listener {
                 }
                 break;
             case ADVENTURE:
-                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() <= Rank.CASTMEMBER.getRankId()) {
+                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() <= Rank.KNIGHT.getRankId()) {
                     return;
                 }
                 event.setCancelled(true);

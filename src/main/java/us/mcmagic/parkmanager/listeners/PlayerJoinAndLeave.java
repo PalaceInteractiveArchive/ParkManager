@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 import us.mcmagic.mcmagiccore.permissions.Rank;
@@ -110,6 +111,15 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
+        // If Disneyland and user rank is below Noble, don't allow them to connect
+        if ((MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("disneyland") ||
+                MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("dlr")) &&
+                user.getRank().getRankId() < Rank.NOBLE.getRankId()) {
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(ChatColor.AQUA + "You must be the " + Rank.NOBLE.getNameWithBrackets() +
+                    ChatColor.AQUA + " rank or above to preview Disneyland!");
+            return;
+        }
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
         }
@@ -167,14 +177,14 @@ public class PlayerJoinAndLeave implements Listener {
                 player.removePotionEffect(type.getType());
             }
             GameMode mode = player.getGameMode();
-            if (user.getRank().getRankId() >= Rank.CASTMEMBER.getRankId()) {
+            if (user.getRank().getRankId() >= Rank.KNIGHT.getRankId()) {
                 player.setGameMode(GameMode.SURVIVAL);
                 if (!player.getAllowFlight()) {
                     player.setAllowFlight(true);
                 }
             } else {
                 player.setGameMode(GameMode.ADVENTURE);
-                boolean fly = user.getRank().getRankId() >= Rank.EARNINGMYEARS.getRankId();
+                boolean fly = user.getRank().getRankId() >= Rank.SQUIRE.getRankId();
                 if (player.getAllowFlight() != fly) {
                     player.setAllowFlight(fly);
                 }
@@ -219,6 +229,15 @@ public class PlayerJoinAndLeave implements Listener {
                 inv.setBoots(c.getBoots());
             }
             setInventory(player, false);
+            if ((MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("disneyland") ||
+                    MCMagicCore.getMCMagicConfig().serverName.equalsIgnoreCase("dlr")) &&
+                    user.getRank().getRankId() >= Rank.NOBLE.getRankId() && user.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                player.setGameMode(GameMode.ADVENTURE);
+                player.setAllowFlight(true);
+                player.setFlying(true);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200000, 0, true, false));
+                return;
+            }
             if (!ParkManager.hotelServer) {
                 return;
             }

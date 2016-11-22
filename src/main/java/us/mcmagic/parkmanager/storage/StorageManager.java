@@ -103,7 +103,7 @@ public class StorageManager {
             }
             inv.setContents(Arrays.copyOfRange(cont, 0, 36));
         }
-        if (user.getRank().getRankId() > Rank.EARNINGMYEARS.getRankId()) {
+        if (user.getRank().getRankId() > Rank.SQUIRE.getRankId()) {
             if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                 inv.setItem(0, new ItemStack(Material.COMPASS));
             }

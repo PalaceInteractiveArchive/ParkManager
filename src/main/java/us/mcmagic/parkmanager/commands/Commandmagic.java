@@ -72,7 +72,7 @@ public class Commandmagic implements Listener, CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             User user = MCMagicCore.getUser(player.getUniqueId());
-            if (user.getRank().getRankId() < Rank.CASTMEMBER.getRankId()) {
+            if (user.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
                 return true;
             }
         }
@@ -527,9 +527,9 @@ public class Commandmagic implements Listener, CommandExecutor {
                                     return true;
                                 }
                                 Rank rank = MCMagicCore.getUser(tp.getUniqueId()).getRank();
-                                if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
+                                if (rank.getRankId() < Rank.KNIGHT.getRankId()) {
                                     sender.sendMessage(ChatColor.RED + "Could not toggle for user " + tp.getName() +
-                                            ", that user is not at least the " + Rank.CASTMEMBER.getNameWithBrackets()
+                                            ", that user is not at least the " + Rank.KNIGHT.getNameWithBrackets()
                                             + ChatColor.RED + " Rank!");
                                     return true;
                                 }

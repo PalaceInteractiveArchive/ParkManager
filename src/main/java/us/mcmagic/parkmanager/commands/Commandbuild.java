@@ -93,7 +93,7 @@ public class Commandbuild implements CommandExecutor {
             Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
                 ParkManager.autographManager.setBook(player.getUniqueId());
                 ParkManager.playerJoinAndLeave.setInventory(player, true);
-                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() > Rank.EARNINGMYEARS.getRankId()) {
+                if (MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() > Rank.SQUIRE.getRankId()) {
                     if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                         inv.setItem(0, new ItemStack(Material.COMPASS));
                     }

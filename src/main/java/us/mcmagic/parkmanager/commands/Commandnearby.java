@@ -40,10 +40,10 @@ public class Commandnearby implements CommandExecutor {
             if (warp.getName().startsWith("dvc") && user.getRank().getRankId() < Rank.DVCMEMBER.getRankId()) {
                 continue;
             }
-            if (warp.getName().startsWith("char") && user.getRank().getRankId() < Rank.CHARACTERGUEST.getRankId()) {
+            if (warp.getName().startsWith("char") && user.getRank().getRankId() < Rank.CHARACTER.getRankId()) {
                 continue;
             }
-            if (warp.getName().startsWith("staff") && user.getRank().getRankId() < Rank.EARNINGMYEARS.getRankId()) {
+            if (warp.getName().startsWith("staff") && user.getRank().getRankId() < Rank.SQUIRE.getRankId()) {
                 continue;
             }
             int distance = (int) warp.getLocation().distance(center);

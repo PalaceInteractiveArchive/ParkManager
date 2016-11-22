@@ -17,8 +17,6 @@ public class FoodLevel implements Listener {
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         Player player = (Player) event.getEntity();
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() >= Rank.CHARACTERGUEST.getRankId()) {
-            event.setCancelled(true);
-        }
+        event.setCancelled(user.getRank().getRankId() >= Rank.CHARACTER.getRankId());
     }
 }

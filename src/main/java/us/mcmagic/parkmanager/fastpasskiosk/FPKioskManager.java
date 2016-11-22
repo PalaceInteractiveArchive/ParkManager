@@ -386,7 +386,7 @@ public class FPKioskManager implements Listener {
                 cal.setTime(new Date(kioskData.getMonthGuest()));
                 if (cal.get(Calendar.MONTH) != Calendar.getInstance().get(Calendar.MONTH)) {
                     kioskData.setMonthGuest(System.currentTimeMillis());
-                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.GUEST.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.SETTLER.getNameWithBrackets() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1f);
                     MCMagicCore.economy.addTokens(player.getUniqueId(), 50, "Monthly Guest");

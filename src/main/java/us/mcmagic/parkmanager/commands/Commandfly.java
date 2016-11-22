@@ -39,7 +39,7 @@ public class Commandfly implements CommandExecutor {
         Player player = (Player) sender;
         if (args.length == 1) {
             Rank rank = MCMagicCore.getUser(player.getUniqueId()).getRank();
-            if (rank.getRankId() < Rank.CASTMEMBER.getRankId()) {
+            if (rank.getRankId() < Rank.KNIGHT.getRankId()) {
                 if (player.getAllowFlight()) {
                     player.setAllowFlight(false);
                     player.setFlying(false);

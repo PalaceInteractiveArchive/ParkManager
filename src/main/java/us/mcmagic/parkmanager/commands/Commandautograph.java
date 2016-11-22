@@ -49,7 +49,7 @@ public class Commandautograph implements CommandExecutor {
                 return true;
         }
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() <= Rank.SHAREHOLDER.getRankId()) {
+        if (user.getRank().getRankId() <= Rank.HONORABLE.getRankId()) {
             helpMenu(player);
             return true;
         }
@@ -70,7 +70,7 @@ public class Commandautograph implements CommandExecutor {
     private void helpMenu(Player player) {
         player.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
         User user = MCMagicCore.getUser(player.getUniqueId());
-        if (user.getRank().getRankId() > Rank.SHAREHOLDER.getRankId()) {
+        if (user.getRank().getRankId() > Rank.HONORABLE.getRankId()) {
             player.sendMessage(ChatColor.GREEN + "/autograph [user] " + ChatColor.AQUA +
                     "- Request to sign a player's book");
         }
