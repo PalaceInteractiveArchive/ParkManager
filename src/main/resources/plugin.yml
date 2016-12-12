@@ -1,7 +1,7 @@
 name: ParkManager
-author: MCMagicDev
-version: 1.1-palace
-description: MCMagic Park Plugin
+author: PalaceDev
+version: 1.2-palace
+description: Palace Park Plugin
 main: us.mcmagic.parkmanager.ParkManager
 depend: [MCMagicCore, ProtocolLib, WorldEdit]
 commands:
