@@ -13,15 +13,16 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mcmagic.mcmagiccore.MCMagicCore;
 import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
+import us.mcmagic.mcmagiccore.permissions.Rank;
 import us.mcmagic.parkmanager.ParkManager;
 import us.mcmagic.parkmanager.handlers.InventoryType;
 import us.mcmagic.parkmanager.handlers.Outfit;
 import us.mcmagic.parkmanager.handlers.PlayerData;
 import us.mcmagic.parkmanager.handlers.Warp;
 import us.mcmagic.parkmanager.utils.BandUtil;
-import us.mcmagic.parkmanager.utils.FileUtil;
 import us.mcmagic.parkmanager.utils.WarpUtil;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,50 +40,56 @@ public class ShopManager {
 
     @SuppressWarnings("deprecation")
     public void initialize() {
-        YamlConfiguration config = FileUtil.shopsYaml();
-        shops.clear();
-        for (String s : config.getStringList("shops")) {
-            List<String> lore = config.getStringList("items." + s + ".lore").stream().map(ss -> ChatColor.translateAlternateColorCodes('&', ss)).collect(Collectors.toList());
-            List<ShopItem> items = new ArrayList<>();
-            List<OutfitItem> outfits = new ArrayList<>();
-            for (String i : config.getStringList("shop." + s + ".items")) {
+        try {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/ParkManager/shops.yml"));
+            shops.clear();
+            System.out.println(config.getStringList("shops").size());
+            for (String s : config.getStringList("shops")) {
+                List<String> lore = config.getStringList("items." + s + ".lore").stream().map(ss -> ChatColor.translateAlternateColorCodes('&', ss)).collect(Collectors.toList());
+                List<ShopItem> items = new ArrayList<>();
+                List<OutfitItem> outfits = new ArrayList<>();
+                for (String i : config.getStringList("shop." + s + ".items")) {
+                    int id = 0;
+                    byte data = 0;
+                    String[] list = config.getString("items." + i + ".id").split(":");
+                    if (list.length == 1) {
+                        id = Integer.parseInt(list[0]);
+                    } else {
+                        id = Integer.parseInt(list[0]);
+                        data = Byte.parseByte(list[1]);
+                    }
+                    ShopItem item = new ShopItem(ChatColor.translateAlternateColorCodes('&', ChatColor.RESET +
+                            config.getString("items." + i + ".name")), ShopCategory.fromString(config.getString("items." +
+                            i + ".category")), id, data, lore, config.getInt("items." + i + ".cost"),
+                            CurrencyType.fromString(config.getString("items." + i + ".currency")));
+                    items.add(item);
+                }
+                outfits.addAll(config.getIntegerList("shop." + s + ".outfits").stream().map(i -> new OutfitItem(i,
+                        config.getInt("outfits." + i + ".cost"))).collect(Collectors.toList()));
+                Warp warp = WarpUtil.findWarp(config.getString("shop." + s + ".warp"));
+                if (warp == null) {
+                    continue;
+                }
+                String display = ChatColor.translateAlternateColorCodes('&', config.getString("shop." + s + ".display"));
                 int id = 0;
                 byte data = 0;
-                String[] list = config.getString("items." + i + ".id").split(":");
+                String[] list = config.getString("shop." + s + ".id").split(":");
                 if (list.length == 1) {
                     id = Integer.parseInt(list[0]);
                 } else {
                     id = Integer.parseInt(list[0]);
                     data = Byte.parseByte(list[1]);
                 }
-                ShopItem item = new ShopItem(ChatColor.translateAlternateColorCodes('&', ChatColor.RESET +
-                        config.getString("items." + i + ".name")), ShopCategory.fromString(config.getString("items." +
-                        i + ".category")), id, data, lore,
-                        config.getInt("items." + i + ".cost"), CurrencyType.fromString(config.getString("items." + i +
-                        ".currency")));
-                items.add(item);
+                Location loc = new Location(Bukkit.getWorlds().get(0), config.getDouble("shop." + s + ".x"),
+                        config.getDouble("shop." + s + ".y"), config.getDouble("shop." + s + ".z"));
+                Shop shop = new Shop(display, loc, items, outfits, new ItemCreator(Material.getMaterial(id), 1, data,
+                        display, Arrays.asList(" ", ChatColor.GREEN + "/warp " + warp.getName())), warp.getName(),
+                        config.getDouble("shop." + s + ".radius"));
+                shops.add(shop);
             }
-            outfits.addAll(config.getIntegerList("shop." + s + ".outfits").stream().map(i -> new OutfitItem(i, config.getInt("outfits." + i + ".cost"))).collect(Collectors.toList()));
-            Warp warp = WarpUtil.findWarp(config.getString("shop." + s + ".warp"));
-            if (warp == null) {
-                continue;
-            }
-            String display = ChatColor.translateAlternateColorCodes('&', config.getString("shop." + s + ".display"));
-            int id = 0;
-            byte data = 0;
-            String[] list = config.getString("shop." + s + ".id").split(":");
-            if (list.length == 1) {
-                id = Integer.parseInt(list[0]);
-            } else {
-                id = Integer.parseInt(list[0]);
-                data = Byte.parseByte(list[1]);
-            }
-            Location loc = new Location(Bukkit.getWorlds().get(0), config.getDouble("shop." + s + ".x"),
-                    config.getDouble("shop." + s + ".y"), config.getDouble("shop." + s + ".z"));
-            Shop shop = new Shop(display, loc, items, outfits, new ItemCreator(Material.getMaterial(id), 1, data,
-                    display, Arrays.asList(" ", ChatColor.GREEN + "/warp " + warp.getName())), warp.getName(),
-                    config.getDouble("shop." + s + ".radius"));
-            shops.add(shop);
+            Bukkit.getLogger().info("Loaded " + shops.size() + " shops!");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -368,6 +375,12 @@ public class ShopManager {
             }
         }
         if (item == null) {
+            return;
+        }
+        //Santa Outfit only available to Majestic and Honorable
+        if (item.getOutfitId() == 12 && MCMagicCore.getUser(player.getUniqueId()).getRank().getRankId() < Rank.MAJESTIC.getRankId()) {
+            player.sendMessage(ChatColor.RED + "You must be a " + Rank.MAJESTIC.getNameWithBrackets() + ChatColor.RED +
+                    " or higher to purchase this Outfit!");
             return;
         }
         openConfirm(player, item);

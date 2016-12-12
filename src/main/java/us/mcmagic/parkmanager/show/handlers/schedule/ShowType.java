@@ -35,9 +35,10 @@ public enum ShowType {
     FHW(ChatColor.AQUA + "Frozen Holiday Wish", Material.QUARTZ),
     HOLIDAYWISHES(ChatColor.AQUA + "Holiday Wishes", Material.SNOW),
     OUACTP(ChatColor.AQUA + "Once Upon A Christmastime Parade", Material.SNOW_BALL),
+    //Seasonal
+    BITHM(ChatColor.AQUA + "Believe in the Holiday Magic", Material.BLAZE_ROD),
     //Anniversary
-    CADCT(ChatColor.AQUA + "Celebreate A Dream Come True Parade", Material.PRISMARINE_SHARD),
-    MCMD(ChatColor.AQUA + "MCMagic " + ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST);
+    MCMD(ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST);
 
     public static ShowType fromString(String name) {
         switch (name.toLowerCase()) {
@@ -83,8 +84,8 @@ public enum ShowType {
                 return HOLIDAYWISHES;
             case "ouactp":
                 return OUACTP;
-            case "cadct":
-                return CADCT;
+            case "bithm":
+                return BITHM;
             case "mcmd":
                 return MCMD;
         }
