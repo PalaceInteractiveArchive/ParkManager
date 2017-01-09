@@ -111,7 +111,13 @@ public class ArmorStandManager {
                 }
             }
             for (ShowStand stand : new ArrayList<>(rot)) {
+                if (!stand.hasSpawned()) {
+                    continue;
+                }
                 ArmorStand armor = stand.getStand();
+                if (armor == null) {
+                    continue;
+                }
                 Rotation r = stand.getRotation();
                 if (r.isHandled()) {
                     continue;
