@@ -1,40 +1,23 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by Marc on 2/20/16
  */
 public class KioskData {
-    private long monthGuest;
-    private long monthDVC;
-    private long monthShare;
+    @Getter @Setter private long monthSettler;
+    @Getter @Setter private long monthDweller;
+    @Getter @Setter private long monthNoble;
+    @Getter @Setter private long monthMajestic;
+    @Getter @Setter private long monthHonorable;
 
-    public KioskData(long monthGuest, long monthDVC, long monthShare) {
-        this.monthGuest = monthGuest;
-        this.monthDVC = monthDVC;
-        this.monthShare = monthShare;
-    }
-
-    public long getMonthGuest() {
-        return monthGuest;
-    }
-
-    public long getMonthDVC() {
-        return monthDVC;
-    }
-
-    public long getMonthShare() {
-        return monthShare;
-    }
-
-    public void setMonthGuest(long monthGuest) {
-        this.monthGuest = monthGuest;
-    }
-
-    public void setMonthDVC(long monthDVC) {
-        this.monthDVC = monthDVC;
-    }
-
-    public void setMonthShare(long monthShare) {
-        this.monthShare = monthShare;
+    public KioskData(long monthSettler, long monthDweller, long monthNoble, long monthMajestic, long monthHonorable) {
+        this.monthSettler = monthSettler;
+        this.monthDweller = monthDweller;
+        this.monthNoble = monthNoble;
+        this.monthMajestic = monthMajestic;
+        this.monthHonorable = monthHonorable;
     }
 }

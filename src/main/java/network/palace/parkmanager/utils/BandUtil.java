@@ -94,17 +94,19 @@ public class BandUtil {
     public PlayerData setupPlayerData(UUID uuid) {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT bandcolor,rank,namecolor,flash,visibility," +
-                    "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,monthguest," +
-                    "monthdvc,monthshare,pack FROM player_data WHERE uuid=?");
+                    "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,pack," +
+                    "monthsettler,monthdweller,monthnoble,monthmajestic,monthhonorable FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
                 return null;
             }
             FastPassData fpdata = new FastPassData(result.getInt("slow"), result.getInt("moderate"),
-                    result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"), result.getInt("tday"));
-            KioskData kioskData = new KioskData(result.getLong("monthguest"), result.getLong("monthdvc"),
-                    result.getLong("monthshare"));
+                    result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"),
+                    result.getInt("tday"));
+            KioskData kioskData = new KioskData(result.getLong("monthsettler"), result.getLong("monthdweller"),
+                    result.getLong("monthnoble"), result.getLong("monthmajestic"),
+                    result.getLong("monthhonorable"));
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s");
             PlayerData data = new PlayerData(uuid, getBandNameColor(result.getString("namecolor")),
                     getBandColor(result.getString("bandcolor")), special,

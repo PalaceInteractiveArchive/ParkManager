@@ -1,30 +1,14 @@
 package network.palace.parkmanager.autograph;
 
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * Created by Marc on 8/16/15
  */
+@AllArgsConstructor
 public class Signature {
-    private final int id;
-    private final UUID signer;
-    private final String message;
-
-    public Signature(int id, UUID signer, String message) {
-        this.id = id;
-        this.signer = signer;
-        this.message = message;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public UUID getSigner() {
-        return signer;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+    @Getter private final int id;
+    @Getter private final String signer;
+    @Getter private final String message;
 }

@@ -6,7 +6,16 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
+import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.show.handlers.ShowDay;
+import network.palace.parkmanager.show.handlers.ShowType;
+import network.palace.parkmanager.show.schedule.ScheduledShow;
+import network.palace.parkmanager.storage.Backpack;
+import network.palace.parkmanager.storage.Locker;
+import network.palace.parkmanager.storage.StorageSize;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -17,15 +26,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.designstation.DesignStation;
-import network.palace.parkmanager.queue.QueueRide;
-import network.palace.parkmanager.show.handlers.ShowDay;
-import network.palace.parkmanager.show.handlers.ShowType;
-import network.palace.parkmanager.show.schedule.ScheduledShow;
-import network.palace.parkmanager.storage.Backpack;
-import network.palace.parkmanager.storage.Locker;
-import network.palace.parkmanager.storage.StorageSize;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +36,7 @@ public class InventoryUtil {
             Arrays.asList(ChatColor.GREEN + "View Rides, Attractions, and", ChatColor.GREEN + "Meet & Greets you can visit!"));
     private ItemStack sne = ItemUtil.create(Material.FIREWORK, ChatColor.GREEN + "Shows and Events",
             Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous " + ChatColor.AQUA +
-                    "MCMagic " + ChatColor.GREEN + "Shows!"));
+                    "Palace " + ChatColor.GREEN + "Shows!"));
     private ItemStack hnr = ItemUtil.create(Material.BED, ChatColor.GREEN + "Hotels and Resorts ",
             Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
     private ItemStack toggleon = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.AQUA + "Guest Visibility " +
@@ -59,7 +59,7 @@ public class InventoryUtil {
     private ItemStack custom = ItemUtil.create(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Customize your MagicBand",
             Arrays.asList(ChatColor.GREEN + "Make your MagicBand", ChatColor.GREEN + "perfect for you!"));
     private ItemStack arcade = ItemUtil.create(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Arcade", Arrays.asList(
-            ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "MCMagic Mini-Games!"));
+            ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "Palace Mini-Games!"));
     private ItemStack creative = ItemUtil.create(Material.GRASS, ChatColor.GREEN + "Creative", Arrays.asList(
             ChatColor.YELLOW + "Create your", ChatColor.GREEN + "own " + ChatColor.RED + "M" + ChatColor.GOLD + "a"
                     + ChatColor.YELLOW + "g" + ChatColor.DARK_GREEN + "i" + ChatColor.BLUE + "c" + ChatColor.LIGHT_PURPLE + "!"));

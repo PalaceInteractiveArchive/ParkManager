@@ -4,7 +4,11 @@ import network.palace.core.Core;
 import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
+import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.utils.WarpUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,10 +24,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.designstation.DesignStation;
-import network.palace.parkmanager.hotels.HotelManager;
-import network.palace.parkmanager.utils.WarpUtil;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +44,7 @@ public class PlayerInteract implements Listener {
             .then("World Leader in Minecraft Server Hosting! ").color(ChatColor.GREEN).style(ChatColor.ITALIC)
             .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
             .style(ChatColor.UNDERLINE).link("https://palace.network/mcph").tooltip(ChatColor.DARK_AQUA +
-                    "Click to purchase a server using MCMagic's 15%-OFF Discount!");
+                    "Click to purchase a server using the Palace Network's 15%-OFF Discount!");
     private boolean dl = Core.getServerType().equalsIgnoreCase("dlr");
 
     @EventHandler(priority = EventPriority.HIGHEST)

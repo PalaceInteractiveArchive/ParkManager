@@ -5,8 +5,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 public class FileUtil {
 
@@ -102,16 +100,6 @@ public class FileUtil {
         config.set("hub.z", loc.getZ());
         config.set("hub.yaw", loc.getYaw());
         config.set("hub.pitch", loc.getPitch());
-        saveFile(file, config);
-    }
-
-    public static void setFirstJoinMessages() {
-        File file = FileUtil.configurationFile();
-        YamlConfiguration config = configurationYaml();
-        List<String> msgs = Arrays.asList(
-                "&fHey everyone, it’s &d%pl% &ffirst visit to McMagic!",
-                "&d%total% Guests have visited McMagic since 2012!");
-        config.set("first-join-messages", msgs);
         saveFile(file, config);
     }
 }

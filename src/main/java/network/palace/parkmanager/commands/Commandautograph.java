@@ -3,19 +3,17 @@ package network.palace.parkmanager.commands;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.parkmanager.ParkManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import network.palace.parkmanager.ParkManager;
 
 /**
  * Created by Jacob on 1/20/15.
  */
 @CommandMeta(description = "Request to sign a player's book", aliases = {"a", "auto"})
-@CommandPermission(rank = Rank.SPECIALGUEST)
 public class Commandautograph extends CoreCommand {
 
     public Commandautograph() {
@@ -70,7 +68,7 @@ public class Commandautograph extends CoreCommand {
     private void helpMenu(CPlayer player) {
         player.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
         CPlayer cp = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cp.getRank().getRankId() > Rank.HONORABLE.getRankId()) {
+        if (cp.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
             player.sendMessage(ChatColor.GREEN + "/autograph [user] " + ChatColor.AQUA +
                     "- Request to sign a player's book");
         }

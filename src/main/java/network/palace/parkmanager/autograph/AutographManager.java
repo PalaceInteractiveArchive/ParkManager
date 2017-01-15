@@ -32,33 +32,41 @@ public class AutographManager {
     public void setBook(UUID uuid) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bm = (BookMeta) book.getItemMeta();
-        bm.addPage("This is your MCMagic Autograph Book! Find Characters and they will sign it for you!");
+        bm.addPage("This is your Palace Autograph Book! Find Characters and they will sign it for you!");
         List<Signature> list = getSignatures(uuid);
         for (Signature sign : list) {
-            String name = "Unknown";
-            if (ParkManager.userCache.containsKey(sign.getSigner())) {
-                name = ParkManager.userCache.get(sign.getSigner());
+            String name = "";
+            UUID suuid = null;
+            if (sign.getSigner().length() > 16) {
+                suuid = UUID.fromString(sign.getSigner());
             } else {
-                try (Connection connection = Core.getSqlUtil().getConnection()) {
-                    PreparedStatement n = connection.prepareStatement("SELECT rank,username FROM player_data WHERE uuid=?");
-                    n.setString(1, sign.getSigner().toString());
-                    ResultSet r = n.executeQuery();
-                    if (!r.next()) {
+                name = ChatColor.BLUE + sign.getSigner();
+            }
+            if (suuid != null) {
+                if (ParkManager.userCache.containsKey(sign.getSigner())) {
+                    name = ParkManager.userCache.get(sign.getSigner());
+                } else {
+                    try (Connection connection = Core.getSqlUtil().getConnection()) {
+                        PreparedStatement n = connection.prepareStatement("SELECT rank,username FROM player_data WHERE uuid=?");
+                        n.setString(1, sign.getSigner());
+                        ResultSet r = n.executeQuery();
+                        if (!r.next()) {
+                            r.close();
+                            n.close();
+                            continue;
+                        }
+                        Rank rank = Rank.fromString(r.getString("rank"));
+                        name = rank.getTagColor() + r.getString("username");
+                        ParkManager.userCache.put(suuid, name);
                         r.close();
                         n.close();
-                        continue;
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
-                    Rank rank = Rank.fromString(r.getString("rank"));
-                    name = rank.getTagColor() + r.getString("username");
-                    ParkManager.userCache.put(sign.getSigner(), name);
-                    r.close();
-                    n.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
             }
-            bm.addPage(ChatColor.translateAlternateColorCodes('&', sign.getMessage()) + ChatColor.DARK_GREEN + "\n- "
-                    + name);
+            bm.addPage(ChatColor.translateAlternateColorCodes('&', sign.getMessage()) +
+                    ChatColor.DARK_GREEN + "\n- " + name);
         }
         bm.setTitle(BOOK_TITLE);
         book.setItemMeta(bm);
@@ -72,7 +80,7 @@ public class AutographManager {
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             while (result.next()) {
-                list.add(new Signature(result.getInt("id"), UUID.fromString(result.getString("sender")),
+                list.add(new Signature(result.getInt("id"), result.getString("sender"),
                         result.getString("message")));
             }
             result.close();
@@ -126,10 +134,16 @@ public class AutographManager {
             player.sendMessage(ChatColor.RED + "You're not signing anyone's book right now!");
             return;
         }
+        String name = "";
+        if (player.getRank().equals(Rank.CHARACTER)) {
+            name = player.getName();
+        } else {
+            name = player.getUniqueId().toString();
+        }
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs (user, sender, message) VALUES (?,?,?)");
             sql.setString(1, tp.getUniqueId().toString());
-            sql.setString(2, player.getUniqueId().toString());
+            sql.setString(2, name);
             sql.setString(3, message);
             sql.execute();
             sql.close();
