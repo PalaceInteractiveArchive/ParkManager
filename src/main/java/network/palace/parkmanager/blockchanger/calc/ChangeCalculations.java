@@ -8,14 +8,14 @@ import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.google.common.base.Stopwatch;
+import network.palace.parkmanager.blockchanger.calc.lookup.ConversionLookup;
+import network.palace.parkmanager.blockchanger.calc.lookup.SegmentLookup;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import network.palace.parkmanager.blockchanger.calc.lookup.ConversionLookup;
-import network.palace.parkmanager.blockchanger.calc.lookup.SegmentLookup;
 
 import java.util.concurrent.TimeUnit;
 

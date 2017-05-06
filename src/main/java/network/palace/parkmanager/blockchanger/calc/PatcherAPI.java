@@ -16,9 +16,9 @@
  */
 package network.palace.parkmanager.blockchanger.calc;
 
-import org.bukkit.entity.Player;
 import network.palace.parkmanager.blockchanger.calc.lookup.ChunkLookup;
 import network.palace.parkmanager.blockchanger.calc.lookup.ChunkSegmentLookup;
+import org.bukkit.entity.Player;
 
 /**
  * Able to automatically translate every block and item on the server to a different type.

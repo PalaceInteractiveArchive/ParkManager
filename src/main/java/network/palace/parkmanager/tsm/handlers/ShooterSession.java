@@ -7,11 +7,11 @@ import java.util.UUID;
 /**
  * Created by Marc on 6/28/16
  */
-public class TSMSession {
+public class ShooterSession {
     private UUID uuid;
     private List<Hit> hits = new ArrayList<>();
 
-    public TSMSession(UUID uuid) {
+    public ShooterSession(UUID uuid) {
         this.uuid = uuid;
     }
 

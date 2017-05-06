@@ -1,4 +1,4 @@
-package us.mcmagic.parkmanager.uso.mib;
+package network.palace.parkmanager.uso.mib;
 
 import org.bukkit.entity.ItemFrame;
 

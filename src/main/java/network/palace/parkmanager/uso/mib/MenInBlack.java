@@ -1,5 +1,11 @@
-package us.mcmagic.parkmanager.uso.mib;
+package network.palace.parkmanager.uso.mib;
 
+import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
+import network.palace.core.utils.ItemUtil;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.tsm.handlers.Hit;
+import network.palace.parkmanager.tsm.handlers.ShooterSession;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,11 +26,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.SpawnEgg;
-import us.mcmagic.mcmagiccore.actionbar.ActionBarManager;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.tsm.handlers.Hit;
-import us.mcmagic.parkmanager.tsm.handlers.ShooterSession;
 
 import java.util.*;
 
@@ -43,7 +44,7 @@ public class MenInBlack implements Listener {
     private HashMap<HitReset, Long> resetMap = new HashMap<>();
 
     public MenInBlack() {
-        item = new ItemCreator(Material.STONE_HOE, ChatColor.DARK_PURPLE + "Blaster",
+        item = ItemUtil.create(Material.STONE_HOE, ChatColor.DARK_PURPLE + "Blaster",
                 Arrays.asList(ChatColor.YELLOW + "Right-Click to Shoot!"));
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
             @Override
@@ -59,7 +60,7 @@ public class MenInBlack implements Listener {
                     resetMap.remove(reset);
                 }
                 for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
-                    Player player = Bukkit.getPlayer(entry.getKey());
+                    CPlayer player = Core.getPlayerManager().getPlayer(entry.getKey());
                     ShooterSession session = entry.getValue();
                     List<Hit> hits = session.getHits();
                     int total = 0;
@@ -74,7 +75,7 @@ public class MenInBlack implements Listener {
                             m = ChatColor.GREEN + " +" + h.getPoints() + " Points";
                         }
                     }
-                    ActionBarManager.sendMessage(player, ChatColor.LIGHT_PURPLE + "MIB Score: " + total + m);
+                    player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + total + m);
                 }
             }
         }, 0L, 10L);
@@ -110,7 +111,7 @@ public class MenInBlack implements Listener {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "You hit " + ChatColor.GREEN + hits.size() + ChatColor.YELLOW + " targets");
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Total Points: " + ChatColor.GREEN + points);
         player.sendMessage(ChatColor.DARK_PURPLE + "----------------------------------------------------");
-        player.getInventory().setItem(4, new ItemCreator(Material.THIN_GLASS, 1, ChatColor.GRAY +
+        player.getInventory().setItem(4, ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +
                 "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
                 "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
                 "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
@@ -160,8 +161,8 @@ public class MenInBlack implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        ItemStack inHand = player.getItemInHand();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
+        ItemStack inHand = player.getItemInMainHand();
         ItemMeta meta = inHand.getItemMeta();
         if (event.getAction().equals(Action.PHYSICAL) || meta == null || meta.getDisplayName() == null ||
                 !sessions.containsKey(player.getUniqueId())) {
@@ -169,15 +170,15 @@ public class MenInBlack implements Listener {
         }
         String displayName = meta.getDisplayName();
         if (inHand.getType().equals(item.getType()) && meta.getDisplayName().equals(item.getItemMeta().getDisplayName())) {
-            player.launchProjectile(Snowball.class);
+            player.getBukkitPlayer().launchProjectile(Snowball.class);
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
-        ItemStack inHand = player.getItemInHand();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
+        ItemStack inHand = player.getItemInMainHand();
         ItemMeta meta = inHand.getItemMeta();
         if (meta == null || meta.getDisplayName() == null || !sessions.containsKey(player.getUniqueId())) {
             return;
@@ -185,7 +186,7 @@ public class MenInBlack implements Listener {
         event.setCancelled(true);
         String displayName = meta.getDisplayName();
         if (inHand.getType().equals(item.getType()) && meta.getDisplayName().equals(item.getItemMeta().getDisplayName())) {
-            player.launchProjectile(Snowball.class);
+            player.getBukkitPlayer().launchProjectile(Snowball.class);
             event.setCancelled(true);
         }
     }
@@ -217,7 +218,7 @@ public class MenInBlack implements Listener {
         if (!stack.getType().equals(Material.INK_SACK)) {
             return;
         }
-        Player player = (Player) sb.getShooter();
+        CPlayer player = Core.getPlayerManager().getPlayer(((Player) sb.getShooter()).getUniqueId());
         ShooterSession session = sessions.get(player.getUniqueId());
         byte data = stack.getData().getData();
         Location loc = item.getLocation();
@@ -229,25 +230,25 @@ public class MenInBlack implements Listener {
         switch (data) {
             case 6: {
                 hit = new Hit(player.getUniqueId(), 25);
-                ActionBarManager.sendMessage(player, ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 25) + ChatColor.GREEN + " +25 Points");
+                player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 25) + ChatColor.GREEN + " +25 Points");
                 item.setItem(blank);
                 break;
             }
             case 11: {
                 hit = new Hit(player.getUniqueId(), 50);
-                ActionBarManager.sendMessage(player, ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 50) + ChatColor.GREEN + " +50 Points");
+                player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 50) + ChatColor.GREEN + " +50 Points");
                 item.setItem(blank);
                 break;
             }
             case 10: {
                 hit = new Hit(player.getUniqueId(), 75);
-                ActionBarManager.sendMessage(player, ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 75) + ChatColor.GREEN + " +75 Points");
+                player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 75) + ChatColor.GREEN + " +75 Points");
                 item.setItem(blank);
                 break;
             }
             case 5: {
                 hit = new Hit(player.getUniqueId(), 100);
-                ActionBarManager.sendMessage(player, ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 100) + ChatColor.GREEN + " +100 Points");
+                player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + (total + 100) + ChatColor.GREEN + " +100 Points");
                 item.setItem(blank);
                 break;
             }

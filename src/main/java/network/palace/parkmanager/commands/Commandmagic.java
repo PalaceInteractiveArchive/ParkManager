@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.comphenix.protocol.wrappers.nbt.io.NbtTextSerializer;
@@ -17,6 +16,17 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.blockchanger.Changer;
+import network.palace.parkmanager.handlers.Outfit;
+import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.Resort;
+import network.palace.parkmanager.handlers.RideCount;
+import network.palace.parkmanager.listeners.BlockEdit;
+import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.tot.DropTower;
+import network.palace.parkmanager.queue.tot.TowerLayout;
+import network.palace.parkmanager.utils.WorldUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -27,16 +37,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.blockchanger.Changer;
-import network.palace.parkmanager.handlers.Outfit;
-import network.palace.parkmanager.handlers.PlayerData;
-import network.palace.parkmanager.handlers.RideCount;
-import network.palace.parkmanager.listeners.BlockEdit;
-import network.palace.parkmanager.queue.QueueRide;
-import network.palace.parkmanager.queue.tot.DropTower;
-import network.palace.parkmanager.queue.tot.TowerLayout;
-import network.palace.parkmanager.utils.WorldUtil;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -79,7 +79,7 @@ public class Commandmagic extends CoreCommand {
                 }
                 if (args[1].equalsIgnoreCase("particle")) {
                     if (args.length == 11) {
-                        EnumWrappers.Particle effect = EnumWrappers.Particle.getByName(args[2]);
+                        Particle effect = Particle.valueOf(args[2]);
                         Location loc = locFromArray(args[3], args[4], args[5]);
                         try {
                             double offsetX = Float.parseFloat(args[6]);
@@ -182,14 +182,14 @@ public class Commandmagic extends CoreCommand {
                         sender.sendMessage(ChatColor.RED + "This player is not in a vehicle!");
                         return;
                     }
-                    String rideName = "";
+                    StringBuilder rideName = new StringBuilder();
                     for (int i = 3; i < args.length; i++) {
-                        rideName += args[i];
+                        rideName.append(args[i]);
                         if ((i - 2) < (args.length)) {
-                            rideName += " ";
+                            rideName.append(" ");
                         }
                     }
-                    final String finalRideName = rideName;
+                    final String finalRideName = rideName.toString();
                     Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
                         PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
                         TreeMap<String, RideCount> rides = data.getRideCounts();
@@ -232,6 +232,9 @@ public class Commandmagic extends CoreCommand {
                 helpMenu("ride", sender);
                 return;
             case "sge":
+                if (!ParkManager.isResort(Resort.WDW)) {
+                    return;
+                }
                 switch (args.length) {
                     case 2:
                         if (args[1].equalsIgnoreCase("lock")) {
@@ -266,16 +269,16 @@ public class Commandmagic extends CoreCommand {
                             if (args[2].equalsIgnoreCase("burp")) {
                                 Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + args[3]);
                                 for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-                                    tp.getParticles().send(loc, EnumWrappers.Particle.VILLAGER_HAPPY, 150,
-                                            (float) 3, (float) 3, (float) 3, 0);
+                                    tp.getParticles().send(loc, Particle.VILLAGER_HAPPY, 150, (float) 3,
+                                            (float) 3, (float) 3, 0);
                                 }
                                 return;
                             }
                             if (args[2].equalsIgnoreCase("spit")) {
                                 Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + args[3]);
                                 for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-                                    tp.getParticles().send(loc, EnumWrappers.Particle.LAVA, 150, (float) 3,
-                                            (float) 3, (float) 3, 0);
+                                    tp.getParticles().send(loc, Particle.LAVA, 150, (float) 3, (float) 3,
+                                            (float) 3, 0);
                                 }
                                 return;
                             }
@@ -363,11 +366,11 @@ public class Commandmagic extends CoreCommand {
                         }
                         final Player player = (Player) sender;
                         player.sendMessage(ChatColor.GREEN + "Preparing outfit...");
-                        String name = "";
+                        StringBuilder name = new StringBuilder();
                         for (int i = 2; i < args.length; i++) {
-                            name += args[i];
+                            name.append(args[i]);
                             if (i < (args.length - 1)) {
-                                name += " ";
+                                name.append(" ");
                             }
                         }
                         PlayerInventory inv = player.getInventory();
@@ -379,7 +382,7 @@ public class Commandmagic extends CoreCommand {
                         String ctag = new NbtTextSerializer().serialize(NbtFactory.fromItemTag(c));
                         String ptag = new NbtTextSerializer().serialize(NbtFactory.fromItemTag(p));
                         String btag = new NbtTextSerializer().serialize(NbtFactory.fromItemTag(b));
-                        String finalName = name;
+                        String finalName = name.toString();
                         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
                             try (Connection conneciton = Core.getSqlUtil().getConnection()) {
                                 PreparedStatement sql = conneciton.prepareStatement("INSERT INTO outfits (id,name," +
@@ -500,12 +503,12 @@ public class Commandmagic extends CoreCommand {
                                 Location l1 = chngr.getFirstLocation();
                                 Location l2 = chngr.getSecondLocation();
                                 List<Material> mats = chngr.getFrom();
-                                String f = "";
+                                StringBuilder f = new StringBuilder();
                                 for (int i = 0; i < mats.size(); i++) {
                                     Material m = mats.get(i);
-                                    f += m.name();
+                                    f.append(m.name());
                                     if (i < (mats.size() - 1)) {
-                                        f += ", ";
+                                        f.append(", ");
                                     }
                                 }
                                 String[] list = new String[]{ChatColor.AQUA + "Info for " + chngr.getName() + " Changer: ",
@@ -600,11 +603,12 @@ public class Commandmagic extends CoreCommand {
                         return;
                     }
                     if (args[2].equalsIgnoreCase("fp")) {
-                        if (ride.toggleFastpass()) {
-                            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been closed!");
-                        } else {
-                            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been opened!");
-                        }
+                        ride.toggleFastpass(sender);
+//                        if (ride.toggleFastpass()) {
+//                            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been closed!");
+//                        } else {
+//                            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been opened!");
+//                        }
                         return;
                     }
                     if (args[2].equalsIgnoreCase("pause")) {
@@ -627,23 +631,23 @@ public class Commandmagic extends CoreCommand {
                     }
                     if (args[2].equalsIgnoreCase("list")) {
                         List<UUID> users = ride.getQueue();
-                        String s = ChatColor.GREEN + "Currently in Queue for " + ride.getName() + ChatColor.GREEN +
-                                ": (" + users.size() + ")\n" + ChatColor.YELLOW;
+                        StringBuilder s = new StringBuilder(ChatColor.GREEN + "Currently in Queue for " + ride.getName() + ChatColor.GREEN +
+                                ": (" + users.size() + ")\n" + ChatColor.YELLOW);
                         for (int i = 0; i < users.size(); i++) {
                             Player tp = Bukkit.getPlayer(users.get(i));
                             if (tp == null) {
                                 continue;
                             }
                             if (i == users.size() - 1) {
-                                s += tp.getName();
+                                s.append(tp.getName());
                             } else {
-                                s += tp.getName() + ", ";
+                                s.append(tp.getName()).append(", ");
                             }
                         }
                         if (users.size() == 0) {
-                            s += "None";
+                            s.append("None");
                         }
-                        sender.sendMessage(s);
+                        sender.sendMessage(s.toString());
                         return;
                     }
                     helpMenu("queue", sender);
@@ -714,22 +718,10 @@ public class Commandmagic extends CoreCommand {
                 helpMenu("iasw", sender);
                 return;
             }
-            case "pin": {
-                if (args.length < 1) {
-                    helpMenu("pin", sender);
-                    return;
-                }
-                String username = args[1];
-                Player tp = Bukkit.getPlayer(username);
-                if (tp == null) {
-                    sender.sendMessage(ChatColor.RED + "Player not found!");
-                    return;
-                }
-                sender.sendMessage(ChatColor.RED + "TODO");
-                helpMenu("pin", sender);
-                return;
-            }
             case "fp": {
+                if (!ParkManager.isResort(Resort.WDW) && !ParkManager.isResort(Resort.DLR)) {
+                    return;
+                }
                 if (args.length < 0) {
                     helpMenu("fp", sender);
                     return;
@@ -747,6 +739,9 @@ public class Commandmagic extends CoreCommand {
                 return;
             }
             case "tot": {
+                if (!ParkManager.isResort(Resort.WDW) && !ParkManager.isResort(Resort.DLR)) {
+                    return;
+                }
                 if (!(sender instanceof Player || sender instanceof BlockCommandSender)) {
                     sender.sendMessage(ChatColor.RED + "Only Players and Command Blocks can do this!");
                     return;

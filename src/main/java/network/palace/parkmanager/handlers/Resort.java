@@ -1,4 +1,4 @@
-package us.mcmagic.parkmanager.handlers;
+package network.palace.parkmanager.handlers;
 
 /**
  * Created by Marc on 4/7/17.
@@ -17,6 +17,9 @@ public enum Resort {
     }
 
     public static Resort fromString(String s) {
+        if (s == null) {
+            return WDW;
+        }
         switch (s.toLowerCase()) {
             case "wdw":
                 return WDW;
@@ -25,6 +28,6 @@ public enum Resort {
             case "uso":
                 return USO;
         }
-        return null;
+        return WDW;
     }
 }

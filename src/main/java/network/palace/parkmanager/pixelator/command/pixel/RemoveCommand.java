@@ -1,10 +1,10 @@
 package network.palace.parkmanager.pixelator.command.pixel;
 
-import org.bukkit.command.CommandSender;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.pixelator.command.CommandDetails;
 import network.palace.parkmanager.pixelator.command.ICommand;
 import network.palace.parkmanager.pixelator.renderer.types.MapImageRenderer;
+import org.bukkit.command.CommandSender;
 
 @CommandDetails(
         name = "remove",

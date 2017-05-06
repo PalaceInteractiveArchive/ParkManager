@@ -5,9 +5,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.pixelator.renderer.ImageRenderer;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.map.MapPalette;
-import network.palace.parkmanager.pixelator.renderer.ImageRenderer;
 
 import java.awt.image.BufferedImage;
 import java.io.*;

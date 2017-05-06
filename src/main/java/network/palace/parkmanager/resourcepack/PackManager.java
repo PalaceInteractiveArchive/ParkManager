@@ -7,6 +7,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.resource.ResourcePack;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,7 +17,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.handlers.PlayerData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -78,9 +78,6 @@ public class PackManager {
             player.closeInventory();
             return;
         }
-        player.sendMessage(ChatColor.GREEN + "You set your Park Resource Pack setting to " + ChatColor.YELLOW +
-                (name.equalsIgnoreCase("yes") ? "on" : (name.equalsIgnoreCase("no") ? "off"
-                        : "none")) + "!");
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 0);
         player.closeInventory();
         if (!player.getPack().equalsIgnoreCase(pack.getName())) {

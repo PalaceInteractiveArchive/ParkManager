@@ -5,7 +5,7 @@ package network.palace.parkmanager.handlers;
  */
 public enum BandColor {
     RED("red"), ORANGE("orange"), YELLOW("yellow"), GREEN("green"), BLUE("blue"), PURPLE("purple"), PINK("pink"),
-    SPECIAL1("s1"), SPECIAL2("s2"), SPECIAL3("s3"), SPECIAL4("s4"), SPECIAL5("s5");
+    SPECIAL1("s1"), SPECIAL2("s2"), SPECIAL3("s3"), SPECIAL4("s4"), SPECIAL5("s5"), USO("uso");
     String name;
 
     BandColor(String name) {
@@ -42,6 +42,8 @@ public enum BandColor {
                 return SPECIAL4;
             case "s5":
                 return SPECIAL5;
+            case "uso":
+                return USO;
             default:
                 return BLUE;
         }

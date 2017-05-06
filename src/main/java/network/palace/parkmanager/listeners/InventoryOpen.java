@@ -7,14 +7,14 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.BlockPosition;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.InventoryType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.InventoryType;
 
 import java.util.List;
 

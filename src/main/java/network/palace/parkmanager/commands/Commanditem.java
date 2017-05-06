@@ -6,17 +6,17 @@ import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
+import network.palace.parkmanager.utils.NumberUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import network.palace.parkmanager.utils.NumberUtil;
 
 /**
  * Created by Marc on 3/10/15
  */
-@CommandMeta(description = "Give player an item")
+@CommandMeta(description = "Give player an item", aliases = "i")
 @CommandPermission(rank = Rank.KNIGHT)
 public class Commanditem extends CoreCommand {
 

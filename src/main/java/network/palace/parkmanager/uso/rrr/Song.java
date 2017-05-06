@@ -1,4 +1,4 @@
-package us.mcmagic.parkmanager.uso.rrr;
+package network.palace.parkmanager.uso.rrr;
 
 import org.bukkit.inventory.ItemStack;
 

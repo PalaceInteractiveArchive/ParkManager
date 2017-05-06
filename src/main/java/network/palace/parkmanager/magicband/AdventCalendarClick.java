@@ -1,12 +1,12 @@
 package network.palace.parkmanager.magicband;
 
 import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkmanager.utils.WarpUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.utils.WarpUtil;
 
 /**
  * Created by Marc on 12/1/15

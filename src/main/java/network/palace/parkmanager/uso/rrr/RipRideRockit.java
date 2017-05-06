@@ -1,5 +1,8 @@
-package us.mcmagic.parkmanager.uso.rrr;
+package network.palace.parkmanager.uso.rrr;
 
+import network.palace.audio.Audio;
+import network.palace.audio.handlers.AudioArea;
+import network.palace.core.utils.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,9 +14,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mcmagic.mcmagiccore.MCMagicCore;
-import us.mcmagic.mcmagiccore.audioserver.AudioArea;
-import us.mcmagic.mcmagiccore.itemcreator.ItemCreator;
 
 import java.io.File;
 import java.util.HashMap;
@@ -51,14 +51,13 @@ public class RipRideRockit {
             }
             ConfigurationSection sec = section.getConfigurationSection(s);
             String title = ChatColor.translateAlternateColorCodes('&', sec.getString("title"));
-            ItemStack item = new ItemCreator(randomRecord(), title);
+            ItemStack item = ItemUtil.create(randomRecord(), title);
             Song song = new Song(s, sec.getString("area"), title, item);
             songs.put(s, song);
             i++;
         }
         for (Map.Entry<String, Song> entry : songs.entrySet()) {
             Song song = entry.getValue();
-            Bukkit.broadcastMessage(entry.getKey() + " " + song.getArea() + " " + song.getName() + " " + song.getTitle() + " " + song.getItem().toString());
         }
     }
 
@@ -85,7 +84,7 @@ public class RipRideRockit {
         }
         player.closeInventory();
         player.sendMessage(ChatColor.GREEN + "You selected " + name + "!");
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 2f);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
     }
 
     public void startSong(Player player) {
@@ -94,7 +93,7 @@ public class RipRideRockit {
             return;
         }
         Song song = songs.get(selections.remove(player.getUniqueId()));
-        AudioArea area = MCMagicCore.audioServer.getByName(song.getArea());
+        AudioArea area = Audio.getInstance().getByName(song.getArea());
         if (area == null) {
             return;
         }

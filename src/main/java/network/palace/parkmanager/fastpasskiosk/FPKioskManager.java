@@ -12,10 +12,7 @@ import network.palace.core.player.Rank;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.FastPassData;
-import network.palace.parkmanager.handlers.KioskData;
-import network.palace.parkmanager.handlers.MonthOfYear;
-import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.*;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -41,6 +38,9 @@ public class FPKioskManager implements Listener {
     private List<UUID> openMenu = new ArrayList<>();
 
     public FPKioskManager() {
+        if (!ParkManager.isResort(Resort.WDW) && !ParkManager.isResort(Resort.DLR)) {
+            return;
+        }
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(),
                 PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.CLOSE_WINDOW) {
             @Override

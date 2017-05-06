@@ -1,8 +1,10 @@
 package network.palace.parkmanager.storage;
 
+import com.google.gson.JsonArray;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryStatus;
 import network.palace.parkmanager.handlers.InventoryType;
@@ -14,19 +16,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.json.simple.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by Marc on 10/10/15
@@ -69,7 +65,7 @@ public class StorageManager {
             }
         }, 0L, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () ->
-                Bukkit.getOnlinePlayers().forEach(this::update), 0L, 6000L);
+                Bukkit.getOnlinePlayers().forEach(this::update), 0L, 1200L);
     }
 
     public void downloadInventory(UUID uuid, boolean force) {
@@ -77,9 +73,8 @@ public class StorageManager {
             return;
         }
         ParkManager.playerJoinAndLeave.setInventory(uuid);
-        final Player player = Bukkit.getPlayer(uuid);
-        CPlayer cplayer = Core.getPlayerManager().getPlayer(uuid);
-        if (player == null || cplayer == null) {
+        final CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+        if (player == null) {
             return;
         }
         final PlayerInventory inv = player.getInventory();
@@ -97,10 +92,10 @@ public class StorageManager {
         ParkManager.playerJoinAndLeave.setInventory(player, true);
         if (hotbar != null) {
             ItemStack[] cont = inv.getContents();
-            System.arraycopy(hotbar, 0, cont, 0, 4);
+            System.arraycopy(hotbar, 0, cont, 0, hotbar.length >= 4 ? 4 : hotbar.length);
             inv.setContents(Arrays.copyOfRange(cont, 0, 36));
         }
-        if (cplayer.getRank().getRankId() > Rank.SQUIRE.getRankId()) {
+        if (player.getRank().getRankId() > Rank.SQUIRE.getRankId()) {
             if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                 inv.setItem(0, new ItemStack(Material.COMPASS));
             }
@@ -116,33 +111,30 @@ public class StorageManager {
         player.getInventory().remove(Material.MINECART);
     }
 
-    public Backpack getBackpack(Player player) {
+    public Backpack getBackpack(CPlayer player) {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement pack = connection.prepareStatement("SELECT pack,packsize FROM storage WHERE uuid=?");
+            PreparedStatement pack = connection.prepareStatement("SELECT pack,packsize FROM storage2 WHERE uuid=? AND resort=?");
             pack.setString(1, player.getUniqueId().toString());
+            pack.setInt(2, ParkManager.resort.getId());
             ResultSet result = pack.executeQuery();
             if (!result.next()) {
                 result.close();
                 pack.close();
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (id, uuid, pack, packsize, " +
-                        "locker, lockersize, hotbar) VALUES (0,?,?,'small',?,'small',?)");
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage2 (uuid, pack, packsize, " +
+                        "locker, lockersize, hotbar, resort) VALUES (?,?,0,?,0,?,?)");
                 insert.setString(1, player.getUniqueId().toString());
-                insert.setBytes(2, new byte[]{});
-                insert.setBytes(3, new byte[]{});
-                insert.setBytes(4, new byte[]{});
+                insert.setString(2, new JSONObject().toString());
+                insert.setString(3, new JSONObject().toString());
+                insert.setString(4, new JSONObject().toString());
+                insert.setInt(5, ParkManager.resort.getId());
                 insert.execute();
                 insert.close();
                 return new Backpack(player, StorageSize.SMALL, new ItemStack[]{});
             }
-            StorageSize size = StorageSize.fromString(result.getString("packsize"));
-            byte[] p = result.getBytes("pack");
-            ItemStack[] deserial = deserial(p);
-            ItemStack[] cont = new ItemStack[size.getRows() * 9];
-            try {
-                System.arraycopy(deserial, 0, cont, 0, p.length);
-            } catch (Exception ignored) {
-            }
-            Backpack backpack = new Backpack(player, size, cont);
+            StorageSize size = StorageSize.fromInt(result.getInt("packsize"));
+            String json = result.getString("pack");
+            ItemStack[] items = ItemUtil.getInventoryFromJson(json);
+            Backpack backpack = new Backpack(player, size, items);
             result.close();
             pack.close();
             return backpack;
@@ -152,146 +144,36 @@ public class StorageManager {
         }
     }
 
-    public Locker getLocker(Player player) {
+    public Locker getLocker(CPlayer player) {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement pack = connection.prepareStatement("SELECT locker,lockersize FROM storage WHERE uuid=?");
+            PreparedStatement pack = connection.prepareStatement("SELECT locker,lockersize FROM storage2 WHERE uuid=? AND resort=?");
             pack.setString(1, player.getUniqueId().toString());
+            pack.setInt(2, ParkManager.resort.getId());
             ResultSet result = pack.executeQuery();
             if (!result.next()) {
                 result.close();
                 pack.close();
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (id, uuid, pack, packsize, " +
-                        "locker, lockersize) VALUES (0,?,?,'small',?,'small')");
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage2 (uuid, pack, packsize, " +
+                        "locker, lockersize, hotbar,resort) VALUES (?,?,0,?,0,?,?)");
                 insert.setString(1, player.getUniqueId().toString());
-                insert.setBytes(2, new byte[]{});
-                insert.setBytes(3, new byte[]{});
+                insert.setString(2, new JSONObject().toString());
+                insert.setString(3, new JSONObject().toString());
+                insert.setString(4, new JSONObject().toString());
+                insert.setInt(5, ParkManager.resort.getId());
                 insert.execute();
                 insert.close();
                 return new Locker(player, StorageSize.SMALL, new ItemStack[]{});
             }
-            StorageSize size = StorageSize.fromString(result.getString("lockersize"));
-            byte[] p = result.getBytes("locker");
-            ItemStack[] deserial = deserial(p);
-            ItemStack[] cont = new ItemStack[size.getRows() * 9];
-            try {
-                System.arraycopy(deserial, 0, cont, 0, p.length);
-            } catch (Exception ignored) {
-            }
-            Locker locker = new Locker(player, size, cont);
+            StorageSize size = StorageSize.fromInt(result.getInt("lockersize"));
+            String json = result.getString("locker");
+            ItemStack[] items = ItemUtil.getInventoryFromJson(json);
+            Locker locker = new Locker(player, size, items);
             result.close();
             pack.close();
             return locker;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public static ItemStack[] deserial(byte[] b) {
-        return deserializeItemStacks(uncompress(b));
-    }
-
-    public static byte[] serial(ItemStack[] stacks) {
-        if (stacks == null) {
-            return new byte[]{};
-        }
-        for (int i = 0; i < stacks.length; i++) {
-            ItemStack s = stacks[i];
-            if (s == null) {
-                continue;
-            }
-            if (s.getType().equals(Material.SKULL_ITEM)) {
-                stacks[i] = new ItemStack(Material.AIR);
-            }
-        }
-        return compress(serializeItemStacks(stacks));
-    }
-
-    public static byte[] serializeItemStacks(ItemStack[] inv) {
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            try {
-                try (BukkitObjectOutputStream bos = new BukkitObjectOutputStream(os)) {
-                    bos.writeObject(inv);
-                    return os.toByteArray();
-                }
-            } finally {
-                if (Collections.singletonList(os).get(0) != null)
-                    os.close();
-            }
-        } catch (IOException ex) {
-            return null;
-        }
-    }
-
-    public static ItemStack[] deserializeItemStacks(byte[] b) {
-        try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(b);
-            try {
-                try (BukkitObjectInputStream bois = new BukkitObjectInputStream(bais)) {
-                    return (ItemStack[]) bois.readObject();
-                }
-            } finally {
-                if (Collections.singletonList(bais).get(0) != null)
-                    bais.close();
-            }
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static byte[] compress(byte[] uncomp) {
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            try {
-                GZIPOutputStream compressor = new GZIPOutputStream(os);
-                compressor.write(uncomp);
-                compressor.close();
-
-                return os.toByteArray();
-            } finally {
-                if (Collections.singletonList(os).get(0) != null)
-                    os.close();
-
-            }
-
-        } catch (IOException ex) {
-            return null;
-        }
-    }
-
-    public static byte[] uncompress(byte[] comp) {
-        GZIPInputStream decompressor = null;
-        try {
-            ByteArrayInputStream is = new ByteArrayInputStream(comp);
-            try {
-                decompressor = new GZIPInputStream(is);
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                byte[] b = new byte[256];
-                int tmp;
-                while ((tmp = decompressor.read(b)) != -1) {
-                    buffer.write(b, 0, tmp);
-                }
-                buffer.close();
-                byte[] arrayOfByte1 = buffer.toByteArray();
-
-                if (Collections.singletonList(is).get(0) != null)
-                    is.close();
-
-                return arrayOfByte1;
-            } finally {
-                if (Collections.singletonList(is).get(0) != null)
-                    is.close();
-
-            }
-        } catch (IOException ex) {
-            return null;
-        } finally {
-            try {
-                if (decompressor != null)
-                    decompressor.close();
-            } catch (IOException ignored) {
-            }
         }
     }
 
@@ -320,9 +202,6 @@ public class StorageManager {
     }
 
     private void update(Player player, PlayerData data, boolean build) {
-        if (player == null || data == null) {
-            return;
-        }
         Backpack pack = data.getBackpack();
         Locker locker = data.getLocker();
         if (pack == null || locker == null) {
@@ -346,7 +225,7 @@ public class StorageManager {
                 ItemStack[] h = getBuildModeHotbars().get(player.getUniqueId());
                 for (int i = 0; i < 4; i++) {
                     try {
-                        hotbar[i] = h[i] == null ? null : h[i];
+                        hotbar[i] = h[i];
                     } catch (Exception ignored) {
                     }
                 }
@@ -354,11 +233,15 @@ public class StorageManager {
                 ItemStack[] cont = player.getInventory().getContents();
                 System.arraycopy(cont, 0, hotbar, 0, 4);
             }
-            PreparedStatement sql = connection.prepareStatement("UPDATE storage SET pack=?,locker=?,hotbar=? WHERE uuid=?");
-            sql.setBytes(1, serial(bp.getContents()));
-            sql.setBytes(2, serial(locker.getInventory().getContents()));
-            sql.setBytes(3, serial(hotbar));
+            PreparedStatement sql = connection.prepareStatement("UPDATE storage2 SET pack=?,locker=?,hotbar=? WHERE uuid=? AND resort=?");
+            JsonArray parr = ItemUtil.getJsonFromArray(bp.getContents());
+            JsonArray larr = ItemUtil.getJsonFromArray(locker.getInventory().getContents());
+            JsonArray harr = ItemUtil.getJsonFromArray(hotbar);
+            sql.setString(1, parr.toString());
+            sql.setString(2, larr.toString());
+            sql.setString(3, harr.toString());
             sql.setString(4, player.getUniqueId().toString());
+            sql.setInt(5, ParkManager.resort.getId());
             sql.execute();
             sql.close();
         } catch (SQLException e) {
@@ -376,18 +259,19 @@ public class StorageManager {
         loadingLocker.add(player.getUniqueId());
     }
 
-    public ItemStack[] getHotbar(Player player) {
+    public ItemStack[] getHotbar(CPlayer player) {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT hotbar FROM storage WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("SELECT hotbar FROM storage2 WHERE uuid=? AND resort=?");
             sql.setString(1, player.getUniqueId().toString());
+            sql.setInt(2, ParkManager.resort.getId());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
                 return null;
             }
-            byte[] hot = result.getBytes("hotbar");
+            String json = result.getString("hotbar");
             result.close();
             sql.close();
-            return deserial(hot);
+            return ItemUtil.getInventoryFromJson(json);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -397,9 +281,10 @@ public class StorageManager {
     public void setValue(final UUID uuid, final String key, final String value) {
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE storage SET " + key + "=? WHERE uuid=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE storage2 SET " + key + "=? WHERE uuid=? AND resort=?");
                 sql.setString(1, value);
                 sql.setString(2, uuid.toString());
+                sql.setInt(3, ParkManager.resort.getId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {

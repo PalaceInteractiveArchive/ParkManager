@@ -1,5 +1,7 @@
 package network.palace.parkmanager.magicband;
 
+import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.InventoryType;
 import network.palace.parkmanager.utils.BandUtil;
@@ -19,7 +21,7 @@ public class CustomizeMenuClick {
         if (item == null) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
             ParkManager.shopManager.openMenu(player);
             return;

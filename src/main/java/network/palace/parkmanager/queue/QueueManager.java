@@ -1,10 +1,10 @@
 package network.palace.parkmanager.queue;
 
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Ride;
+import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.queue.tasks.NextRidersTask;
 import network.palace.parkmanager.queue.tasks.QueueTask;
@@ -14,12 +14,12 @@ import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import network.palace.parkmanager.handlers.RideCategory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -401,6 +401,6 @@ public class QueueManager {
 
     public void particle(Player player, Location loc) {
         Core.getPlayerManager().getPlayer(player).getParticles().send(loc.add(0.5, 0.5, 0.5),
-                EnumWrappers.Particle.SPELL_WITCH, 25, 0.2f, 0.2f, 0.2f, 1);
+                Particle.SPELL_WITCH, 25, 0.2f, 0.2f, 0.2f, 1);
     }
 }

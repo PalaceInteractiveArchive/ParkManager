@@ -1,7 +1,7 @@
 package network.palace.parkmanager.pixelator.renderer.types;
 
-import network.palace.parkmanager.pixelator.util.FilesystemCache;
 import network.palace.parkmanager.pixelator.renderer.ImageRenderer;
+import network.palace.parkmanager.pixelator.util.FilesystemCache;
 
 import java.awt.image.BufferedImage;
 

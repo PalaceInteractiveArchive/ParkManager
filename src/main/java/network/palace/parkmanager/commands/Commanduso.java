@@ -1,29 +1,38 @@
-package us.mcmagic.parkmanager.commands;
+package network.palace.parkmanager.commands;
 
+import network.palace.core.command.CommandException;
+import network.palace.core.command.CommandMeta;
+import network.palace.core.command.CommandPermission;
+import network.palace.core.command.CoreCommand;
+import network.palace.core.player.Rank;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.listeners.BlockEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mcmagic.parkmanager.ParkManager;
-import us.mcmagic.parkmanager.listeners.BlockEdit;
 
 /**
  * Created by Marc on 4/13/17.
  */
-public class Commanduso implements CommandExecutor {
+@CommandMeta(description = "USO-related features")
+@CommandPermission(rank = Rank.KNIGHT)
+public class Commanduso extends CoreCommand {
+
+    public Commanduso() {
+        super("uso");
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         if (args.length == 0) {
             helpMenu("main", sender);
-            return true;
+            return;
         }
         if (args[0].equalsIgnoreCase("reload")) {
             ParkManager.ripRideRockit.initialize();
             sender.sendMessage(ChatColor.GREEN + "Reloaded!");
-            return true;
+            return;
         }
         switch (args[0].toLowerCase()) {
             case "rrr": {
@@ -32,17 +41,17 @@ public class Commanduso implements CommandExecutor {
                         case "choose": {
                             Player p = Bukkit.getPlayer(args[2]);
                             ParkManager.ripRideRockit.chooseSong(p);
-                            return true;
+                            return;
                         }
                         case "start": {
                             Player p = Bukkit.getPlayer(args[2]);
                             ParkManager.ripRideRockit.startSong(p);
-                            return true;
+                            return;
                         }
                     }
                 }
                 helpMenu("rrr", sender);
-                return true;
+                return;
             }
             case "mib": {
                 if (args.length > 2) {
@@ -52,24 +61,23 @@ public class Commanduso implements CommandExecutor {
                             if (BlockEdit.isInBuildMode(p.getUniqueId())) {
                                 p.performCommand("build");
                                 Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> ParkManager.menInBlack.join(p), 20L);
-                                return true;
+                                return;
                             }
                             ParkManager.menInBlack.join(p);
-                            return true;
+                            return;
                         }
                         case "remove": {
                             Player p = Bukkit.getPlayer(args[2]);
                             ParkManager.menInBlack.done(p);
-                            return true;
+                            return;
                         }
                     }
                 }
                 helpMenu("mib", sender);
-                return true;
+                return;
             }
         }
         helpMenu("main", sender);
-        return true;
     }
 
     private static void helpMenu(String menu, CommandSender sender) {

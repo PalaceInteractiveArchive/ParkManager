@@ -7,9 +7,9 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import network.palace.parkmanager.utils.FileUtil;
 
 @CommandMeta(description = "Set spawn location")
 @CommandPermission(rank = Rank.WIZARD)

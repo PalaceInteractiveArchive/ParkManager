@@ -3,7 +3,10 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.hotels.HotelManager;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -11,8 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.hotels.HotelManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,10 +84,24 @@ public class BlockEdit implements Listener {
 
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
+        if (event.getBlockPlaced().getType().equals(Material.THIN_GLASS)) {
+            Location loc = player.getLocation();
+            if (loc.getBlock().getType().equals(Material.AIR) && (loc.clone().add(0, -0.5, 0).getBlock()
+                    .getType().equals(Material.THIN_GLASS) && loc.clone().add(0, -0.5, 0).getBlock()
+                    .getLocation().equals(event.getBlockPlaced().getLocation()))) {
+                Location loc2 = loc.clone().add(0, -1, 0);
+                if (loc2.getBlock().getType().isSolid()) {
+                    Location target = new Location(loc2.getWorld(), loc2.getX(), loc2.getBlock().getLocation().clone()
+                            .add(0, 1, 0).getY(), loc2.getZ(), loc2.getYaw(), loc2.getPitch());
+                    player.teleport(target);
+                }
+            }
+        }
+
         if (cplayer.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
             event.setCancelled(true);
         } else {

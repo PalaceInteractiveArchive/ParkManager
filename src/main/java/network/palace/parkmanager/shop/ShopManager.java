@@ -1,6 +1,7 @@
 package network.palace.parkmanager.shop;
 
 import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
@@ -8,6 +9,8 @@ import network.palace.parkmanager.handlers.InventoryType;
 import network.palace.parkmanager.handlers.Outfit;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkmanager.utils.BandUtil;
+import network.palace.parkmanager.utils.WarpUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,8 +22,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.utils.BandUtil;
-import network.palace.parkmanager.utils.WarpUtil;
 
 import java.io.File;
 import java.util.*;
@@ -93,7 +94,7 @@ public class ShopManager {
         }
     }
 
-    public boolean isNearShop(Player player, Shop shop, int distance) {
+    public boolean isNearShop(CPlayer player, Shop shop, int distance) {
         return shop.getLocation().distance(player.getLocation()) <= distance;
     }
 
@@ -134,8 +135,8 @@ public class ShopManager {
         return menu;
     }
 
-    public Inventory getMenu(Player player) {
-        Inventory main = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop");
+    public Inventory getMenu(CPlayer player) {
+        Inventory main = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.GREEN + "Shop");
         main.setItem(22, BandUtil.getBackItem());
         ItemStack storage = ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Storage Shop",
                 Arrays.asList(ChatColor.YELLOW + "Purchase up to 3 extra rows in your ", ChatColor.AQUA + "Backpack " +
@@ -182,7 +183,7 @@ public class ShopManager {
     }
 
     @SuppressWarnings("deprecation")
-    public void openCategory(Player player, Shop shop, ShopCategory category) {
+    public void openCategory(CPlayer player, Shop shop, ShopCategory category) {
         if (category.equals(ShopCategory.WARDROBE)) {
             openWardrobe(player, shop);
             return;
@@ -192,7 +193,7 @@ public class ShopManager {
         if (title.length() > 32) {
             title = title.substring(0, 32);
         }
-        Inventory menu = Bukkit.createInventory(player, 27, title);
+        Inventory menu = Bukkit.createInventory(player.getBukkitPlayer(), 27, title);
         if (items.isEmpty()) {
             menu.setItem(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED +
                     "No items are currently available in this category!"));
@@ -229,12 +230,12 @@ public class ShopManager {
         player.openInventory(menu);
     }
 
-    private void openWardrobe(Player player, Shop shop) {
+    private void openWardrobe(CPlayer player, Shop shop) {
         String title = ChatColor.GREEN + "Shop - " + shop.getName() + ChatColor.GREEN + " - " + "Wardrobe";
         if (title.length() > 32) {
             title = title.substring(0, 32);
         }
-        Inventory inv = Bukkit.createInventory(player, 27, title);
+        Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, title);
         List<OutfitItem> outfits = shop.getOutfits();
         if (outfits.isEmpty()) {
             inv.setItem(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED +
@@ -277,7 +278,7 @@ public class ShopManager {
         player.openInventory(inv);
     }
 
-    public void openMenu(Player player) {
+    public void openMenu(CPlayer player) {
         Shop shop = null;
         for (Shop s : shops) {
             if (isNearShop(player, s, 20)) {
@@ -293,15 +294,15 @@ public class ShopManager {
         openMenu(player, shop);
     }
 
-    public void openMenu(Player player, Shop shop) {
-        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + shop.getName());
+    public void openMenu(CPlayer player, Shop shop) {
+        Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.GREEN + "Shop - " + shop.getName());
         inv.setItem(11, ShopCategory.WARDROBE.getStack());
         inv.setItem(13, ShopCategory.TOYS.getStack());
         inv.setItem(15, ShopCategory.DOLLS.getStack());
         player.openInventory(inv);
     }
 
-    public void openMenu(Player player, String shopName) {
+    public void openMenu(CPlayer player, String shopName) {
         Shop shop = getShop(shopName);
         if (shop == null) {
             player.sendMessage(ChatColor.RED + "There was an error opening that Shop menu!");
@@ -315,7 +316,7 @@ public class ShopManager {
         if (stack == null) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         ItemMeta meta = stack.getItemMeta();
         if (meta == null) {
             return;
@@ -355,7 +356,7 @@ public class ShopManager {
         }
     }
 
-    private void purchaseOutfit(Player player, Shop shop, String name, InventoryClickEvent event) {
+    private void purchaseOutfit(CPlayer player, Shop shop, String name, InventoryClickEvent event) {
         List<OutfitItem> items = new ArrayList<>();
         items.addAll(shop.getOutfits());
         Outfit ou = null;
@@ -461,10 +462,10 @@ public class ShopManager {
         }
     }
 
-    public void openConfirm(Player player, Object item) {
+    public void openConfirm(CPlayer player, Object item) {
         if (item instanceof ShopItem) {
             ShopItem itm = (ShopItem) item;
-            Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
+            Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
             ItemStack name = ItemUtil.create(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
                     Arrays.asList(ChatColor.GREEN + "You are about to purchase", itm.getDisplayName(), ChatColor.GREEN +
                             "for " + ChatColor.YELLOW + itm.getCurrencyType().getIcon() + itm.getCost() + ChatColor.GREEN + "."));
@@ -483,7 +484,7 @@ public class ShopManager {
         } else if (item instanceof OutfitItem) {
             OutfitItem itm = (OutfitItem) item;
             Outfit o = ParkManager.wardrobeManager.getOutfit(itm.getOutfitId());
-            Inventory inv = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
+            Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
             ItemStack name = ItemUtil.create(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
                     Arrays.asList(ChatColor.GREEN + "You are about to purchase the ", o.getName() + " Outfit", ChatColor.GREEN +
                             "for " + ChatColor.YELLOW + CurrencyType.TOKEN.getIcon() + itm.getCost() + ChatColor.GREEN + "."));

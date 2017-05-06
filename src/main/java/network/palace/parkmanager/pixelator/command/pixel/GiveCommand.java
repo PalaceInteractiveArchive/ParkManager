@@ -1,13 +1,13 @@
 package network.palace.parkmanager.pixelator.command.pixel;
 
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.pixelator.command.CommandDetails;
 import network.palace.parkmanager.pixelator.command.ICommand;
 import network.palace.parkmanager.pixelator.renderer.types.MapImageRenderer;
 import network.palace.parkmanager.pixelator.util.PlayerUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import network.palace.parkmanager.pixelator.command.CommandDetails;
 
 @CommandDetails(
         name = "give",

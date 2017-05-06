@@ -8,7 +8,6 @@ import network.palace.parkmanager.ParkManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -32,7 +31,7 @@ public class AutographManager {
     public void setBook(UUID uuid) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta bm = (BookMeta) book.getItemMeta();
-        bm.addPage("This is your Palace Autograph Book! Find Characters and they will sign it for you!");
+        bm.addPage("This is your Palace Network Autograph Book! Find Characters and they will sign it for you!");
         List<Signature> list = getSignatures(uuid);
         for (Signature sign : list) {
             String name = "";
@@ -91,7 +90,7 @@ public class AutographManager {
         return list;
     }
 
-    public void giveBook(Player player) {
+    public void giveBook(CPlayer player) {
         ItemStack book = books.remove(player.getUniqueId());
         if (book == null) {
             return;
@@ -102,7 +101,7 @@ public class AutographManager {
         player.getInventory().setItem(7, book);
     }
 
-    public void logout(Player player) {
+    public void logout(CPlayer player) {
         if (map.containsKey(player.getUniqueId())) {
             UUID tuuid = map.remove(player.getUniqueId());
             cancelTimer(player.getUniqueId());
@@ -153,7 +152,7 @@ public class AutographManager {
             return;
         }
         setBook(tp.getUniqueId());
-        giveBook(tp.getBukkitPlayer());
+        giveBook(player);
         tp.sendMessage(player.getRank().getTagColor() + player.getName() + ChatColor.GREEN +
                 " has signed your Autograph Book!");
         tp.giveAchievement(1);
@@ -297,7 +296,7 @@ public class AutographManager {
                 e.printStackTrace();
             }
             setBook(player.getUniqueId());
-            giveBook(player.getBukkitPlayer());
+            giveBook(player);
             player.sendMessage(ChatColor.GREEN + "You removed the Autograph on " + ChatColor.YELLOW + "Page #" + num);
         });
     }

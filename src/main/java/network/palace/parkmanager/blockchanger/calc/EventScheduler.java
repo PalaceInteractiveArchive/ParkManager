@@ -1,11 +1,11 @@
 package network.palace.parkmanager.blockchanger.calc;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import network.palace.parkmanager.blockchanger.calc.events.ChunkPostProcessingEvent;
 import network.palace.parkmanager.blockchanger.calc.events.ItemConvertingEvent;
 import network.palace.parkmanager.blockchanger.calc.lookup.SegmentLookup;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 
 public class EventScheduler {

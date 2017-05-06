@@ -1,7 +1,7 @@
 package network.palace.parkmanager.pixelator.renderer.util;
 
-import org.bukkit.entity.Player;
 import network.palace.parkmanager.pixelator.renderer.ImageRenderer;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;

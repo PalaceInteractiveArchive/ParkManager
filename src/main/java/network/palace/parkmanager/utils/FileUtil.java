@@ -54,18 +54,28 @@ public class FileUtil {
         return YamlConfiguration.loadConfiguration(shopsFile());
     }
 
+    public static String getResort() {
+        return configurationYaml().getString("resort");
+    }
+
     public static void setupConfig() {
         try {
             File file = FileUtil.configurationFile();
             if (file.exists()) {
+                YamlConfiguration config = new YamlConfiguration().loadConfiguration(file);
+                if (!config.contains("resort")) {
+                    config.set("resort", "wdw");
+                    config.save(file);
+                }
                 return;
             }
-            if (file.createNewFile()) {
+            if (!file.createNewFile()) {
                 return;
             }
             YamlConfiguration config = configurationYaml();
             config.set("server-name", "Hub");
-            config.set("transfer-inventories", "false");
+            config.set("resort", "wdw");
+            config.save(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

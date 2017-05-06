@@ -44,12 +44,13 @@ public class PlayerInteract implements Listener {
             .then("World Leader in Minecraft Server Hosting! ").color(ChatColor.GREEN).style(ChatColor.ITALIC)
             .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
             .style(ChatColor.UNDERLINE).link("https://palace.network/mcph").tooltip(ChatColor.DARK_AQUA +
-                    "Click to purchase a server using the Palace Network's 15%-OFF Discount!");
+                    "Click to purchase a server using Palace's 15%-OFF Discount!");
     private boolean dl = Core.getServerType().equalsIgnoreCase("dlr");
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         Action action = event.getAction();
         Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
@@ -162,7 +163,7 @@ public class PlayerInteract implements Listener {
                 }
                 if (s.getLine(0).equals(shop)) {
                     String shop = ChatColor.stripColor(s.getLine(1));
-                    ParkManager.shopManager.openMenu(player, shop);
+                    ParkManager.shopManager.openMenu(cp, shop);
                     return;
                 }
                 if (s.getLine(0).equals(queue) || s.getLine(0).equals(fastpass) || s.getLine(0).equals(wait)) {

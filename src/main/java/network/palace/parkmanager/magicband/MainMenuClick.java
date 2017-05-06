@@ -6,6 +6,7 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.InventoryType;
 import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.utils.BandUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -75,13 +76,17 @@ public class MainMenuClick {
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERTIME);
                 return;
             case GOLD_BOOTS:
-                ParkManager.shopManager.openMenu(player.getBukkitPlayer());
+                ParkManager.shopManager.openMenu(player);
                 return;
             case POTATO_ITEM:
                 ParkManager.inventoryUtil.openFoodMenuPage(player.getBukkitPlayer(), 1);
                 return;
             case NETHER_STAR:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK);
+                if (ParkManager.isResort(Resort.WDW)) {
+                    ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_WDW);
+                } else {
+                    ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_ALL);
+                }
         }
     }
 }

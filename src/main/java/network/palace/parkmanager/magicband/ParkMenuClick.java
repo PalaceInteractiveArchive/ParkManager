@@ -4,12 +4,12 @@ import network.palace.core.Core;
 import network.palace.core.dashboard.packets.dashboard.PacketSendToServer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.InventoryType;
+import network.palace.parkmanager.utils.BandUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.utils.BandUtil;
 
 /**
  * Created by Marc on 12/15/14
@@ -25,8 +25,13 @@ public class ParkMenuClick {
             return;
         }
         Player player = (Player) event.getWhoClicked();
+        boolean all = !event.getInventory().getTitle().endsWith("WDW");
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            if (all) {
+                ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            } else {
+                ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_ALL);
+            }
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -84,6 +89,19 @@ public class ParkMenuClick {
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Seasonal...");
                 Core.getDashboardConnection().send(new PacketSendToServer(player.getUniqueId(), "Seasonal"));
+                return;
+            case "Walt Disney World Resort":
+                ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_WDW);
+                return;
+            case "Disneyland Resort":
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Disneyland Resort...");
+                Core.getDashboardConnection().send(new PacketSendToServer(player.getUniqueId(), "DLR"));
+                return;
+            case "Universal Orlando Resort":
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Universal Orlando Resort...");
+                Core.getDashboardConnection().send(new PacketSendToServer(player.getUniqueId(), "USO"));
                 return;
             default:
                 player.closeInventory();

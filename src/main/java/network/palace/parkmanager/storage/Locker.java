@@ -1,8 +1,8 @@
 package network.palace.parkmanager.storage;
 
+import network.palace.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,10 +16,10 @@ public class Locker {
     private StorageSize size;
     private Inventory inv;
 
-    public Locker(Player player, StorageSize size, ItemStack[] contents) {
+    public Locker(CPlayer player, StorageSize size, ItemStack[] contents) {
         this.uuid = player.getUniqueId();
         this.size = size;
-        inv = Bukkit.createInventory(player, size.getRows() * 9, ChatColor.BLUE + "Your Locker");
+        inv = Bukkit.createInventory(player.getBukkitPlayer(), size.getRows() * 9, ChatColor.BLUE + "Your Locker");
         if (contents != null) {
             inv.setContents(contents);
         }

@@ -4,6 +4,13 @@ import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.designstation.DesignStation;
+import network.palace.parkmanager.handlers.HotelRoom;
+import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.watch.WatchTask;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,13 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.designstation.DesignStation;
-import network.palace.parkmanager.handlers.HotelRoom;
-import network.palace.parkmanager.handlers.PlayerData;
-import network.palace.parkmanager.handlers.Warp;
-import network.palace.parkmanager.hotels.HotelManager;
-import network.palace.parkmanager.watch.WatchTask;
 
 import java.util.*;
 
@@ -106,6 +106,10 @@ public class PlayerJoinAndLeave implements Listener {
         CPlayer user = Core.getPlayerManager().getPlayer(player.getUniqueId());
         if (user == null) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+        if (Bukkit.hasWhitelist() && user.getRank().getRankId() < Rank.SQUIRE.getRankId()) {
+            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
             return;
         }
         // If Disneyland and user rank is below Noble, don't allow them to connect
@@ -220,7 +224,7 @@ public class PlayerJoinAndLeave implements Listener {
             if (c.getBoots() != null) {
                 inv.setBoots(c.getBoots());
             }
-            setInventory(player, false);
+            setInventory(cp, false);
             if ((Core.getServerType().equalsIgnoreCase("dlr")) &&
                     cp.getRank().getRankId() >= Rank.NOBLE.getRankId() && cp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 player.setGameMode(GameMode.ADVENTURE);
@@ -267,11 +271,11 @@ public class PlayerJoinAndLeave implements Listener {
         inv.setBoots(air);
     }
 
-    public void setInventory(Player player, boolean book) {
+    public void setInventory(CPlayer player, boolean book) {
         Inventory inv = player.getInventory();
         ItemStack[] barrier = new ItemStack[36];
         for (int i = 9; i < barrier.length; i++) {
-            barrier[i] = ItemUtil.create(Material.INK_SACK, 1, (byte) 7, ChatColor.RED + "You can't use this area!",
+            barrier[i] = ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.RED + "You can't use this area!",
                     Arrays.asList(ChatColor.GREEN + "Use your Backpack for Storage."));
         }
         inv.setContents(barrier);
@@ -282,7 +286,7 @@ public class PlayerJoinAndLeave implements Listener {
             ParkManager.autographManager.giveBook(player);
         }
         ParkManager.bandUtil.giveBandToPlayer(player);
-        inv.setItem(4, ItemUtil.create(Material.INK_SACK, 1, (byte) 7, ChatColor.GRAY +
+        inv.setItem(4, ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +
                 "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
                 "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
                 "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
@@ -326,6 +330,7 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
         ParkManager.storageManager.logout(player);
         if (player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -335,7 +340,7 @@ public class PlayerJoinAndLeave implements Listener {
         }
         BlockEdit.logout(player.getUniqueId());
         ParkManager.queueManager.silentLeaveAllQueues(player);
-        ParkManager.autographManager.logout(player);
+        ParkManager.autographManager.logout(cp);
         ParkManager.bandUtil.cancelLoadPlayerData(player.getUniqueId());
         ParkManager.visibilityUtil.logout(Core.getPlayerManager().getPlayer(player));
         WatchTask.removeFromMessage(player.getUniqueId());

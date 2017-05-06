@@ -4,24 +4,15 @@ import lombok.Setter;
 import network.palace.core.Core;
 import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
-import network.palace.parkmanager.commands.*;
-import network.palace.parkmanager.handlers.*;
-import network.palace.parkmanager.hotels.HotelManager;
-import network.palace.parkmanager.listeners.*;
-import network.palace.parkmanager.stitch.Stitch;
-import network.palace.parkmanager.utils.*;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 import network.palace.parkmanager.autograph.AutographManager;
 import network.palace.parkmanager.blockchanger.BlockChanger;
+import network.palace.parkmanager.commands.*;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.fastpasskiosk.FPKioskManager;
+import network.palace.parkmanager.handlers.*;
+import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.pixelator.Pixelator;
 import network.palace.parkmanager.queue.QueueManager;
 import network.palace.parkmanager.queue.QueueRide;
@@ -32,9 +23,20 @@ import network.palace.parkmanager.shooter.Shooter;
 import network.palace.parkmanager.shop.ShopManager;
 import network.palace.parkmanager.shop.WardrobeManager;
 import network.palace.parkmanager.show.schedule.ScheduleManager;
+import network.palace.parkmanager.stitch.Stitch;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.tsm.ToyStoryMania;
+import network.palace.parkmanager.uso.mib.MenInBlack;
+import network.palace.parkmanager.uso.rrr.RipRideRockit;
+import network.palace.parkmanager.utils.*;
 import network.palace.parkmanager.watch.WatchTask;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -44,11 +46,12 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@PluginInfo(name = "ParkManager", version = "2.0", depend = {"Core", "ProtocolLib", "WorldEdit"})
+@PluginInfo(name = "ParkManager", version = "2.1", depend = {"Core", "ProtocolLib", "WorldEdit"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     public static List<FoodLocation> foodLocations = new ArrayList<>();
     public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
+    public static Resort resort;
     public static Stitch stitch;
     public static List<Warp> warps = new ArrayList<>();
     public static List<Ride> rides = new ArrayList<>();
@@ -81,6 +84,8 @@ public class ParkManager extends Plugin implements Listener {
     public static Pixelator pixelator;
     public static FPKioskManager fpKioskManager;
     public static ToyStoryMania toyStoryMania;
+    public static MenInBlack menInBlack;
+    public static RipRideRockit ripRideRockit;
     @Setter private String activityURL;
     @Setter private String activityUser;
     @Setter private String activityPassword;
@@ -102,10 +107,10 @@ public class ParkManager extends Plugin implements Listener {
         blockChanger = new BlockChanger();
         wardrobeManager = new WardrobeManager();
         playerJoinAndLeave = new PlayerJoinAndLeave();
+        resort = Resort.fromString(FileUtil.getResort());
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        saveConfig();
         FileUtil.setupConfig();
         /*
         try {
@@ -331,6 +336,10 @@ public class ParkManager extends Plugin implements Listener {
                 b.getType().equals(Material.WALL_SIGN);
     }
 
+    public static boolean isResort(Resort resort) {
+        return ParkManager.resort.equals(resort);
+    }
+
     public void registerCommands() {
         registerCommand(new Commandautograph());
         registerCommand(new Commandb());
@@ -364,6 +373,7 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new Commandsmite());
         registerCommand(new Commandspawn());
         registerCommand(new Commandtp());
+        registerCommand(new Commanduso());
     }
 
     public void registerListeners() {
@@ -384,20 +394,29 @@ public class ParkManager extends Plugin implements Listener {
         registerListener(new SignChange());
         registerListener(new PacketListener());
         registerListener(new ResourceListener());
-        if (Core.getServerType().equals("MK")) {
-            registerListener(stitch);
+        switch (resort) {
+            case WDW: {
+                if (Core.getServerType().equals("MK")) {
+                    registerListener(stitch);
+                }
+                if (getConfig().getBoolean("shooter-enabled")) {
+                    shooter = new Shooter(this);
+                    registerListener(shooter);
+                    MessageTimer.start();
+                }
+                if (Core.getServerType().equalsIgnoreCase("dhs")) {
+                    registerListener(new TowerManager(Bukkit.getWorlds().get(0)));
+                    toyStoryMania = new ToyStoryMania();
+                    registerListener(toyStoryMania);
+                }
+                break;
+            }
+            case USO: {
+                menInBlack = new MenInBlack();
+                registerListener(menInBlack);
+                ripRideRockit = new RipRideRockit();
+                break;
+            }
         }
-        if (getConfig().getBoolean("shooter-enabled")) {
-            shooter = new Shooter(this);
-            registerListener(shooter);
-            MessageTimer.start();
-        }
-        if (Core.getServerType().equals("MK")) {
-            registerListener(new TowerManager(Bukkit.getWorlds().get(0)));
-            toyStoryMania = new ToyStoryMania();
-            registerListener(toyStoryMania);
-        }
-        //pm.registerEvents(blockChanger, this);
-        //pm.registerEvents(rideManager, this);
     }
 }

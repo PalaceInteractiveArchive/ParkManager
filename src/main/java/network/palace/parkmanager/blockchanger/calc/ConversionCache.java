@@ -1,10 +1,10 @@
 package network.palace.parkmanager.blockchanger.calc;
 
 import com.google.common.collect.MapMaker;
-import network.palace.parkmanager.blockchanger.calc.lookup.SphericalBuffer;
-import org.bukkit.entity.Player;
 import network.palace.parkmanager.blockchanger.calc.lookup.ConversionLookup;
 import network.palace.parkmanager.blockchanger.calc.lookup.SegmentLookup;
+import network.palace.parkmanager.blockchanger.calc.lookup.SphericalBuffer;
+import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;

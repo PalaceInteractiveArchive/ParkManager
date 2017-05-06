@@ -1,14 +1,15 @@
 package network.palace.parkmanager.magicband;
 
+import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.BandColor;
 import network.palace.parkmanager.handlers.InventoryType;
+import network.palace.parkmanager.utils.BandUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.utils.BandUtil;
 
 /**
  * Created by Marc on 12/21/14
@@ -23,7 +24,7 @@ public class CustomBandClick {
         if (item.getItemMeta() == null) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
             ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
             return;

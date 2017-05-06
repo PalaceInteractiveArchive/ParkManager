@@ -1,11 +1,11 @@
 package network.palace.parkmanager.pixelator.renderer.types;
 
 import network.palace.parkmanager.ParkManager;
-import org.bukkit.entity.Player;
 import network.palace.parkmanager.pixelator.renderer.ImageRenderer;
 import network.palace.parkmanager.pixelator.renderer.SourceType;
 import network.palace.parkmanager.pixelator.renderer.util.ImageUtil;
 import network.palace.parkmanager.pixelator.util.FilesystemCache;
+import org.bukkit.entity.Player;
 
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicBoolean;

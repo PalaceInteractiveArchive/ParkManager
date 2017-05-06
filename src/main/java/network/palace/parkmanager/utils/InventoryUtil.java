@@ -38,7 +38,7 @@ public class InventoryUtil {
             Arrays.asList(ChatColor.GREEN + "Watch one of the", ChatColor.GREEN + "famous " + ChatColor.AQUA +
                     "Palace " + ChatColor.GREEN + "Shows!"));
     private ItemStack hnr = ItemUtil.create(Material.BED, ChatColor.GREEN + "Hotels and Resorts ",
-            Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Walt Disney World Resort!"));
+            Arrays.asList(ChatColor.GREEN + "Visit and rent a room from", ChatColor.GREEN + "a Resort!"));
     private ItemStack toggleon = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.AQUA + "Guest Visibility " +
             ChatColor.GOLD + "➠ " + ChatColor.RED + "Hidden", Collections.singletonList(ChatColor.GREEN +
             "Click to show Guests!"));
@@ -55,11 +55,11 @@ public class InventoryUtil {
     private ItemStack ttc = ItemUtil.create(Material.ENDER_PEARL, ChatColor.GREEN + "Transportation and Ticket Center",
             Arrays.asList(ChatColor.GREEN + "Return to the Transportation", ChatColor.GREEN + "and Ticket Center!"));
     private ItemStack parks = ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Park Menu", Arrays.asList(
-            ChatColor.GREEN + "Visit one of the Walt", ChatColor.GREEN + "Disney World Parks!"));
+            ChatColor.GREEN + "Visit our theme parks!"));
     private ItemStack custom = ItemUtil.create(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Customize your MagicBand",
             Arrays.asList(ChatColor.GREEN + "Make your MagicBand", ChatColor.GREEN + "perfect for you!"));
     private ItemStack arcade = ItemUtil.create(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Arcade", Arrays.asList(
-            ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "Palace Mini-Games!"));
+            ChatColor.YELLOW + "Play some unique", ChatColor.YELLOW + "Palace Arcade Games!"));
     private ItemStack creative = ItemUtil.create(Material.GRASS, ChatColor.GREEN + "Creative", Arrays.asList(
             ChatColor.YELLOW + "Create your", ChatColor.GREEN + "own " + ChatColor.RED + "M" + ChatColor.GOLD + "a"
                     + ChatColor.YELLOW + "g" + ChatColor.DARK_GREEN + "i" + ChatColor.BLUE + "c" + ChatColor.LIGHT_PURPLE + "!"));
@@ -78,16 +78,22 @@ public class InventoryUtil {
             Collections.singletonList(ChatColor.GREEN + "/join Typhoon"));
     private ItemStack dcl = ItemUtil.create(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line",
             Collections.singletonList(ChatColor.GREEN + "/join DCL"));
+    private ItemStack wdw = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Walt Disney World Resort",
+            Collections.singletonList(ChatColor.GREEN + "/join TTC"));
+    private ItemStack dlr = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Disneyland Resort",
+            Collections.singletonList(ChatColor.GREEN + "/join DLR"));
+    private ItemStack uso = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Universal Orlando Resort",
+            Collections.singletonList(ChatColor.GREEN + "/join USO"));
     private ItemStack seasonal = ItemUtil.create(Material.RED_ROSE, 1, (byte) 2, ChatColor.AQUA +
             "Seasonal", Arrays.asList(ChatColor.GREEN + "/join Seasonal"));
     //My Profile
-    private ItemStack dvc = ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Make a Donation!");
+    private ItemStack store = ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Store");
     private ItemStack web = ItemUtil.create(Material.REDSTONE, ChatColor.GREEN + "Website");
     private ItemStack locker = ItemUtil.create(Material.ENDER_CHEST, ChatColor.GREEN + "Locker");
     private ItemStack ach = ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Achievements");
     private ItemStack rc = ItemUtil.create(Material.EMERALD, ChatColor.GREEN + "Ride Counter");
-    private ItemStack mumble = ItemUtil.create(Material.COMPASS, ChatColor.GREEN + "Mumble");
-    private ItemStack packs = ItemUtil.create(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource/Audio Packs");
+    private ItemStack discord = ItemUtil.create(Material.COMPASS, ChatColor.GREEN + "Discord");
+    private ItemStack packs = ItemUtil.create(Material.NOTE_BLOCK, ChatColor.GREEN + "Resource Packs");
     private ItemStack prefs = ItemUtil.create(Material.DIODE, ChatColor.GREEN + "Player Settings");
     //Pages
     private ItemStack nextPage = ItemUtil.create(Material.ARROW, ChatColor.GREEN + "Next Page");
@@ -271,9 +277,11 @@ public class InventoryUtil {
             Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
             switch (inv) {
                 case MAINMENU: {
-                    Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE + player.getName() + "'s MagicBand");
+                    Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE + player.getName() +
+                            (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "'s MagicBand" :
+                                    (ParkManager.isResort(Resort.USO) ? "'s Power Pass" : "")));
                     ItemStack playerInfo = HeadUtil.getPlayerHead(Core.getPlayerManager().getPlayer(player.getUniqueId())
-                            .getTextureHash(), ChatColor.GREEN + "My Profile");
+                            .getTextureValue(), ChatColor.GREEN + "My Profile");
                     ItemMeta im = playerInfo.getItemMeta();
                     im.setLore(Collections.singletonList(ChatColor.GRAY + "Loading..."));
                     playerInfo.setItemMeta(im);
@@ -305,8 +313,8 @@ public class InventoryUtil {
                     ParkManager.bandUtil.loadPlayerData(player);
                     return;
                 }
-                case PARK: {
-                    Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
+                case PARK_WDW: {
+                    Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu - WDW");
                     park.setItem(2, arcade);
                     park.setItem(4, ttc);
                     park.setItem(6, creative);
@@ -316,6 +324,19 @@ public class InventoryUtil {
                     park.setItem(13, ak);
                     park.setItem(14, tl);
                     park.setItem(15, dcl);
+                    park.setItem(16, seasonal);
+                    park.setItem(22, BandUtil.getBackItem());
+                    player.openInventory(park);
+                    return;
+                }
+                case PARK_ALL: {
+                    Inventory park = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Park Menu");
+                    park.setItem(2, arcade);
+                    park.setItem(4, ttc);
+                    park.setItem(6, creative);
+                    park.setItem(10, wdw);
+                    park.setItem(12, dlr);
+                    park.setItem(14, uso);
                     park.setItem(16, seasonal);
                     park.setItem(22, BandUtil.getBackItem());
                     player.openInventory(park);
@@ -380,12 +401,12 @@ public class InventoryUtil {
                 case MYPROFILE: {
                     Inventory pmenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Profile");
                     pmenu.setItem(10, web);
-                    pmenu.setItem(11, dvc);
+                    pmenu.setItem(11, store);
                     pmenu.setItem(12, packs);
                     pmenu.setItem(13, ach);
                     pmenu.setItem(14, rc);
                     pmenu.setItem(15, prefs);
-                    pmenu.setItem(16, mumble);
+                    pmenu.setItem(16, discord);
                     pmenu.setItem(22, BandUtil.getBackItem());
                     player.openInventory(pmenu);
                     return;

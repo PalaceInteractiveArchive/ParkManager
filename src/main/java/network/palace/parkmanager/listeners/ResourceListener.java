@@ -5,11 +5,11 @@ import network.palace.core.events.CurrentPackReceivedEvent;
 import network.palace.core.player.CPlayer;
 import network.palace.core.resource.ResourceStatusEvent;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import network.palace.parkmanager.handlers.PlayerData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +37,7 @@ public class ResourceListener implements Listener {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            } else {
+            } else if (!preferred.equals("yes")) {
                 //Choose a pack
                 player.sendMessage(ChatColor.GREEN + "Please choose a Resource Pack setting for Theme Parks.");
                 Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () ->

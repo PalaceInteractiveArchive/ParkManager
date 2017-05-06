@@ -1,12 +1,12 @@
 package network.palace.parkmanager.pixelator.command.pixel;
 
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.pixelator.command.CommandDetails;
 import network.palace.parkmanager.pixelator.command.ICommand;
 import network.palace.parkmanager.pixelator.renderer.SourceType;
 import network.palace.parkmanager.pixelator.renderer.types.MapImageRenderer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
-import network.palace.parkmanager.pixelator.command.CommandDetails;
 
 import java.util.Arrays;
 

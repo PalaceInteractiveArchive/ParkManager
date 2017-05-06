@@ -1,8 +1,8 @@
 package network.palace.parkmanager.queue.mng;
 
+import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.parkmanager.queue.QueueRide;
 import org.bukkit.Location;
-import network.palace.parkmanager.handlers.RideCategory;
 
 /**
  * Created by Marc on 3/26/16

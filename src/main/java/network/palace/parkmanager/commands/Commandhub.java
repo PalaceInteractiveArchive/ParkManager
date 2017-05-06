@@ -3,11 +3,11 @@ package network.palace.parkmanager.commands;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
+import network.palace.parkmanager.ParkManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import network.palace.parkmanager.ParkManager;
 
 /**
  * Created by Marc on 3/10/15

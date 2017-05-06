@@ -9,13 +9,11 @@ public class DataResponse {
     private UUID uuid;
     private int balance;
     private int tokens;
-    private String onlineTime;
 
-    public DataResponse(UUID uuid, int balance, int tokens, String onlineTime) {
+    public DataResponse(UUID uuid, int balance, int tokens) {
         this.uuid = uuid;
         this.balance = balance;
         this.tokens = tokens;
-        this.onlineTime = onlineTime;
     }
 
     public UUID getUniqueId() {
@@ -28,9 +26,5 @@ public class DataResponse {
 
     public int getTokens() {
         return tokens;
-    }
-
-    public String getOnlineTime() {
-        return onlineTime;
     }
 }

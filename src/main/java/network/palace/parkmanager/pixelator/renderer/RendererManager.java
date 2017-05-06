@@ -1,6 +1,11 @@
 package network.palace.parkmanager.pixelator.renderer;
 
 import network.palace.core.Core;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.pixelator.manager.Manager;
+import network.palace.parkmanager.pixelator.reader.CompressedStringReader;
+import network.palace.parkmanager.pixelator.renderer.types.MapImageRenderer;
+import network.palace.parkmanager.pixelator.renderer.util.RendererList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -13,11 +18,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.pixelator.manager.Manager;
-import network.palace.parkmanager.pixelator.reader.CompressedStringReader;
-import network.palace.parkmanager.pixelator.renderer.types.MapImageRenderer;
-import network.palace.parkmanager.pixelator.renderer.util.RendererList;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

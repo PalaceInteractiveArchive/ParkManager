@@ -1,8 +1,8 @@
 package network.palace.parkmanager.show.schedule;
 
 
-import network.palace.parkmanager.show.handlers.ShowType;
 import network.palace.parkmanager.show.handlers.ShowDay;
+import network.palace.parkmanager.show.handlers.ShowType;
 
 /**
  * Created by Marc on 10/29/15

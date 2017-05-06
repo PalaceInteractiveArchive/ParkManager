@@ -1,9 +1,9 @@
 package network.palace.parkmanager.pixelator.command.pixel;
 
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.pixelator.command.CommandDetails;
 import network.palace.parkmanager.pixelator.command.ICommand;
 import org.bukkit.command.CommandSender;
-import network.palace.parkmanager.pixelator.command.CommandDetails;
 
 @CommandDetails(
         name = "help",

@@ -1,9 +1,9 @@
 package network.palace.parkmanager.blockchanger.calc.events;
 
+import network.palace.parkmanager.blockchanger.calc.lookup.SegmentLookup;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import network.palace.parkmanager.blockchanger.calc.lookup.SegmentLookup;
 
 
 /**

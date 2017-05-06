@@ -1,11 +1,11 @@
 package network.palace.parkmanager.queue.tot;
 
+import network.palace.parkmanager.handlers.RideCategory;
+import network.palace.parkmanager.queue.QueueRide;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.queue.QueueRide;
 
 import java.util.ArrayList;
 import java.util.List;

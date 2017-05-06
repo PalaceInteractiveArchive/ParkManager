@@ -4,6 +4,7 @@ import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.designstation.DesignStationClick;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.magicband.*;
 import network.palace.parkmanager.watch.WatchTask;
 import org.bukkit.ChatColor;
@@ -55,7 +56,8 @@ public class InventoryClick implements Listener {
             }
         }
         String name = ChatColor.stripColor(inv.getName());
-        if (name.equals(player.getName() + "'s MagicBand")) {
+        if (((ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR)) && name.equals(player.getName() + "'s MagicBand")) ||
+                (ParkManager.isResort(Resort.USO) && name.equals(player.getName() + "'s Power Pass"))) {
             MainMenuClick.handle(event);
             event.setCancelled(true);
             return;
@@ -146,6 +148,7 @@ public class InventoryClick implements Listener {
                 CustomNameClick.handle(event);
                 return;
             case "Park Menu":
+            case "Park Menu - WDW":
                 event.setCancelled(true);
                 ParkMenuClick.handle(event);
                 return;
@@ -216,6 +219,10 @@ public class InventoryClick implements Listener {
             case "Player Time":
                 event.setCancelled(true);
                 PlayerTimeClick.handle(event);
+                return;
+            case "Rip Ride Rockit Song Selection":
+                event.setCancelled(true);
+                ParkManager.ripRideRockit.handle(event);
         }
     }
 

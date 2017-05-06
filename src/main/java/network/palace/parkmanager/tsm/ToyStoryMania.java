@@ -3,11 +3,10 @@ package network.palace.parkmanager.tsm;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
-import network.palace.parkmanager.tsm.handlers.TSMSession;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.tsm.handlers.Hit;
+import network.palace.parkmanager.tsm.handlers.ShooterSession;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
@@ -26,7 +25,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.tsm.handlers.Hit;
 
 import java.util.*;
 
@@ -34,7 +32,7 @@ import java.util.*;
  * Created by Marc on 6/28/16
  */
 public class ToyStoryMania implements Listener {
-    private HashMap<UUID, TSMSession> sessions = new HashMap<>();
+    private HashMap<UUID, ShooterSession> sessions = new HashMap<>();
     public static ItemStack item;
     private ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
     private ItemStack red = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 14);
@@ -46,13 +44,52 @@ public class ToyStoryMania implements Listener {
     public ToyStoryMania() {
         item = ItemUtil.create(Material.STONE_HOE, ChatColor.YELLOW + "Toy Cannon",
                 Arrays.asList(ChatColor.YELLOW + "Right-Click to Shoot!"));
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                long cur = System.currentTimeMillis();
+                for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
+                    CPlayer player = Core.getPlayerManager().getPlayer(entry.getKey());
+                    ShooterSession session = entry.getValue();
+                    List<Hit> hits = session.getHits();
+                    int total = 0;
+                    for (Hit h : hits) {
+                        total += h.getPoints();
+                    }
+                    String m = "";
+                    if (!hits.isEmpty()) {
+                        Hit h = hits.get(hits.size() - 1);
+                        long t = h.getTime();
+                        if (t + 2000 > cur) {
+                            ChatColor color = ChatColor.GREEN;
+                            switch (h.getPoints()) {
+                                case 25:
+                                    color = ChatColor.RED;
+                                    return;
+                                case 50:
+                                    color = ChatColor.BLUE;
+                                    return;
+                                case 75:
+                                    color = ChatColor.GREEN;
+                                    return;
+                                case 100:
+                                    color = ChatColor.LIGHT_PURPLE;
+                                    return;
+                            }
+                            m = color + " +" + h.getPoints() + " Points";
+                        }
+                    }
+                    player.getActionBar().show(ChatColor.YELLOW + "TSM Score: " + total + m);
+                }
+            }
+        }, 0L, 10L);
     }
 
     public void join(Player player) {
         if (sessions.containsKey(player.getUniqueId())) {
             return;
         }
-        sessions.put(player.getUniqueId(), new TSMSession(player.getUniqueId()));
+        sessions.put(player.getUniqueId(), new ShooterSession(player.getUniqueId()));
         player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
         player.sendMessage(ChatColor.YELLOW + "Welcome to Toy Story Midway Mania!");
         player.sendMessage(ChatColor.YELLOW + "Right-Click with your Cannon to fire at targets.");
@@ -67,7 +104,7 @@ public class ToyStoryMania implements Listener {
         if (!sessions.containsKey(player.getUniqueId())) {
             return;
         }
-        TSMSession session = sessions.remove(player.getUniqueId());
+        ShooterSession session = sessions.remove(player.getUniqueId());
         List<Hit> hits = session.getHits();
         int points = 0;
         for (Hit hit : hits) {
@@ -184,33 +221,37 @@ public class ToyStoryMania implements Listener {
         if (!stack.getType().equals(Material.STAINED_GLASS_PANE)) {
             return;
         }
-        Player player = (Player) sb.getShooter();
-        CPlayer cplayer = Core.getPlayerManager().getPlayer(player);
-        TSMSession session = sessions.get(player.getUniqueId());
+        CPlayer player = Core.getPlayerManager().getPlayer(((Player) sb.getShooter()).getUniqueId());
+        ShooterSession session = sessions.get(player.getUniqueId());
         byte data = stack.getData().getData();
+        Location loc = item.getLocation();
+        int total = 0;
+        for (Hit h : session.getHits()) {
+            total += h.getPoints();
+        }
         Hit hit = null;
         switch (data) {
-            case 14: {
+            case 6: {
                 hit = new Hit(player.getUniqueId(), 25);
-                cplayer.getActionBar().show(ChatColor.RED + "+25 Points");
+                player.getActionBar().show(ChatColor.RED + "+25 Points");
                 item.setItem(black);
                 break;
             }
             case 11: {
                 hit = new Hit(player.getUniqueId(), 50);
-                cplayer.getActionBar().show(ChatColor.BLUE + "+50 Points");
-                item.setItem(black);
-                break;
-            }
-            case 5: {
-                hit = new Hit(player.getUniqueId(), 75);
-                cplayer.getActionBar().show(ChatColor.GREEN + "+75 Points");
+                player.getActionBar().show(ChatColor.BLUE + "+50 Points");
                 item.setItem(black);
                 break;
             }
             case 10: {
+                hit = new Hit(player.getUniqueId(), 75);
+                player.getActionBar().show(ChatColor.GREEN + "+75 Points");
+                item.setItem(black);
+                break;
+            }
+            case 5: {
                 hit = new Hit(player.getUniqueId(), 100);
-                cplayer.getActionBar().show(ChatColor.LIGHT_PURPLE + "+100 Points");
+                player.getActionBar().show(ChatColor.LIGHT_PURPLE + "+100 Points");
                 item.setItem(black);
                 break;
             }

@@ -1,17 +1,17 @@
 package network.palace.parkmanager.magicband;
 
 import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.storage.Backpack;
 import network.palace.parkmanager.storage.Locker;
 import network.palace.parkmanager.storage.StorageSize;
+import network.palace.parkmanager.utils.BandUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import network.palace.parkmanager.utils.BandUtil;
 
 /**
  * Created by Marc on 10/25/15
@@ -23,7 +23,7 @@ public class StorageUpgradeClick {
         if (item == null) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
             ParkManager.shopManager.openMenu(player);
             return;

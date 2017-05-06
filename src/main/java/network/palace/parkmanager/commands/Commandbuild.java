@@ -8,7 +8,9 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.listeners.BlockEdit;
+import network.palace.parkmanager.watch.WatchTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -16,8 +18,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import network.palace.parkmanager.handlers.PlayerData;
-import network.palace.parkmanager.watch.WatchTask;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -91,7 +91,7 @@ public class Commandbuild extends CoreCommand {
             inv.clear();
             Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
                 ParkManager.autographManager.setBook(player.getUniqueId());
-                ParkManager.playerJoinAndLeave.setInventory(player.getBukkitPlayer(), true);
+                ParkManager.playerJoinAndLeave.setInventory(player, true);
                 if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() > Rank.SQUIRE.getRankId()) {
                     if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                         inv.setItem(0, new ItemStack(Material.COMPASS));

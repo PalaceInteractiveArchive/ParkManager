@@ -2,19 +2,20 @@ package network.palace.parkmanager.queue;
 
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.FastPassData;
+import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.parkmanager.queue.tasks.QueueTask;
 import network.palace.parkmanager.queue.tasks.SpawnBlockSetTask;
+import network.palace.parkmanager.utils.DateUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import network.palace.parkmanager.handlers.FastPassData;
-import network.palace.parkmanager.handlers.PlayerData;
-import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.utils.DateUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -168,9 +169,7 @@ public class QueueRide {
                 fullList.add(place, fps.remove(i));
                 place += 2;
             }
-            for (UUID uuid : fps) {
-                fullList.add(uuid);
-            }
+            fullList.addAll(fps);
         } else {
             int place = 1;
             if (fullList.isEmpty()) {
@@ -411,7 +410,7 @@ public class QueueRide {
         return frozen;
     }
 
-    public boolean toggleFastpass() {
+    public boolean toggleFastpass(CommandSender sender) {
         fpoff = !fpoff;
         if (fpoff) {
             for (UUID uuid : getFPQueue()) {
@@ -423,6 +422,9 @@ public class QueueRide {
                         "'s FastPass Queue has been closed. You may stay in line until you reach the ride, " +
                         "but if you leave your place in line will be lost.");
             }
+            sender.sendMessage(ChatColor.RED + "The FastPass line has been closed!");
+        } else {
+            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been opened!");
         }
         return fpoff;
     }
