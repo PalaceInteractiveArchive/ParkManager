@@ -81,11 +81,11 @@ public class InventoryUtil {
     private ItemStack wdw = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Walt Disney World Resort",
             Collections.singletonList(ChatColor.GREEN + "/join TTC"));
     private ItemStack dlr = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Disneyland Resort",
-            Collections.singletonList(ChatColor.GREEN + "/join DLR"));
+            Collections.singletonList(ChatColor.GREEN + "Coming Soon!"));
     private ItemStack uso = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Universal Orlando Resort",
             Collections.singletonList(ChatColor.GREEN + "/join USO"));
     private ItemStack seasonal = ItemUtil.create(Material.RED_ROSE, 1, (byte) 2, ChatColor.AQUA +
-            "Seasonal", Arrays.asList(ChatColor.GREEN + "/join Seasonal"));
+            "Seasonal", Arrays.asList(ChatColor.GREEN + "Opening again soon!"));
     //My Profile
     private ItemStack store = ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Store");
     private ItemStack web = ItemUtil.create(Material.REDSTONE, ChatColor.GREEN + "Website");
@@ -334,9 +334,9 @@ public class InventoryUtil {
                     park.setItem(2, arcade);
                     park.setItem(4, ttc);
                     park.setItem(6, creative);
-                    park.setItem(10, wdw);
-                    park.setItem(12, dlr);
-                    park.setItem(14, uso);
+                    park.setItem(13, wdw);
+                    park.setItem(10, dlr);
+//                    park.setItem(14, uso);
                     park.setItem(16, seasonal);
                     park.setItem(22, BandUtil.getBackItem());
                     player.openInventory(park);
