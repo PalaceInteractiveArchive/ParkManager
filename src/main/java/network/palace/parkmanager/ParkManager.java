@@ -373,6 +373,7 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new Commandsmite());
         registerCommand(new Commandspawn());
         registerCommand(new Commandtp());
+        registerCommand(new Commandupdate());
         registerCommand(new Commanduso());
     }
 
