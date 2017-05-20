@@ -1,11 +1,5 @@
 package network.palace.parkmanager.commands;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.comphenix.protocol.wrappers.nbt.io.NbtTextSerializer;
 import network.palace.core.Core;
@@ -39,7 +33,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -127,27 +120,28 @@ public class Commandmagic extends CoreCommand {
                                 }
                                 uuids.add(tp.getUniqueId());
                             }
-                            PacketContainer packetFirst = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.BLOCK_CHANGE);
-                            StructureModifier<WrappedBlockData> mFirst = packetFirst.getBlockData();
-                            com.comphenix.protocol.wrappers.BlockPosition posFirst = new com.comphenix.protocol.wrappers.BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                            packetFirst.getBlockPositionModifier().write(0, posFirst);
-                            mFirst.getValues().get(0).setTypeAndData(Material.REDSTONE_LAMP_OFF, 0);
-                            PacketContainer packetSecond = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.BLOCK_CHANGE);
-                            StructureModifier<WrappedBlockData> mSecond = packetSecond.getBlockData();
-                            com.comphenix.protocol.wrappers.BlockPosition posSecond = new com.comphenix.protocol.wrappers.BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                            packetSecond.getBlockPositionModifier().write(0, posSecond);
-                            mSecond.getValues().get(0).setTypeAndData(type, d);
-                            ProtocolManager pm = ProtocolLibrary.getProtocolManager();
+//                            PacketContainer packetFirst = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.BLOCK_CHANGE);
+//                            StructureModifier<WrappedBlockData> mFirst = packetFirst.getBlockData();
+//                            com.comphenix.protocol.wrappers.BlockPosition posFirst = new com.comphenix.protocol.wrappers.BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+//                            packetFirst.getBlockPositionModifier().write(0, posFirst);
+//                            mFirst.getValues().get(0).setTypeAndData(Material.REDSTONE_LAMP_OFF, 0);
+//                            PacketContainer packetSecond = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.BLOCK_CHANGE);
+//                            StructureModifier<WrappedBlockData> mSecond = packetSecond.getBlockData();
+//                            com.comphenix.protocol.wrappers.BlockPosition posSecond = new com.comphenix.protocol.wrappers.BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+//                            packetSecond.getBlockPositionModifier().write(0, posSecond);
+//                            mSecond.getValues().get(0).setTypeAndData(type, d);
+//                            ProtocolManager pm = ProtocolLibrary.getProtocolManager();
                             for (UUID uuid : uuids) {
                                 Player tp = Bukkit.getPlayer(uuid);
                                 if (tp == null) {
                                     continue;
                                 }
-                                try {
-                                    pm.sendServerPacket(tp, packetFirst);
-                                } catch (InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
+                                tp.sendBlockChange(loc, Material.REDSTONE_LAMP_ON, (byte) 0);
+//                                try {
+//                                    pm.sendServerPacket(tp, packetFirst);
+//                                } catch (InvocationTargetException e) {
+//                                    e.printStackTrace();
+//                                }
                             }
                             Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
                                 for (UUID uuid : uuids) {
@@ -155,11 +149,12 @@ public class Commandmagic extends CoreCommand {
                                     if (tp == null) {
                                         continue;
                                     }
-                                    try {
-                                        pm.sendServerPacket(tp, packetSecond);
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
+                                    tp.sendBlockChange(loc, type, d);
+//                                    try {
+//                                        pm.sendServerPacket(tp, packetSecond);
+//                                    } catch (InvocationTargetException e) {
+//                                        e.printStackTrace();
+//                                    }
                                 }
                             }, 6L);
                             return;
@@ -576,6 +571,13 @@ public class Commandmagic extends CoreCommand {
                     }
                 }
                 helpMenu("schedule", sender);
+                return;
+            case "show":
+                StringBuilder cmd = new StringBuilder();
+                for (String a : args) {
+                    cmd.append(a).append(" ");
+                }
+                Bukkit.dispatchCommand(sender, cmd.toString());
                 return;
             case "hotel":
                 sender.sendMessage(ChatColor.BLUE + "Reloading hotel rooms...");

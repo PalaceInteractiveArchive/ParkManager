@@ -46,20 +46,13 @@ public class HotelManager {
             return;
         }
         refreshRooms();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
-            for (HotelRoom room : hotelRooms) {
-                if (room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                    checkout(room, true);
-                    return;
-                }
-            }
-        }, 0L, 6000L);
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
-            for (HotelRoom room : new ArrayList<>(closeDoors)) {
-                closeDoor(room);
-                closeDoors.remove(room);
-            }
-        }, 0L, 5L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> hotelRooms.stream()
+                .filter(room -> room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000))
+                .forEach(room -> checkout(room, true)), 0L, 6000L);
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> closeDoors.stream().forEach(room -> {
+            closeDoor(room);
+            closeDoors.remove(room);
+        }), 0L, 5L);
     }
 
     public List<HotelRoom> getHotelRooms() {
@@ -388,7 +381,7 @@ public class HotelManager {
 
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        if (ParkManager.hotelServer && room.getWarp().getWorld().getUID().equals(Bukkit.getWorlds().get(0).getUID())) {
+        if (ParkManager.hotelServer && room.getWarp().getWorld().equals(Bukkit.getWorlds().get(0))) {
             closeDoors.add(room);
         }
         room.setCheckoutTime(0);

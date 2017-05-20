@@ -8,6 +8,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.HotelRoom;
 import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.handlers.Warp;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.watch.WatchTask;
@@ -113,7 +114,7 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         // If Disneyland and user rank is below Noble, don't allow them to connect
-        if ((Core.getServerType().equalsIgnoreCase("dlr")) &&
+        if ((ParkManager.isResort(Resort.DLR)) &&
                 user.getRank().getRankId() < Rank.NOBLE.getRankId()) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(ChatColor.AQUA + "You must be the " + Rank.NOBLE.getNameWithBrackets() +
@@ -197,18 +198,6 @@ public class PlayerJoinAndLeave implements Listener {
             for (String msg : ParkManager.joinMessages) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
-            if (ParkManager.ttcServer) {
-                if (cp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                    if (player.getLocation().distance(ParkManager.spawn) <= 5) {
-                        for (Player tp : Bukkit.getOnlinePlayers()) {
-                            if (tp.getUniqueId().equals(player.getUniqueId())) {
-                                continue;
-                            }
-                            tp.hidePlayer(player);
-                        }
-                    }
-                }
-            }
             final PlayerInventory inv = player.getInventory();
             clearArmor(inv);
             PlayerData.Clothing c = data.getClothing();
@@ -225,7 +214,7 @@ public class PlayerJoinAndLeave implements Listener {
                 inv.setBoots(c.getBoots());
             }
             setInventory(cp, false);
-            if ((Core.getServerType().equalsIgnoreCase("dlr")) &&
+            if ((ParkManager.isResort(Resort.DLR)) &&
                     cp.getRank().getRankId() >= Rank.NOBLE.getRankId() && cp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setAllowFlight(true);

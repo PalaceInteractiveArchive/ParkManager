@@ -45,7 +45,7 @@ public class PlayerInteract implements Listener {
             .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
             .style(ChatColor.UNDERLINE).link("https://palace.network/mcph").tooltip(ChatColor.DARK_AQUA +
                     "Click to purchase a server using Palace's 15%-OFF Discount!");
-    private boolean dl = Core.getServerType().equalsIgnoreCase("dlr");
+    private boolean dl = ParkManager.isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {

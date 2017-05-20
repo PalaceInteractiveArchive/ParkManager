@@ -1,5 +1,6 @@
 package network.palace.parkmanager.shop;
 
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.comphenix.protocol.wrappers.nbt.io.NbtTextSerializer;
 import network.palace.core.Core;
@@ -60,14 +61,22 @@ public class WardrobeManager {
                 int bid = result.getInt("bid");
                 int bdata = result.getInt("bdata");
                 String bt = result.getString("boots");
-                ItemStack h = new ItemStack(Material.getMaterial(hid), 1, (short) hdata);
-                NbtFactory.setItemTag(h, new NbtTextSerializer().deserializeCompound(ht));
-                ItemStack s = new ItemStack(Material.getMaterial(hid), 1, (short) hdata);
-                NbtFactory.setItemTag(s, new NbtTextSerializer().deserializeCompound(st));
-                ItemStack l = new ItemStack(Material.getMaterial(hid), 1, (short) hdata);
-                NbtFactory.setItemTag(l, new NbtTextSerializer().deserializeCompound(pt));
-                ItemStack b = new ItemStack(Material.getMaterial(hid), 1, (short) hdata);
-                NbtFactory.setItemTag(b, new NbtTextSerializer().deserializeCompound(bt));
+                ItemStack h = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(hid), 1, (short) hdata));
+                if (!ht.equals("")) {
+                    NbtFactory.setItemTag(h, new NbtTextSerializer().deserializeCompound(ht));
+                }
+                ItemStack s = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(cid), 1, (short) cdata));
+                if (!st.equals("")) {
+                    NbtFactory.setItemTag(s, new NbtTextSerializer().deserializeCompound(st));
+                }
+                ItemStack l = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(lid), 1, (short) ldata));
+                if (!pt.equals("")) {
+                    NbtFactory.setItemTag(l, new NbtTextSerializer().deserializeCompound(pt));
+                }
+                ItemStack b = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(bid), 1, (short) bdata));
+                if (!bt.equals("")) {
+                    NbtFactory.setItemTag(b, new NbtTextSerializer().deserializeCompound(bt));
+                }
 //                net.minecraft.server.v1_8_R3.ItemStack h = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(hid), 1);
 //                h.setData(hdata);
 //                if (!ht.equals("")) {

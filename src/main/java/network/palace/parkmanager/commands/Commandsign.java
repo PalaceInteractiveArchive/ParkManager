@@ -28,14 +28,14 @@ public class Commandsign extends CoreCommand {
                     ChatColor.RED + " Rank or higher to do this!");
             return;
         }
-        String msg = "";
+        StringBuilder msg = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
-            msg += args[i];
+            msg.append(args[i]);
             if (i < (args.length - 1)) {
-                msg += " ";
+                msg.append(" ");
             }
         }
-        String finalMsg = msg;
+        String finalMsg = msg.toString();
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             player.sendMessage(ChatColor.GREEN + "Signing book...");
             ParkManager.autographManager.sign(player, finalMsg);

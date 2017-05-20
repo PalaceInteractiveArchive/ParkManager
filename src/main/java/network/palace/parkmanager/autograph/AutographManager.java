@@ -152,7 +152,7 @@ public class AutographManager {
             return;
         }
         setBook(tp.getUniqueId());
-        giveBook(player);
+        giveBook(tp);
         tp.sendMessage(player.getRank().getTagColor() + player.getName() + ChatColor.GREEN +
                 " has signed your Autograph Book!");
         tp.giveAchievement(1);
