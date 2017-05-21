@@ -8,9 +8,10 @@ import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.Ladder;
 
 import java.util.Random;
@@ -28,13 +29,20 @@ public class TowerManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (!player.isInsideVehicle()) {
+    public void onPlayerMove(VehicleMoveEvent event) {
+        Vehicle e = event.getVehicle();
+        if (!e.getType().equals(EntityType.MINECART)) {
             return;
         }
-        Entity e = player.getVehicle();
-        if (!e.getType().equals(EntityType.MINECART)) {
+        if (e.getPassengers().size() > 1 || e.getPassengers().isEmpty()) {
+            return;
+        }
+        Entity first = e.getPassengers().get(0);
+        if (!(first instanceof Player)) {
+            return;
+        }
+        Player player = (Player) first;
+        if (!player.isInsideVehicle()) {
             return;
         }
         Location from = event.getFrom();
