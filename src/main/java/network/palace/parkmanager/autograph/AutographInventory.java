@@ -56,8 +56,6 @@ public class AutographInventory {
             // Add the book to the inventory
             InventoryClick click = (clicker, clickAction) -> click(clicker, x);
             inventory.addButton(new InventoryButton(item, click), i);
-            // Open the inventory
-            inventory.open(player);
         }
     }
 
@@ -69,6 +67,8 @@ public class AutographInventory {
      */
     private void click(CPlayer player, int id) {
         ItemStack book = createBook(player, id);
+        player.setInventorySlot(8, book);
+        player.sendMessage(ChatColor.YELLOW + "Selected " + id + "!");
     }
 
     /**
@@ -120,7 +120,7 @@ public class AutographInventory {
      */
     private int getNextMultiple(int starting) {
         int current = starting;
-        if (starting % 9 == 0) return starting;
+        if (current % 9 == 0) return current;
         for (int i = 0; i < 9; i++) {
             if (current % 9 == 0) break;
             current += 1;
@@ -139,6 +139,7 @@ public class AutographInventory {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
         meta.addPage("This is your Palace Network Autograph Book! Find Characters and staff, and they'll sign it for you!");
+        meta.addPage("Each book is limited to 50 autographs, use /auto book to move between books");
         List<Signature> signatures = getSignatures(player, Optional.of(id * 50));
         signatures.forEach(signature -> {
             String displayName = "";
@@ -172,5 +173,9 @@ public class AutographInventory {
         meta.setTitle(ChatColor.AQUA + "Autograph book #" + id);
         book.setItemMeta(meta);
         return book;
+    }
+
+    public void open() {
+        inventory.open(player);
     }
 }
