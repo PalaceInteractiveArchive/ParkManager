@@ -81,7 +81,7 @@ public class MenInBlack implements Listener {
         }, 0L, 10L);
     }
 
-    public void join(Player player) {
+    public void join(CPlayer player) {
         if (sessions.containsKey(player.getUniqueId())) {
             return;
         }
@@ -96,7 +96,7 @@ public class MenInBlack implements Listener {
         inv.setHeldItemSlot(4);
     }
 
-    public void done(Player player) {
+    public void done(CPlayer player) {
         if (!sessions.containsKey(player.getUniqueId())) {
             return;
         }

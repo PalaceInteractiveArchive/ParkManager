@@ -1,16 +1,17 @@
 package network.palace.parkmanager.commands;
 
+import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.listeners.BlockEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Created by Marc on 4/13/17.
@@ -39,12 +40,12 @@ public class Commanduso extends CoreCommand {
                 if (args.length > 2) {
                     switch (args[1].toLowerCase()) {
                         case "choose": {
-                            Player p = Bukkit.getPlayer(args[2]);
+                            CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
                             ParkManager.ripRideRockit.chooseSong(p);
                             return;
                         }
                         case "start": {
-                            Player p = Bukkit.getPlayer(args[2]);
+                            CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
                             ParkManager.ripRideRockit.startSong(p);
                             return;
                         }
@@ -57,7 +58,7 @@ public class Commanduso extends CoreCommand {
                 if (args.length > 2) {
                     switch (args[1].toLowerCase()) {
                         case "add": {
-                            Player p = Bukkit.getPlayer(args[2]);
+                            CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
                             if (BlockEdit.isInBuildMode(p.getUniqueId())) {
                                 p.performCommand("build");
                                 Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> ParkManager.menInBlack.join(p), 20L);
@@ -67,7 +68,7 @@ public class Commanduso extends CoreCommand {
                             return;
                         }
                         case "remove": {
-                            Player p = Bukkit.getPlayer(args[2]);
+                            CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
                             ParkManager.menInBlack.done(p);
                             return;
                         }
