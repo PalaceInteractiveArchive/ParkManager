@@ -2,6 +2,7 @@ package network.palace.parkmanager.uso.rrr;
 
 import network.palace.audio.Audio;
 import network.palace.audio.handlers.AudioArea;
+import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -87,7 +88,7 @@ public class RipRideRockit {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
     }
 
-    public void startSong(Player player) {
+    public void startSong(CPlayer player) {
         player.closeInventory();
         if (!selections.containsKey(player.getUniqueId())) {
             return;
@@ -100,11 +101,11 @@ public class RipRideRockit {
         area.triggerPlayer(player);
     }
 
-    public void chooseSong(Player player) {
-        if (!player.isInsideVehicle()) {
+    public void chooseSong(CPlayer player) {
+        if (!player.getBukkitPlayer().isInsideVehicle()) {
             return;
         }
-        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.RED + "Rip Ride Rockit Song Selection");
+        Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.RED + "Rip Ride Rockit Song Selection");
         int place = 13;
         int change = 1;
         if (songs.size() % 2 == 0) {

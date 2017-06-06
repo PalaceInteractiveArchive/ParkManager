@@ -21,7 +21,7 @@ import java.util.*;
  * Created by Jacob on 7/19/15.
  */
 public class AutographManager {
-    public static final String BOOK_TITLE = ChatColor.DARK_AQUA + "My Autograph Book";
+    private static final String BOOK_TITLE = ChatColor.DARK_AQUA + "My Autograph Book";
     private HashMap<UUID, UUID> map = new HashMap<>();
     private HashMap<UUID, Integer> map2 = new HashMap<>();
     private HashMap<UUID, Integer> map3 = new HashMap<>();
@@ -30,8 +30,9 @@ public class AutographManager {
 
     public void setBook(UUID uuid) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-        BookMeta bm = (BookMeta) book.getItemMeta();
-        bm.addPage("This is your Palace Network Autograph Book! Find Characters and they will sign it for you!");
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        meta.addPage(
+                "This is your Palace Network Autograph Book! Find Characters and staff, and they'll sign it for you! Each book is limited to 50 autographs, use /autobook to move between books");
         List<Signature> list = getSignatures(uuid);
         for (Signature sign : list) {
             String name = "";
@@ -64,11 +65,11 @@ public class AutographManager {
                     }
                 }
             }
-            bm.addPage(ChatColor.translateAlternateColorCodes('&', sign.getMessage()) +
+            meta.addPage(ChatColor.translateAlternateColorCodes('&', sign.getMessage()) +
                     ChatColor.DARK_GREEN + "\n- " + name);
         }
-        bm.setTitle(BOOK_TITLE);
-        book.setItemMeta(bm);
+        meta.setTitle(BOOK_TITLE);
+        book.setItemMeta(meta);
         books.put(uuid, book);
     }
 

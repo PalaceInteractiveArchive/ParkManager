@@ -1,9 +1,9 @@
 package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
-import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
@@ -38,13 +38,6 @@ public class PlayerInteract implements Listener {
     public static String queue = ChatColor.BLUE + "[Queue]";
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
-    public static String mcpro = ChatColor.GREEN + "[MCProHosting]";
-    private FormattedMessage mcpromsg = new FormattedMessage("MCProHosting ").color(ChatColor.GREEN)
-            .style(ChatColor.BOLD).then("is the ").color(ChatColor.AQUA)
-            .then("World Leader in Minecraft Server Hosting! ").color(ChatColor.GREEN).style(ChatColor.ITALIC)
-            .then("Click here to purchase a server from MCProHosting!").color(ChatColor.YELLOW)
-            .style(ChatColor.UNDERLINE).link("https://palace.network/mcph").tooltip(ChatColor.DARK_AQUA +
-                    "Click to purchase a server using Palace's 15%-OFF Discount!");
     private boolean dl = ParkManager.isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -170,13 +163,9 @@ public class PlayerInteract implements Listener {
                     ParkManager.queueManager.handle(event);
                     return;
                 }
-                if (s.getLine(0).equals(mcpro)) {
-                    mcpromsg.send(player);
-                    return;
-                }
                 if (Core.getInstanceName().contains("Epcot")) {
                     if (s.getLine(0).equals(designStation)) {
-                        if (isInt(ChatColor.stripColor(s.getLine(1)))) {
+                        if (MiscUtil.checkIfInt(ChatColor.stripColor(s.getLine(1)))) {
                             ParkManager.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
                             return;
                         }
@@ -304,15 +293,6 @@ public class PlayerInteract implements Listener {
             if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
             }
-        }
-    }
-
-    private boolean isInt(String s) {
-        try {
-            Integer.parseInt(s);
-            return true;
-        } catch (NumberFormatException ignored) {
-            return false;
         }
     }
 }
