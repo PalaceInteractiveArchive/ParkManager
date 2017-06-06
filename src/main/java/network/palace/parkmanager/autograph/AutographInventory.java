@@ -67,8 +67,9 @@ public class AutographInventory {
      */
     private void click(CPlayer player, int id) {
         ItemStack book = createBook(player, id);
-        player.setInventorySlot(8, book);
-        player.sendMessage(ChatColor.YELLOW + "Selected " + id + "!");
+        player.setInventorySlot(7, book);
+        player.sendMessage(ChatColor.YELLOW + "Selected " + (id + 1)+ "!");
+        player.closeInventory();
     }
 
     /**
@@ -78,9 +79,9 @@ public class AutographInventory {
      */
     private int getAmountOfBooks() {
         List signatures = getSignatures(player, Optional.empty());
-        double amount = signatures.size() / 50;
-        if (amount % 1 == 0) return (int) amount;
-        else return (int) amount + 1;
+        double amount = signatures.size();
+        if (amount % 50 == 0) return (int) amount / 50;
+        else return (int) (amount / 50) + 1;
     }
 
     /**
@@ -138,8 +139,8 @@ public class AutographInventory {
     private ItemStack createBook(CPlayer player, int id) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
-        meta.addPage("This is your Palace Network Autograph Book! Find Characters and staff, and they'll sign it for you!");
-        meta.addPage("Each book is limited to 50 autographs, use /auto book to move between books");
+        meta.addPage(
+                "This is your Palace Network Autograph Book! Find Characters and staff, and they'll sign it for you! Each book is limited to 50 autographs, use /autobook to move between books");
         List<Signature> signatures = getSignatures(player, Optional.of(id * 50));
         signatures.forEach(signature -> {
             String displayName = "";
