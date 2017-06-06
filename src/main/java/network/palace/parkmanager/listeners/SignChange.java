@@ -68,13 +68,6 @@ public class SignChange implements Listener {
                 }
                 return;
             }
-            if (l1.equalsIgnoreCase("[mcpro]")) {
-                event.setLine(0, PlayerInteract.mcpro);
-                event.setLine(1, ChatColor.WHITE + "Click to get a");
-                event.setLine(2, ChatColor.WHITE + "server for 15%");
-                event.setLine(3, ChatColor.WHITE + "off from MCPH!");
-                return;
-            }
             if (l1.equalsIgnoreCase("[shop]")) {
                 event.setLine(0, PlayerInteract.shop);
                 event.setLine(1, ChatColor.DARK_GREEN + event.getLine(1));
