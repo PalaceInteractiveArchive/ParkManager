@@ -1,26 +1,18 @@
 package network.palace.parkmanager.storage;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by Marc on 10/10/15
  */
+@AllArgsConstructor
 public enum StorageSize {
     SMALL(3, 0), LARGE(6, 1);
 
-    private int rows;
-    private int size;
-
-    StorageSize(int rows, int size) {
-        this.rows = rows;
-        this.size = size;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getSize() {
-        return size;
-    }
+    @Getter @Setter private int rows;
+    @Getter @Setter private int size;
 
     public static StorageSize fromInt(int i) {
         switch (i) {

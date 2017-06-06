@@ -21,7 +21,10 @@ public class Locker {
         this.size = size;
         inv = Bukkit.createInventory(player.getBukkitPlayer(), size.getRows() * 9, ChatColor.BLUE + "Your Locker");
         if (contents != null) {
-            inv.setContents(contents);
+            for (int i = 0; i < contents.length - 1; i++) {
+                if (i > 27) break;
+                inv.addItem(contents[i]);
+            }
         }
     }
 
