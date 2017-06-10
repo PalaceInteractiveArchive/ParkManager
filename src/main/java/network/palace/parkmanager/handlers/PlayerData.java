@@ -38,6 +38,7 @@ public class PlayerData {
     private String outfitCode;
     private boolean inventorySet = false;
     @Getter @Setter private String pack;
+    @Getter @Setter private long lastInventoryUpdate = System.currentTimeMillis();
 
     public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, boolean special, boolean flash,
                       boolean visibility, boolean loop, boolean hotel, FastPassData fastPassData, KioskData kioskData,

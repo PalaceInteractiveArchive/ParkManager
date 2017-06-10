@@ -184,7 +184,7 @@ public class StorageManager {
         final boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             final long time = System.currentTimeMillis();
-            update(player, data, build);
+            update(player, data, build, true);
             PacketInventoryStatus packet = new PacketInventoryStatus(player.getUniqueId(), 0);
             Core.getDashboardConnection().send(packet);
             removeHotbar(player.getUniqueId());
@@ -202,6 +202,17 @@ public class StorageManager {
     }
 
     private void update(Player player, PlayerData data, boolean build) {
+        update(player, data, build, false);
+    }
+
+    private void update(Player player, PlayerData data, boolean build, boolean force) {
+        if (data == null || data.getBackpack() == null || data.getLocker() == null) {
+            return;
+        }
+        if (System.currentTimeMillis() - data.getLastInventoryUpdate() > (5 * 60 * 1000) && !force) {
+            return;
+        }
+        long cur = System.currentTimeMillis();
         Backpack pack = data.getBackpack();
         Locker locker = data.getLocker();
         if (pack == null || locker == null) {
@@ -247,6 +258,7 @@ public class StorageManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        Bukkit.getLogger().info("Updated " + player.getName() + "'s inventory in " + (System.currentTimeMillis() - cur) + "ms");
     }
 
     public void setLoadingPack(Player player) {
