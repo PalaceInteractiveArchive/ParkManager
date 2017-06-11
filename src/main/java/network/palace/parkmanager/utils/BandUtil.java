@@ -58,7 +58,7 @@ public class BandUtil {
                 ItemMeta meta = pinfo.getItemMeta();
                 FastPassData data = ParkManager.getPlayerData(player.getUniqueId()).getFastPassData();
                 meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
-                        ChatColor.GREEN + "Rank: " + rank.getNameWithBrackets(),
+                        ChatColor.GREEN + "Rank: " + rank.getFormattedName(),
                         ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + response.getBalance(),
                         ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + response.getTokens(),
                         ChatColor.GREEN + "Slow FPs: " + ChatColor.YELLOW + data.getSlow(),

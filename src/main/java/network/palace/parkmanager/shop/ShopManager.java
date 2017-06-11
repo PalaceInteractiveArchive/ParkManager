@@ -380,7 +380,7 @@ public class ShopManager {
         }
         //Santa Outfit only available to Majestic and Honorable
         if (item.getOutfitId() == 12 && Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() < Rank.MAJESTIC.getRankId()) {
-            player.sendMessage(ChatColor.RED + "You must be a " + Rank.MAJESTIC.getNameWithBrackets() + ChatColor.RED +
+            player.sendMessage(ChatColor.RED + "You must be a " + Rank.MAJESTIC.getFormattedName() + ChatColor.RED +
                     " or higher to purchase this Outfit!");
             return;
         }

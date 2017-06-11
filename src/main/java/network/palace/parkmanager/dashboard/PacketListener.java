@@ -3,17 +3,16 @@ package network.palace.parkmanager.dashboard;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import network.palace.core.Core;
+import network.palace.core.events.DashboardConnectEvent;
 import network.palace.core.events.IncomingPacketEvent;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryStatus;
+import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
+import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent;
 import network.palace.parkmanager.dashboard.packets.parks.PacketRefreshHotels;
 import network.palace.parkmanager.dashboard.packets.parks.PacketRefreshWarps;
 import network.palace.parkmanager.utils.WarpUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.UUID;
 
 /**
  * Created by Marc on 9/18/16
@@ -29,10 +28,7 @@ public class PacketListener implements Listener {
         }
         int id = object.get("id").getAsInt();
         switch (id) {
-            /**
-             * Cross-server Inventory
-             */
-            case 58: {
+             /*case 58: {
                 PacketInventoryStatus packet = new PacketInventoryStatus().fromJSON(object);
                 UUID uuid = packet.getUniqueId();
                 int status = packet.getStatus();
@@ -40,6 +36,14 @@ public class PacketListener implements Listener {
                     return;
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> ParkManager.storageManager.downloadInventory(uuid, false));
+                break;
+            }*/
+            /**
+             * Cross-server Inventory
+             */
+            case 58: {
+                PacketInventoryContent packet = new PacketInventoryContent().fromJSON(object);
+                ParkManager.storageManager.updateInventory(packet);
                 break;
             }
             /**
@@ -65,5 +69,10 @@ public class PacketListener implements Listener {
                 break;
             }
         }
+    }
+
+    @EventHandler
+    public void onDashboardConnect(DashboardConnectEvent event) {
+        Core.getDashboardConnection().send(new PacketImAPark());
     }
 }

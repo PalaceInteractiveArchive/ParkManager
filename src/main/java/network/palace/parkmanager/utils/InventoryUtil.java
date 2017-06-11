@@ -292,7 +292,7 @@ public class InventoryUtil {
                                         "your current Park"));
                     } else {
                         ptime = ItemUtil.create(Material.WATCH, ChatColor.GREEN + "Player Time",
-                                Arrays.asList(ChatColor.RED + "You must be a " + Rank.NOBLE.getNameWithBrackets(),
+                                Arrays.asList(ChatColor.RED + "You must be a " + Rank.NOBLE.getFormattedName(),
                                         ChatColor.RED + "to use this feature!"));
                     }
                     main.setItem(2, hnr);
@@ -713,7 +713,7 @@ public class InventoryUtil {
                 case PLAYERTIME: {
                     if (rank.getRankId() < Rank.NOBLE.getRankId()) {
                         player.closeInventory();
-                        player.sendMessage(ChatColor.RED + "You must be a " + Rank.NOBLE.getNameWithBrackets() +
+                        player.sendMessage(ChatColor.RED + "You must be a " + Rank.NOBLE.getFormattedName() +
                                 ChatColor.RED + " or above to use this!");
                         return;
                     }

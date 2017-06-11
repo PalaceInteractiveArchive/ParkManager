@@ -30,4 +30,11 @@ public enum Resort {
         }
         return WDW;
     }
+
+    public static Resort fromId(int id) {
+        for (Resort type : values()) {
+            if (type.getId() == id) return type;
+        }
+        return WDW;
+    }
 }

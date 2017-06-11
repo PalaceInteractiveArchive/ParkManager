@@ -27,14 +27,17 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerJoinAndLeave implements Listener {
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
 
-    public PlayerJoinAndLeave() {
+    /*public PlayerJoinAndLeave() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
-            HashMap<UUID, Long> localMap = getPartOfMap(needInvSet, 5);
+            HashMap<UUID, Long> localMap = new HashMap<>(needInvSet);
             for (Map.Entry<UUID, Long> entry : new HashMap<>(localMap).entrySet()) {
                 Long time = entry.getValue();
                 if (time + 5000 <= System.currentTimeMillis()) {
@@ -45,26 +48,10 @@ public class PlayerJoinAndLeave implements Listener {
                     if (tp == null) {
                         continue;
                     }
-                    tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
-                    ParkManager.storageManager.downloadInventory(uuid, true);
+                    ParkManager.storageManager.join(uuid, true);
                 }
             }
         }, 0L, 20L);
-        /*Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
-            for (Map.Entry<UUID, Long> entry : new HashMap<>(needInvSet).entrySet()) {
-                needInvSet.remove(entry.getKey());
-                UUID uuid = entry.getKey();
-                Long time = entry.getValue();
-                if (time + 5000 <= System.currentTimeMillis()) {
-                    Player tp = Bukkit.getPlayer(uuid);
-                    if (tp == null) {
-                        continue;
-                    }
-                    tp.sendMessage(ChatColor.GREEN + "Inventory took too long to download, forcing download.");
-                    ParkManager.storageManager.downloadInventory(uuid);
-                }
-            }
-        }, 0L, 20L);*/
     }
 
     private HashMap<UUID, Long> getPartOfMap(HashMap<UUID, Long> map, int amount) {
@@ -81,21 +68,26 @@ public class PlayerJoinAndLeave implements Listener {
             i++;
         }
         return temp;
-    }
+    }*/
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        Bukkit.getLogger().info(System.currentTimeMillis() + " 1");
         try {
             UUID uuid = event.getUniqueId();
+            Bukkit.getLogger().info(System.currentTimeMillis() + " 2");
             ParkManager.bandUtil.setupPlayerData(uuid);
-            ParkManager.autographManager.setBook(uuid);
+            Bukkit.getLogger().info(System.currentTimeMillis() + " 3");
+            Bukkit.getLogger().info(System.currentTimeMillis() + " 4");
             if (ParkManager.getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
             }
+            Bukkit.getLogger().info(System.currentTimeMillis() + " 5");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Bukkit.getLogger().info(System.currentTimeMillis() + " 6");
     }
 
     @EventHandler
@@ -117,7 +109,7 @@ public class PlayerJoinAndLeave implements Listener {
         if ((ParkManager.isResort(Resort.DLR)) &&
                 user.getRank().getRankId() < Rank.NOBLE.getRankId()) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(ChatColor.AQUA + "You must be the " + Rank.NOBLE.getNameWithBrackets() +
+            event.setKickMessage(ChatColor.AQUA + "You must be the " + Rank.NOBLE.getFormattedName() +
                     ChatColor.AQUA + " rank or above to preview Disneyland!");
             return;
         }
@@ -153,9 +145,7 @@ public class PlayerJoinAndLeave implements Listener {
                     cp.giveAchievement(8);
                     break;
             }
-            if (!needInvSet.containsKey(player.getUniqueId())) {
-                needInvSet.put(player.getUniqueId(), System.currentTimeMillis());
-            }
+            ParkManager.storageManager.join(player.getUniqueId(), true);
             ParkManager.userCache.put(player.getUniqueId(), player.getName());
             PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
             if (!cp.hasAchievement(12) && !data.getRideCounts().isEmpty()) {
@@ -272,7 +262,13 @@ public class PlayerJoinAndLeave implements Listener {
         inv.setItem(6, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                 Arrays.asList(ChatColor.GRAY + "Right-Click to open the", ChatColor.GRAY + "Show Schedule Menu")));
         if (book) {
-            ParkManager.autographManager.giveBook(player);
+            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    ParkManager.autographManager.setBook(player.getUniqueId());
+                    ParkManager.autographManager.giveBook(player);
+                }
+            });
         }
         ParkManager.bandUtil.giveBandToPlayer(player);
         inv.setItem(4, ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +

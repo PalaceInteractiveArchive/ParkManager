@@ -24,7 +24,7 @@ public class Commandsign extends CoreCommand {
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (player.getRank().getRankId() <= Rank.DVCMEMBER.getRankId()) {
-            player.sendMessage(ChatColor.RED + "You must be the " + Rank.SPECIALGUEST.getNameWithBrackets() +
+            player.sendMessage(ChatColor.RED + "You must be the " + Rank.SPECIALGUEST.getFormattedName() +
                     ChatColor.RED + " Rank or higher to do this!");
             return;
         }

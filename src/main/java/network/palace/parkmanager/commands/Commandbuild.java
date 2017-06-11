@@ -54,7 +54,8 @@ public class Commandbuild extends CoreCommand {
             inv.setItem(0, new ItemStack(Material.COMPASS));
             inv.setItem(1, new ItemStack(Material.WOOD_AXE));
             for (ItemStack i : ParkManager.getPlayerData(player.getUniqueId()).getBackpack().getInventory().getContents()) {
-                if (i == null || i.getType().equals(Material.AIR)) {
+                if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
+                        i.getType().equals(Material.COMPASS)) {
                     continue;
                 }
                 inv.addItem(i);

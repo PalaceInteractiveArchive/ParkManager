@@ -22,6 +22,10 @@ public enum StorageSize {
         return size;
     }
 
+    public int getSlots() {
+        return rows * 9;
+    }
+
     public static StorageSize fromInt(int i) {
         switch (i) {
             case 0:

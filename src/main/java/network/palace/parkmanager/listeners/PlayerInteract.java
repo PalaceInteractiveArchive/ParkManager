@@ -118,7 +118,7 @@ public class PlayerInteract implements Listener {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(this.suite);
                         if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
-                            player.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getNameWithBrackets()
+                            player.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getFormattedName()
                                     + ChatColor.RED + " or above to stay in a Suite!");
                             return;
                         }

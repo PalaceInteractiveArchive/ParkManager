@@ -19,9 +19,26 @@ public class Locker {
     public Locker(CPlayer player, StorageSize size, ItemStack[] contents) {
         this.uuid = player.getUniqueId();
         this.size = size;
-        inv = Bukkit.createInventory(player.getBukkitPlayer(), size.getRows() * 9, ChatColor.BLUE + "Your Locker");
-        if (contents != null) {
-            inv.setContents(contents);
+        if (contents.length < size.getSlots()) {
+            throw new IllegalArgumentException("array must have at least " + size.getSlots() + " entries");
+        }
+        ItemStack[] arr;
+        if (contents.length > size.getSlots()) {
+            arr = new ItemStack[size.getSlots()];
+            int i = 0;
+            for (ItemStack item : contents) {
+                if (i >= size.getSlots()) {
+                    break;
+                }
+                arr[i] = item;
+                i++;
+            }
+        } else {
+            arr = contents;
+        }
+        inv = Bukkit.createInventory(player.getBukkitPlayer(), size.getSlots(), ChatColor.BLUE + "Your Locker");
+        if (arr != null) {
+            inv.setContents(arr);
         }
     }
 

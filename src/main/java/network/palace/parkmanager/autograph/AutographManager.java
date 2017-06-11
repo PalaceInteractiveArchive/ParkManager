@@ -102,6 +102,9 @@ public class AutographManager {
     }
 
     public void logout(CPlayer player) {
+        if (player == null) {
+            return;
+        }
         if (map.containsKey(player.getUniqueId())) {
             UUID tuuid = map.remove(player.getUniqueId());
             cancelTimer(player.getUniqueId());
@@ -141,7 +144,7 @@ public class AutographManager {
         }
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs (user, sender, message) VALUES (?,?,?)");
-            sql.setString(1, tp.getUniqueId().toString());
+            sql.setString(1, tp.getName());
             sql.setString(2, name);
             sql.setString(3, message);
             sql.execute();

@@ -458,7 +458,7 @@ public class Commandmagic extends CoreCommand {
                                 Rank rank = Core.getPlayerManager().getPlayer(tp.getUniqueId()).getRank();
                                 if (rank.getRankId() < Rank.KNIGHT.getRankId()) {
                                     sender.sendMessage(ChatColor.RED + "Could not toggle for user " + tp.getName() +
-                                            ", that user is not at least the " + Rank.KNIGHT.getNameWithBrackets()
+                                            ", that user is not at least the " + Rank.KNIGHT.getFormattedName()
                                             + ChatColor.RED + " Rank!");
                                     return;
                                 }

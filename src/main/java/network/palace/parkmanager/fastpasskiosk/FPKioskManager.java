@@ -174,19 +174,19 @@ public class FPKioskManager implements Listener {
                 ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthSettler())));
         ItemStack monthDweller = ItemUtil.create(monthItem(kioskData.getMonthDweller()), ChatColor.GREEN +
                 "Monthly Tokens - Dweller", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.DWELLER.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.DWELLER.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthDweller())));
         ItemStack monthNoble = ItemUtil.create(monthItem(kioskData.getMonthNoble()), ChatColor.GREEN +
                 "Monthly Tokens - Noble", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.NOBLE.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.NOBLE.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthNoble())));
         ItemStack monthMajestic = ItemUtil.create(monthItem(kioskData.getMonthMajestic()), ChatColor.GREEN +
                 "Monthly Tokens - Majestic", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthMajestic())));
         ItemStack monthHonorable = ItemUtil.create(monthItem(kioskData.getMonthHonorable()), ChatColor.GREEN +
                 "Monthly Tokens - Honorable", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.HONORABLE.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.HONORABLE.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthHonorable())));
         inv.setItem(4, website);
         inv.setItem(11, fpslow);
@@ -224,19 +224,19 @@ public class FPKioskManager implements Listener {
                 ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthSettler())));
         ItemStack monthDweller = ItemUtil.create(monthItem(kioskData.getMonthDweller()), ChatColor.GREEN +
                 "Monthly Tokens - Dweller", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.DWELLER.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.DWELLER.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthDweller())));
         ItemStack monthNoble = ItemUtil.create(monthItem(kioskData.getMonthNoble()), ChatColor.GREEN +
                 "Monthly Tokens - Noble", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.NOBLE.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.NOBLE.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthNoble())));
         ItemStack monthMajestic = ItemUtil.create(monthItem(kioskData.getMonthMajestic()), ChatColor.GREEN +
                 "Monthly Tokens - Majestic", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthMajestic())));
         ItemStack monthHonorable = ItemUtil.create(monthItem(kioskData.getMonthHonorable()), ChatColor.GREEN +
                 "Monthly Tokens - Honorable", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.HONORABLE.getNameWithBrackets() + ChatColor.GRAY + " or above",
+                ChatColor.GRAY + "You must be " + Rank.HONORABLE.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthHonorable())));
         inv.setItem(4, website);
         inv.setItem(11, fpslow);
@@ -392,7 +392,7 @@ public class FPKioskManager implements Listener {
                 cal.setTime(new Date(kioskData.getMonthSettler()));
                 if (cal.get(Calendar.MONTH) != Calendar.getInstance().get(Calendar.MONTH)) {
                     kioskData.setMonthSettler(System.currentTimeMillis());
-                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.SETTLER.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.SETTLER.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Settler");
@@ -402,7 +402,7 @@ public class FPKioskManager implements Listener {
             }
             case 20: {
                 if (r.getRankId() < Rank.DWELLER.getRankId()) {
-                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.DWELLER.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.DWELLER.getFormattedName() +
                             ChatColor.GREEN + " rank at " + ChatColor.AQUA + "https://store.palace.network " +
                             ChatColor.GREEN + "to claim this!");
                     return;
@@ -411,7 +411,7 @@ public class FPKioskManager implements Listener {
                 cal.setTime(new Date(kioskData.getMonthDweller()));
                 if (cal.get(Calendar.MONTH) != Calendar.getInstance().get(Calendar.MONTH)) {
                     kioskData.setMonthDweller(System.currentTimeMillis());
-                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.DWELLER.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.DWELLER.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Dweller");
@@ -421,7 +421,7 @@ public class FPKioskManager implements Listener {
             }
             case 22: {
                 if (r.getRankId() < Rank.NOBLE.getRankId()) {
-                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.NOBLE.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.NOBLE.getFormattedName() +
                             ChatColor.GREEN + " rank at " + ChatColor.AQUA + "https://store.palace.network " +
                             ChatColor.GREEN + "to claim this!");
                     return;
@@ -430,7 +430,7 @@ public class FPKioskManager implements Listener {
                 cal.setTime(new Date(kioskData.getMonthNoble()));
                 if (cal.get(Calendar.MONTH) != Calendar.getInstance().get(Calendar.MONTH)) {
                     kioskData.setMonthNoble(System.currentTimeMillis());
-                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.NOBLE.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.NOBLE.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Noble");
@@ -440,7 +440,7 @@ public class FPKioskManager implements Listener {
             }
             case 24: {
                 if (r.getRankId() < Rank.MAJESTIC.getRankId()) {
-                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.MAJESTIC.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.MAJESTIC.getFormattedName() +
                             ChatColor.GREEN + " rank at " + ChatColor.AQUA + "https://store.palace.network " +
                             ChatColor.GREEN + "to claim this!");
                     return;
@@ -449,7 +449,7 @@ public class FPKioskManager implements Listener {
                 cal.setTime(new Date(kioskData.getMonthMajestic()));
                 if (cal.get(Calendar.MONTH) != Calendar.getInstance().get(Calendar.MONTH)) {
                     kioskData.setMonthMajestic(System.currentTimeMillis());
-                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.MAJESTIC.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.MAJESTIC.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Majestic");
@@ -459,7 +459,7 @@ public class FPKioskManager implements Listener {
             }
             case 26: {
                 if (r.getRankId() < Rank.HONORABLE.getRankId()) {
-                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.HONORABLE.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "Purchase the " + Rank.HONORABLE.getFormattedName() +
                             ChatColor.GREEN + " rank at " + ChatColor.AQUA + "https://store.palace.network " +
                             ChatColor.GREEN + "to claim this!");
                     return;
@@ -468,7 +468,7 @@ public class FPKioskManager implements Listener {
                 cal.setTime(new Date(kioskData.getMonthHonorable()));
                 if (cal.get(Calendar.MONTH) != Calendar.getInstance().get(Calendar.MONTH)) {
                     kioskData.setMonthHonorable(System.currentTimeMillis());
-                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.HONORABLE.getNameWithBrackets() +
+                    player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.HONORABLE.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Honorable");
