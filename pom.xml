@@ -12,18 +12,18 @@
             <id>palace</id>
             <url>https://repo.palace.network/nexus/content/repositories/releases/</url>
         </repository>
-        <!--<repository>-->
-            <!--<id>spigot-repo</id>-->
-            <!--<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>dmulloy2-releases</id>-->
-            <!--<url>http://repo.dmulloy2.net/content/repositories/releases/</url>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>dmulloy2-snapshots</id>-->
-            <!--<url>http://repo.dmulloy2.net/content/repositories/snapshots/</url>-->
-        <!--</repository>-->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>dmulloy2-releases</id>
+            <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>dmulloy2-snapshots</id>
+            <url>http://repo.dmulloy2.net/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>

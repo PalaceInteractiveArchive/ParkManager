@@ -374,6 +374,7 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new Commandspawn());
         registerCommand(new Commandtp());
         registerCommand(new Commandupdate());
+        registerCommand(new CommandAutoBook());
         if (isResort(Resort.USO)) {
             registerCommand(new Commanduso());
         }
