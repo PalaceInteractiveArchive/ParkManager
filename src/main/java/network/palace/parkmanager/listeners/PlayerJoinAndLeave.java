@@ -1,6 +1,7 @@
 package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
+import network.palace.core.events.CorePlayerJoinedEvent;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
@@ -18,7 +19,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
@@ -72,22 +72,16 @@ public class PlayerJoinAndLeave implements Listener {
 
     @EventHandler
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
-        Bukkit.getLogger().info(System.currentTimeMillis() + " 1");
         try {
             UUID uuid = event.getUniqueId();
-            Bukkit.getLogger().info(System.currentTimeMillis() + " 2");
             ParkManager.bandUtil.setupPlayerData(uuid);
-            Bukkit.getLogger().info(System.currentTimeMillis() + " 3");
-            Bukkit.getLogger().info(System.currentTimeMillis() + " 4");
             if (ParkManager.getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
             }
-            Bukkit.getLogger().info(System.currentTimeMillis() + " 5");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Bukkit.getLogger().info(System.currentTimeMillis() + " 6");
     }
 
     @EventHandler
@@ -120,10 +114,10 @@ public class PlayerJoinAndLeave implements Listener {
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(CorePlayerJoinedEvent event) {
         try {
-            final Player player = event.getPlayer();
-            final CPlayer cp = Core.getPlayerManager().getPlayer(player.getUniqueId());
+            final CPlayer cp = event.getPlayer();
+            final Player player = event.getPlayer().getBukkitPlayer();
             cp.giveAchievement(0);
             switch (Core.getServerType()) {
                 case "MK":

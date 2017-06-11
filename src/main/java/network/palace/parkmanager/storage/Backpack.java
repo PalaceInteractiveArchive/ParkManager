@@ -3,6 +3,7 @@ package network.palace.parkmanager.storage;
 import network.palace.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,10 +20,18 @@ public class Backpack {
     public Backpack(CPlayer player, StorageSize size, ItemStack[] contents) {
         this.uuid = player.getUniqueId();
         this.size = size;
-        if (contents.length < size.getSlots()) {
-            throw new IllegalArgumentException("array must have at least " + size.getSlots() + " entries");
-        }
         ItemStack[] arr;
+        if (contents.length < size.getSlots()) {
+            arr = new ItemStack[size.getSlots()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = new ItemStack(Material.AIR);
+            }
+            int i = 0;
+            for (ItemStack item : contents) {
+                arr[i] = item;
+                i++;
+            }
+        }
         if (contents.length > size.getSlots()) {
             arr = new ItemStack[size.getSlots()];
             int i = 0;

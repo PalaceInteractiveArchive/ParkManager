@@ -2,6 +2,7 @@ package network.palace.parkmanager.storage;
 
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
+import network.palace.core.player.PlayerStatus;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
@@ -348,7 +349,7 @@ public class StorageManager {
         packet.setHotbar(hotbar);
         cachedInventories.put(uuid, packet);
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
-        if (player == null) {
+        if (player == null || !player.getStatus().equals(PlayerStatus.JOINED)) {
             return;
         }
         setInventory(uuid);

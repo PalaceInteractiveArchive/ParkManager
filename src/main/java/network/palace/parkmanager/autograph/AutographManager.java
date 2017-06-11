@@ -5,6 +5,7 @@ import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.listeners.BlockEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -99,6 +100,9 @@ public class AutographManager {
         BookMeta bm = (BookMeta) book.getItemMeta();
         bm.setAuthor(player.getName());
         book.setItemMeta(bm);
+        if (BlockEdit.isInBuildMode(player.getUniqueId())) {
+            return;
+        }
         player.getInventory().setItem(7, book);
     }
 

@@ -46,7 +46,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@PluginInfo(name = "ParkManager", version = "2.1.4", depend = {"Core", "ProtocolLib", "WorldEdit"})
+@PluginInfo(name = "ParkManager", version = "2.1.6", depend = {"Core", "ProtocolLib", "WorldEdit"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     public static List<FoodLocation> foodLocations = new ArrayList<>();

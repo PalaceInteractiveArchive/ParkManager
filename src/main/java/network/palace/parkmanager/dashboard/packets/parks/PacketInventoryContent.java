@@ -58,14 +58,49 @@ public class PacketInventoryContent extends BasePacket {
         this.id = PacketID.Inventory.INVENTORY_CONTENT.getID();
         this.uuid = UUID.fromString(obj.get("uuid").getAsString());
         this.resort = Resort.fromId(obj.get("resort").getAsInt());
-        this.backpackJson = obj.get("backpackJson").getAsString();
-        this.backpackHash = obj.get("backpackHash").getAsString();
-        this.backpackSize = obj.get("backpackSize").getAsInt();
-        this.lockerJson = obj.get("lockerJson").getAsString();
-        this.lockerHash = obj.get("lockerHash").getAsString();
-        this.lockerSize = obj.get("lockerSize").getAsInt();
-        this.hotbarJson = obj.get("hotbarJson").getAsString();
-        this.hotbarHash = obj.get("hotbarHash").getAsString();
+
+        if (obj.get("backpackJson").isJsonNull()) {
+            this.backpackJson = "";
+        } else {
+            this.backpackJson = obj.get("backpackJson").getAsString();
+        }
+        if (obj.get("backpackHash").isJsonNull()) {
+            this.backpackHash = "";
+        } else {
+            this.backpackHash = obj.get("backpackHash").getAsString();
+        }
+        if (obj.get("backpackSize").isJsonNull()) {
+            this.backpackSize = 0;
+        } else {
+            this.backpackSize = obj.get("backpackSize").getAsInt();
+        }
+
+        if (obj.get("lockerJson").isJsonNull()) {
+            this.lockerJson = "";
+        } else {
+            this.lockerJson = obj.get("lockerJson").getAsString();
+        }
+        if (obj.get("lockerHash").isJsonNull()) {
+            this.lockerHash = "";
+        } else {
+            this.lockerHash = obj.get("lockerHash").getAsString();
+        }
+        if (obj.get("lockerSize").isJsonNull()) {
+            this.lockerSize = 0;
+        } else {
+            this.lockerSize = obj.get("lockerSize").getAsInt();
+        }
+
+        if (obj.get("hotbarJson").isJsonNull()) {
+            this.hotbarJson = "";
+        } else {
+            this.hotbarJson = obj.get("hotbarJson").getAsString();
+        }
+        if (obj.get("hotbarHash").isJsonNull()) {
+            this.hotbarHash = "";
+        } else {
+            this.hotbarHash = obj.get("hotbarHash").getAsString();
+        }
         return this;
     }
 
