@@ -732,7 +732,10 @@ public class Commandmagic extends CoreCommand {
                     sender.sendMessage(ChatColor.RED + "You must be a Player to do this!");
                     return;
                 }
-                Player player = ((Player) sender);
+                CPlayer player = Core.getPlayerManager().getPlayer(((Player) sender).getUniqueId());
+                if (player == null) {
+                    return;
+                }
                 if (args[1].equalsIgnoreCase("create")) {
                     ParkManager.fpKioskManager.create(player);
                     return;

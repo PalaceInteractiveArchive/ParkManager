@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import network.palace.core.Core;
 import network.palace.core.message.FormattedMessage;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
@@ -17,7 +18,6 @@ import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -27,6 +27,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -81,7 +82,7 @@ public class FPKioskManager implements Listener {
         });
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             for (UUID uuid : new ArrayList<>(firstOpenMenu)) {
-                Player tp = Bukkit.getPlayer(uuid);
+                CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
                 if (tp != null) {
                     firstOpenMenu.remove(uuid);
                     openKiosk(tp);
@@ -91,7 +92,7 @@ public class FPKioskManager implements Listener {
         }, 0L, 1L);
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             for (UUID uuid : new ArrayList<>(openMenu)) {
-                Player tp = Bukkit.getPlayer(uuid);
+                CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
                 if (tp != null) {
                     updateKioskMenu(tp);
                 }
@@ -99,7 +100,7 @@ public class FPKioskManager implements Listener {
         }, 0L, 20L);
     }
 
-    public void create(Player player) {
+    public void create(CPlayer player) {
         World world = player.getWorld();
         Location loc = player.getLocation();
         Location loc1 = new Location(world, loc.getX(), loc.getY() - 0.7, loc.getZ(), loc.getYaw(), 0);
@@ -137,12 +138,12 @@ public class FPKioskManager implements Listener {
         player.sendMessage(ChatColor.GREEN + "A FastPass Kiosk has been created!");
     }
 
-    private void updateKioskMenu(Player player) {
+    private void updateKioskMenu(CPlayer player) {
         if (player.getOpenInventory() == null) {
             openMenu.remove(player.getUniqueId());
             return;
         }
-        Inventory inv = player.getOpenInventory().getTopInventory();
+        Inventory inv = player.getBukkitPlayer().getOpenInventory().getTopInventory();
         if (inv == null) {
             openMenu.remove(player.getUniqueId());
             return;
@@ -151,9 +152,23 @@ public class FPKioskManager implements Listener {
             openMenu.remove(player.getUniqueId());
             return;
         }
+        setInventory(player, inv);
+    }
+
+    public void setInventory(CPlayer player, Inventory inv) {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         FastPassData fpdata = data.getFastPassData();
         KioskData kioskData = data.getKioskData();
+        long vote = kioskData.getVote();
+        int lastVote = kioskData.getLastVote();
+        int today = new GregorianCalendar().get(Calendar.DAY_OF_YEAR);
+        Calendar cur = Calendar.getInstance();
+        Calendar lastG = Calendar.getInstance();
+        Calendar lastD = Calendar.getInstance();
+        Calendar lastS = Calendar.getInstance();
+        boolean sameYearG = lastG.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        boolean sameYearD = lastD.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
+        boolean sameYearS = lastS.get(Calendar.YEAR) == cur.get(Calendar.YEAR);
         ItemStack fpslow = ItemUtil.create(fpItem(fpdata.getSlow(), fpdata.getSlowDay()), ChatColor.GREEN +
                 "FastPass - Slow", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
                 "line of a " + ChatColor.YELLOW + "Slow " + ChatColor.GRAY + "ride!", fpLore(fpdata.getSlow(),
@@ -166,6 +181,10 @@ public class FPKioskManager implements Listener {
                 "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
                 "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
                 fpdata.getThrillDay(), "Thrill")));
+        ItemStack voteItem = ItemUtil.create((System.currentTimeMillis() - vote > 43200000) ? Material.NETHER_STAR :
+                Material.IRON_INGOT, ChatColor.GREEN + "Vote for Palace!", Arrays.asList(ChatColor.GRAY +
+                "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists daily and receive " + ChatColor.YELLOW +
+                "5 Tokens!", voteLore(vote)));
         ItemStack website = ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Visit our website!",
                 Arrays.asList(ChatColor.GRAY + "Check out our website at " + ChatColor.AQUA + "palace.network",
                         ChatColor.GRAY + "for news, posts and more!"));
@@ -188,7 +207,8 @@ public class FPKioskManager implements Listener {
                 "Monthly Tokens - Honorable", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                 ChatColor.GRAY + "You must be " + Rank.HONORABLE.getFormattedName() + ChatColor.GRAY + " or above",
                 monthLore(kioskData.getMonthHonorable())));
-        inv.setItem(4, website);
+        inv.setItem(3, website);
+        inv.setItem(5, voteItem);
         inv.setItem(11, fpslow);
         inv.setItem(13, fpmod);
         inv.setItem(15, fpthr);
@@ -199,56 +219,19 @@ public class FPKioskManager implements Listener {
         inv.setItem(26, monthHonorable);
     }
 
-    public void openKiosk(Player player) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
-        FastPassData fpdata = data.getFastPassData();
-        KioskData kioskData = data.getKioskData();
-        Inventory inv = Bukkit.createInventory(player, 27, ChatColor.BLUE + "FastPass Kiosk");
-        ItemStack fpslow = ItemUtil.create(fpItem(fpdata.getSlow(), fpdata.getSlowDay()), ChatColor.GREEN +
-                "FastPass - Slow", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
-                "line of a " + ChatColor.YELLOW + "Slow " + ChatColor.GRAY + "ride!", fpLore(fpdata.getSlow(),
-                fpdata.getSlowDay(), "Slow")));
-        ItemStack fpmod = ItemUtil.create(fpItem(fpdata.getModerate(), fpdata.getModerateDay()), ChatColor.GREEN +
-                "FastPass - Moderate", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
-                "line of a " + ChatColor.YELLOW + "Moderate " + ChatColor.GRAY + "ride!", fpLore(fpdata.getModerate(),
-                fpdata.getModerateDay(), "Moderate")));
-        ItemStack fpthr = ItemUtil.create(fpItem(fpdata.getThrill(), fpdata.getThrillDay()), ChatColor.GREEN +
-                "FastPass - Thrill", Arrays.asList(ChatColor.GRAY + "Use this to skip the", ChatColor.GRAY +
-                "line of a " + ChatColor.YELLOW + "Thrill " + ChatColor.GRAY + "ride!", fpLore(fpdata.getThrill(),
-                fpdata.getThrillDay(), "Thrill")));
-        ItemStack website = ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Visit our website!",
-                Arrays.asList(ChatColor.GRAY + "Check out our website at " + ChatColor.AQUA + "palace.network",
-                        ChatColor.GRAY + "for news, posts and more!"));
-        ItemStack monthSettler = ItemUtil.create(monthItem(kioskData.getMonthSettler()), ChatColor.GREEN +
-                "Monthly Tokens - Settler", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "Everyone can claim this prize!", monthLore(kioskData.getMonthSettler())));
-        ItemStack monthDweller = ItemUtil.create(monthItem(kioskData.getMonthDweller()), ChatColor.GREEN +
-                "Monthly Tokens - Dweller", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.DWELLER.getFormattedName() + ChatColor.GRAY + " or above",
-                monthLore(kioskData.getMonthDweller())));
-        ItemStack monthNoble = ItemUtil.create(monthItem(kioskData.getMonthNoble()), ChatColor.GREEN +
-                "Monthly Tokens - Noble", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.NOBLE.getFormattedName() + ChatColor.GRAY + " or above",
-                monthLore(kioskData.getMonthNoble())));
-        ItemStack monthMajestic = ItemUtil.create(monthItem(kioskData.getMonthMajestic()), ChatColor.GREEN +
-                "Monthly Tokens - Majestic", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getFormattedName() + ChatColor.GRAY + " or above",
-                monthLore(kioskData.getMonthMajestic())));
-        ItemStack monthHonorable = ItemUtil.create(monthItem(kioskData.getMonthHonorable()), ChatColor.GREEN +
-                "Monthly Tokens - Honorable", Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                ChatColor.GRAY + "You must be " + Rank.HONORABLE.getFormattedName() + ChatColor.GRAY + " or above",
-                monthLore(kioskData.getMonthHonorable())));
-        inv.setItem(4, website);
-        inv.setItem(11, fpslow);
-        inv.setItem(13, fpmod);
-        inv.setItem(15, fpthr);
-        inv.setItem(18, monthSettler);
-        inv.setItem(20, monthDweller);
-        inv.setItem(22, monthNoble);
-        inv.setItem(24, monthMajestic);
-        inv.setItem(26, monthHonorable);
+    public void openKiosk(CPlayer player) {
+        Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.BLUE + "FastPass Kiosk");
+        setInventory(player, inv);
         player.openInventory(inv);
     }
+
+    private String voteLore(long vote) {
+        if (System.currentTimeMillis() - vote > 43200000) {
+            return ChatColor.YELLOW + "Right-Click to Vote!";
+        }
+        return ChatColor.GOLD + "You already voted in the past 12 hours!";
+    }
+
 
     private String monthLore(long last) {
         Calendar cur = Calendar.getInstance();
@@ -332,8 +315,8 @@ public class FPKioskManager implements Listener {
         if (item == null) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
-        if (item.getItemMeta() == null) {
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
+        if (item.getItemMeta() == null || player == null) {
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -348,13 +331,33 @@ public class FPKioskManager implements Listener {
         int today = new GregorianCalendar().get(Calendar.DAY_OF_YEAR);
         Rank r = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
         switch (slot) {
-            case 4: {
+            case 3: {
                 FormattedMessage msg = new FormattedMessage("\nClick to visit our website\n").color(ChatColor.YELLOW)
                         .style(ChatColor.BOLD).tooltip(ChatColor.GREEN + "Click to visit https://palace.network")
                         .link("https://palace.network");
                 msg.send(player);
                 player.closeInventory();
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+                break;
+            }
+            case 5: {
+                if (System.currentTimeMillis() - kioskData.getVote() <= 43200000) {
+                    player.sendMessage(ChatColor.RED + "You already voted in the past 12 hours!");
+                    break;
+                }
+                int voteSite = 1;
+                if (kioskData.getLastVote() + 1 <= 4) {
+                    voteSite = kioskData.getLastVote() + 1;
+                }
+                String link = "http://vote.palace.network/?" + voteSite;
+                FormattedMessage msg = new FormattedMessage("To vote for us, ").color(ChatColor.GREEN)
+                        .then("click here!").color(ChatColor.AQUA).style(ChatColor.BOLD, ChatColor.UNDERLINE)
+                        .link(link).tooltip(ChatColor.GREEN + "Click to visit " + link).then(" You will receive ")
+                        .color(ChatColor.GREEN).then("5 Tokens").color(ChatColor.GOLD).style(ChatColor.BOLD)
+                        .then(" after you vote.").color(ChatColor.GREEN);
+                msg.send(player);
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
+                player.closeInventory();
                 break;
             }
             case 11: {
@@ -517,4 +520,30 @@ public class FPKioskManager implements Listener {
             }
         });
     }
+
+    public void updateVoteData(final UUID uuid) {
+        CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+        final PlayerData data = ParkManager.getPlayerData(uuid);
+        if (player == null || data == null) {
+            return;
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            try (Connection connection = Core.getSqlUtil().getConnection()) {
+                PreparedStatement sql = connection.prepareStatement("SELECT vote,lastvote FROM player_data WHERE uuid=?");
+                sql.setString(1, uuid.toString());
+                ResultSet result = sql.executeQuery();
+                if (!result.next()) {
+                    return;
+                }
+                KioskData kioskData = data.getKioskData();
+                kioskData.setVote(result.getLong("vote"));
+                kioskData.setLastVote(result.getInt("lastvote"));
+                result.close();
+                sql.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 }

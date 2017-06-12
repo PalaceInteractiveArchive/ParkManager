@@ -63,12 +63,12 @@ public class AutographInventory {
      * Open the autographs with the index of 1 - 50 * id.
      *
      * @param player the player who clicked
-     * @param id the offset of the autographs
+     * @param id     the offset of the autographs
      */
     private void click(CPlayer player, int id) {
         ItemStack book = createBook(player, id);
         player.setInventorySlot(7, book);
-        player.sendMessage(ChatColor.YELLOW + "Selected " + (id + 1)+ "!");
+        player.sendMessage(ChatColor.YELLOW + "Selected " + (id + 1) + "!");
         player.closeInventory();
     }
 
@@ -133,7 +133,7 @@ public class AutographInventory {
      * Create a new autograph book
      *
      * @param player the player to get the autographs for
-     * @param id the id of the book clicked
+     * @param id     the id of the book clicked
      * @return the fulfilled autograph book
      */
     private ItemStack createBook(CPlayer player, int id) {

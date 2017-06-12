@@ -78,7 +78,7 @@ public class BandUtil {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT bandcolor,rank,namecolor,flash,visibility," +
                     "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,pack," +
-                    "monthsettler,monthdweller,monthnoble,monthmajestic,monthhonorable FROM player_data WHERE uuid=?");
+                    "vote,lastvote,monthsettler,monthdweller,monthnoble,monthmajestic,monthhonorable FROM player_data WHERE uuid=?");
             sql.setString(1, uuid.toString());
             ResultSet result = sql.executeQuery();
             if (!result.next()) {
@@ -89,7 +89,7 @@ public class BandUtil {
                     result.getInt("tday"));
             KioskData kioskData = new KioskData(result.getLong("monthsettler"), result.getLong("monthdweller"),
                     result.getLong("monthnoble"), result.getLong("monthmajestic"),
-                    result.getLong("monthhonorable"));
+                    result.getLong("monthhonorable"), result.getLong("vote"), result.getInt("lastvote"));
             boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s") || ParkManager.isResort(Resort.USO);
             BandColor bandColor = !ParkManager.isResort(Resort.USO) ? getBandColor(result.getString("bandcolor")) : BandColor.USO;
             PlayerData data = new PlayerData(uuid, getBandNameColor(result.getString("namecolor")),
@@ -128,7 +128,7 @@ public class BandUtil {
             pur.close();
             data.setPurchases(purch);
             TreeMap<String, RideCount> rides = new TreeMap<>();
-            PreparedStatement counts = connection.prepareStatement("SELECT name,server from ride_counter WHERE uuid=? ORDER BY server DESC");
+            PreparedStatement counts = connection.prepareStatement("SELECT name,server FROM ride_counter WHERE uuid=? ORDER BY server DESC");
             counts.setString(1, uuid.toString());
             ResultSet results = counts.executeQuery();
             while (results.next()) {

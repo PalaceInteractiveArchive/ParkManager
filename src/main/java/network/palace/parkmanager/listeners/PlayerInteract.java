@@ -272,7 +272,10 @@ public class PlayerInteract implements Listener {
 
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
+        if (player == null) {
+            return;
+        }
         EntityType etype = event.getRightClicked().getType();
         if (etype.equals(EntityType.ARMOR_STAND)) {
             ArmorStand stand = (ArmorStand) event.getRightClicked();

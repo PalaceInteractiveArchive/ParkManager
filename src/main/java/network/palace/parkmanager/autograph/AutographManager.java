@@ -142,14 +142,10 @@ public class AutographManager {
             return;
         }
         String name = "";
-        if (player.getRank().equals(Rank.CHARACTER)) {
-            name = player.getName();
-        } else {
-            name = player.getUniqueId().toString();
-        }
+        name = player.getName();
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs (user, sender, message) VALUES (?,?,?)");
-            sql.setString(1, tp.getName());
+            sql.setString(1, tp.getUniqueId().toString());
             sql.setString(2, name);
             sql.setString(3, message);
             sql.execute();

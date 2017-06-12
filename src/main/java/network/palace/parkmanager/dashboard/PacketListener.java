@@ -3,6 +3,7 @@ package network.palace.parkmanager.dashboard;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import network.palace.core.Core;
+import network.palace.core.dashboard.packets.dashboard.PacketUpdateEconomy;
 import network.palace.core.events.DashboardConnectEvent;
 import network.palace.core.events.IncomingPacketEvent;
 import network.palace.parkmanager.ParkManager;
@@ -13,6 +14,8 @@ import network.palace.parkmanager.dashboard.packets.parks.PacketRefreshWarps;
 import network.palace.parkmanager.utils.WarpUtil;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import java.util.UUID;
 
 /**
  * Created by Marc on 9/18/16
@@ -66,6 +69,16 @@ public class PacketListener implements Listener {
                     return;
                 }
                 WarpUtil.refreshWarps();
+                break;
+            }
+            /**
+             * Update economy
+             * Used for voting
+             */
+            case 67: {
+                PacketUpdateEconomy packet = new PacketUpdateEconomy().fromJSON(object);
+                UUID uuid = packet.getUniqueId();
+                ParkManager.fpKioskManager.updateVoteData(uuid);
                 break;
             }
         }
