@@ -70,115 +70,6 @@ public class StorageManager {
         Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () ->
                 Bukkit.getOnlinePlayers().forEach(this::update), 0L, 1200L);
     }
-/*
-    public void downloadInventory(UUID uuid, boolean force) {
-        if (ParkManager.playerJoinAndLeave.isSet(uuid) && !force) {
-            return;
-        }
-        ParkManager.playerJoinAndLeave.setInventory(uuid);
-        final CPlayer player = Core.getPlayerManager().getPlayer(uuid);
-        if (player == null) {
-            return;
-        }
-        final PlayerInventory inv = player.getInventory();
-        Backpack pack = ParkManager.storageManager.getBackpack(player);
-        Locker locker = ParkManager.storageManager.getLocker(player);
-        Inventory p = pack.getInventory();
-        Inventory l = locker.getInventory();
-        p.remove(Material.MINECART);
-        p.remove(Material.SNOW_BALL);
-        p.remove(Material.EGG);
-        l.remove(Material.MINECART);
-        l.remove(Material.SNOW_BALL);
-        l.remove(Material.EGG);
-        final ItemStack[] hotbar = ParkManager.storageManager.getHotbar(player);
-        ParkManager.playerJoinAndLeave.setInventory(player, true);
-        if (hotbar != null) {
-            ItemStack[] cont = inv.getContents();
-            System.arraycopy(hotbar, 0, cont, 0, hotbar.length >= 4 ? 4 : hotbar.length);
-            inv.setContents(Arrays.copyOfRange(cont, 0, 36));
-        }
-        if (player.getRank().getRankId() > Rank.SQUIRE.getRankId()) {
-            if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
-                inv.setItem(0, new ItemStack(Material.COMPASS));
-            }
-            if (makeBuildMode.remove(player.getUniqueId())) {
-                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> player.performCommand("build"), 20L);
-            }
-        } else {
-            inv.remove(Material.COMPASS);
-        }
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
-        data.setBackpack(pack);
-        data.setLocker(locker);
-        player.getInventory().remove(Material.MINECART);
-    }
-
-    public Backpack getBackpack(CPlayer player) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement pack = connection.prepareStatement("SELECT pack,packsize FROM storage WHERE uuid=? AND resort=?");
-            pack.setString(1, player.getUniqueId().toString());
-            pack.setInt(2, ParkManager.resort.getId());
-            ResultSet result = pack.executeQuery();
-            if (!result.next()) {
-                result.close();
-                pack.close();
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (uuid, pack, packsize, " +
-                        "locker, lockersize, hotbar, resort) VALUES (?,?,0,?,0,?,?)");
-                insert.setString(1, player.getUniqueId().toString());
-                insert.setString(2, new JSONObject().toString());
-                insert.setString(3, new JSONObject().toString());
-                insert.setString(4, new JSONObject().toString());
-                insert.setInt(5, ParkManager.resort.getId());
-                insert.execute();
-                insert.close();
-                return new Backpack(player, StorageSize.SMALL, new ItemStack[]{});
-            }
-            StorageSize size = StorageSize.fromInt(result.getInt("packsize"));
-            String json = result.getString("pack");
-            ItemStack[] items = ItemUtil.getInventoryFromJson(json, size.getSlots());
-            Backpack backpack = new Backpack(player, size, items);
-            result.close();
-            pack.close();
-            return backpack;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public Locker getLocker(CPlayer player) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement pack = connection.prepareStatement("SELECT locker,lockersize FROM storage WHERE uuid=? AND resort=?");
-            pack.setString(1, player.getUniqueId().toString());
-            pack.setInt(2, ParkManager.resort.getId());
-            ResultSet result = pack.executeQuery();
-            if (!result.next()) {
-                result.close();
-                pack.close();
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO storage (uuid, pack, packsize, " +
-                        "locker, lockersize, hotbar,resort) VALUES (?,?,0,?,0,?,?)");
-                insert.setString(1, player.getUniqueId().toString());
-                insert.setString(2, new JSONObject().toString());
-                insert.setString(3, new JSONObject().toString());
-                insert.setString(4, new JSONObject().toString());
-                insert.setInt(5, ParkManager.resort.getId());
-                insert.execute();
-                insert.close();
-                return new Locker(player, StorageSize.SMALL, new ItemStack[]{});
-            }
-            StorageSize size = StorageSize.fromInt(result.getInt("lockersize"));
-            String json = result.getString("locker");
-            ItemStack[] items = ItemUtil.getInventoryFromJson(json, size.getSlots());
-            Locker locker = new Locker(player, size, items);
-            result.close();
-            pack.close();
-            return locker;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 
     public void logout(final Player player) {
         loadingPack.remove(player.getUniqueId());
@@ -187,7 +78,6 @@ public class StorageManager {
         final boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
         cachedInventories.remove(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            final long time = System.currentTimeMillis();
             update(player, data, build, true);
             removeHotbar(player.getUniqueId());
             //System.out.println("Total Processing Time: " + (System.currentTimeMillis() - time) + "ms");
@@ -288,25 +178,6 @@ public class StorageManager {
         loadingLocker.remove(player.getUniqueId());
         loadingLocker.add(player.getUniqueId());
     }
-/*
-    public ItemStack[] getHotbar(CPlayer player) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT hotbar FROM storage WHERE uuid=? AND resort=?");
-            sql.setString(1, player.getUniqueId().toString());
-            sql.setInt(2, ParkManager.resort.getId());
-            ResultSet result = sql.executeQuery();
-            if (!result.next()) {
-                return null;
-            }
-            String json = result.getString("hotbar");
-            result.close();
-            sql.close();
-            return ItemUtil.getInventoryFromJson(json, 0);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 
     public void setValue(final UUID uuid, final String key, final String value) {
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {

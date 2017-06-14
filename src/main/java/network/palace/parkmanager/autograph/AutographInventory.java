@@ -171,7 +171,7 @@ public class AutographInventory {
             }
             meta.addPage(ChatColor.translateAlternateColorCodes('&', signature.getMessage()) + ChatColor.DARK_GREEN + "\n- " + displayName);
         });
-        meta.setTitle(ChatColor.AQUA + "Autograph book #" + id);
+        meta.setTitle(ChatColor.AQUA + "Autograph book #" + (id + 1));
         book.setItemMeta(meta);
         return book;
     }

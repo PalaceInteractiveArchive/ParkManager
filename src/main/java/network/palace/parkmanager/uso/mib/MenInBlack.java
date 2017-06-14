@@ -45,38 +45,35 @@ public class MenInBlack implements Listener {
 
     public MenInBlack() {
         item = ItemUtil.create(Material.STONE_HOE, ChatColor.DARK_PURPLE + "Blaster",
-                Arrays.asList(ChatColor.YELLOW + "Right-Click to Shoot!"));
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                long cur = System.currentTimeMillis();
-                for (Map.Entry<HitReset, Long> entry : new HashMap<>(resetMap).entrySet()) {
-                    if ((entry.getValue() + 4000) > cur) {
-                        continue;
-                    }
-                    HitReset reset = entry.getKey();
-                    ItemFrame frame = reset.getItemFrame();
-                    frame.setItem(new ItemStack(Material.INK_SACK, 1, reset.getData()));
-                    resetMap.remove(reset);
+                Collections.singletonList(ChatColor.YELLOW + "Right-Click to Shoot!"));
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            long cur = System.currentTimeMillis();
+            for (Map.Entry<HitReset, Long> entry : new HashMap<>(resetMap).entrySet()) {
+                if ((entry.getValue() + 4000) > cur) {
+                    continue;
                 }
-                for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
-                    CPlayer player = Core.getPlayerManager().getPlayer(entry.getKey());
-                    ShooterSession session = entry.getValue();
-                    List<Hit> hits = session.getHits();
-                    int total = 0;
-                    for (Hit h : hits) {
-                        total += h.getPoints();
-                    }
-                    String m = "";
-                    if (!hits.isEmpty()) {
-                        Hit h = hits.get(hits.size() - 1);
-                        long t = h.getTime();
-                        if (t + 2000 > cur) {
-                            m = ChatColor.GREEN + " +" + h.getPoints() + " Points";
-                        }
-                    }
-                    player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + total + m);
+                HitReset reset = entry.getKey();
+                ItemFrame frame = reset.getItemFrame();
+                frame.setItem(new ItemStack(Material.INK_SACK, 1, reset.getData()));
+                resetMap.remove(reset);
+            }
+            for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
+                CPlayer player = Core.getPlayerManager().getPlayer(entry.getKey());
+                ShooterSession session = entry.getValue();
+                List<Hit> hits = session.getHits();
+                int total = 0;
+                for (Hit h : hits) {
+                    total += h.getPoints();
                 }
+                String m = "";
+                if (!hits.isEmpty()) {
+                    Hit h = hits.get(hits.size() - 1);
+                    long t = h.getTime();
+                    if (t + 2000 > cur) {
+                        m = ChatColor.GREEN + " +" + h.getPoints() + " Points";
+                    }
+                }
+                player.getActionBar().show(ChatColor.LIGHT_PURPLE + "MIB Score: " + total + m);
             }
         }, 0L, 10L);
     }
@@ -168,7 +165,6 @@ public class MenInBlack implements Listener {
                 !sessions.containsKey(player.getUniqueId())) {
             return;
         }
-        String displayName = meta.getDisplayName();
         if (inHand.getType().equals(item.getType()) && meta.getDisplayName().equals(item.getItemMeta().getDisplayName())) {
             player.getBukkitPlayer().launchProjectile(Snowball.class);
             event.setCancelled(true);
@@ -184,7 +180,6 @@ public class MenInBlack implements Listener {
             return;
         }
         event.setCancelled(true);
-        String displayName = meta.getDisplayName();
         if (inHand.getType().equals(item.getType()) && meta.getDisplayName().equals(item.getItemMeta().getDisplayName())) {
             player.getBukkitPlayer().launchProjectile(Snowball.class);
             event.setCancelled(true);
@@ -221,7 +216,6 @@ public class MenInBlack implements Listener {
         CPlayer player = Core.getPlayerManager().getPlayer(((Player) sb.getShooter()).getUniqueId());
         ShooterSession session = sessions.get(player.getUniqueId());
         byte data = stack.getData().getData();
-        Location loc = item.getLocation();
         int total = 0;
         for (Hit h : session.getHits()) {
             total += h.getPoints();
