@@ -760,9 +760,9 @@ public class InventoryUtil {
         return i;
     }
 
-    public void openWardrobeManagerPage(Player player, int page) {
+    public void openWardrobeManagerPage(CPlayer player, int page) {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
-        Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wardrobe Manager Page " + page);
+        Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 54, ChatColor.BLUE + "Wardrobe Manager Page " + page);
         List<Outfit> first = ParkManager.wardrobeManager.getOutfits();
         List<Outfit> outfits = first.subList((page - 1) * 6, (page * 6 > first.size() ? first.size() : page * 6));
         boolean lpage = page > 1;

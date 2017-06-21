@@ -366,7 +366,7 @@ public class FPKioskManager implements Listener {
                     fpd.setSlowDay(today);
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + ChatColor.YELLOW + "Daily Slow FastPass!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    updateFPData(player.getUniqueId(), fpd);
+                    updateFPData(player.getSqlId(), fpd);
                 }
                 break;
             }
@@ -376,7 +376,7 @@ public class FPKioskManager implements Listener {
                     fpd.setModerateDay(today);
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + ChatColor.YELLOW + "Daily Moderate FastPass!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    updateFPData(player.getUniqueId(), fpd);
+                    updateFPData(player.getSqlId(), fpd);
                 }
                 break;
             }
@@ -386,7 +386,7 @@ public class FPKioskManager implements Listener {
                     fpd.setThrillDay(today);
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + ChatColor.YELLOW + "Daily Thrill FastPass!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    updateFPData(player.getUniqueId(), fpd);
+                    updateFPData(player.getSqlId(), fpd);
                 }
                 break;
             }
@@ -399,7 +399,7 @@ public class FPKioskManager implements Listener {
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Settler");
-                    updateMonthlyData(player.getUniqueId(), kioskData);
+                    updateMonthlyData(player.getSqlId(), kioskData);
                 }
                 break;
             }
@@ -418,7 +418,7 @@ public class FPKioskManager implements Listener {
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Dweller");
-                    updateMonthlyData(player.getUniqueId(), kioskData);
+                    updateMonthlyData(player.getSqlId(), kioskData);
                 }
                 break;
             }
@@ -437,7 +437,7 @@ public class FPKioskManager implements Listener {
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Noble");
-                    updateMonthlyData(player.getUniqueId(), kioskData);
+                    updateMonthlyData(player.getSqlId(), kioskData);
                 }
                 break;
             }
@@ -456,7 +456,7 @@ public class FPKioskManager implements Listener {
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Majestic");
-                    updateMonthlyData(player.getUniqueId(), kioskData);
+                    updateMonthlyData(player.getSqlId(), kioskData);
                 }
                 break;
             }
@@ -475,24 +475,24 @@ public class FPKioskManager implements Listener {
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                     Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Honorable");
-                    updateMonthlyData(player.getUniqueId(), kioskData);
+                    updateMonthlyData(player.getSqlId(), kioskData);
                 }
                 break;
             }
         }
     }
 
-    private void updateMonthlyData(final UUID uuid, final KioskData data) {
+    private void updateMonthlyData(final int id, final KioskData data) {
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET monthsettler=?," +
-                        "monthdweller=?,monthnoble=?,monthmajestic=?,monthhonorable=? WHERE uuid=?");
+                        "monthdweller=?,monthnoble=?,monthmajestic=?,monthhonorable=? WHERE id=?");
                 sql.setLong(1, data.getMonthSettler());
                 sql.setLong(2, data.getMonthDweller());
                 sql.setLong(3, data.getMonthNoble());
                 sql.setLong(4, data.getMonthMajestic());
                 sql.setLong(5, data.getMonthHonorable());
-                sql.setString(6, uuid.toString());
+                sql.setInt(6, id);
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {
@@ -501,18 +501,18 @@ public class FPKioskManager implements Listener {
         });
     }
 
-    private void updateFPData(final UUID uuid, final FastPassData fastPassData) {
+    private void updateFPData(final int id, final FastPassData fastPassData) {
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET slow=?,moderate=?," +
-                        "thrill=?,sday=?,mday=?,tday=? WHERE uuid=?");
+                        "thrill=?,sday=?,mday=?,tday=? WHERE id=?");
                 sql.setInt(1, fastPassData.getSlow());
                 sql.setInt(2, fastPassData.getModerate());
                 sql.setInt(3, fastPassData.getThrill());
                 sql.setInt(4, fastPassData.getSlowDay());
                 sql.setInt(5, fastPassData.getModerateDay());
                 sql.setInt(6, fastPassData.getThrillDay());
-                sql.setString(7, uuid.toString());
+                sql.setInt(7, id);
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {
@@ -527,7 +527,7 @@ public class FPKioskManager implements Listener {
         if (player == null || data == null) {
             return;
         }
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+        Core.runTaskAsynchronously(() -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("SELECT vote,lastvote FROM player_data WHERE uuid=?");
                 sql.setString(1, uuid.toString());

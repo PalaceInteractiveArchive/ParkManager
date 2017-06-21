@@ -42,7 +42,7 @@ public class PlayerSettingsClick {
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 data.setFlash(!data.getFlash());
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player.getUniqueId(), "flash", data.getFlash());
+                ParkManager.bandUtil.setSetting(player, "flash", data.getFlash());
                 return;
             case "Player Visibility":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
@@ -53,19 +53,19 @@ public class PlayerSettingsClick {
                     ParkManager.visibilityUtil.addToHideAll(player);
                 }
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", data.getVisibility());
+                ParkManager.bandUtil.setSetting(player, "visibility", data.getVisibility());
                 return;
             case "Park Loop Music":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 data.setLoop(!data.getLoop());
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player.getUniqueId(), "parkloop", data.getLoop());
+                ParkManager.bandUtil.setSetting(player, "parkloop", data.getLoop());
                 return;
             case "Friends Access Hotel Room":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 data.setHotel(!data.getHotel());
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player.getUniqueId(), "hotel", data.getHotel());
+                ParkManager.bandUtil.setSetting(player, "hotel", data.getHotel());
         }
     }
 }

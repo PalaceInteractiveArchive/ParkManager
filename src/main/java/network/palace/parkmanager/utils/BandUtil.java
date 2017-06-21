@@ -152,12 +152,12 @@ public class BandUtil {
         }
     }
 
-    public void setSetting(final UUID uuid, final String name, final boolean value) {
+    public void setSetting(final CPlayer player, final String name, final boolean value) {
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE uuid=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE id=?");
                 sql.setInt(1, value ? 1 : 0);
-                sql.setString(2, uuid.toString());
+                sql.setInt(2, player.getSqlId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {
@@ -172,9 +172,9 @@ public class BandUtil {
                 (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE id=?");
                 sql.setString(1, color.getName());
-                sql.setString(2, player.getUniqueId().toString());
+                sql.setInt(2, player.getSqlId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {
@@ -195,9 +195,9 @@ public class BandUtil {
                 (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE uuid=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE id=?");
                 sql.setString(1, name);
-                sql.setString(2, player.getUniqueId().toString());
+                sql.setInt(2, player.getSqlId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {
@@ -271,9 +271,9 @@ public class BandUtil {
                 (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE uuid=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE id=?");
                 sql.setString(1, getBandNameColor(color));
-                sql.setString(2, player.getUniqueId().toString());
+                sql.setInt(2, player.getSqlId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {

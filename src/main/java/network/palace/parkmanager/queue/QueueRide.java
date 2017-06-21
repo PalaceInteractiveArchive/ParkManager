@@ -222,10 +222,16 @@ public class QueueRide {
     protected void chargeFastpass(final PlayerData data) {
         final FastPassData fpdata = data.getFastPassData();
         fpdata.setPass(category, fpdata.getPass(category) - 1);
+        int sqlid;
+        try {
+            sqlid = Core.getPlayerManager().getPlayer(data.getUniqueId()).getSqlId();
+        } catch (Exception e) {
+            return;
+        }
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
-                        category.getSqlName() + "=? WHERE uuid=?");
+                        category.getSqlName() + "=? WHERE id=?");
                 sql.setInt(1, fpdata.getPass(category));
                 sql.setString(2, data.getUniqueId().toString());
                 sql.execute();

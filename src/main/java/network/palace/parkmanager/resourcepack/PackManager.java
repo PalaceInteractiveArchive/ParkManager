@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Marc on 3/14/15
@@ -54,19 +53,19 @@ public class PackManager {
         PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
         String rp = "";
         if (name.equalsIgnoreCase("no")) {
-            setResourcePack(player.getUniqueId(), "no");
+            setResourcePack(player.getSqlId(), "no");
             data.setPack("no");
             player.sendMessage(ChatColor.GREEN + "You will not be sent a Resource Pack when you join a Park server.");
             player.closeInventory();
             return;
         } else if (name.equalsIgnoreCase("yes")) {
-            setResourcePack(player.getUniqueId(), "yes");
+            setResourcePack(player.getSqlId(), "yes");
             data.setPack("yes");
             player.sendMessage(ChatColor.GREEN + "You will be sent the Park Resource Pack when you join a Park server.");
             player.closeInventory();
             rp = serverPack;
         } else if (name.equalsIgnoreCase("Blank")) {
-            setResourcePack(player.getUniqueId(), "blank");
+            setResourcePack(player.getSqlId(), "blank");
             data.setPack("blank");
             player.sendMessage(ChatColor.GREEN + "You will be sent a Blank Resource Pack when you join a Park server.");
             player.closeInventory();
@@ -85,16 +84,21 @@ public class PackManager {
         }
     }
 
-    private void setResourcePack(UUID uuid, String pack) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET pack=? WHERE uuid=?");
-            sql.setString(1, pack);
-            sql.setString(2, uuid.toString());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    private void setResourcePack(int id, String pack) {
+        Core.runTaskAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+                try (Connection connection = Core.getSqlUtil().getConnection()) {
+                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET pack=? WHERE id=?");
+                    sql.setString(1, pack);
+                    sql.setInt(2, id);
+                    sql.execute();
+                    sql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void openMenu(CPlayer player) {

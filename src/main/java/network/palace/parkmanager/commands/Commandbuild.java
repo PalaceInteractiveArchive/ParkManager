@@ -113,9 +113,9 @@ public class Commandbuild extends CoreCommand {
         player.closeInventory();
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE uuid=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE id=?");
                 sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);
-                sql.setString(2, player.getUniqueId().toString());
+                sql.setInt(2, player.getSqlId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {

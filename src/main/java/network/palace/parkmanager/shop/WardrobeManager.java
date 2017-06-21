@@ -4,6 +4,7 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.comphenix.protocol.wrappers.nbt.io.NbtTextSerializer;
 import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.InventoryType;
 import network.palace.parkmanager.handlers.Outfit;
@@ -138,7 +139,7 @@ public class WardrobeManager {
         if (item == null || item.getItemMeta() == null) {
             return;
         }
-        final Player player = (Player) event.getWhoClicked();
+        final CPlayer player = Core.getPlayerManager().getPlayer((Player) event.getWhoClicked());
         if (item.equals(BandUtil.getBackItem())) {
             ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
             return;
@@ -391,11 +392,11 @@ public class WardrobeManager {
                 item.getItemMeta().getDisplayName().contains(head.getItemMeta().getDisplayName());
     }
 
-    private void setOutfitCode(Player player, String code) {
+    private void setOutfitCode(CPlayer player, String code) {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET outfit=? WHERE uuid=?");
+            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET outfit=? WHERE id=?");
             sql.setString(1, code);
-            sql.setString(2, player.getUniqueId().toString());
+            sql.setInt(2, player.getSqlId());
             sql.execute();
             sql.close();
         } catch (SQLException e) {

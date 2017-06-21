@@ -59,18 +59,18 @@ public class MainMenuClick {
                     player.closeInventory();
                     ParkManager.visibilityUtil.addToHideAll(player);
                     pdata.setVisibility(false);
-                    ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
+                    ParkManager.bandUtil.setSetting(player, "visibility", pdata.getVisibility());
                 } else {
                     player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
                     ParkManager.visibilityUtil.removeFromHideAll(player);
                     pdata.setVisibility(true);
-                    ParkManager.bandUtil.setSetting(player.getUniqueId(), "visibility", pdata.getVisibility());
+                    ParkManager.bandUtil.setSetting(player, "visibility", pdata.getVisibility());
                 }
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 return;
             case IRON_CHESTPLATE:
-                ParkManager.inventoryUtil.openWardrobeManagerPage(player.getBukkitPlayer(), 1);
+                ParkManager.inventoryUtil.openWardrobeManagerPage(player, 1);
                 return;
             case WATCH:
                 ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERTIME);
