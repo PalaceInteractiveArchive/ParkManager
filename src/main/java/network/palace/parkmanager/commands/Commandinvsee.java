@@ -30,17 +30,21 @@ public class Commandinvsee extends CoreCommand {
             }
             String type = args[1];
             PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
-            switch (type.toLowerCase()) {
-                case "backpack": {
-                    player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Backpack!");
-                    player.openInventory(data.getBackpack().getInventory());
-                    return;
+            if (data != null && data.getLocker() != null && data.getBackpack() != null) {
+                switch (type.toLowerCase()) {
+                    case "backpack": {
+                        player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Backpack!");
+                        player.openInventory(data.getBackpack().getInventory());
+                        return;
+                    }
+                    case "locker": {
+                        player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Locker!");
+                        player.openInventory(data.getLocker().getInventory());
+                        return;
+                    }
                 }
-                case "locker": {
-                    player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Locker!");
-                    player.openInventory(data.getLocker().getInventory());
-                    return;
-                }
+            } else {
+                player.sendMessage(ChatColor.RED + "Player data not found for " + args[0] + ", showing main inventory");
             }
             player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Main Inventory!");
             player.openInventory(tp.getInventory());
