@@ -21,6 +21,7 @@ public class Commandhub extends CoreCommand {
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        ParkManager parkManager = ParkManager.getInstance();
         if (!(sender instanceof Player)) {
             if (args.length > 0) {
                 Player tp = Bukkit.getPlayer(args[0]);
@@ -28,37 +29,37 @@ public class Commandhub extends CoreCommand {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return;
                 }
-                ParkManager.queueManager.leaveAllQueues(tp);
-                if (ParkManager.shooter != null) {
-                    ParkManager.shooter.warp(tp);
+                parkManager.getQueueManager().leaveAllQueues(tp);
+                if (parkManager.getShooter() != null) {
+                    parkManager.getShooter().warp(tp);
                 }
-                if (ParkManager.toyStoryMania != null) {
-                    ParkManager.toyStoryMania.done(tp);
+                if (parkManager.getToyStoryMania() != null) {
+                    parkManager.getToyStoryMania().done(tp);
                 }
                 if (tp.isInsideVehicle()) {
                     tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return;
                 }
-                ParkManager.teleportUtil.log(tp, tp.getLocation());
-                tp.teleport(ParkManager.hub);
+                parkManager.getTeleportUtil().log(tp, tp.getLocation());
+                tp.teleport(parkManager.getHub());
                 tp.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
             }
             return;
         }
         Player player = (Player) sender;
-        ParkManager.queueManager.leaveAllQueues(player);
-        if (ParkManager.shooter != null) {
-            ParkManager.shooter.warp(player);
+        parkManager.getQueueManager().leaveAllQueues(player);
+        if (parkManager.getShooter() != null) {
+            parkManager.getShooter().warp(player);
         }
-        if (ParkManager.toyStoryMania != null) {
-            ParkManager.toyStoryMania.done(player);
+        if (parkManager.getToyStoryMania() != null) {
+            parkManager.getToyStoryMania().done(player);
         }
         if (player.isInsideVehicle()) {
             player.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
             return;
         }
-        ParkManager.teleportUtil.log(player, player.getLocation());
-        player.teleport(ParkManager.hub);
+        parkManager.getTeleportUtil().log(player, player.getLocation());
+        player.teleport(parkManager.getHub());
         sender.sendMessage(ChatColor.DARK_AQUA + "You have arrived at the Hub!");
     }
 }

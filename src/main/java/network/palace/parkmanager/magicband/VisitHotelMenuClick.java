@@ -23,7 +23,7 @@ public class VisitHotelMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -39,7 +39,7 @@ public class VisitHotelMenuClick {
                 player.sendMessage(ChatColor.GREEN + "Now joining " + ChatColor.AQUA + "" + ChatColor.BOLD + "Resorts...");
                 return;
             case "No":
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
         }
     }
 }

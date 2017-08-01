@@ -8,7 +8,6 @@ import network.palace.parkmanager.tsm.handlers.Hit;
 import network.palace.parkmanager.tsm.handlers.ShooterSession;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
@@ -25,7 +24,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.SpawnEgg;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 
 import java.util.*;
 
@@ -35,7 +34,7 @@ import java.util.*;
 public class MenInBlack implements Listener {
     private HashMap<UUID, ShooterSession> sessions = new HashMap<>();
     public static ItemStack item;
-    private ItemStack blank = new SpawnEgg(EntityType.ENDERMAN).toItemStack();
+    private ItemStack blank = new ItemStack(Material.MONSTER_EGG, 1);
     private ItemStack red = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 14);
     private ItemStack blue = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 11);
     private ItemStack green = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 5);
@@ -44,7 +43,10 @@ public class MenInBlack implements Listener {
     private HashMap<HitReset, Long> resetMap = new HashMap<>();
 
     public MenInBlack() {
-        item = ItemUtil.create(Material.STONE_HOE, ChatColor.DARK_PURPLE + "Blaster",
+        SpawnEggMeta meta = (SpawnEggMeta) blank.getItemMeta();
+        meta.setSpawnedType(EntityType.ENDERMAN);
+        blank.setItemMeta(meta);
+        item = ItemUtil.create(Material.DIAMOND_PICKAXE, ChatColor.DARK_PURPLE + "Blaster",
                 Collections.singletonList(ChatColor.YELLOW + "Right-Click to Shoot!"));
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             long cur = System.currentTimeMillis();

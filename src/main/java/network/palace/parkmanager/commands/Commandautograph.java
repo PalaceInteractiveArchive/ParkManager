@@ -28,7 +28,7 @@ public class Commandautograph extends CoreCommand {
                     Integer pageNum;
                     try {
                         pageNum = Integer.parseInt(args[1]);
-                        ParkManager.autographManager.removeAutograph(player, pageNum);
+                        ParkManager.getInstance().getAutographManager().removeAutograph(player, pageNum);
                         return;
                     } catch (NumberFormatException ignored) {
                     }
@@ -41,10 +41,10 @@ public class Commandautograph extends CoreCommand {
         }
         switch (args[0].toLowerCase()) {
             case "accept":
-                ParkManager.autographManager.acceptRequest(player);
+                ParkManager.getInstance().getAutographManager().acceptRequest(player);
                 return;
             case "deny":
-                ParkManager.autographManager.denyRequest(player);
+                ParkManager.getInstance().getAutographManager().denyRequest(player);
                 return;
         }
         CPlayer cp = Core.getPlayerManager().getPlayer(player.getUniqueId());
@@ -61,7 +61,7 @@ public class Commandautograph extends CoreCommand {
             player.sendMessage(ChatColor.RED + "You can't sign your own book!");
             return;
         }
-        ParkManager.autographManager.requestToSign(player, tp);
+        ParkManager.getInstance().getAutographManager().requestToSign(player, tp);
     }
 
 

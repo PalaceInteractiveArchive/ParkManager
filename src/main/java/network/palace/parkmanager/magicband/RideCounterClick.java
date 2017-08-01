@@ -21,7 +21,7 @@ public class RideCounterClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -35,10 +35,10 @@ public class RideCounterClick {
         int page = Integer.parseInt(inv.replaceAll("Ride Counter Page ", ""));
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Next Page")) {
-            ParkManager.inventoryUtil.openRideCounterPage(player, page + 1);
+            ParkManager.getInstance().getInventoryUtil().openRideCounterPage(player, page + 1);
         }
         if (name.equals("Last Page")) {
-            ParkManager.inventoryUtil.openRideCounterPage(player, page - 1);
+            ParkManager.getInstance().getInventoryUtil().openRideCounterPage(player, page - 1);
         }
     }
 }

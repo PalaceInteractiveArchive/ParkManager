@@ -1,5 +1,6 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.Getter;
 import org.bukkit.Color;
 
 /**
@@ -11,14 +12,10 @@ public enum GlowType {
     PURPLE(Color.fromRGB(39, 31, 155)), PINK(Color.fromRGB(255, 0, 255)), WHITE(Color.fromRGB(255, 255, 255)),
     BLACK(Color.fromRGB(0, 0, 0)), DONE(Color.fromRGB(0, 0, 0));
 
-    private Color color;
+    @Getter private Color color;
 
     GlowType(Color color) {
         this.color = color;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     public static GlowType fromString(String s) {

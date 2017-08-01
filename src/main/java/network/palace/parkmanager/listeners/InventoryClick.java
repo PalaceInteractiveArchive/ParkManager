@@ -55,9 +55,10 @@ public class InventoryClick implements Listener {
                 }
             }
         }
+        ParkManager parkManager = ParkManager.getInstance();
         String name = ChatColor.stripColor(inv.getName());
-        if (((ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR)) && name.equals(player.getName() + "'s MagicBand")) ||
-                (ParkManager.isResort(Resort.USO) && name.equals(player.getName() + "'s Power Pass"))) {
+        if (((parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR)) && name.equals(player.getName() + "'s MagicBand")) ||
+                (parkManager.isResort(Resort.USO) && name.equals(player.getName() + "'s Power Pass"))) {
             MainMenuClick.handle(event);
             event.setCancelled(true);
             return;
@@ -79,12 +80,12 @@ public class InventoryClick implements Listener {
         }
         if (name.startsWith("Wardrobe Manager Page")) {
             event.setCancelled(true);
-            ParkManager.wardrobeManager.handle(event);
+            parkManager.getWardrobeManager().handle(event);
             return;
         }
         if (name.startsWith("Resource Pack")) {
             event.setCancelled(true);
-            ParkManager.packManager.handleClick(event);
+            parkManager.getPackManager().handleClick(event);
             return;
         }
         if (name.startsWith("Rooms in")) {
@@ -99,7 +100,7 @@ public class InventoryClick implements Listener {
                 ShopConfirmClick.handle(event);
                 return;
             }
-            ParkManager.shopManager.handleClick(event, shop);
+            ParkManager.getInstance().getShopManager().handleClick(event, shop);
             return;
         }
         switch (name) {
@@ -137,7 +138,7 @@ public class InventoryClick implements Listener {
                 return;
             case "Wardrobe Manager":
                 event.setCancelled(true);
-                ParkManager.wardrobeManager.handle(event);
+                parkManager.getWardrobeManager().handle(event);
                 return;
             case "Customize Band Color":
                 event.setCancelled(true);
@@ -210,7 +211,7 @@ public class InventoryClick implements Listener {
                 return;
             case "FastPass Kiosk":
                 event.setCancelled(true);
-                ParkManager.fpKioskManager.handle(event);
+                parkManager.getFpKioskManager().handle(event);
                 return;
             case "Show Timetable":
                 event.setCancelled(true);
@@ -222,7 +223,7 @@ public class InventoryClick implements Listener {
                 return;
             case "Rip Ride Rockit Song Selection":
                 event.setCancelled(true);
-                ParkManager.ripRideRockit.handle(event);
+                parkManager.getRipRideRockit().handle(event);
         }
     }
 
@@ -234,7 +235,7 @@ public class InventoryClick implements Listener {
         }
         if (event.getNewSlot() == 6) {
             player.getActionBar().show(ChatColor.YELLOW + "" + ChatColor.BOLD + "Current time in EST: " +
-                    ChatColor.GREEN + ParkManager.bandUtil.currentTime());
+                    ChatColor.GREEN + ParkManager.getInstance().getBandUtil().currentTime());
             WatchTask.addToMessage(player.getUniqueId());
         } else if (event.getPreviousSlot() == 6) {
             WatchTask.removeFromMessage(player.getUniqueId());

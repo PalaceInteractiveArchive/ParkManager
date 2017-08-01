@@ -14,9 +14,10 @@ import java.util.UUID;
 public class MessageTimer {
 
     public static void start() {
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+        ParkManager parkManager = ParkManager.getInstance();
+        Bukkit.getScheduler().runTaskTimer(parkManager, () -> {
             String msg = "";
-            switch (ParkManager.shooter.game) {
+            switch (parkManager.getShooter().game) {
                 case "buzz":
                     msg = ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz Points: " + ChatColor.GREEN + "" +
                             ChatColor.BOLD;
@@ -30,7 +31,7 @@ public class MessageTimer {
                             "" + ChatColor.BOLD;
                     break;
             }
-            for (UUID uuid : ParkManager.shooter.getIngame()) {
+            for (UUID uuid : parkManager.getShooter().getIngame()) {
                 CPlayer player = Core.getPlayerManager().getPlayer(uuid);
                 if (player == null) {
                     continue;

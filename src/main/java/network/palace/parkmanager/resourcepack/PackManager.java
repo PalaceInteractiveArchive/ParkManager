@@ -35,7 +35,7 @@ public class PackManager {
     }
 
     public void initialize() {
-        setServerPack(ParkManager.config.getString("server-pack"));
+        setServerPack(ParkManager.getInstance().getConfig().getString("server-pack"));
     }
 
     public void handleClick(InventoryClickEvent event) {
@@ -50,7 +50,7 @@ public class PackManager {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         event.setCancelled(true);
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         String rp = "";
         if (name.equalsIgnoreCase("no")) {
             setResourcePack(player.getSqlId(), "no");
@@ -103,7 +103,7 @@ public class PackManager {
 
     public void openMenu(CPlayer player) {
         Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.BLUE + "Resource Pack");
-        String selected = ParkManager.getPlayerData(player.getUniqueId()).getPack();
+        String selected = ParkManager.getInstance().getPlayerData(player.getUniqueId()).getPack();
         ItemStack yes = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes",
                 Arrays.asList(ChatColor.GRAY + "Download all Park resource", ChatColor.GRAY + "packs when you connect",
                         ChatColor.GRAY + "to a Park server"));

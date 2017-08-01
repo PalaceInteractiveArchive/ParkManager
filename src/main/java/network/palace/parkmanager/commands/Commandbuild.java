@@ -36,7 +36,8 @@ public class Commandbuild extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        ParkManager parkManager = ParkManager.getInstance();
+        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         WatchTask.removeFromMessage(player.getUniqueId());
         if (data == null || data.getBackpack() == null || data.getBackpack().getInventory() == null
                 || data.getBackpack().getInventory().getContents() == null) {
@@ -53,7 +54,7 @@ public class Commandbuild extends CoreCommand {
             inv.clear();
             inv.setItem(0, new ItemStack(Material.COMPASS));
             inv.setItem(1, new ItemStack(Material.WOOD_AXE));
-            for (ItemStack i : ParkManager.getPlayerData(player.getUniqueId()).getBackpack().getInventory().getContents()) {
+            for (ItemStack i : parkManager.getPlayerData(player.getUniqueId()).getBackpack().getInventory().getContents()) {
                 if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
                         i.getType().equals(Material.COMPASS)) {
                     continue;
@@ -70,8 +71,8 @@ public class Commandbuild extends CoreCommand {
                 h[in] = i;
                 in++;
             }
-            ParkManager.storageManager.removeHotbar(player.getUniqueId());
-            ParkManager.storageManager.addHotbar(player.getUniqueId(), h);
+            parkManager.getStorageManager().removeHotbar(player.getUniqueId());
+            parkManager.getStorageManager().addHotbar(player.getUniqueId(), h);
         } else {
             player.sendMessage(ChatColor.GREEN + "You have exited " + ChatColor.YELLOW + "" + ChatColor.BOLD +
                     "Build Mode!");
@@ -80,7 +81,7 @@ public class Commandbuild extends CoreCommand {
             player.getBukkitPlayer().setAllowFlight(true);
             player.getBukkitPlayer().setFlying(isFlying);
             final PlayerInventory inv = player.getInventory();
-            Inventory pack = ParkManager.getPlayerData(player.getUniqueId()).getBackpack().getInventory();
+            Inventory pack = parkManager.getPlayerData(player.getUniqueId()).getBackpack().getInventory();
             pack.clear();
             for (ItemStack i : inv.getContents()) {
                 if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
@@ -90,18 +91,18 @@ public class Commandbuild extends CoreCommand {
                 pack.addItem(i);
             }
             inv.clear();
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-                ParkManager.autographManager.setBook(player.getUniqueId());
-                ParkManager.playerJoinAndLeave.setInventory(player, true);
+            Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
+                parkManager.getAutographManager().setBook(player.getUniqueId());
+                parkManager.getPlayerJoinAndLeave().setInventory(player, true);
                 if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() > Rank.SQUIRE.getRankId()) {
                     if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                         inv.setItem(0, new ItemStack(Material.COMPASS));
                     }
                 }
-                if (!ParkManager.storageManager.getBuildModeHotbars().containsKey(player.getUniqueId())) {
+                if (!parkManager.getStorageManager().getBuildModeHotbars().containsKey(player.getUniqueId())) {
                     return;
                 }
-                for (ItemStack i : ParkManager.storageManager.removeHotbar(player.getUniqueId())) {
+                for (ItemStack i : parkManager.getStorageManager().removeHotbar(player.getUniqueId())) {
                     if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
                             i.getType().equals(Material.COMPASS)) {
                         continue;
@@ -111,7 +112,7 @@ public class Commandbuild extends CoreCommand {
             });
         }
         player.closeInventory();
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE id=?");
                 sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);

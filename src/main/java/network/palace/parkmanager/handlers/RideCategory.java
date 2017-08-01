@@ -1,19 +1,17 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.Getter;
+
 /**
  * Created by Marc on 2/19/16
  */
 public enum RideCategory {
     SLOW("Slow"), MODERATE("Moderate"), THRILL("Thrill");
 
-    private String name;
+    @Getter private String name;
 
     RideCategory(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public static RideCategory fromString(String s) {

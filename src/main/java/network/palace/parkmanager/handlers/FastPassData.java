@@ -1,72 +1,22 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by Marc on 2/19/16
  */
+@Getter
+@Setter
+@AllArgsConstructor
 public class FastPassData {
     private int slow;
     private int moderate;
     private int thrill;
-    private int sday;
-    private int mday;
-    private int tday;
-
-    public FastPassData(int slow, int moderate, int thrill, int sday, int mday, int tday) {
-        this.slow = slow;
-        this.moderate = moderate;
-        this.thrill = thrill;
-        this.sday = sday;
-        this.mday = mday;
-        this.tday = tday;
-    }
-
-    public int getSlow() {
-        return slow;
-    }
-
-    public int getModerate() {
-        return moderate;
-    }
-
-    public int getThrill() {
-        return thrill;
-    }
-
-    public void setSlow(int slow) {
-        this.slow = slow;
-    }
-
-    public void setModerate(int moderate) {
-        this.moderate = moderate;
-    }
-
-    public void setThrill(int thrill) {
-        this.thrill = thrill;
-    }
-
-    public int getSlowDay() {
-        return sday;
-    }
-
-    public int getModerateDay() {
-        return mday;
-    }
-
-    public int getThrillDay() {
-        return tday;
-    }
-
-    public void setSlowDay(int sday) {
-        this.sday = sday;
-    }
-
-    public void setModerateDay(int mday) {
-        this.mday = mday;
-    }
-
-    public void setThrillDay(int tday) {
-        this.tday = tday;
-    }
+    private int slowDay;
+    private int moderateDay;
+    private int thrillDay;
 
     public int getPass(RideCategory category) {
         switch (category) {

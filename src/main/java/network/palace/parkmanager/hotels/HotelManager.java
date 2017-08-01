@@ -34,7 +34,8 @@ public class HotelManager {
     }
 
     private void initialize() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> hotelRooms.stream()
+        ParkManager parkManager = ParkManager.getInstance();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(parkManager, () -> hotelRooms.stream()
                 .filter(room -> room.getCheckoutNotificationRecipient() != null).forEach(room -> {
                     UUID uuid = room.getCheckoutNotificationRecipient();
                     Player tp = Bukkit.getPlayer(uuid);
@@ -42,14 +43,15 @@ public class HotelManager {
                         checkout(room, true);
                     }
                 }), 10L, 6000L);
-        if (!ParkManager.hotelServer) {
+        if (!parkManager.isHotelServer()) {
             return;
         }
         refreshRooms();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(ParkManager.getInstance(), () -> hotelRooms.stream()
+        Bukkit.getScheduler().runTaskTimerAsynchronously(parkManager, () -> hotelRooms.stream()
                 .filter(room -> room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000))
                 .forEach(room -> checkout(room, true)), 0L, 6000L);
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> closeDoors.stream().forEach(room -> {
+        final List<HotelRoom> closeDoorsList = new ArrayList<>(closeDoors);
+        Bukkit.getScheduler().runTaskTimer(parkManager, () -> closeDoorsList.stream().forEach(room -> {
             closeDoor(room);
             closeDoors.remove(room);
         }), 0L, 5L);
@@ -87,6 +89,8 @@ public class HotelManager {
 
     @SuppressWarnings("deprecation")
     public void closeDoor(HotelRoom room) {
+        if (room == null)
+            return;
         Block s = new Location(Bukkit.getWorlds().get(0), room.getX(), room.getY(), room.getZ()).getBlock();
         Sign sign;
         Material type = s.getType();
@@ -264,7 +268,7 @@ public class HotelManager {
     }
 
     public void serverStop() {
-        if (!ParkManager.hotelServer) {
+        if (!ParkManager.getInstance().isHotelServer()) {
             return;
         }
         hotelRooms.stream().filter(room -> room.getCheckoutTime() <= (System.currentTimeMillis() / 1000) &&
@@ -381,12 +385,13 @@ public class HotelManager {
 
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
-        if (ParkManager.hotelServer && room.getWarp().getWorld().equals(Bukkit.getWorlds().get(0))) {
+        boolean hotelServer = ParkManager.getInstance().isHotelServer();
+        if (hotelServer && room.getWarp().getWorld().equals(Bukkit.getWorlds().get(0))) {
             closeDoors.add(room);
         }
         room.setCheckoutTime(0);
         if (tp != null) {
-            if (room.getWarp() != null && ParkManager.hotelServer &&
+            if (room.getWarp() != null && hotelServer &&
                     room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
                 Warp w = room.getWarp();
                 if (tp.getLocation().distance(w.getLocation()) < 25) {
@@ -406,7 +411,7 @@ public class HotelManager {
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());
         }
-        if (!lapsed && ParkManager.hotelServer && room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
+        if (!lapsed && hotelServer && room.getWarp().getWorld().getUID().equals(tp.getWorld().getUID())) {
             Block b = tp.getWorld().getBlockAt(room.getX(), room.getY(), room.getZ());
             Material type = b.getType();
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {

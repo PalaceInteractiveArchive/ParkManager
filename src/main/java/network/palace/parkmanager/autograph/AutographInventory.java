@@ -148,7 +148,9 @@ public class AutographInventory {
             if (signature.getSigner().length() > 16) uuid = Optional.of(UUID.fromString(signature.getSigner()));
             else displayName = ChatColor.BLUE + signature.getSigner();
             if (uuid.isPresent()) {
-                if (ParkManager.userCache.containsKey(uuid.get())) displayName = ParkManager.userCache.get(uuid.get());
+                ParkManager parkManager = ParkManager.getInstance();
+                if (parkManager.getUserCache().containsKey(uuid.get()))
+                    displayName = parkManager.getUserCache().get(uuid.get());
                 else {
                     try (Connection connection = Core.getSqlUtil().getConnection()) {
                         PreparedStatement statement = connection.prepareStatement("SELECT rank,username FROM player_data WHERE uuid=?");
@@ -161,7 +163,7 @@ public class AutographInventory {
                         }
                         Rank rank = Rank.fromString(results.getString("rank"));
                         displayName = rank.getFormattedName() + results.getString("username");
-                        ParkManager.userCache.put(uuid.get(), displayName);
+                        parkManager.getUserCache().put(uuid.get(), displayName);
                         results.close();
                         connection.close();
                     } catch (SQLException e) {

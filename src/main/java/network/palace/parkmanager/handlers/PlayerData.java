@@ -1,6 +1,8 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.storage.Backpack;
@@ -18,25 +20,23 @@ import java.util.UUID;
  * Created by Marc on 12/13/14
  */
 public class PlayerData {
-    private UUID uuid;
-    private boolean dvc;
-    private ChatColor bandName;
-    private BandColor bandColor;
-    private List<UUID> friends;
-    private boolean special;
-    private boolean flash;
-    private boolean visibility;
-    private boolean loop;
-    private boolean hotel;
-    private FastPassData fastPassData;
-    private KioskData kioskData;
-    private Backpack backpack;
-    private Locker locker;
-    private TreeMap<String, RideCount> rideCounts = new TreeMap<>();
-    private List<Integer> purchases;
-    private Clothing clothing;
-    private String outfitCode;
-    private boolean inventorySet = false;
+    @Getter private UUID uuid;
+    @Getter @Setter private ChatColor bandName;
+    @Getter @Setter private BandColor bandColor;
+    private @Setter List<UUID> friends;
+    @Getter @Setter private boolean special;
+    @Getter @Setter private boolean flash;
+    @Getter @Setter private boolean visibility;
+    @Getter @Setter private boolean loop;
+    @Getter @Setter private boolean hotel;
+    @Getter private FastPassData fastPassData;
+    @Getter private KioskData kioskData;
+    @Getter @Setter private Backpack backpack;
+    @Getter @Setter private Locker locker;
+    private @Setter TreeMap<String, RideCount> rideCounts = new TreeMap<>();
+    private @Setter List<Integer> purchases;
+    @Getter @Setter private Clothing clothing;
+    @Getter @Setter private String outfitCode;
     @Getter @Setter private String pack;
     @Getter @Setter private long lastInventoryUpdate = System.currentTimeMillis();
     @Getter @Setter private String backpackHash = "";
@@ -47,11 +47,8 @@ public class PlayerData {
                       boolean visibility, boolean loop, boolean hotel, FastPassData fastPassData, KioskData kioskData,
                       String outfitCode, String pack) {
         this.uuid = uuid;
-        this.dvc = dvc;
         this.bandName = bandName;
         this.bandColor = bandColor;
-        this.pack = pack;
-        this.friends = friends;
         this.special = special;
         this.flash = flash;
         this.visibility = visibility;
@@ -59,15 +56,15 @@ public class PlayerData {
         this.hotel = hotel;
         this.fastPassData = fastPassData;
         this.kioskData = kioskData;
-        this.purchases = purchases;
         this.outfitCode = outfitCode;
+        this.pack = pack;
         Clothing c = new Clothing();
         String[] list = outfitCode.split(",");
         int in = 0;
         for (String s : list) {
             try {
                 Integer i = Integer.parseInt(s);
-                Outfit o = ParkManager.wardrobeManager.getOutfit(i);
+                Outfit o = ParkManager.getInstance().getWardrobeManager().getOutfit(i);
                 if (o == null) {
                     continue;
                 }
@@ -101,47 +98,11 @@ public class PlayerData {
         return uuid;
     }
 
-    public ChatColor getBandName() {
-        return bandName;
-    }
-
-    public BandColor getBandColor() {
-        return bandColor;
-    }
-
     public List<UUID> getFriendList() {
         return new ArrayList<>(friends);
     }
 
-    public void setBandColor(BandColor color) {
-        this.bandColor = color;
-    }
-
-    public boolean getFlash() {
-        return flash;
-    }
-
-    public void setFlash(boolean flash) {
-        this.flash = flash;
-    }
-
-    public boolean getLoop() {
-        return loop;
-    }
-
-    public Backpack getBackpack() {
-        return backpack;
-    }
-
-    public void setBackpack(Backpack backpack) {
-        this.backpack = backpack;
-    }
-
-    public void setLoop(boolean loop) {
-        this.loop = loop;
-    }
-
-    public void setBandColor(Material color) {
+    public void setBandColorMaterial(Material color) {
         switch (color) {
             case PAPER:
                 this.bandColor = BandColor.SPECIAL1;
@@ -166,60 +127,8 @@ public class PlayerData {
         return new TreeMap<>(rideCounts);
     }
 
-    public void setBandName(ChatColor color) {
-        this.bandName = color;
-    }
-
-    public boolean getSpecial() {
-        return special;
-    }
-
-    public void setSpecial(boolean special) {
-        this.special = special;
-    }
-
-    public boolean getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(boolean visibility) {
-        this.visibility = visibility;
-    }
-
-    public void setHotel(boolean hotel) {
-        this.hotel = hotel;
-    }
-
-    public boolean getHotel() {
-        return hotel;
-    }
-
-    public FastPassData getFastPassData() {
-        return fastPassData;
-    }
-
-    public KioskData getKioskData() {
-        return kioskData;
-    }
-
-    public void setRideCounts(TreeMap<String, RideCount> rideCounts) {
-        this.rideCounts = rideCounts;
-    }
-
-    public Locker getLocker() {
-        return locker;
-    }
-
-    public void setLocker(Locker locker) {
-        this.locker = locker;
-    }
-
     public List<Integer> getPurchases() {
         return new ArrayList<>(purchases);
-    }
-
-    public void setPurchases(List<Integer> purchases) {
-        this.purchases = purchases;
     }
 
     public void addPurchase(int i) {
@@ -228,121 +137,16 @@ public class PlayerData {
         }
     }
 
-    public String getOutfitCode() {
-        return outfitCode;
-    }
-
-    public void setOutfitCode(String outfitCode) {
-        this.outfitCode = outfitCode;
-    }
-
-    public Clothing getClothing() {
-        return clothing;
-    }
-
-    public void setClothing(Clothing clothing) {
-        this.clothing = clothing;
-    }
-
-    public void setFriendList(List<UUID> friendList) {
-        this.friends = friendList;
-    }
-
+    @AllArgsConstructor
+    @NoArgsConstructor
     public class Clothing {
-        private ItemStack head = null;
-        private int headID;
-        private ItemStack shirt = null;
-        private int shirtID;
-        private ItemStack pants = null;
-        private int pantsID;
-        private ItemStack boots = null;
-        private int bootsID;
-
-        public Clothing() {
-        }
-
-        public Clothing(ItemStack head, int headID, ItemStack shirt, int shirtID, ItemStack pants,
-                        int pantsID, ItemStack boots, int bootsID) {
-            this.head = head;
-            this.headID = headID;
-            this.shirt = shirt;
-            this.shirtID = shirtID;
-            this.pants = pants;
-            this.pantsID = pantsID;
-            this.boots = boots;
-            this.bootsID = bootsID;
-        }
-
-        public ItemStack getHead() {
-            return head;
-        }
-
-        public int getHeadID() {
-            return headID;
-        }
-
-        public ItemStack getShirt() {
-            return shirt;
-        }
-
-        public int getShirtID() {
-            return shirtID;
-        }
-
-        public ItemStack getPants() {
-            return pants;
-        }
-
-        public int getPantsID() {
-            return pantsID;
-        }
-
-        public ItemStack getBoots() {
-            return boots;
-        }
-
-        public int getBootsID() {
-            return bootsID;
-        }
-
-        public void setHead(ItemStack head) {
-            this.head = head;
-        }
-
-        public void setHeadID(int headID) {
-            this.headID = headID;
-        }
-
-        public void setShirt(ItemStack shirt) {
-            this.shirt = shirt;
-        }
-
-        public void setShirtID(int shirtID) {
-            this.shirtID = shirtID;
-        }
-
-        public void setPants(ItemStack pants) {
-            this.pants = pants;
-        }
-
-        public void setPantsID(int pantsID) {
-            this.pantsID = pantsID;
-        }
-
-        public void setBoots(ItemStack boots) {
-            this.boots = boots;
-        }
-
-        public void setBootsID(int bootsID) {
-            this.bootsID = bootsID;
-        }
-
-        public void setInventorySet(boolean b) {
-            inventorySet = b;
-        }
-
-        public boolean getInventorySet() {
-            return inventorySet;
-        }
+        @Getter @Setter private ItemStack head = null;
+        @Getter @Setter private int headID;
+        @Getter @Setter private ItemStack shirt = null;
+        @Getter @Setter private int shirtID;
+        @Getter @Setter private ItemStack pants = null;
+        @Getter @Setter private int pantsID;
+        @Getter @Setter private ItemStack boots = null;
+        @Getter @Setter private int bootsID;
     }
 }

@@ -25,7 +25,7 @@ public class StorageUpgradeClick {
         }
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.shopManager.openMenu(player);
+            ParkManager.getInstance().getShopManager().openMenu(player);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -33,7 +33,7 @@ public class StorageUpgradeClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         switch (name) {
             case "Upgrade Backpack": {
                 if (data.getBackpack().getSize().equals(StorageSize.LARGE)) {
@@ -51,7 +51,7 @@ public class StorageUpgradeClick {
                 Core.getEconomy().addBalance(player.getUniqueId(), -500);
                 ItemStack[] cont = data.getBackpack().getInventory().getContents();
                 data.setBackpack(new Backpack(player, StorageSize.LARGE, cont));
-                ParkManager.storageManager.setValue(player.getUniqueId(), "packsize", "large");
+                ParkManager.getInstance().getStorageManager().setValue(player.getUniqueId(), "packsize", 1);
                 break;
             }
             case "Upgrade Locker": {
@@ -70,7 +70,7 @@ public class StorageUpgradeClick {
                 Core.getEconomy().addBalance(player.getUniqueId(), -500);
                 ItemStack[] cont = data.getLocker().getInventory().getContents();
                 data.setLocker(new Locker(player, StorageSize.LARGE, cont));
-                ParkManager.storageManager.setValue(player.getUniqueId(), "lockersize", "large");
+                ParkManager.getInstance().getStorageManager().setValue(player.getUniqueId(), "lockersize", 1);
                 break;
             }
         }

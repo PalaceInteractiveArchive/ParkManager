@@ -44,8 +44,8 @@ public class AutographManager {
                 name = ChatColor.BLUE + sign.getSigner();
             }
             if (suuid != null) {
-                if (ParkManager.userCache.containsKey(sign.getSigner())) {
-                    name = ParkManager.userCache.get(sign.getSigner());
+                if (ParkManager.getInstance().getUserCache().containsKey(sign.getSigner())) {
+                    name = ParkManager.getInstance().getUserCache().get(sign.getSigner());
                 } else {
                     try (Connection connection = Core.getSqlUtil().getConnection()) {
                         PreparedStatement n = connection.prepareStatement("SELECT rank,username FROM player_data WHERE uuid=?");
@@ -58,7 +58,7 @@ public class AutographManager {
                         }
                         Rank rank = Rank.fromString(r.getString("rank"));
                         name = rank.getTagColor() + r.getString("username");
-                        ParkManager.userCache.put(suuid, name);
+                        ParkManager.getInstance().addToUserCache(suuid, name);
                         r.close();
                         n.close();
                     } catch (SQLException e) {

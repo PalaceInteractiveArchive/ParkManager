@@ -39,7 +39,7 @@ public class SignChange implements Listener {
                 return;
             }
             if (l1.equalsIgnoreCase("[hotel]") || l1.equalsIgnoreCase("[suite]")) {
-                if (!ParkManager.hotelServer) {
+                if (!ParkManager.getInstance().isHotelServer()) {
                     return;
                 }
                 boolean suite = l1.equalsIgnoreCase("[suite]");
@@ -48,14 +48,14 @@ public class SignChange implements Listener {
                 String hotelName = ChatColor.stripColor(event.getLine(2));
                 int cost = Integer.parseInt(ChatColor.stripColor(event.getLine(3).replace("$", "")));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(event.getLine(1));
-                if (ParkManager.hotelManager.getRoom(fullRoomName) == null) {
+                if (ParkManager.getInstance().getHotelManager().getRoom(fullRoomName) == null) {
                     Location loc = b.getLocation();
                     HotelRoom newRoom = new HotelRoom(hotelName, roomNumber, null, "", 0, null, cost, null, 259200,
                             loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), suite);
                     event.setLine(1, "" + ChatColor.GOLD + newRoom.getRoomNumber());
                     event.setLine(2, ChatColor.DARK_GREEN + event.getLine(2));
                     event.setLine(3, "" + ChatColor.GREEN + cost);
-                    Location loc2 = ParkManager.hotelManager.locFromSign((Sign) b.getState());
+                    Location loc2 = ParkManager.getInstance().getHotelManager().locFromSign((Sign) b.getState());
                     Warp warp = null;
                     if (loc != null) {
                         warp = new Warp(newRoom.getName().replace(" ", ""), Core.getInstanceName(),
@@ -63,8 +63,8 @@ public class SignChange implements Listener {
                                 player.getWorld().getName());
                     }
                     newRoom.setWarp(warp);
-                    ParkManager.hotelManager.addRoom(newRoom);
-                    ParkManager.hotelManager.updateRooms();
+                    ParkManager.getInstance().getHotelManager().addRoom(newRoom);
+                    ParkManager.getInstance().getHotelManager().updateRooms();
                 }
                 return;
             }
@@ -74,7 +74,7 @@ public class SignChange implements Listener {
                 return;
             }
             if (l1.equalsIgnoreCase("[queue]")) {
-                ParkManager.queueManager.createSign(event);
+                ParkManager.getInstance().getQueueManager().createSign(event);
                 return;
             }
             if (Core.getInstanceName().contains("Epcot")) {

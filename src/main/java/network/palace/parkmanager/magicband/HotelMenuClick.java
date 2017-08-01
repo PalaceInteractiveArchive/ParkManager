@@ -21,7 +21,7 @@ public class HotelMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELSANDRESORTS);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -29,6 +29,6 @@ public class HotelMenuClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        ParkManager.inventoryUtil.openHotelRoomListPage(player, name);
+        ParkManager.getInstance().getInventoryUtil().openHotelRoomListPage(player, name);
     }
 }

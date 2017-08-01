@@ -18,7 +18,7 @@ public class WatchTask implements Runnable {
     @Override
     public void run() {
         String msg = ChatColor.YELLOW + "" + ChatColor.BOLD + "Current time in EST: " + ChatColor.GREEN +
-                ParkManager.bandUtil.currentTime();
+                ParkManager.getInstance().getBandUtil().currentTime();
         for (UUID uuid : new ArrayList<>(message)) {
             CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
             tp.getActionBar().show(msg);

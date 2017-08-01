@@ -1,5 +1,8 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bukkit.Location;
 
 import java.util.UUID;
@@ -7,34 +10,18 @@ import java.util.UUID;
 /**
  * Created by Marc on 1/10/15
  */
+@RequiredArgsConstructor
 public class StitchSeat {
-    private int id;
-    private Location location;
-    private UUID occupant = null;
-
-    public StitchSeat(int id, Location location) {
-        this.id = id;
-        this.location = location;
-    }
+    @Getter private final int id;
+    private final Location location;
+    @Getter @Setter private UUID occupant = null;
 
     public boolean inUse() {
         return occupant != null;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Location getLocation() {
         return location.clone();
-    }
-
-    public UUID getOccupant() {
-        return occupant;
-    }
-
-    public void setOccupant(UUID uuid) {
-        this.occupant = uuid;
     }
 
     public void clearOccupant() {

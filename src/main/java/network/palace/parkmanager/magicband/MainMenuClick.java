@@ -27,23 +27,24 @@ public class MainMenuClick {
     @SuppressWarnings("deprecation")
     public static void handle(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
+        ParkManager parkManager = ParkManager.getInstance();
         CPlayer player = Core.getPlayerManager().getPlayer((Player) event.getWhoClicked());
         Inventory inv = event.getInventory();
         if (item.getType().equals(Material.SKULL_ITEM)) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
+            parkManager.getInventoryUtil().openInventory(player, InventoryType.MYPROFILE);
             return;
         }
-        PlayerData pdata = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData pdata = parkManager.getPlayerData(player.getUniqueId());
         switch (item.getType()) {
             case MINECART:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+                parkManager.getInventoryUtil().openInventory(player, InventoryType.RIDESANDATTRACTIONS);
                 return;
             case FIREWORK:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.SHOWSANDEVENTS);
+                parkManager.getInventoryUtil().openInventory(player, InventoryType.SHOWSANDEVENTS);
                 return;
             case BED:
-                if (ParkManager.hotelServer) {
-                    ParkManager.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+                if (parkManager.isHotelServer()) {
+                    parkManager.getInventoryUtil().openInventory(player, InventoryType.HOTELSANDRESORTS);
                 } else {
                     Inventory hotel = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.BLUE + "Visit Hotels and Resorts?");
                     hotel.setItem(11, ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Yes", new ArrayList<>()));
@@ -57,35 +58,35 @@ public class MainMenuClick {
                 if (data == 5) {
                     player.sendMessage(ChatColor.GREEN + "You can no longer see players!");
                     player.closeInventory();
-                    ParkManager.visibilityUtil.addToHideAll(player);
+                    parkManager.getVisibilityUtil().addToHideAll(player);
                     pdata.setVisibility(false);
-                    ParkManager.bandUtil.setSetting(player, "visibility", pdata.getVisibility());
+                    parkManager.getBandUtil().setSetting(player, "visibility", pdata.isVisibility());
                 } else {
                     player.sendMessage(ChatColor.GREEN + "You can now see players!");
                     player.closeInventory();
-                    ParkManager.visibilityUtil.removeFromHideAll(player);
+                    parkManager.getVisibilityUtil().removeFromHideAll(player);
                     pdata.setVisibility(true);
-                    ParkManager.bandUtil.setSetting(player, "visibility", pdata.getVisibility());
+                    parkManager.getBandUtil().setSetting(player, "visibility", pdata.isVisibility());
                 }
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 return;
             case IRON_CHESTPLATE:
-                ParkManager.inventoryUtil.openWardrobeManagerPage(player, 1);
+                parkManager.getInventoryUtil().openWardrobeManagerPage(player, 1);
                 return;
             case WATCH:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERTIME);
+                parkManager.getInventoryUtil().openInventory(player, InventoryType.PLAYERTIME);
                 return;
             case GOLD_BOOTS:
-                ParkManager.shopManager.openMenu(player);
+                parkManager.getShopManager().openMenu(player);
                 return;
             case POTATO_ITEM:
-                ParkManager.inventoryUtil.openFoodMenuPage(player.getBukkitPlayer(), 1);
+                parkManager.getInventoryUtil().openFoodMenuPage(player.getBukkitPlayer(), 1);
                 return;
             case NETHER_STAR:
-                if (ParkManager.isResort(Resort.WDW)) {
-                    ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_WDW);
+                if (parkManager.isResort(Resort.WDW)) {
+                    parkManager.getInventoryUtil().openInventory(player, InventoryType.PARK_WDW);
                 } else {
-                    ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_ALL);
+                    parkManager.getInventoryUtil().openInventory(player, InventoryType.PARK_ALL);
                 }
         }
     }

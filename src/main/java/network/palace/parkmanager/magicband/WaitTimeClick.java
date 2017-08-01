@@ -22,7 +22,7 @@ public class WaitTimeClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.RIDESANDATTRACTIONS);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -38,7 +38,7 @@ public class WaitTimeClick {
             player.sendMessage(ChatColor.RED + "Sorry, but there are no rides setup on this server!");
             return;
         }
-        QueueRide ride = ParkManager.queueManager.getRide2(name);
+        QueueRide ride = ParkManager.getInstance().getQueueManager().getRide2(name);
         player.performCommand("warp " + ride.getWarp());
     }
 }

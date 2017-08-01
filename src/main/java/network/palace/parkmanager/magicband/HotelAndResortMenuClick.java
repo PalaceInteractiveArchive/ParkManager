@@ -23,16 +23,16 @@ public class HotelAndResortMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         Material itemType = item.getType();
         switch (itemType) {
             case BED:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.MYHOTELROOMS);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MYHOTELROOMS);
                 return;
             case EMERALD:
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.HOTELS);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELS);
         }
     }
 }

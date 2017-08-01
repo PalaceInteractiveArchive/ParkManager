@@ -30,6 +30,7 @@ public class PacketListener implements Listener {
             return;
         }
         int id = object.get("id").getAsInt();
+        ParkManager parkManager = ParkManager.getInstance();
         switch (id) {
              /*case 58: {
                 PacketInventoryStatus packet = new PacketInventoryStatus().fromJSON(object);
@@ -38,7 +39,7 @@ public class PacketListener implements Listener {
                 if (status != 1) {
                     return;
                 }
-                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> ParkManager.storageManager.downloadInventory(uuid, false));
+                Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> parkManager.getStorageManager().downloadInventory(uuid, false));
                 break;
             }*/
             /**
@@ -46,7 +47,7 @@ public class PacketListener implements Listener {
              */
             case 58: {
                 PacketInventoryContent packet = new PacketInventoryContent().fromJSON(object);
-                ParkManager.storageManager.updateInventory(packet);
+                parkManager.getStorageManager().updateInventory(packet);
                 break;
             }
             /**
@@ -57,7 +58,7 @@ public class PacketListener implements Listener {
                 if (packet.getServer().equals(Core.getInstanceName())) {
                     return;
                 }
-                ParkManager.hotelManager.refreshRooms();
+                parkManager.getHotelManager().refreshRooms();
                 break;
             }
             /**
@@ -78,7 +79,7 @@ public class PacketListener implements Listener {
             case 67: {
                 PacketUpdateEconomy packet = new PacketUpdateEconomy().fromJSON(object);
                 UUID uuid = packet.getUniqueId();
-                ParkManager.fpKioskManager.updateVoteData(uuid);
+                parkManager.getFpKioskManager().updateVoteData(uuid);
                 break;
             }
         }

@@ -25,7 +25,7 @@ public class RideListClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.RIDESANDATTRACTIONS);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -38,7 +38,7 @@ public class RideListClick {
             player.sendMessage(ChatColor.RED + "Sorry, but there are no rides on this server!");
             return;
         }
-        Ride ride = ParkManager.getRide(name);
+        Ride ride = ParkManager.getInstance().getRide(name);
         if (ride == null) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "There was an error, please tell a Staff Member!");

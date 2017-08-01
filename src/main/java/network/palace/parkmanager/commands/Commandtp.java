@@ -40,7 +40,7 @@ public class Commandtp extends CoreCommand {
                             "They must be in Spectator Mode to teleport to players on rides.");
                     return;
                 }
-                ParkManager.teleportUtil.log(tp1, tp1.getLocation());
+                ParkManager.getInstance().getTeleportUtil().log(tp1, tp1.getLocation());
                 tp1.teleport(tp2);
                 sender.sendMessage(ChatColor.GRAY + tp1.getName() + " has been teleported to " + tp2.getName());
                 return;
@@ -57,7 +57,7 @@ public class Commandtp extends CoreCommand {
                         sender.sendMessage(ChatColor.RED + tp.getName() + " is on a ride, you can't teleport them!");
                         return;
                     }
-                    ParkManager.teleportUtil.log(tp, tp.getLocation());
+                    ParkManager.getInstance().getTeleportUtil().log(tp, tp.getLocation());
                     tp.teleport(loc);
                     sender.sendMessage(ChatColor.GRAY + tp.getName() + " has been teleported to " + x + ", " + y + ", "
                             + z);
@@ -82,7 +82,7 @@ public class Commandtp extends CoreCommand {
                         "You must be in Spectator Mode to teleport to players on rides.");
                 return;
             }
-            ParkManager.teleportUtil.log(player, player.getLocation());
+            ParkManager.getInstance().getTeleportUtil().log(player, player.getLocation());
             player.teleport(tp);
             player.sendMessage(ChatColor.GRAY + "You teleported to " + tp.getName());
             return;
@@ -102,7 +102,7 @@ public class Commandtp extends CoreCommand {
                 sender.sendMessage(ChatColor.RED + tp2.getName() + " is on a ride, you can't teleport to them!");
                 return;
             }
-            ParkManager.teleportUtil.log(tp1, tp1.getLocation());
+            ParkManager.getInstance().getTeleportUtil().log(tp1, tp1.getLocation());
             tp1.teleport(tp2);
             player.sendMessage(ChatColor.GRAY + tp1.getName()
                     + " has been teleported to " + tp2.getName());
@@ -114,7 +114,7 @@ public class Commandtp extends CoreCommand {
                 double y = args[1].startsWith("~") ? player.getLocation().getY() + num(args[1].substring(1)) : num(args[1]);
                 double z = args[2].startsWith("~") ? player.getLocation().getZ() + num(args[2].substring(1)) : num(args[2]);
                 Location loc = new Location(player.getWorld(), x, y, z, player.getLocation().getYaw(), player.getLocation().getPitch());
-                ParkManager.teleportUtil.log(player, player.getLocation());
+                ParkManager.getInstance().getTeleportUtil().log(player, player.getLocation());
                 player.teleport(loc);
                 player.sendMessage(ChatColor.GRAY + "You teleported to " + x + ", " + y + ", " + z);
                 return;
@@ -134,7 +134,7 @@ public class Commandtp extends CoreCommand {
                     sender.sendMessage(ChatColor.RED + tp.getName() + " is on a ride, you can't teleport to them!");
                     return;
                 }
-                ParkManager.teleportUtil.log(tp, tp.getLocation());
+                ParkManager.getInstance().getTeleportUtil().log(tp, tp.getLocation());
                 tp.teleport(loc);
                 player.sendMessage(ChatColor.GRAY + tp.getName() + " has been teleported to " + x + ", " + y + ", " + z);
                 return;

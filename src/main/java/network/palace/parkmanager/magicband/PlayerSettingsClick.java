@@ -28,7 +28,7 @@ public class PlayerSettingsClick {
         }
         CPlayer player = Core.getPlayerManager().getPlayer((Player) event.getWhoClicked());
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -36,36 +36,36 @@ public class PlayerSettingsClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         switch (name) {
             case "Flash Effects":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                data.setFlash(!data.getFlash());
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player, "flash", data.getFlash());
+                data.setFlash(!data.isFlash());
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
+                ParkManager.getInstance().getBandUtil().setSetting(player, "flash", data.isFlash());
                 return;
             case "Player Visibility":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                data.setVisibility(!data.getVisibility());
-                if (data.getVisibility()) {
-                    ParkManager.visibilityUtil.removeFromHideAll(player);
+                data.setVisibility(!data.isVisibility());
+                if (data.isVisibility()) {
+                    ParkManager.getInstance().getVisibilityUtil().removeFromHideAll(player);
                 } else {
-                    ParkManager.visibilityUtil.addToHideAll(player);
+                    ParkManager.getInstance().getVisibilityUtil().addToHideAll(player);
                 }
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player, "visibility", data.getVisibility());
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
+                ParkManager.getInstance().getBandUtil().setSetting(player, "visibility", data.isVisibility());
                 return;
             case "Park Loop Music":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                data.setLoop(!data.getLoop());
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player, "parkloop", data.getLoop());
+                data.setLoop(!data.isLoop());
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
+                ParkManager.getInstance().getBandUtil().setSetting(player, "parkloop", data.isLoop());
                 return;
             case "Friends Access Hotel Room":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                data.setHotel(!data.getHotel());
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.bandUtil.setSetting(player, "hotel", data.getHotel());
+                data.setHotel(!data.isHotel());
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
+                ParkManager.getInstance().getBandUtil().setSetting(player, "hotel", data.isHotel());
         }
     }
 }

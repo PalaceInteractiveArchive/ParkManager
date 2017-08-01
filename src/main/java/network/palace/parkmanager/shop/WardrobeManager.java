@@ -9,6 +9,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.InventoryType;
 import network.palace.parkmanager.handlers.Outfit;
 import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.BandUtil;
 import org.bukkit.Bukkit;
@@ -43,10 +44,27 @@ public class WardrobeManager {
 
     @SuppressWarnings("deprecation")
     public void initialize() {
-        StorageManager sm = ParkManager.storageManager;
+        StorageManager sm = ParkManager.getInstance().getStorageManager();
         outfits.clear();
         try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM outfits");
+            String extra;
+            Resort resort = ParkManager.getInstance().getResort();
+            switch (resort) {
+                case WDW:
+                case DLR:
+                    extra = " OR resort=?";
+                    break;
+                default:
+                    extra = "";
+                    break;
+            }
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM outfits WHERE resort=?" + extra);
+            if (resort.equals(Resort.WDW) || resort.equals(Resort.DLR)) {
+                sql.setInt(1, 0);
+                sql.setInt(2, 1);
+            } else {
+                sql.setInt(1, resort.getId());
+            }
             ResultSet result = sql.executeQuery();
             while (result.next()) {
                 Integer id = result.getInt("id");
@@ -78,26 +96,6 @@ public class WardrobeManager {
                 if (!bt.equals("")) {
                     NbtFactory.setItemTag(b, new NbtTextSerializer().deserializeCompound(bt));
                 }
-//                net.minecraft.server.v1_8_R3.ItemStack h = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(hid), 1);
-//                h.setData(hdata);
-//                if (!ht.equals("")) {
-//                    h.setTag(MojangsonParser.parse(ht));
-//                }
-//                net.minecraft.server.v1_8_R3.ItemStack s = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(cid), 1);
-//                s.setData(cdata);
-//                if (!st.equals("")) {
-//                    s.setTag(MojangsonParser.parse(st));
-//                }
-//                net.minecraft.server.v1_8_R3.ItemStack l = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(lid), 1);
-//                l.setData(ldata);
-//                if (!pt.equals("")) {
-//                    l.setTag(MojangsonParser.parse(pt));
-//                }
-//                net.minecraft.server.v1_8_R3.ItemStack b = new net.minecraft.server.v1_8_R3.ItemStack(Item.getById(bid), 1);
-//                b.setData(bdata);
-//                if (!bt.equals("")) {
-//                    b.setTag(MojangsonParser.parse(bt));
-//                }
                 String name = result.getString("name");
                 String cname = ChatColor.translateAlternateColorCodes('&', result.getString("name"));
                 ItemMeta hm = h.getItemMeta();
@@ -140,8 +138,9 @@ public class WardrobeManager {
             return;
         }
         final CPlayer player = Core.getPlayerManager().getPlayer((Player) event.getWhoClicked());
+        ParkManager parkManager = ParkManager.getInstance();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            parkManager.getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         Material itype = item.getType();
@@ -156,9 +155,9 @@ public class WardrobeManager {
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (itype.equals(Material.ARROW)) {
             if (name.contains("Next")) {
-                ParkManager.inventoryUtil.openWardrobeManagerPage(player, page + 1);
+                parkManager.getInventoryUtil().openWardrobeManagerPage(player, page + 1);
             } else if (name.contains("Last")) {
-                ParkManager.inventoryUtil.openWardrobeManagerPage(player, page - 1);
+                parkManager.getInventoryUtil().openWardrobeManagerPage(player, page - 1);
             }
             return;
         }
@@ -189,7 +188,7 @@ public class WardrobeManager {
                 inv.setChestplate(air);
                 inv.setLeggings(air);
                 inv.setBoots(air);
-                final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
+                final PlayerData.Clothing c = parkManager.getPlayerData(player.getUniqueId()).getClothing();
                 c.setHead(null);
                 c.setShirt(null);
                 c.setPants(null);
@@ -198,55 +197,55 @@ public class WardrobeManager {
                 c.setShirtID(0);
                 c.setPantsID(0);
                 c.setBootsID(0);
-                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, c.getHeadID() +
                         "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+                parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
                 return;
             }
             switch (type) {
                 case HEAD: {
                     inv.setHelmet(air);
-                    final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
+                    final PlayerData.Clothing c = parkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setHead(null);
                     c.setHeadID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                    Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, c.getHeadID() +
                             "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                    ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+                    parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
                     break;
                 }
                 case SHIRT: {
                     inv.setChestplate(air);
-                    final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
+                    final PlayerData.Clothing c = parkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setShirt(null);
                     c.setShirtID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                    Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, c.getHeadID() +
                             "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                    ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+                    parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
                     break;
                 }
                 case PANTS: {
                     inv.setLeggings(air);
-                    final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
+                    final PlayerData.Clothing c = parkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setPants(null);
                     c.setPantsID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                    Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, c.getHeadID() +
                             "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                    ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+                    parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
                     break;
                 }
                 case BOOTS: {
                     inv.setBoots(air);
-                    final PlayerData.Clothing c = ParkManager.getPlayerData(player.getUniqueId()).getClothing();
+                    final PlayerData.Clothing c = parkManager.getPlayerData(player.getUniqueId()).getClothing();
                     c.setBoots(null);
                     c.setBootsID(0);
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, c.getHeadID() +
+                    Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, c.getHeadID() +
                             "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID()));
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                    ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+                    parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
                     break;
                 }
             }
@@ -257,7 +256,7 @@ public class WardrobeManager {
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 25, 1);
             return;
         }
-        final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        final PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         List<Outfit> first = getOutfits();
         List<Outfit> outfits = first.subList((page - 1) * 6, (page * 6 > first.size() ? first.size() : page * 6));
         int id = 0;
@@ -331,11 +330,11 @@ public class WardrobeManager {
                 }
             } catch (Exception ignored) {
             }
-            ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+            parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
             String code = c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID();
             data.setClothing(c);
             data.setOutfitCode(code);
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, data.getOutfitCode()));
+            Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, data.getOutfitCode()));
             return;
         }
         switch (type) {
@@ -380,11 +379,11 @@ public class WardrobeManager {
             }
         } catch (Exception ignored) {
         }
-        ParkManager.inventoryUtil.openWardrobeManagerPage(player, page);
+        parkManager.getInventoryUtil().openWardrobeManagerPage(player, page);
         String code = c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID();
         data.setClothing(c);
         data.setOutfitCode(code);
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> setOutfitCode(player, data.getOutfitCode()));
+        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, data.getOutfitCode()));
     }
 
     private boolean equals(ItemStack head, ItemStack item) {

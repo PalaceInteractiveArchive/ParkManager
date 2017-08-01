@@ -64,6 +64,7 @@ public class Commandmagic extends CoreCommand {
                 return;
             }
         }
+        ParkManager parkManager = ParkManager.getInstance();
         switch (args[0]) {
             case "effect":
                 if (args.length == 1) {
@@ -84,8 +85,8 @@ public class Commandmagic extends CoreCommand {
                                 if (tp.getLocation().distance(loc) > 50) {
                                     continue;
                                 }
-                                PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
-                                if (!data.getFlash()) {
+                                PlayerData data = parkManager.getPlayerData(tp.getUniqueId());
+                                if (!data.isFlash()) {
                                     continue;
                                 }
                                 tp.getParticles().send(loc, effect, amount, (float) offsetX, (float) offsetY,
@@ -114,8 +115,8 @@ public class Commandmagic extends CoreCommand {
                                 if (tp.getLocation().distance(loc) > 50) {
                                     continue;
                                 }
-                                PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
-                                if (!data.getFlash()) {
+                                PlayerData data = parkManager.getPlayerData(tp.getUniqueId());
+                                if (!data.isFlash()) {
                                     continue;
                                 }
                                 uuids.add(tp.getUniqueId());
@@ -143,7 +144,7 @@ public class Commandmagic extends CoreCommand {
 //                                    e.printStackTrace();
 //                                }
                             }
-                            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+                            Bukkit.getScheduler().runTaskLater(parkManager, () -> {
                                 for (UUID uuid : uuids) {
                                     Player tp = Bukkit.getPlayer(uuid);
                                     if (tp == null) {
@@ -185,8 +186,8 @@ public class Commandmagic extends CoreCommand {
                         }
                     }
                     final String finalRideName = rideName.toString();
-                    Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-                        PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
+                    Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
+                        PlayerData data = parkManager.getPlayerData(tp.getUniqueId());
                         TreeMap<String, RideCount> rides = data.getRideCounts();
                         try (Connection connection = Core.getSqlUtil().getConnection()) {
                             PreparedStatement sql = connection.prepareStatement("INSERT INTO ride_counter (uuid, name, server, time) VALUES (?,?,?,?)");
@@ -227,22 +228,22 @@ public class Commandmagic extends CoreCommand {
                 helpMenu("ride", sender);
                 return;
             case "sge":
-                if (!ParkManager.isResort(Resort.WDW)) {
+                if (!parkManager.isResort(Resort.WDW)) {
                     return;
                 }
                 switch (args.length) {
                     case 2:
                         if (args[1].equalsIgnoreCase("lock")) {
-                            ParkManager.stitch.toggleLock(sender);
+                            parkManager.getStitch().toggleLock(sender);
                         } else if (args[1].equalsIgnoreCase("eject")) {
-                            ParkManager.stitch.ejectAll(sender);
+                            parkManager.getStitch().ejectAll(sender);
                         } else if (args[1].equalsIgnoreCase("add")) {
                             if (!(sender instanceof Player)) {
                                 return;
                             }
                             Player player = (Player) sender;
                             try {
-                                ParkManager.stitch.addSeat(player);
+                                parkManager.getStitch().addSeat(player);
                             } catch (IOException e) {
                                 player.sendMessage(ChatColor.RED + "There was an error doing this command!");
                                 e.printStackTrace();
@@ -256,7 +257,7 @@ public class Commandmagic extends CoreCommand {
                                 sender.sendMessage(ChatColor.RED + "Player not found!");
                                 return;
                             }
-                            ParkManager.stitch.joinShow(tp);
+                            parkManager.getStitch().joinShow(tp);
                         }
                         return;
                     case 4:
@@ -284,7 +285,7 @@ public class Commandmagic extends CoreCommand {
                         return;
                 }
             case "shooter":
-                if (ParkManager.shooter == null) {
+                if (parkManager.getShooter() == null) {
                     sender.sendMessage(ChatColor.RED + "Shooter is Disabled!");
                     return;
                 }
@@ -297,11 +298,11 @@ public class Commandmagic extends CoreCommand {
                                 return;
                             }
                             PlayerInventory inv = player.getInventory();
-                            player.setMetadata("shooter", new FixedMetadataValue(ParkManager.getInstance(), 0));
-                            inv.setItem(4, ParkManager.shooter.getItem());
+                            player.setMetadata("shooter", new FixedMetadataValue(parkManager, 0));
+                            inv.setItem(4, parkManager.getShooter().getItem());
                             inv.setHeldItemSlot(4);
-                            ParkManager.shooter.sendGameMessage(player);
-                            ParkManager.shooter.join(player);
+                            parkManager.getShooter().sendGameMessage(player);
+                            parkManager.getShooter().join(player);
                             return;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
@@ -311,10 +312,10 @@ public class Commandmagic extends CoreCommand {
                                 return;
                             }
                             PlayerInventory inv = player.getInventory();
-                            if (!inv.contains(ParkManager.shooter.getItem())) {
+                            if (!inv.contains(parkManager.getShooter().getItem())) {
                                 return;
                             }
-                            ParkManager.shooter.done(player);
+                            parkManager.getShooter().done(player);
                             return;
                         }
                 }
@@ -323,7 +324,7 @@ public class Commandmagic extends CoreCommand {
             case "outfit":
                 if (args.length == 2) {
                     if (args[1].equalsIgnoreCase("list")) {
-                        List<Outfit> outfits = ParkManager.wardrobeManager.getOutfits();
+                        List<Outfit> outfits = parkManager.getWardrobeManager().getOutfits();
                         sender.sendMessage(ChatColor.GREEN + "Current Outfits:");
                         for (Outfit o : outfits) {
                             sender.sendMessage(ChatColor.AQUA + "- " + ChatColor.GREEN + "ID: " + o.getId() + " Name: "
@@ -335,17 +336,17 @@ public class Commandmagic extends CoreCommand {
                     if (isInt(args[2])) {
                         if (args[1].equalsIgnoreCase("remove")) {
                             final Integer id = Integer.parseInt(args[2]);
-                            Outfit o = ParkManager.wardrobeManager.getOutfit(id);
+                            Outfit o = parkManager.getWardrobeManager().getOutfit(id);
                             if (o == null) {
                                 sender.sendMessage(ChatColor.RED + "No outfit found by that ID!");
                                 break;
                             }
                             sender.sendMessage(ChatColor.GREEN + "Removed the Outfit with the ID " + id + "!");
-                            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> ParkManager.wardrobeManager.removeOutfit(id));
+                            Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> parkManager.getWardrobeManager().removeOutfit(id));
                             break;
                         } else if (args[1].equalsIgnoreCase("info")) {
                             Integer id = Integer.parseInt(args[2]);
-                            Outfit o = ParkManager.wardrobeManager.getOutfit(id);
+                            Outfit o = parkManager.getWardrobeManager().getOutfit(id);
                             if (o == null) {
                                 sender.sendMessage(ChatColor.RED + "No outfit found by that ID!");
                                 break;
@@ -378,11 +379,26 @@ public class Commandmagic extends CoreCommand {
                         String ptag = new NbtTextSerializer().serialize(NbtFactory.fromItemTag(p));
                         String btag = new NbtTextSerializer().serialize(NbtFactory.fromItemTag(b));
                         String finalName = name.toString();
-                        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                        final int resort;
+                        switch (ParkManager.getInstance().getResort()) {
+                            case WDW:
+                                resort = 0;
+                                break;
+                            case DLR:
+                                resort = 1;
+                                break;
+                            case USO:
+                                resort = 2;
+                                break;
+                            default:
+                                resort = 0;
+                                break;
+                        }
+                        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
                             try (Connection conneciton = Core.getSqlUtil().getConnection()) {
                                 PreparedStatement sql = conneciton.prepareStatement("INSERT INTO outfits (id,name," +
-                                        "hid,hdata,head,cid,cdata,chestplate,lid,ldata,leggings,bid,bdata,boots) " +
-                                        "VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                        "hid,hdata,head,cid,cdata,chestplate,lid,ldata,leggings,bid,bdata,boots,resort) " +
+                                        "VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                                 sql.setString(1, finalName);
                                 sql.setInt(2, h.getTypeId());
                                 sql.setInt(3, h.getData().getData());
@@ -396,12 +412,13 @@ public class Commandmagic extends CoreCommand {
                                 sql.setInt(11, b.getTypeId());
                                 sql.setInt(12, b.getData().getData());
                                 sql.setString(13, btag == null ? "" : btag);
+                                sql.setInt(14, resort);
                                 sql.execute();
                                 sql.close();
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
-                            ParkManager.wardrobeManager.initialize();
+                            parkManager.getWardrobeManager().initialize();
                             player.sendMessage(ChatColor.GREEN + "Created outfit!");
                         });
                         break;
@@ -414,7 +431,7 @@ public class Commandmagic extends CoreCommand {
                     case 2:
                         switch (args[1]) {
                             case "list":
-                                List<String> list = ParkManager.blockChanger.changerList();
+                                List<String> list = parkManager.getBlockChanger().changerList();
                                 if (list.isEmpty()) {
                                     sender.sendMessage(ChatColor.RED + "No Changers on this server!");
                                     return;
@@ -426,7 +443,7 @@ public class Commandmagic extends CoreCommand {
                                 return;
                             case "debug":
                                 if (sender instanceof Player) {
-                                    if (ParkManager.blockChanger.toggleDebug(((Player) sender))) {
+                                    if (parkManager.getBlockChanger().toggleDebug(((Player) sender))) {
                                         sender.sendMessage(ChatColor.YELLOW + "You're no longer in Changer Debugging mode!");
                                         return;
                                     } else {
@@ -462,7 +479,7 @@ public class Commandmagic extends CoreCommand {
                                             + ChatColor.RED + " Rank!");
                                     return;
                                 }
-                                if (ParkManager.blockChanger.toggleDebug(tp)) {
+                                if (parkManager.getBlockChanger().toggleDebug(tp)) {
                                     sender.sendMessage(ChatColor.YELLOW + "Removed " + tp.getName() + " from Changer Debugging!");
                                     tp.sendMessage(ChatColor.YELLOW + "You're no longer in Changer Debugging mode!");
                                     return;
@@ -472,24 +489,24 @@ public class Commandmagic extends CoreCommand {
                                     return;
                                 }
                             case "remove":
-                                final Changer changer = ParkManager.blockChanger.getChanger(args[2]);
+                                final Changer changer = parkManager.getBlockChanger().getChanger(args[2]);
                                 if (changer == null) {
                                     sender.sendMessage(ChatColor.RED + "Changer not found by the name of " +
                                             ChatColor.GREEN + args[2]);
                                     return;
                                 }
-                                final List<Changer> l = ParkManager.blockChanger.getChangers();
-                                Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                                final List<Changer> l = parkManager.getBlockChanger().getChangers();
+                                Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
                                     for (Player p : Bukkit.getOnlinePlayers()) {
                                         l.stream().filter(c -> c.getFirstLocation().distance(p.getLocation()) < 75)
                                                 .forEach(c -> c.sendReverse(p));
                                     }
-                                    ParkManager.blockChanger.removeChanger(changer.getName());
+                                    parkManager.getBlockChanger().removeChanger(changer.getName());
                                     sender.sendMessage(ChatColor.GREEN + "Removed changer " + ChatColor.AQUA + args[2]);
                                 });
                                 return;
                             case "info":
-                                Changer chngr = ParkManager.blockChanger.getChanger(args[2]);
+                                Changer chngr = parkManager.getBlockChanger().getChanger(args[2]);
                                 if (chngr == null) {
                                     sender.sendMessage(ChatColor.RED + "Changer not found by the name of " +
                                             ChatColor.GREEN + args[2]);
@@ -519,11 +536,11 @@ public class Commandmagic extends CoreCommand {
                         if (args[1].equalsIgnoreCase("create")) {
                             try {
                                 String name = args[2];
-                                if (ParkManager.blockChanger.getChanger(name) != null) {
+                                if (parkManager.getBlockChanger().getChanger(name) != null) {
                                     sender.sendMessage(ChatColor.RED + "A changer with that name already exists!");
                                     return;
                                 }
-                                HashMap<Material, Byte> from = ParkManager.blockChanger.blocksFromString(args[3]);
+                                HashMap<Material, Byte> from = parkManager.getBlockChanger().blocksFromString(args[3]);
                                 int to;
                                 byte data;
                                 String[] list = args[4].split(":");
@@ -535,9 +552,9 @@ public class Commandmagic extends CoreCommand {
                                     data = Byte.valueOf(list[1]);
                                 }
                                 int send = Integer.parseInt(args[5]);
-                                Location loc1 = ParkManager.blockChanger.getSelection(0, ((Player) sender));
+                                Location loc1 = parkManager.getBlockChanger().getSelection(0, ((Player) sender));
                                 //loc1 = getLocation(((Player) sender).getWorld(), args[6]);
-                                Location loc2 = ParkManager.blockChanger.getSelection(1, ((Player) sender));
+                                Location loc2 = parkManager.getBlockChanger().getSelection(1, ((Player) sender));
                                 //loc2 = getLocation(((Player) sender).getWorld(), args[7]);
                                 if (loc1 == null || loc2 == null) {
                                     sender.sendMessage(ChatColor.RED + "You don't have a full selection selected!");
@@ -545,9 +562,9 @@ public class Commandmagic extends CoreCommand {
                                 }
                                 Changer changer = new Changer(name, loc1, loc2, from, Material.getMaterial(to), data,
                                         Material.getMaterial(send));
-                                ParkManager.blockChanger.addChanger(changer);
+                                parkManager.getBlockChanger().addChanger(changer);
                                 sender.sendMessage(ChatColor.GREEN + "Created Changer " + ChatColor.AQUA + name);
-                                ParkManager.blockChanger.clearSelection(((Player) sender).getUniqueId());
+                                parkManager.getBlockChanger().clearSelection(((Player) sender).getUniqueId());
                                 return;
                             } catch (Exception e) {
                                 sender.sendMessage(ChatColor.RED + "There was an error creating that Changer!");
@@ -563,8 +580,8 @@ public class Commandmagic extends CoreCommand {
                 if (args.length > 1) {
                     if (args[1].equalsIgnoreCase("reload")) {
                         sender.sendMessage(ChatColor.BLUE + "Reloading Show Schedule...");
-                        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-                            ParkManager.scheduleManager.update();
+                        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
+                            parkManager.getScheduleManager().update();
                             sender.sendMessage(ChatColor.BLUE + "Show Schedule reloaded!");
                         });
                         return;
@@ -581,12 +598,12 @@ public class Commandmagic extends CoreCommand {
                 return;
             case "hotel":
                 sender.sendMessage(ChatColor.BLUE + "Reloading hotel rooms...");
-                ParkManager.hotelManager.refreshRooms();
+                parkManager.getHotelManager().refreshRooms();
                 sender.sendMessage(ChatColor.BLUE + "Hotel rooms reloaded!");
                 return;
             case "queue":
                 if (args.length == 3) {
-                    QueueRide ride = ParkManager.queueManager.getRide(args[1]);
+                    QueueRide ride = parkManager.getQueueManager().getRide(args[1]);
                     if (ride == null) {
                         sender.sendMessage(ChatColor.RED + "Ride not found!");
                         return;
@@ -656,7 +673,7 @@ public class Commandmagic extends CoreCommand {
                     return;
                 }
                 if (args.length == 4) {
-                    QueueRide ride = ParkManager.queueManager.getRide(args[1]);
+                    QueueRide ride = parkManager.getQueueManager().getRide(args[1]);
                     if (args[2].equalsIgnoreCase("set")) {
                         if (args[3].equalsIgnoreCase("station")) {
                             try {
@@ -721,7 +738,7 @@ public class Commandmagic extends CoreCommand {
                 return;
             }
             case "fp": {
-                if (!ParkManager.isResort(Resort.WDW) && !ParkManager.isResort(Resort.DLR)) {
+                if (!parkManager.isResort(Resort.WDW) && !parkManager.isResort(Resort.DLR)) {
                     return;
                 }
                 if (args.length < 0) {
@@ -737,14 +754,14 @@ public class Commandmagic extends CoreCommand {
                     return;
                 }
                 if (args[1].equalsIgnoreCase("create")) {
-                    ParkManager.fpKioskManager.create(player);
+                    parkManager.getFpKioskManager().create(player);
                     return;
                 }
                 helpMenu("fp", sender);
                 return;
             }
             case "tot": {
-                if (!ParkManager.isResort(Resort.WDW) && !ParkManager.isResort(Resort.DLR)) {
+                if (!parkManager.isResort(Resort.WDW) && !parkManager.isResort(Resort.DLR)) {
                     return;
                 }
                 if (!(sender instanceof Player || sender instanceof BlockCommandSender)) {
@@ -858,7 +875,7 @@ public class Commandmagic extends CoreCommand {
                 return;
             }
             case "tsm": {
-                if (ParkManager.toyStoryMania == null) {
+                if (parkManager.getToyStoryMania() == null) {
                     sender.sendMessage(ChatColor.RED + "Shooter is Disabled!");
                     return;
                 }
@@ -872,10 +889,10 @@ public class Commandmagic extends CoreCommand {
                             }
                             if (BlockEdit.isInBuildMode(player.getUniqueId())) {
                                 player.performCommand("build");
-                                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> ParkManager.toyStoryMania.join(player), 20L);
+                                Bukkit.getScheduler().runTaskLater(parkManager, () -> parkManager.getToyStoryMania().join(player), 20L);
                                 return;
                             }
-                            ParkManager.toyStoryMania.join(player);
+                            parkManager.getToyStoryMania().join(player);
                             return;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
@@ -885,10 +902,10 @@ public class Commandmagic extends CoreCommand {
                                 return;
                             }
                             PlayerInventory inv = player.getInventory();
-                            if (!ParkManager.toyStoryMania.isInGame(player)) {
+                            if (!parkManager.getToyStoryMania().isInGame(player)) {
                                 return;
                             }
-                            ParkManager.toyStoryMania.done(player);
+                            parkManager.getToyStoryMania().done(player);
                             return;
                         }
                         helpMenu("tsm", sender);
@@ -913,7 +930,7 @@ public class Commandmagic extends CoreCommand {
                                 loc1.setZ(loc2.getBlockZ());
                                 loc2.setZ(z);
                             }
-                            ParkManager.toyStoryMania.randomize(loc1, loc2);
+                            parkManager.getToyStoryMania().randomize(loc1, loc2);
                             return;
                         }
                         if (args[1].equalsIgnoreCase("reset")) {
@@ -934,7 +951,7 @@ public class Commandmagic extends CoreCommand {
                                 loc1.setZ(loc2.getBlockZ());
                                 loc2.setZ(z);
                             }
-                            ParkManager.toyStoryMania.reset(loc1, loc2);
+                            parkManager.getToyStoryMania().reset(loc1, loc2);
                             return;
                         }
                         helpMenu("tsm", sender);
@@ -965,7 +982,7 @@ public class Commandmagic extends CoreCommand {
                                         chest.getBlockY() + "," + chest.getBlockZ() + ",");
                                 return;
                             }
-                            ParkManager.toyStoryMania.setMap(loc1, loc2, (Chest) chest.getBlock().getState());
+                            parkManager.getToyStoryMania().setMap(loc1, loc2, (Chest) chest.getBlock().getState());
                         }
                         helpMenu("tsm", sender);
                         break;
@@ -975,22 +992,21 @@ public class Commandmagic extends CoreCommand {
                 return;
             }
             case "reload":
-                ParkManager pm = ParkManager.getInstance();
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
-                pm.setupFoodLocations();
-                pm.setupRides();
-                ParkManager.stitch.initialize();
-                ParkManager.scheduleManager.update();
-                ParkManager.hotelManager.refreshRooms();
+                parkManager.setupFoodLocations();
+                parkManager.setupRides();
+                parkManager.getStitch().initialize();
+                parkManager.getScheduleManager().update();
+                parkManager.getHotelManager().refreshRooms();
                 /*
                 try {
-                    ParkManager.blockChanger.reload();
+                    parkManager.getBlockChanger().reload();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }*/
-                ParkManager.packManager.initialize();
-                ParkManager.shopManager.initialize();
-                ParkManager.wardrobeManager.initialize();
+                parkManager.getPackManager().initialize();
+                parkManager.getShopManager().initialize();
+                parkManager.getWardrobeManager().initialize();
                 sender.sendMessage(ChatColor.BLUE + "Plugin Reloaded!");
                 return;
             default:

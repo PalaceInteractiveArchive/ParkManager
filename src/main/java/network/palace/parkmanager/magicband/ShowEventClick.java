@@ -22,7 +22,7 @@ public class ShowEventClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -32,7 +32,7 @@ public class ShowEventClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Show Timetable":
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.SHOWTIMES);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.SHOWTIMES);
                 return;
             case "Fantasmic!":
                 player.performCommand("warp fantasmic");

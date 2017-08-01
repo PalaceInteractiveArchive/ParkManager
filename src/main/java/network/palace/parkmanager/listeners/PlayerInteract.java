@@ -38,13 +38,13 @@ public class PlayerInteract implements Listener {
     public static String queue = ChatColor.BLUE + "[Queue]";
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
-    private boolean dl = ParkManager.isResort(Resort.DLR);
+    private boolean dl = ParkManager.getInstance().isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         Action action = event.getAction();
         Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
         if (action.equals(Action.PHYSICAL)) {
@@ -82,10 +82,10 @@ public class PlayerInteract implements Listener {
                     rank.getRankId() >= Rank.KNIGHT.getRankId()) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
-                    ParkManager.blockChanger.setSelection(0, player, event.getClickedBlock().getLocation());
+                    ParkManager.getInstance().getBlockChanger().setSelection(0, player, event.getClickedBlock().getLocation());
                 } else {
                     event.setCancelled(true);
-                    ParkManager.blockChanger.setSelection(1, player, event.getClickedBlock().getLocation());
+                    ParkManager.getInstance().getBlockChanger().setSelection(1, player, event.getClickedBlock().getLocation());
                 }
                 return;
             }
@@ -114,7 +114,7 @@ public class PlayerInteract implements Listener {
                             + ChatColor.WHITE + "]");
                     return;
                 }
-                if (ParkManager.hotelServer) {
+                if (ParkManager.getInstance().isHotelServer()) {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(this.suite);
                         if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
@@ -124,14 +124,14 @@ public class PlayerInteract implements Listener {
                         }
                         String roomName = ChatColor.stripColor(s.getLine(2)) + " #"
                                 + ChatColor.stripColor(s.getLine(1));
-                        HotelManager manager = ParkManager.hotelManager;
+                        HotelManager manager = ParkManager.getInstance().getHotelManager();
                         HotelRoom room = manager.getRoom(roomName);
                         if (room == null) {
                             player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
                             return;
                         }
                         if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
-                            ParkManager.inventoryUtil.openSpecificHotelRoomCheckoutPage(player, room);
+                            ParkManager.getInstance().getInventoryUtil().openSpecificHotelRoomCheckoutPage(player, room);
                         } else if (room.isOccupied() && !(room.getCurrentOccupant().equals(player.getUniqueId()))) {
                             player.sendMessage(ChatColor.RED + "This room is already occupied!");
                         } else {
@@ -149,24 +149,24 @@ public class PlayerInteract implements Listener {
                                 return;
                             }
 
-                            ParkManager.inventoryUtil.openSpecificHotelRoomPage(player, manager.getRoom(roomName));
+                            ParkManager.getInstance().getInventoryUtil().openSpecificHotelRoomPage(player, manager.getRoom(roomName));
                         }
                         return;
                     }
                 }
                 if (s.getLine(0).equals(shop)) {
                     String shop = ChatColor.stripColor(s.getLine(1));
-                    ParkManager.shopManager.openMenu(cp, shop);
+                    ParkManager.getInstance().getShopManager().openMenu(cp, shop);
                     return;
                 }
                 if (s.getLine(0).equals(queue) || s.getLine(0).equals(fastpass) || s.getLine(0).equals(wait)) {
-                    ParkManager.queueManager.handle(event);
+                    ParkManager.getInstance().getQueueManager().handle(event);
                     return;
                 }
                 if (Core.getInstanceName().contains("Epcot")) {
                     if (s.getLine(0).equals(designStation)) {
                         if (MiscUtil.checkIfInt(ChatColor.stripColor(s.getLine(1)))) {
-                            ParkManager.inventoryUtil.openInventory(player, InventoryType.DESIGNSTATION);
+                            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.DESIGNSTATION);
                             return;
                         }
                         DesignStation.showStats(player);
@@ -175,20 +175,20 @@ public class PlayerInteract implements Listener {
                 }
             } else if (type.name().toLowerCase().contains("_door") && !type.name().toLowerCase().contains("trap") &&
                     !(dl && rank.getRankId() < Rank.SPECIALGUEST.getRankId())) {
-                HotelManager manager = ParkManager.hotelManager;
+                HotelManager manager = ParkManager.getInstance().getHotelManager();
                 HotelRoom room = manager.getRoomFromDoor(event.getClickedBlock(), player);
                 if (room != null) {
                     if (room.isOccupied()) {
                         List<UUID> friends = data.getFriendList();
                         if (friends.contains(room.getCurrentOccupant())) {
-                            PlayerData target = ParkManager.getPlayerData(room.getCurrentOccupant());
+                            PlayerData target = ParkManager.getInstance().getPlayerData(room.getCurrentOccupant());
                             if (target == null) {
                                 player.sendMessage(ChatColor.RED +
                                         "Your friend must be online for you to access their room!");
                                 event.setCancelled(true);
                                 return;
                             }
-                            if (!target.getHotel()) {
+                            if (!target.isHotel()) {
                                 player.sendMessage(ChatColor.RED + "That room is currently occupied.");
                                 event.setCancelled(true);
                             }
@@ -221,21 +221,21 @@ public class PlayerInteract implements Listener {
         if (pi.getHeldItemSlot() == 5) {
             if (pi.getItemInMainHand().getType().equals(Material.CHEST)) {
                 event.setCancelled(true);
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.BACKPACK);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.BACKPACK);
                 return;
             }
         }
         if (pi.getHeldItemSlot() == 6) {
             if (pi.getItemInMainHand().getType().equals(Material.WATCH)) {
                 event.setCancelled(true);
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.SHOWTIMES);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.SHOWTIMES);
                 return;
             }
         }
         if (pi.getHeldItemSlot() == 8) {
-            if (pi.getItemInMainHand().getType().equals(ParkManager.bandUtil.getBandMaterial(data.getBandColor()))) {
+            if (pi.getItemInMainHand().getType().equals(ParkManager.getInstance().getBandUtil().getBandMaterial(data.getBandColor()))) {
                 event.setCancelled(true);
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
                 Core.getPlayerManager().getPlayer(player.getUniqueId()).giveAchievement(2);
             }
         }
@@ -284,7 +284,7 @@ public class PlayerInteract implements Listener {
             }
             event.setCancelled(true);
             if (stand.getMetadata("kiosk").get(0).asBoolean()) {
-                ParkManager.fpKioskManager.openKiosk(player);
+                ParkManager.getInstance().getFpKioskManager().openKiosk(player);
             }
             return;
         }

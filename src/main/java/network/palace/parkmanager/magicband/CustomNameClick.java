@@ -22,7 +22,7 @@ public class CustomNameClick {
         }
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -33,8 +33,8 @@ public class CustomNameClick {
             return;
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
-        ChatColor color = ParkManager.bandUtil.getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
+        ChatColor color = ParkManager.getInstance().getBandUtil().getBandNameColor(name.toLowerCase().replaceAll(" ", ""));
         player.closeInventory();
-        ParkManager.bandUtil.setBandName(player, color);
+        ParkManager.getInstance().getBandUtil().setBandName(player, color);
     }
 }

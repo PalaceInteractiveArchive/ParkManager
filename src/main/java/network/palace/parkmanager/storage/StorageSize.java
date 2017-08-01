@@ -2,17 +2,17 @@ package network.palace.parkmanager.storage;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by Marc on 10/10/15
  */
 @AllArgsConstructor
 public enum StorageSize {
-    SMALL(3, 0), LARGE(6, 1);
+    SMALL(3, 0, "Small"), LARGE(6, 1, "Large");
 
-    @Getter @Setter private int rows;
-    @Getter @Setter private int size;
+    @Getter private int rows;
+    @Getter private int size;
+    @Getter private String name;
 
     public int getSlots() {
         return rows * 9;

@@ -26,7 +26,7 @@ public class CustomBandClick {
         }
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -35,16 +35,16 @@ public class CustomBandClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Next Page")) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.SPECIALCOLOR);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.SPECIALCOLOR);
             return;
         }
-        BandColor color = ParkManager.bandUtil.getBandColor(name.toLowerCase());
-        if (color.equals(ParkManager.getPlayerData(player.getUniqueId()).getBandColor())) {
+        BandColor color = ParkManager.getInstance().getBandUtil().getBandColor(name.toLowerCase());
+        if (color.equals(ParkManager.getInstance().getPlayerData(player.getUniqueId()).getBandColor())) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
         player.closeInventory();
-        ParkManager.bandUtil.setBandColor(player, color);
+        ParkManager.getInstance().getBandUtil().setBandColor(player, color);
     }
 }

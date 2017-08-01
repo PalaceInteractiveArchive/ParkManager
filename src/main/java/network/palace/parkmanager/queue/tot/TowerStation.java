@@ -66,9 +66,7 @@ public class TowerStation extends QueueRide {
                 fullList.add(place, fps.remove(i));
                 place += 2;
             }
-            for (UUID uuid : fps) {
-                fullList.add(uuid);
-            }
+            fullList.addAll(fps);
         } else {
             int place = 1;
             if (fullList.isEmpty()) {
@@ -90,7 +88,7 @@ public class TowerStation extends QueueRide {
                     continue;
                 }
                 if (fps.contains(tp.getUniqueId())) {
-                    chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                    chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
                     tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
                             getCategory().getName() + " FastPass!");
                 }
@@ -107,7 +105,7 @@ public class TowerStation extends QueueRide {
                 continue;
             }
             if (fps.contains(tp.getUniqueId())) {
-                chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
                 tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
                         getCategory().getName() + " FastPass!");
             }

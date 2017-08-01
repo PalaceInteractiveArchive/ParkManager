@@ -83,7 +83,7 @@ public class InventoryUtil {
     private ItemStack dlr = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Disneyland Resort",
             Collections.singletonList(ChatColor.GREEN + "Coming Soon!"));
     private ItemStack uso = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Universal Orlando Resort",
-            Collections.singletonList(ChatColor.GREEN + "/join USO"));
+            Collections.singletonList(ChatColor.GREEN + "Coming Soon!"));
     private ItemStack seasonal = ItemUtil.create(Material.RED_ROSE, 1, (byte) 2, ChatColor.AQUA +
             "Seasonal", Arrays.asList(ChatColor.GREEN + "Opening again soon!"));
     //My Profile
@@ -255,15 +255,15 @@ public class InventoryUtil {
         this.s.setItemMeta(bs);
         this.su.setItemMeta(bsu);
         //MagicBands
-        s1Band = ItemUtil.create(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL1),
+        s1Band = ItemUtil.create(ParkManager.getInstance().getBandUtil().getBandMaterial(BandColor.SPECIAL1),
                 ChatColor.BLUE + "Holiday Band", new ArrayList<>());
-        s2Band = ItemUtil.create(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL2),
+        s2Band = ItemUtil.create(ParkManager.getInstance().getBandUtil().getBandMaterial(BandColor.SPECIAL2),
                 ChatColor.RED + "Big Hero 6", new ArrayList<>());
-        s3Band = ItemUtil.create(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL3),
+        s3Band = ItemUtil.create(ParkManager.getInstance().getBandUtil().getBandMaterial(BandColor.SPECIAL3),
                 ChatColor.GRAY + "Haunted Mansion", new ArrayList<>());
-        s4Band = ItemUtil.create(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL4),
+        s4Band = ItemUtil.create(ParkManager.getInstance().getBandUtil().getBandMaterial(BandColor.SPECIAL4),
                 ChatColor.DARK_AQUA + "Sorcerer Mickey", new ArrayList<>());
-        s5Band = ItemUtil.create(ParkManager.bandUtil.getBandMaterial(BandColor.SPECIAL5),
+        s5Band = ItemUtil.create(ParkManager.getInstance().getBandUtil().getBandMaterial(BandColor.SPECIAL5),
                 ChatColor.LIGHT_PURPLE + "Princess", new ArrayList<>());
     }
 
@@ -272,14 +272,15 @@ public class InventoryUtil {
     }
 
     public void openInventory(Player player, InventoryType inv) {
+        ParkManager parkManager = ParkManager.getInstance();
         try {
-            PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+            PlayerData data = parkManager.getPlayerData(player.getUniqueId());
             Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
             switch (inv) {
                 case MAINMENU: {
                     Inventory main = Bukkit.createInventory(player, 27, ChatColor.BLUE + player.getName() +
-                            (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "'s MagicBand" :
-                                    (ParkManager.isResort(Resort.USO) ? "'s Power Pass" : "")));
+                            (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "'s MagicBand" :
+                                    (parkManager.isResort(Resort.USO) ? "'s Power Pass" : "")));
                     ItemStack playerInfo = HeadUtil.getPlayerHead(Core.getPlayerManager().getPlayer(player.getUniqueId())
                             .getTextureValue(), ChatColor.GREEN + "My Profile");
                     ItemMeta im = playerInfo.getItemMeta();
@@ -304,13 +305,13 @@ public class InventoryUtil {
                     main.setItem(13, parks);
                     main.setItem(14, shop);
                     main.setItem(15, ward);
-                    if (ParkManager.visibilityUtil.isInHideAll(player.getUniqueId())) {
+                    if (parkManager.getVisibilityUtil().isInHideAll(player.getUniqueId())) {
                         main.setItem(16, toggleon);
                     } else {
                         main.setItem(16, toggleoff);
                     }
                     player.openInventory(main);
-                    ParkManager.bandUtil.loadPlayerData(player);
+                    parkManager.getBandUtil().loadPlayerData(player);
                     return;
                 }
                 case PARK_WDW: {
@@ -334,9 +335,9 @@ public class InventoryUtil {
                     park.setItem(2, arcade);
                     park.setItem(4, ttc);
                     park.setItem(6, creative);
-                    park.setItem(13, wdw);
-                    park.setItem(10, dlr);
-//                    park.setItem(14, uso);
+                    park.setItem(10, wdw);
+                    park.setItem(12, dlr);
+                    park.setItem(14, uso);
                     park.setItem(16, seasonal);
                     park.setItem(22, BandUtil.getBackItem());
                     player.openInventory(park);
@@ -345,7 +346,7 @@ public class InventoryUtil {
                 case FOOD: {
                     Inventory foodMenu = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Food Menu");
                     foodMenu.setItem(22, BandUtil.getBackItem());
-                    List<FoodLocation> foodLocations = ParkManager.foodLocations;
+                    List<FoodLocation> foodLocations = parkManager.getFoodLocations();
                     if (foodLocations.isEmpty()) {
                         foodMenu.setItem(13, ItemUtil.create(Material.STAINED_CLAY, 1, (byte) 14, ChatColor.RED +
                                 "Uh oh!", Arrays.asList(ChatColor.RED + "Sorry, but there are no",
@@ -426,15 +427,15 @@ public class InventoryUtil {
                 case CUSTOMIZE: {
                     Inventory custom = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Customize Menu");
                     ItemStack band;
-                    if (data.getSpecial()) {
-                        band = ItemUtil.create(ParkManager.bandUtil.getBandMaterial(data.getBandColor()));
+                    if (data.isSpecial()) {
+                        band = ItemUtil.create(parkManager.getBandUtil().getBandMaterial(data.getBandColor()));
                         ItemMeta bm = band.getItemMeta();
                         bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                         band.setItemMeta(bm);
                     } else {
                         band = ItemUtil.create(Material.FIREWORK_CHARGE);
                         FireworkEffectMeta bm = (FireworkEffectMeta) band.getItemMeta();
-                        bm.setEffect(FireworkEffect.builder().withColor(ParkManager.bandUtil
+                        bm.setEffect(FireworkEffect.builder().withColor(parkManager.getBandUtil()
                                 .getBandColor(data.getBandColor())).build());
                         bm.setDisplayName(ChatColor.GREEN + "Change MagicBand Color");
                         band.setItemMeta(bm);
@@ -510,14 +511,14 @@ public class InventoryUtil {
                 }
                 case MYHOTELROOMS: {
                     Inventory viewMyHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "My Hotel Rooms");
-                    List<HotelRoom> rooms = ParkManager.hotelManager.getHotelRooms().stream().filter(room -> room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())).collect(Collectors.toList());
+                    List<HotelRoom> rooms = parkManager.getHotelManager().getHotelRooms().stream().filter(room -> room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())).collect(Collectors.toList());
                     int roomItemPlacement = 13 - ((rooms.size() - 1) / 2);
                     for (HotelRoom room : rooms) {
                         ItemStack roomItem = ItemUtil.create(Material.BED, 1);
                         ItemMeta rim = roomItem.getItemMeta();
                         rim.setDisplayName(ChatColor.GREEN + room.getName());
                         if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-                            ParkManager.hotelManager.checkout(room, true);
+                            parkManager.getHotelManager().checkout(room, true);
                             return;
                         }
                         String times = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);
@@ -540,7 +541,7 @@ public class InventoryUtil {
                 case HOTELS: {
                     Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
                     List<String> availableHotels = new ArrayList<>();
-                    ParkManager.hotelManager.getHotelRooms().stream().filter(room -> !availableHotels
+                    parkManager.getHotelManager().getHotelRooms().stream().filter(room -> !availableHotels
                             .contains(room.getHotelName())).forEach(room -> availableHotels.add(room.getHotelName()));
                     int hotelItemPlacement = 10;
                     for (String hotel : availableHotels) {
@@ -569,22 +570,22 @@ public class InventoryUtil {
                     ItemStack visibility;
                     ItemStack loop;
                     ItemStack hotel;
-                    if (data.getFlash()) {
+                    if (data.isFlash()) {
                         flash = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Flash Effects", enab);
                     } else {
                         flash = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Flash Effects", disab);
                     }
-                    if (data.getVisibility()) {
+                    if (data.isVisibility()) {
                         visibility = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Player Visibility", enab);
                     } else {
                         visibility = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Player Visibility", disab);
                     }
-                    if (data.getLoop()) {
+                    if (data.isLoop()) {
                         loop = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Park Loop Music", enab);
                     } else {
                         loop = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Park Loop Music", disab);
                     }
-                    if (data.getHotel()) {
+                    if (data.isHotel()) {
                         hotel = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Friends Access Hotel Room", enab);
                     } else {
                         hotel = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Friends Access Hotel Room", disab);
@@ -606,7 +607,7 @@ public class InventoryUtil {
                     StorageSize packSize = data.getBackpack().getSize();
                     StorageSize lockerSize = data.getLocker().getSize();
                     List<String> packLore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Current Size: " +
-                            packSize.getSize()));
+                            packSize.getName()));
                     switch (packSize) {
                         case SMALL:
                             packLore.add(ChatColor.YELLOW + "Click to upgrade to the Large size");
@@ -619,7 +620,7 @@ public class InventoryUtil {
                     ItemStack pack = ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Upgrade Backpack",
                             packLore);
                     List<String> lockerLore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Current Size: " +
-                            lockerSize.getSize()));
+                            lockerSize.getName()));
                     switch (lockerSize) {
                         case SMALL:
                             lockerLore.add(ChatColor.YELLOW + "Click to upgrade to the Large size");
@@ -643,7 +644,7 @@ public class InventoryUtil {
                         Inventory load = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Loading Backpack...");
                         load.setItem(13, loadingPack);
                         player.openInventory(load);
-                        ParkManager.storageManager.setLoadingPack(player);
+                        parkManager.getStorageManager().setLoadingPack(player);
                         return;
                     } else {
                         player.openInventory(pack.getInventory());
@@ -656,7 +657,7 @@ public class InventoryUtil {
                         Inventory load = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Loading Locker...");
                         load.setItem(13, loadingLocker);
                         player.openInventory(load);
-                        ParkManager.storageManager.setLoadingLocker(player);
+                        parkManager.getStorageManager().setLoadingLocker(player);
                         return;
                     } else {
                         player.openInventory(locker.getInventory());
@@ -672,7 +673,7 @@ public class InventoryUtil {
                     s.setItem(5, f);
                     s.setItem(6, this.s);
                     s.setItem(7, su);
-                    List<ScheduledShow> shows = ParkManager.scheduleManager.getShows();
+                    List<ScheduledShow> shows = parkManager.getScheduleManager().getShows();
                     List<String> times = new ArrayList<>();
                     shows.stream().filter(show -> !times.contains(show.getTime())).forEach(show -> times.add(show.getTime()));
                     HashMap<String, Integer> timeMap = new HashMap<>();
@@ -761,9 +762,9 @@ public class InventoryUtil {
     }
 
     public void openWardrobeManagerPage(CPlayer player, int page) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 54, ChatColor.BLUE + "Wardrobe Manager Page " + page);
-        List<Outfit> first = ParkManager.wardrobeManager.getOutfits();
+        List<Outfit> first = ParkManager.getInstance().getWardrobeManager().getOutfits();
         List<Outfit> outfits = first.subList((page - 1) * 6, (page * 6 > first.size() ? first.size() : page * 6));
         boolean lpage = page > 1;
         boolean npage = (page * 6) < first.size();
@@ -852,7 +853,7 @@ public class InventoryUtil {
 
     public void openHotelRoomListPage(final Player player, String hotelName) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Rooms in " + hotelName);
-        List<HotelRoom> availableHotelRooms = ParkManager.hotelManager.getHotelRooms().stream().filter(room -> room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()).collect(Collectors.toList());
+        List<HotelRoom> availableHotelRooms = ParkManager.getInstance().getHotelManager().getHotelRooms().stream().filter(room -> room.getHotelName().equalsIgnoreCase(hotelName) && !room.isOccupied()).collect(Collectors.toList());
         List<HotelRoom> sortedHotelRooms = new ArrayList<>();
         while (availableHotelRooms.size() > 0) {
             HotelRoom smallest = availableHotelRooms.get(0);
@@ -904,7 +905,7 @@ public class InventoryUtil {
     public void openSpecificHotelRoomCheckoutPage(final Player player, HotelRoom room) {
         Inventory viewAvailableHotelRooms = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Check Out?");
         if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
-            ParkManager.hotelManager.checkout(room, true);
+            ParkManager.getInstance().getHotelManager().checkout(room, true);
             return;
         }
         String time = DateUtil.formatDateDiff(room.getCheckoutTime() * 1000);
@@ -919,7 +920,7 @@ public class InventoryUtil {
 
     @SuppressWarnings("deprecation")
     public void openRideList(Player player) {
-        List<Ride> rides = ParkManager.rides;
+        List<Ride> rides = ParkManager.getInstance().getRides();
         Inventory rlist = Bukkit.createInventory(player, (rides.size() <= 7 ? 27 : (rides.size() <= 14 ? 36 :
                 (rides.size() <= 21 ? 45 : 54))), ChatColor.BLUE + "Ride List");
         if (rides.isEmpty()) {
@@ -966,7 +967,7 @@ public class InventoryUtil {
 
     @SuppressWarnings("deprecation")
     public void openAttractionList(Player player) {
-        List<Ride> attractions = ParkManager.attractions;
+        List<Ride> attractions = ParkManager.getInstance().getAttractions();
         Inventory alist = Bukkit.createInventory(player, (attractions.size() <= 7 ? 27 : (attractions.size() <= 14 ? 36 :
                 (attractions.size() <= 21 ? 45 : 54))), ChatColor.BLUE + "Attraction List");
         if (attractions.isEmpty()) {
@@ -1010,7 +1011,7 @@ public class InventoryUtil {
 
     @SuppressWarnings("deprecation")
     public void openMeetAndGreetList(Player player) {
-        List<Ride> meetandgreets = ParkManager.meetandgreets;
+        List<Ride> meetandgreets = ParkManager.getInstance().getMeetAndGreets();
         Inventory mlist = Bukkit.createInventory(player, (meetandgreets.size() <= 7 ? 27 : (meetandgreets.size() <= 14 ? 36 :
                 (meetandgreets.size() <= 21 ? 45 : 54))), ChatColor.BLUE + "Meet & Greet List");
         if (meetandgreets.isEmpty()) {
@@ -1061,7 +1062,7 @@ public class InventoryUtil {
     public void openWaitTimes(Player player) {
         Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wait Times");
         List<ItemStack> items = new ArrayList<>();
-        for (QueueRide ride : ParkManager.queueManager.getRides()) {
+        for (QueueRide ride : ParkManager.getInstance().getQueueManager().getRides()) {
             List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + ride.appxWaitTime(), ChatColor.YELLOW +
                     "Players in Queue: " + (ride.getQueueSize() <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW +
                     "Warp: " + ChatColor.GREEN + "/warp " + ride.getWarp());
@@ -1095,7 +1096,7 @@ public class InventoryUtil {
     }
 
     public void openRideCounterPage(Player player, int page) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         List<RideCount> rides = new ArrayList<>(data.getRideCounts().values());
         int size = rides.size();
         if (size < 46) {
@@ -1138,8 +1139,8 @@ public class InventoryUtil {
 
     @SuppressWarnings("deprecation")
     public void openFoodMenuPage(Player player, int page) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
-        List<FoodLocation> foodLocations = ParkManager.foodLocations;
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
+        List<FoodLocation> foodLocations = ParkManager.getInstance().getFoodLocations();
         int size = foodLocations.size();
         if (size < 8) {
             page = 1;

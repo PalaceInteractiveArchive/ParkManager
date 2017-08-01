@@ -25,10 +25,10 @@ public class ShopConfirmClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Confirm Purchase":
-                ParkManager.shopManager.confirmPurchase(player);
+                ParkManager.getInstance().getShopManager().confirmPurchase(player);
                 return;
             case "Cancel Purchase":
-                ParkManager.shopManager.cancelPurchase(player);
+                ParkManager.getInstance().getShopManager().cancelPurchase(player);
                 player.closeInventory();
         }
     }

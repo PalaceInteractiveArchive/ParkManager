@@ -22,7 +22,7 @@ public class Commandback extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (!ParkManager.teleportUtil.back(player)) {
+        if (!ParkManager.getInstance().getTeleportUtil().back(player)) {
             player.sendMessage(ChatColor.GRAY + "No location to teleport back to!");
         }
     }

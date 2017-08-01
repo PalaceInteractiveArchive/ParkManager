@@ -24,11 +24,12 @@ public class ResourceListener implements Listener {
     public void onCurrentPackReceive(CurrentPackReceivedEvent event) {
         CPlayer player = event.getPlayer();
         String current = event.getPack();
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        ParkManager parkManager = ParkManager.getInstance();
+        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         String preferred = data.getPack();
         if (!preferred.equals("no")) {
-            if (preferred.equals("yes") && !current.equalsIgnoreCase(ParkManager.packManager.getServerPack())) {
-                Core.getResourceManager().sendPack(player, ParkManager.packManager.getServerPack());
+            if (preferred.equals("yes") && !current.equalsIgnoreCase(parkManager.getPackManager().getServerPack())) {
+                Core.getResourceManager().sendPack(player, parkManager.getPackManager().getServerPack());
             } else if (preferred.equals("blank") && !current.equals("none")) {
                 //Send blank
                 Core.getResourceManager().sendPack(player, "Blank");
@@ -40,8 +41,8 @@ public class ResourceListener implements Listener {
             } else if (!preferred.equals("yes")) {
                 //Choose a pack
                 player.sendMessage(ChatColor.GREEN + "Please choose a Resource Pack setting for Theme Parks.");
-                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () ->
-                        ParkManager.packManager.openMenu(player), 20L);
+                Bukkit.getScheduler().runTaskLater(parkManager, () ->
+                        parkManager.getPackManager().openMenu(player), 20L);
             }
         }
     }

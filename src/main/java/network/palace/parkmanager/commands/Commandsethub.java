@@ -25,8 +25,8 @@ public class Commandsethub extends CoreCommand {
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         Location loc = player.getLocation();
-        ParkManager.getInstance().setHub(loc);
         FileUtil.setHub(loc);
+        ParkManager.getInstance().setHub(loc);
         player.sendMessage(ChatColor.DARK_AQUA + "The hub location has been set!");
     }
 }

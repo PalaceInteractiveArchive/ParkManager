@@ -21,7 +21,7 @@ public class AchievementClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MYPROFILE);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MYPROFILE);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -35,10 +35,10 @@ public class AchievementClick {
         int page = Integer.parseInt(inv.replaceAll("Achievements Page ", ""));
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Next Page")) {
-            ParkManager.inventoryUtil.openAchievementPage(player, page + 1);
+            ParkManager.getInstance().getInventoryUtil().openAchievementPage(player, page + 1);
         }
         if (name.equals("Last Page")) {
-            ParkManager.inventoryUtil.openAchievementPage(player, page - 1);
+            ParkManager.getInstance().getInventoryUtil().openAchievementPage(player, page - 1);
         }
     }
 }

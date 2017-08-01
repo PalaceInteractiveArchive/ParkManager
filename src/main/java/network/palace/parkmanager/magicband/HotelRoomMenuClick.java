@@ -24,11 +24,11 @@ public class HotelRoomMenuClick {
         }
         final Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.HOTELS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELS);
             return;
         }
         boolean playerOwnsRooms = false;
-        HotelManager manager = ParkManager.hotelManager;
+        HotelManager manager = ParkManager.getInstance().getHotelManager();
         for (HotelRoom room : manager.getHotelRooms()) {
             if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
                 playerOwnsRooms = true;

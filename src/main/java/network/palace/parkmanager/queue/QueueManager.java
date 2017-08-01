@@ -159,7 +159,7 @@ public class QueueManager {
     }
 
     public void createSign(SignChangeEvent event) {
-        QueueRide ride = ParkManager.queueManager.getRide(event.getLine(1));
+        QueueRide ride = getRide(event.getLine(1));
         if (ride != null) {
             boolean fp = event.getLine(2).equalsIgnoreCase("fp");
             boolean wait = event.getLine(2).equalsIgnoreCase("wait");
@@ -282,7 +282,7 @@ public class QueueManager {
         }
         String rideName = s.getLine(2);
         QueueRide ride = getRide2(rideName);
-        Ride rideObject = ParkManager.getRide(ride.getShortName());
+        Ride rideObject = ParkManager.getInstance().getRide(ride.getShortName());
         if (ride == null) {
             return;
         }
@@ -303,7 +303,7 @@ public class QueueManager {
             return;
         }
         if (s.getLine(0).equals(PlayerInteract.fastpass)) {
-            PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+            PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
             if (data.getFastPassData().getPass(ride.getCategory()) <= 0) {
                 player.sendMessage(ChatColor.RED + "You do not have any " + ChatColor.YELLOW +
                         ride.getCategory().getName() + " FastPasses! " + ChatColor.RED + "You can claim one per day at FastPass Kiosks.");
@@ -318,9 +318,10 @@ public class QueueManager {
     }
 
     public List<QueueRide> getRides() {
-        List<Ride> rides = ParkManager.getRides();
-        List<Ride> attractions = ParkManager.getAttractions();
-        List<Ride> mngs = ParkManager.getMeetAndGreets();
+        ParkManager parkManager = ParkManager.getInstance();
+        List<Ride> rides = parkManager.getRides();
+        List<Ride> attractions = parkManager.getAttractions();
+        List<Ride> mngs = parkManager.getMeetAndGreets();
         List<Ride> finalList = rides.stream().collect(Collectors.toList());
         finalList.addAll(attractions.stream().collect(Collectors.toList()));
         finalList.addAll(mngs.stream().collect(Collectors.toList()));

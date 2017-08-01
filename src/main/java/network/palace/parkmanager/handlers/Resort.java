@@ -1,19 +1,17 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.Getter;
+
 /**
  * Created by Marc on 4/7/17.
  */
 public enum Resort {
     WDW(0), DLR(1), USO(2);
 
-    private int id;
+    @Getter private int id;
 
     Resort(int id) {
         this.id = id;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public static Resort fromString(String s) {

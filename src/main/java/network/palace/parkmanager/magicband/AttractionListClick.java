@@ -22,7 +22,7 @@ public class AttractionListClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.RIDESANDATTRACTIONS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.RIDESANDATTRACTIONS);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -38,7 +38,7 @@ public class AttractionListClick {
             player.sendMessage(ChatColor.RED + "Sorry, but there are no attractions on this server!");
             return;
         }
-        Ride attraction = ParkManager.getAttraction(name);
+        Ride attraction = ParkManager.getInstance().getAttraction(name);
         if (attraction == null) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "There was an error, please tell a Staff Member!");

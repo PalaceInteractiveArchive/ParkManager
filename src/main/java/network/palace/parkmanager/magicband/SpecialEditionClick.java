@@ -23,7 +23,7 @@ public class SpecialEditionClick {
         }
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMIZE);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -35,20 +35,20 @@ public class SpecialEditionClick {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Last Page")) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMCOLOR);
             return;
         }
         Material type = item.getType();
         if (type.equals(Material.REDSTONE_BLOCK)) {
             return;
         }
-        if (type.equals(ParkManager.bandUtil.getBandMaterial(ParkManager.getPlayerData(player.getUniqueId())
+        if (type.equals(ParkManager.getInstance().getBandUtil().getBandMaterial(ParkManager.getInstance().getPlayerData(player.getUniqueId())
                 .getBandColor()))) {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You already have that MagicBand color!");
             return;
         }
         player.closeInventory();
-        ParkManager.bandUtil.setBandColor(player, type);
+        ParkManager.getInstance().getBandUtil().setBandColor(player, type);
     }
 }

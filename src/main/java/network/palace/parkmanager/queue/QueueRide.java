@@ -106,7 +106,7 @@ public class QueueRide {
     }
 
     public void joinQueue(final Player player) {
-        ParkManager.queueManager.leaveAllQueues(player);
+        ParkManager.getInstance().getQueueManager().leaveAllQueues(player);
         if (queue.isEmpty() && timeToNextRide <= 0) {
             lastSpawn = getTime() - (delay - 10);
             timeToNextRide = 10;
@@ -129,7 +129,7 @@ public class QueueRide {
             player.sendMessage(ChatColor.GREEN + "The queue is empty, don't use a FastPass!");
             return;
         }
-        ParkManager.queueManager.leaveAllQueues(player);
+        ParkManager.getInstance().getQueueManager().leaveAllQueues(player);
         fpqueue.add(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.AQUA + "FastPass Queue" +
                 ChatColor.GREEN + " for " + ChatColor.BLUE + name + ChatColor.GREEN + "\nYou are in position #" +
@@ -190,7 +190,7 @@ public class QueueRide {
                     continue;
                 }
                 if (fps.contains(tp.getUniqueId())) {
-                    chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                    chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
                     tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
                             getCategory().getName() + " FastPass!");
                 }
@@ -208,7 +208,7 @@ public class QueueRide {
                 continue;
             }
             if (fps.contains(tp.getUniqueId())) {
-                chargeFastpass(ParkManager.getPlayerData(tp.getUniqueId()));
+                chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
                 tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
                         getCategory().getName() + " FastPass!");
             }
@@ -278,7 +278,7 @@ public class QueueRide {
     }
 
     protected void addTask(QueueTask task) {
-        ParkManager.queueManager.addTask(task);
+        ParkManager.getInstance().getQueueManager().addTask(task);
     }
 
     protected long getTime() {
@@ -355,7 +355,7 @@ public class QueueRide {
     public void addSign(Location loc, boolean setFile) {
         try {
             if (setFile) {
-                ParkManager.queueManager.addSign(this, loc);
+                ParkManager.getInstance().getQueueManager().addSign(this, loc);
             }
             signs.add(loc);
         } catch (IOException e) {
@@ -366,7 +366,7 @@ public class QueueRide {
     public void addFPSign(Location loc, boolean setFile) {
         try {
             if (setFile) {
-                ParkManager.queueManager.addFPSign(this, loc);
+                ParkManager.getInstance().getQueueManager().addFPSign(this, loc);
             }
             fpsigns.add(loc);
         } catch (IOException e) {
@@ -384,12 +384,12 @@ public class QueueRide {
 
     public void setStation(Location loc) throws IOException {
         station = loc;
-        ParkManager.queueManager.setStation(this, loc);
+        ParkManager.getInstance().getQueueManager().setStation(this, loc);
     }
 
     public void setSpawner(Location loc) throws IOException {
         spawner = loc;
-        ParkManager.queueManager.setSpawner(this, loc);
+        ParkManager.getInstance().getQueueManager().setSpawner(this, loc);
     }
 
     public boolean isFrozen() {

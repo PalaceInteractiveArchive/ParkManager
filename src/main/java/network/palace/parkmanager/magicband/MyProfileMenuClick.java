@@ -35,7 +35,7 @@ public class MyProfileMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -62,13 +62,13 @@ public class MyProfileMenuClick {
                 player.openInventory(player.getEnderChest());
                 return;
             case "Achievements":
-                ParkManager.inventoryUtil.openAchievementPage(player, 1);
+                ParkManager.getInstance().getInventoryUtil().openAchievementPage(player, 1);
                 return;
             case "Ride Counter":
-                ParkManager.inventoryUtil.openRideCounterPage(player, 1);
+                ParkManager.getInstance().getInventoryUtil().openRideCounterPage(player, 1);
                 return;
             case "Resource Packs":
-                ParkManager.packManager.openMenu(cplayer);
+                ParkManager.getInstance().getPackManager().openMenu(cplayer);
                 return;
             case "Discord":
                 player.closeInventory();
@@ -77,7 +77,7 @@ public class MyProfileMenuClick {
                 player.sendMessage(" ");
                 return;
             case "Player Settings":
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERSETTINGS);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
         }
     }
 }

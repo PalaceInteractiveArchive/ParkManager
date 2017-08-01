@@ -18,6 +18,6 @@ public class Commandpack extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        ParkManager.packManager.openMenu(player);
+        ParkManager.getInstance().getPackManager().openMenu(player);
     }
 }

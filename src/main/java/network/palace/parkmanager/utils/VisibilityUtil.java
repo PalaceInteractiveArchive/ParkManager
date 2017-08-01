@@ -34,7 +34,7 @@ public class VisibilityUtil {
             if (hideall.contains(tp.getUniqueId())) {
                 continue;
             }
-            if (ParkManager.getPlayerData(tp.getUniqueId()).getVisibility()) {
+            if (ParkManager.getInstance().getPlayerData(tp.getUniqueId()).isVisibility()) {
                 tp.showPlayer(player);
             }
         }
@@ -45,7 +45,7 @@ public class VisibilityUtil {
     }
 
     public void addToHideAll(CPlayer player) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         List<UUID> friends = data.getFriendList();
         hideall.add(player.getUniqueId());
         for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
@@ -60,7 +60,7 @@ public class VisibilityUtil {
     }
 
     public void removeFromHideAll(CPlayer player) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         List<UUID> friends = data.getFriendList();
         hideall.remove(player.getUniqueId());
         for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
@@ -79,7 +79,7 @@ public class VisibilityUtil {
 
     public void login(CPlayer player) {
         if (player.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-            PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+            PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
             List<UUID> friends = data.getFriendList();
             for (UUID uuid : hideall) {
                 if (friends.contains(uuid)) {

@@ -38,7 +38,7 @@ public class Commandsign extends CoreCommand {
         String finalMsg = msg.toString();
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             player.sendMessage(ChatColor.GREEN + "Signing book...");
-            ParkManager.autographManager.sign(player, finalMsg);
+            ParkManager.getInstance().getAutographManager().sign(player, finalMsg);
         });
     }
 }

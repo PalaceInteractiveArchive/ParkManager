@@ -58,7 +58,7 @@ public class BlockEdit implements Listener {
                 }
                 String hotelName = ChatColor.stripColor(s.getLine(2));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(s.getLine(1));
-                HotelManager manager = ParkManager.hotelManager;
+                HotelManager manager = ParkManager.getInstance().getHotelManager();
                 if (manager.getRoom(fullRoomName) != null) {
                     manager.removeRoom(manager.getRoom(fullRoomName));
                     manager.refreshRooms();
@@ -68,14 +68,14 @@ public class BlockEdit implements Listener {
             }
             if (l1.equalsIgnoreCase("[queue]")) {
                 try {
-                    ParkManager.queueManager.deleteSign(s.getLocation());
+                    ParkManager.getInstance().getQueueManager().deleteSign(s.getLocation());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             if (l1.equalsIgnoreCase("[fastpass]")) {
                 try {
-                    ParkManager.queueManager.deleteFPSign(s.getLocation());
+                    ParkManager.getInstance().getQueueManager().deleteFPSign(s.getLocation());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -24,7 +24,7 @@ public class RideAttractionClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -39,16 +39,16 @@ public class RideAttractionClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Wait Times":
-                ParkManager.inventoryUtil.openWaitTimes(player);
+                ParkManager.getInstance().getInventoryUtil().openWaitTimes(player);
                 return;
             case "Rides":
-                ParkManager.inventoryUtil.openRideList(player);
+                ParkManager.getInstance().getInventoryUtil().openRideList(player);
                 return;
             case "Meet & Greets":
-                ParkManager.inventoryUtil.openMeetAndGreetList(player);
+                ParkManager.getInstance().getInventoryUtil().openMeetAndGreetList(player);
                 return;
             case "Attractions":
-                ParkManager.inventoryUtil.openAttractionList(player);
+                ParkManager.getInstance().getInventoryUtil().openAttractionList(player);
         }
     }
 }

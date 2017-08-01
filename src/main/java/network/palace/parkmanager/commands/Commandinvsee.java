@@ -29,7 +29,7 @@ public class Commandinvsee extends CoreCommand {
                 return;
             }
             String type = args[1];
-            PlayerData data = ParkManager.getPlayerData(tp.getUniqueId());
+            PlayerData data = ParkManager.getInstance().getPlayerData(tp.getUniqueId());
             if (data != null && data.getLocker() != null && data.getBackpack() != null) {
                 switch (type.toLowerCase()) {
                     case "backpack": {

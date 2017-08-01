@@ -39,7 +39,7 @@ public class FPKioskManager implements Listener {
     private List<UUID> openMenu = new ArrayList<>();
 
     public FPKioskManager() {
-        if (!ParkManager.isResort(Resort.WDW) && !ParkManager.isResort(Resort.DLR)) {
+        if (!ParkManager.getInstance().isResort(Resort.WDW) && !ParkManager.getInstance().isResort(Resort.DLR)) {
             return;
         }
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(),
@@ -156,7 +156,7 @@ public class FPKioskManager implements Listener {
     }
 
     public void setInventory(CPlayer player, Inventory inv) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         FastPassData fpdata = data.getFastPassData();
         KioskData kioskData = data.getKioskData();
         long vote = kioskData.getVote();
@@ -325,7 +325,7 @@ public class FPKioskManager implements Listener {
         }
         String name = ChatColor.stripColor(meta.getDisplayName());
         int slot = event.getSlot();
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         FastPassData fpd = data.getFastPassData();
         KioskData kioskData = data.getKioskData();
         int today = new GregorianCalendar().get(Calendar.DAY_OF_YEAR);
@@ -523,7 +523,7 @@ public class FPKioskManager implements Listener {
 
     public void updateVoteData(final UUID uuid) {
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
-        final PlayerData data = ParkManager.getPlayerData(uuid);
+        final PlayerData data = ParkManager.getInstance().getPlayerData(uuid);
         if (player == null || data == null) {
             return;
         }

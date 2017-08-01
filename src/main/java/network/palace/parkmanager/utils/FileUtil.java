@@ -93,14 +93,6 @@ public class FileUtil {
         saveFile(file, config);
     }
 
-    public static void saveFile(File file, YamlConfiguration config) {
-        try {
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void setHub(Location loc) {
         File file = FileUtil.configurationFile();
         YamlConfiguration config = configurationYaml();
@@ -111,5 +103,13 @@ public class FileUtil {
         config.set("hub.yaw", loc.getYaw());
         config.set("hub.pitch", loc.getPitch());
         saveFile(file, config);
+    }
+
+    public static void saveFile(File file, YamlConfiguration config) {
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

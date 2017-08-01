@@ -48,7 +48,7 @@ public class PlayerJoinAndLeave implements Listener {
                     if (tp == null) {
                         continue;
                     }
-                    ParkManager.storageManager.join(uuid, true);
+                    ParkManager.getInstance().getStorageManager().join(uuid, true);
                 }
             }
         }, 0L, 20L);
@@ -74,8 +74,8 @@ public class PlayerJoinAndLeave implements Listener {
     public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
         try {
             UUID uuid = event.getUniqueId();
-            ParkManager.bandUtil.setupPlayerData(uuid);
-            if (ParkManager.getPlayerData(uuid) == null) {
+            ParkManager.getInstance().getBandUtil().setupPlayerData(uuid);
+            if (ParkManager.getInstance().getPlayerData(uuid) == null) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("There was an error joining this server! (Error Code 106)");
             }
@@ -100,7 +100,7 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
         // If Disneyland and user rank is below Noble, don't allow them to connect
-        if ((ParkManager.isResort(Resort.DLR)) &&
+        if ((ParkManager.getInstance().isResort(Resort.DLR)) &&
                 user.getRank().getRankId() < Rank.NOBLE.getRankId()) {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(ChatColor.AQUA + "You must be the " + Rank.NOBLE.getFormattedName() +
@@ -116,6 +116,7 @@ public class PlayerJoinAndLeave implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(CorePlayerJoinedEvent event) {
         try {
+            ParkManager parkManager = ParkManager.getInstance();
             final CPlayer cp = event.getPlayer();
             final Player player = event.getPlayer().getBukkitPlayer();
             cp.giveAchievement(0);
@@ -139,9 +140,9 @@ public class PlayerJoinAndLeave implements Listener {
                     cp.giveAchievement(8);
                     break;
             }
-            ParkManager.storageManager.join(player.getUniqueId(), true);
-            ParkManager.userCache.put(player.getUniqueId(), player.getName());
-            PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+            parkManager.getStorageManager().join(player.getUniqueId(), true);
+            parkManager.addToUserCache(player.getUniqueId(), player.getName());
+            PlayerData data = parkManager.getPlayerData(player.getUniqueId());
             if (!cp.hasAchievement(12) && !data.getRideCounts().isEmpty()) {
                 int size = data.getRideCounts().size();
                 cp.giveAchievement(12);
@@ -155,8 +156,8 @@ public class PlayerJoinAndLeave implements Listener {
                     cp.giveAchievement(15);
                 }
             }
-            if (!data.getVisibility()) {
-                ParkManager.visibilityUtil.addToHideAll(cp);
+            if (!data.isVisibility()) {
+                parkManager.getVisibilityUtil().addToHideAll(cp);
             }
             for (PotionEffect type : player.getActivePotionEffects()) {
                 player.removePotionEffect(type.getType());
@@ -174,12 +175,12 @@ public class PlayerJoinAndLeave implements Listener {
                     player.setAllowFlight(fly);
                 }
             }
-            if (ParkManager.spawnOnJoin || !player.hasPlayedBefore()) {
+            if (parkManager.isSpawnOnJoin() || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");
             } else {
                 warpToNearestWarp(player);
             }
-            for (String msg : ParkManager.joinMessages) {
+            for (String msg : parkManager.getJoinMessages()) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
             final PlayerInventory inv = player.getInventory();
@@ -198,7 +199,7 @@ public class PlayerJoinAndLeave implements Listener {
                 inv.setBoots(c.getBoots());
             }
             setInventory(cp, false);
-            if ((ParkManager.isResort(Resort.DLR)) &&
+            if ((parkManager.isResort(Resort.DLR)) &&
                     cp.getRank().getRankId() >= Rank.NOBLE.getRankId() && cp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setAllowFlight(true);
@@ -206,11 +207,11 @@ public class PlayerJoinAndLeave implements Listener {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200000, 0, true, false));
                 return;
             }
-            if (!ParkManager.hotelServer) {
+            if (!parkManager.isHotelServer()) {
                 return;
             }
-            Bukkit.getScheduler().runTaskLaterAsynchronously(ParkManager.getInstance(), () -> {
-                HotelManager manager = ParkManager.hotelManager;
+            Bukkit.getScheduler().runTaskLaterAsynchronously(parkManager, () -> {
+                HotelManager manager = parkManager.getHotelManager();
                 for (HotelRoom room : manager.getHotelRooms()) {
                     if (room.getCheckoutNotificationRecipient() != null &&
                             room.getCheckoutNotificationRecipient().equals(player.getUniqueId())) {
@@ -245,6 +246,7 @@ public class PlayerJoinAndLeave implements Listener {
     }
 
     public void setInventory(CPlayer player, boolean book) {
+        ParkManager parkManager = ParkManager.getInstance();
         Inventory inv = player.getInventory();
         ItemStack[] barrier = new ItemStack[36];
         for (int i = 9; i < barrier.length; i++) {
@@ -256,15 +258,15 @@ public class PlayerJoinAndLeave implements Listener {
         inv.setItem(6, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                 Arrays.asList(ChatColor.GRAY + "Right-Click to open the", ChatColor.GRAY + "Show Schedule Menu")));
         if (book) {
-            Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), new Runnable() {
+            Bukkit.getScheduler().runTaskAsynchronously(parkManager, new Runnable() {
                 @Override
                 public void run() {
-                    ParkManager.autographManager.setBook(player.getUniqueId());
-                    ParkManager.autographManager.giveBook(player);
+                    parkManager.getAutographManager().setBook(player.getUniqueId());
+                    parkManager.getAutographManager().giveBook(player);
                 }
             });
         }
-        ParkManager.bandUtil.giveBandToPlayer(player);
+        parkManager.getBandUtil().giveBandToPlayer(player);
         inv.setItem(4, ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +
                 "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
                 "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
@@ -277,7 +279,7 @@ public class PlayerJoinAndLeave implements Listener {
         loc.setWorld(Bukkit.getWorlds().get(0));
         Warp w = null;
         double distance = -1;
-        for (Warp warp : new ArrayList<>(ParkManager.warps)) {
+        for (Warp warp : new ArrayList<>(ParkManager.getInstance().getWarps())) {
             if (!warp.getServer().equals(Core.getServerType())) {
                 continue;
             }
@@ -310,27 +312,28 @@ public class PlayerJoinAndLeave implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
-        ParkManager.storageManager.logout(player);
+        ParkManager parkManager = ParkManager.getInstance();
+        parkManager.getStorageManager().logout(player);
         if (player.getVehicle() != null) {
             player.getVehicle().eject();
         }
-        if (ParkManager.hotelServer) {
-            ParkManager.hotelManager.closeDoor(player);
+        if (parkManager.isHotelServer()) {
+            ParkManager.getInstance().getHotelManager().closeDoor(player);
         }
         BlockEdit.logout(player.getUniqueId());
-        ParkManager.queueManager.silentLeaveAllQueues(player);
-        ParkManager.autographManager.logout(cp);
-        ParkManager.bandUtil.cancelLoadPlayerData(player.getUniqueId());
-        ParkManager.visibilityUtil.logout(Core.getPlayerManager().getPlayer(player));
+        ParkManager.getInstance().getQueueManager().silentLeaveAllQueues(player);
+        ParkManager.getInstance().getAutographManager().logout(cp);
+        ParkManager.getInstance().getBandUtil().cancelLoadPlayerData(player.getUniqueId());
+        ParkManager.getInstance().getVisibilityUtil().logout(Core.getPlayerManager().getPlayer(player));
         WatchTask.removeFromMessage(player.getUniqueId());
-        ParkManager.blockChanger.logout(player);
+        parkManager.getBlockChanger().logout(player);
         if (Core.getServerType().equals("MK")) {
-            ParkManager.stitch.logout(player);
+            parkManager.getStitch().logout(player);
         }
         if (Core.getServerType().equals("Epcot")) {
             DesignStation.removePlayerVehicle(player.getUniqueId());
         }
-        ParkManager.playerData.remove(player.getUniqueId());
+        parkManager.removePlayerData(player.getUniqueId());
     }
 
     public void setInventory(UUID uuid) {

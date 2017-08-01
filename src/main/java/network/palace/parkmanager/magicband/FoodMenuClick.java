@@ -23,7 +23,7 @@ public class FoodMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -37,14 +37,14 @@ public class FoodMenuClick {
         int page = Integer.parseInt(inv.replaceAll("Food Menu Page ", ""));
         String name = ChatColor.stripColor(meta.getDisplayName());
         if (name.equals("Next Page")) {
-            ParkManager.inventoryUtil.openFoodMenuPage(player, page + 1);
+            ParkManager.getInstance().getInventoryUtil().openFoodMenuPage(player, page + 1);
             return;
         }
         if (name.equals("Last Page")) {
-            ParkManager.inventoryUtil.openFoodMenuPage(player, page - 1);
+            ParkManager.getInstance().getInventoryUtil().openFoodMenuPage(player, page - 1);
             return;
         }
-        for (FoodLocation loc : ParkManager.foodLocations) {
+        for (FoodLocation loc : ParkManager.getInstance().getFoodLocations()) {
             if (item.getTypeId() == loc.getType() && item.getData().getData() == loc.getData() &&
                     name.equalsIgnoreCase(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', loc.getName())))) {
                 player.closeInventory();

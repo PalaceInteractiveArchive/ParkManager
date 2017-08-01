@@ -116,7 +116,7 @@ public class WarpUtil {
     public synchronized static void addWarp(Warp warp) {
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection
-                    .prepareStatement("INSERT INTO warps values(0,?,?,?,?,?,?,?,?)");
+                    .prepareStatement("INSERT INTO warps VALUES(0,?,?,?,?,?,?,?,?)");
             sql.setString(1, warp.getName());
             sql.setDouble(2, warp.getX());
             sql.setDouble(3, warp.getY());
@@ -145,7 +145,7 @@ public class WarpUtil {
     }
 
     public static Warp findWarp(String name) {
-        List<Warp> warps = ParkManager.getWarps();
+        List<Warp> warps = ParkManager.getInstance().getWarps();
         for (Warp warp : warps) {
             if (warp.getName().toLowerCase().equals(name.toLowerCase())) {
                 return warp;
@@ -160,7 +160,8 @@ public class WarpUtil {
     }
 
     public synchronized static void refreshWarps() {
-        ParkManager.clearWarps();
-        getWarps().forEach(ParkManager::addWarp);
+        ParkManager parkManager = ParkManager.getInstance();
+        parkManager.clearWarps();
+        getWarps().forEach(parkManager::addWarp);
     }
 }

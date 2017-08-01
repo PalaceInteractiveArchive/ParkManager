@@ -38,7 +38,7 @@ public class StorageManager {
     public StorageManager() {
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             for (UUID uuid : new ArrayList<>(loadingPack)) {
-                PlayerData data = ParkManager.getPlayerData(uuid);
+                PlayerData data = ParkManager.getInstance().getPlayerData(uuid);
                 Player tp = Bukkit.getPlayer(uuid);
                 if (tp == null || data == null) {
                     continue;
@@ -47,12 +47,12 @@ public class StorageManager {
                     if (tp.getOpenInventory() != null &&
                             tp.getOpenInventory().getTopInventory().getName().contains("Loading")) {
                         loadingPack.remove(uuid);
-                        ParkManager.inventoryUtil.openInventory(tp, InventoryType.BACKPACK);
+                        ParkManager.getInstance().getInventoryUtil().openInventory(tp, InventoryType.BACKPACK);
                     }
                 }
             }
             for (UUID uuid : new ArrayList<>(loadingLocker)) {
-                PlayerData data = ParkManager.getPlayerData(uuid);
+                PlayerData data = ParkManager.getInstance().getPlayerData(uuid);
                 Player tp = Bukkit.getPlayer(uuid);
                 if (tp == null || data == null) {
                     continue;
@@ -61,7 +61,7 @@ public class StorageManager {
                     if (tp.getOpenInventory() != null &&
                             tp.getOpenInventory().getTopInventory().getName().contains("Loading")) {
                         loadingLocker.remove(uuid);
-                        ParkManager.inventoryUtil.openInventory(tp, InventoryType.LOCKER);
+                        ParkManager.getInstance().getInventoryUtil().openInventory(tp, InventoryType.LOCKER);
 
                     }
                 }
@@ -74,7 +74,7 @@ public class StorageManager {
     public void logout(final Player player) {
         loadingPack.remove(player.getUniqueId());
         loadingLocker.remove(player.getUniqueId());
-        final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        final PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         final boolean build = BlockEdit.isInBuildMode(player.getUniqueId());
         cachedInventories.remove(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
@@ -85,7 +85,7 @@ public class StorageManager {
     }
 
     private void update(Player player) {
-        update(player, ParkManager.getPlayerData(player.getUniqueId()));
+        update(player, ParkManager.getInstance().getPlayerData(player.getUniqueId()));
     }
 
 
@@ -161,7 +161,8 @@ public class StorageManager {
         if (packhash.isEmpty() && lockerhash.isEmpty() && hotbarhash.isEmpty()) {
             Bukkit.getLogger().info("Skipped updating " + player.getName() + "'s inventory, no change!");
         }
-        PacketInventoryContent packet = new PacketInventoryContent(player.getUniqueId(), ParkManager.resort,
+        data.setLastInventoryUpdate(System.currentTimeMillis());
+        PacketInventoryContent packet = new PacketInventoryContent(player.getUniqueId(), ParkManager.getInstance().getResort(),
                 packjson, packhash, data.getBackpack().getSize().ordinal(),
                 lockerjson, lockerhash, data.getLocker().getSize().ordinal(),
                 hotbarjson, hotbarhash);
@@ -179,13 +180,13 @@ public class StorageManager {
         loadingLocker.add(player.getUniqueId());
     }
 
-    public void setValue(final UUID uuid, final String key, final String value) {
+    public void setValue(final UUID uuid, final String key, final int value) {
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE storage SET " + key + "=? WHERE uuid=? AND resort=?");
-                sql.setString(1, value);
+                sql.setInt(1, value);
                 sql.setString(2, uuid.toString());
-                sql.setInt(3, ParkManager.resort.getId());
+                sql.setInt(3, ParkManager.getInstance().getResort().getId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {
@@ -229,8 +230,12 @@ public class StorageManager {
     public void setInventory(UUID uuid) {
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
         final PlayerInventory inv = player.getInventory();
-        PlayerData data = ParkManager.getPlayerData(uuid);
+        PlayerData data = ParkManager.getInstance().getPlayerData(uuid);
         PacketInventoryContent packet = cachedInventories.remove(player.getUniqueId());
+
+        if (packet == null) {
+            return;
+        }
 
         StorageSize bsize = StorageSize.fromInt(packet.getLockerSize());
         StorageSize lsize = StorageSize.fromInt(packet.getLockerSize());
@@ -255,7 +260,7 @@ public class StorageManager {
         data.setBackpack(pack);
         data.setLocker(locker);
 
-        ParkManager.playerJoinAndLeave.setInventory(player, true);
+        ParkManager.getInstance().getPlayerJoinAndLeave().setInventory(player, true);
         if (hotbar != null) {
             ItemStack[] cont = inv.getContents();
             System.arraycopy(hotbar, 0, cont, 0, hotbar.length >= 4 ? 4 : hotbar.length);
@@ -275,7 +280,7 @@ public class StorageManager {
     }
 
     public void join(UUID uuid, boolean force) {
-        if (ParkManager.playerJoinAndLeave.isSet(uuid) && !force) {
+        if (ParkManager.getInstance().getPlayerJoinAndLeave().isSet(uuid) && !force) {
             return;
         }
         if (!cachedInventories.containsKey(uuid)) {

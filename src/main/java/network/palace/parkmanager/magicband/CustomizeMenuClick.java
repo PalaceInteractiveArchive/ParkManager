@@ -23,7 +23,7 @@ public class CustomizeMenuClick {
         }
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.shopManager.openMenu(player);
+            ParkManager.getInstance().getShopManager().openMenu(player);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -33,10 +33,10 @@ public class CustomizeMenuClick {
         String name = ChatColor.stripColor(meta.getDisplayName());
         switch (name) {
             case "Change MagicBand Color":
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMCOLOR);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMCOLOR);
                 return;
             case "Change Name Color":
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMNAME);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMNAME);
         }
     }
 }

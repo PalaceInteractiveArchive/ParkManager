@@ -28,9 +28,9 @@ public class ParkMenuClick {
         boolean all = !event.getInventory().getTitle().endsWith("WDW");
         if (item.equals(BandUtil.getBackItem())) {
             if (all) {
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             } else {
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_ALL);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PARK_ALL);
             }
             return;
         }
@@ -91,7 +91,7 @@ public class ParkMenuClick {
                 Core.getDashboardConnection().send(new PacketSendToServer(player.getUniqueId(), "Seasonal"));
                 return;
             case "Walt Disney World Resort":
-                ParkManager.inventoryUtil.openInventory(player, InventoryType.PARK_WDW);
+                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PARK_WDW);
                 return;
             case "Disneyland Resort":
                 player.closeInventory();

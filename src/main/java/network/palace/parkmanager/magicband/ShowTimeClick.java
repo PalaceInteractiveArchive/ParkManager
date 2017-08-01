@@ -23,7 +23,7 @@ public class ShowTimeClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.SHOWSANDEVENTS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.SHOWSANDEVENTS);
         }
     }
 }

@@ -22,7 +22,7 @@ public class PlayerTimeClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         if (item.getItemMeta() == null) {
@@ -39,13 +39,13 @@ public class PlayerTimeClick {
             player.sendMessage(ChatColor.GREEN + "You " + ChatColor.AQUA + "Reset " + ChatColor.GREEN + "your Player Time!");
             player.resetPlayerTime();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERTIME);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERTIME);
             return;
         }
         player.setPlayerTime(time, false);
         player.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + name);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-        ParkManager.inventoryUtil.openInventory(player, InventoryType.PLAYERTIME);
+        ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERTIME);
     }
 
     private static long getTime(String s) {

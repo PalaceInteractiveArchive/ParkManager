@@ -47,7 +47,7 @@ public class InventoryOpen implements Listener {
         Inventory inv = event.getInventory();
         if (inv.getType().equals(org.bukkit.event.inventory.InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.LOCKER);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.LOCKER);
         }
     }
 }

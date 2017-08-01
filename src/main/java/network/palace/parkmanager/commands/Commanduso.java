@@ -26,12 +26,13 @@ public class Commanduso extends CoreCommand {
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        ParkManager parkManager = ParkManager.getInstance();
         if (args.length == 0) {
             helpMenu("main", sender);
             return;
         }
         if (args[0].equalsIgnoreCase("reload")) {
-            ParkManager.ripRideRockit.initialize();
+            parkManager.getRipRideRockit().initialize();
             sender.sendMessage(ChatColor.GREEN + "Reloaded!");
             return;
         }
@@ -41,12 +42,12 @@ public class Commanduso extends CoreCommand {
                     switch (args[1].toLowerCase()) {
                         case "choose": {
                             CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
-                            ParkManager.ripRideRockit.chooseSong(p);
+                            parkManager.getRipRideRockit().chooseSong(p);
                             return;
                         }
                         case "start": {
                             CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
-                            ParkManager.ripRideRockit.startSong(p);
+                            parkManager.getRipRideRockit().startSong(p);
                             return;
                         }
                     }
@@ -61,15 +62,15 @@ public class Commanduso extends CoreCommand {
                             CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
                             if (BlockEdit.isInBuildMode(p.getUniqueId())) {
                                 p.performCommand("build");
-                                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> ParkManager.menInBlack.join(p), 20L);
+                                Bukkit.getScheduler().runTaskLater(parkManager, () -> parkManager.getMenInBlack().join(p), 20L);
                                 return;
                             }
-                            ParkManager.menInBlack.join(p);
+                            parkManager.getMenInBlack().join(p);
                             return;
                         }
                         case "remove": {
                             CPlayer p = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
-                            ParkManager.menInBlack.done(p);
+                            parkManager.getMenInBlack().done(p);
                             return;
                         }
                     }

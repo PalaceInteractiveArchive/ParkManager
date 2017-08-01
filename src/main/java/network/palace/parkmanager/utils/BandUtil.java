@@ -56,7 +56,7 @@ public class BandUtil {
                     continue;
                 }
                 ItemMeta meta = pinfo.getItemMeta();
-                FastPassData data = ParkManager.getPlayerData(player.getUniqueId()).getFastPassData();
+                FastPassData data = ParkManager.getInstance().getPlayerData(player.getUniqueId()).getFastPassData();
                 meta.setLore(Arrays.asList(ChatColor.GREEN + "Name: " + ChatColor.YELLOW + user.getName(),
                         ChatColor.GREEN + "Rank: " + rank.getFormattedName(),
                         ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + response.getBalance(),
@@ -75,6 +75,7 @@ public class BandUtil {
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
+        ParkManager parkManager = ParkManager.getInstance();
         try (Connection connection = Core.getSqlUtil().getConnection()) {
             PreparedStatement sql = connection.prepareStatement("SELECT bandcolor,rank,namecolor,flash,visibility," +
                     "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,pack," +
@@ -90,15 +91,15 @@ public class BandUtil {
             KioskData kioskData = new KioskData(result.getLong("monthsettler"), result.getLong("monthdweller"),
                     result.getLong("monthnoble"), result.getLong("monthmajestic"),
                     result.getLong("monthhonorable"), result.getLong("vote"), result.getInt("lastvote"));
-            boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s") || ParkManager.isResort(Resort.USO);
-            BandColor bandColor = !ParkManager.isResort(Resort.USO) ? getBandColor(result.getString("bandcolor")) : BandColor.USO;
+            boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s") || parkManager.isResort(Resort.USO);
+            BandColor bandColor = !parkManager.isResort(Resort.USO) ? getBandColor(result.getString("bandcolor")) : BandColor.USO;
             PlayerData data = new PlayerData(uuid, getBandNameColor(result.getString("namecolor")),
                     bandColor, special, result.getInt("flash") == 1,
                     result.getInt("visibility") == 1, result.getInt("parkloop") == 1,
                     result.getInt("hotel") == 1, fpdata, kioskData, result.getString("outfit"),
                     result.getString("pack"));
             if (result.getInt("buildmode") == 1) {
-                ParkManager.storageManager.makeBuildMode.add(uuid);
+                parkManager.getStorageManager().makeBuildMode.add(uuid);
             }
             result.close();
             sql.close();
@@ -116,7 +117,7 @@ public class BandUtil {
             }
             frir.close();
             fri.close();
-            data.setFriendList(friendlist);
+            data.setFriends(friendlist);
             List<Integer> purch = new ArrayList<>();
             PreparedStatement pur = connection.prepareStatement("SELECT item FROM purchases WHERE uuid=?");
             pur.setString(1, uuid.toString());
@@ -143,7 +144,7 @@ public class BandUtil {
             results.close();
             counts.close();
             data.setRideCounts(rides);
-            ParkManager.playerData.put(uuid, data);
+            parkManager.addPlayerData(data);
             dataResponses.remove(uuid);
             return data;
         } catch (SQLException e) {
@@ -167,10 +168,11 @@ public class BandUtil {
     }
 
     public void setBandColor(final CPlayer player, final BandColor color) {
-        final PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        ParkManager parkManager = ParkManager.getInstance();
+        final PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() +
-                (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
+        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE id=?");
                 sql.setString(1, color.getName());
@@ -187,13 +189,14 @@ public class BandUtil {
     }
 
     public void setBandColor(final CPlayer player, Material color) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        ParkManager parkManager = ParkManager.getInstance();
+        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         final String name = getBandName(color);
         data.setBandColor(getBandColor(name));
         data.setSpecial(getBandColor(name).getName().startsWith("s"));
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() +
-                (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
+        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE id=?");
                 sql.setString(1, name);
@@ -208,12 +211,13 @@ public class BandUtil {
     }
 
     public void giveBandToPlayer(CPlayer player) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        ParkManager parkManager = ParkManager.getInstance();
+        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         ItemStack mb;
-        if (data.getSpecial()) {
+        if (data.isSpecial()) {
             mb = new ItemStack(getBandMaterial(data.getBandColor()));
             ItemMeta mbm = mb.getItemMeta();
-            mbm.setDisplayName(data.getBandName() + (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ?
+            mbm.setDisplayName(data.getBandName() + (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ?
                     "MagicBand " : "Power Pass ") + ChatColor.GRAY + "(Right-Click)");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the park menu!"));
@@ -222,7 +226,7 @@ public class BandUtil {
             mb = new ItemStack(Material.FIREWORK_CHARGE);
             FireworkEffectMeta mbm = (FireworkEffectMeta) mb.getItemMeta();
             mbm.setEffect(FireworkEffect.builder().withColor(getBandColor(data.getBandColor())).build());
-            mbm.setDisplayName(data.getBandName() + (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ?
+            mbm.setDisplayName(data.getBandName() + (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ?
                     "MagicBand " : "Power Pass ") + ChatColor.GRAY + "(Right-Click)");
             mbm.setLore(Arrays.asList(ChatColor.GREEN + "Click me to open",
                     ChatColor.GREEN + "the park menu!"));
@@ -250,7 +254,7 @@ public class BandUtil {
     public String getBandName(Material color) {
         switch (color) {
             case PAPER:
-                return ParkManager.isResort(Resort.USO) ? "uso" : "s1";
+                return ParkManager.getInstance().isResort(Resort.USO) ? "uso" : "s1";
             case IRON_BARDING:
                 return "s2";
             case GOLD_BARDING:
@@ -265,11 +269,12 @@ public class BandUtil {
     }
 
     public void setBandName(final CPlayer player, final ChatColor color) {
-        PlayerData data = ParkManager.getPlayerData(player.getUniqueId());
+        ParkManager parkManager = ParkManager.getInstance();
+        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         data.setBandName(color);
         player.sendMessage(ChatColor.GREEN + "You have changed the name color of your " + data.getBandName() +
-                (ParkManager.isResort(Resort.WDW) || ParkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
+        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE id=?");
                 sql.setString(1, getBandNameColor(color));

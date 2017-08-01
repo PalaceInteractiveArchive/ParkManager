@@ -1,5 +1,7 @@
 package network.palace.parkmanager;
 
+import com.google.common.collect.ImmutableList;
+import lombok.Getter;
 import lombok.Setter;
 import network.palace.core.Core;
 import network.palace.core.plugin.Plugin;
@@ -13,7 +15,6 @@ import network.palace.parkmanager.fastpasskiosk.FPKioskManager;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.listeners.*;
-import network.palace.parkmanager.pixelator.Pixelator;
 import network.palace.parkmanager.queue.QueueManager;
 import network.palace.parkmanager.queue.QueueRide;
 import network.palace.parkmanager.queue.tot.TowerManager;
@@ -38,54 +39,51 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
-@PluginInfo(name = "ParkManager", version = "2.1.8", depend = {"Core", "ProtocolLib", "WorldEdit"})
+@PluginInfo(name = "ParkManager", version = "2.1.9", depend = {"Core", "ProtocolLib", "WorldEdit"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
-    public static List<FoodLocation> foodLocations = new ArrayList<>();
-    public static HashMap<UUID, PlayerData> playerData = new HashMap<>();
-    public static Resort resort;
-    public static Stitch stitch;
-    public static List<Warp> warps = new ArrayList<>();
-    public static List<Ride> rides = new ArrayList<>();
-    public static List<Ride> attractions = new ArrayList<>();
-    public static List<Ride> meetandgreets = new ArrayList<>();
-    public static Location spawn;
-    public static Location hub;
-    public static PlayerJoinAndLeave playerJoinAndLeave;
-    public static boolean spawnOnJoin;
-    public static boolean crossServerInv;
-    public static boolean hotelServer;
-    public static YamlConfiguration config = FileUtil.configurationYaml();
-    public static TeleportUtil teleportUtil;
-    public static List<String> joinMessages = config.getStringList("join-messages");
-    public static Map<UUID, String> userCache = new HashMap<>();
-    public static boolean ttcServer;
-    public static BlockChanger blockChanger;
-    public static PackManager packManager;
-    public static BandUtil bandUtil;
-    public static InventoryUtil inventoryUtil;
-    public static ShopManager shopManager;
-    public static HotelManager hotelManager;
-    public static QueueManager queueManager;
-    public static AutographManager autographManager;
-    public static StorageManager storageManager;
-    public static VisibilityUtil visibilityUtil;
-    public static Shooter shooter = null;
-    public static ScheduleManager scheduleManager;
-    public static WardrobeManager wardrobeManager;
-    public static Pixelator pixelator;
-    public static FPKioskManager fpKioskManager;
-    public static ToyStoryMania toyStoryMania;
-    public static MenInBlack menInBlack;
-    public static RipRideRockit ripRideRockit;
+    private List<FoodLocation> foodLocations = new ArrayList<>();
+    private HashMap<UUID, PlayerData> playerData = new HashMap<>();
+    @Getter private Resort resort;
+    @Getter private Stitch stitch;
+    private List<Warp> warps = new ArrayList<>();
+    private List<Ride> rides = new ArrayList<>();
+    private List<Ride> attractions = new ArrayList<>();
+    private List<Ride> meetandgreets = new ArrayList<>();
+    @Getter @Setter private Location spawn;
+    @Getter @Setter private Location hub;
+    @Getter private PlayerJoinAndLeave playerJoinAndLeave;
+    @Getter private boolean spawnOnJoin;
+    @Getter private boolean crossServerInv;
+    @Getter private boolean hotelServer;
+    @Getter private YamlConfiguration config = FileUtil.configurationYaml();
+    @Getter private TeleportUtil teleportUtil;
+    private List<String> joinMessages = config.getStringList("join-messages");
+    private Map<UUID, String> userCache = new HashMap<>();
+    @Getter private boolean ttcServer;
+    @Getter private BlockChanger blockChanger;
+    @Getter private PackManager packManager;
+    @Getter private BandUtil bandUtil;
+    @Getter private InventoryUtil inventoryUtil;
+    @Getter private ShopManager shopManager;
+    @Getter private HotelManager hotelManager;
+    @Getter private QueueManager queueManager;
+    @Getter private AutographManager autographManager;
+    @Getter private StorageManager storageManager;
+    @Getter private VisibilityUtil visibilityUtil;
+    @Getter private Shooter shooter = null;
+    @Getter private ScheduleManager scheduleManager;
+    @Getter private WardrobeManager wardrobeManager;
+    @Getter private FPKioskManager fpKioskManager;
+    @Getter private ToyStoryMania toyStoryMania;
+    @Getter private MenInBlack menInBlack;
+    @Getter private RipRideRockit ripRideRockit;
     @Setter private String activityURL;
     @Setter private String activityUser;
     @Setter private String activityPassword;
@@ -93,6 +91,7 @@ public class ParkManager extends Plugin implements Listener {
     @Override
     protected void onPluginEnable() throws Exception {
         instance = this;
+        resort = Resort.fromString(FileUtil.getResort());
         stitch = new Stitch();
         packManager = new PackManager();
         //universeEnergyRide = new UniverseEnergyRide();
@@ -107,7 +106,6 @@ public class ParkManager extends Plugin implements Listener {
         blockChanger = new BlockChanger();
         wardrobeManager = new WardrobeManager();
         playerJoinAndLeave = new PlayerJoinAndLeave();
-        resort = Resort.fromString(FileUtil.getResort());
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -176,30 +174,27 @@ public class ParkManager extends Plugin implements Listener {
         return instance;
     }
 
-    public static List<Warp> getWarps() {
-        return new ArrayList<>(warps);
+    public List<FoodLocation> getFoodLocations() {
+        return ImmutableList.copyOf(foodLocations);
     }
 
-    public static void clearWarps() {
+    public List<String> getJoinMessages() {
+        return ImmutableList.copyOf(joinMessages);
+    }
+
+    public HashMap<UUID, String> getUserCache() {
+        return new HashMap<>(userCache);
+    }
+
+    public List<Warp> getWarps() {
+        return ImmutableList.copyOf(warps);
+    }
+
+    public void clearWarps() {
         warps.clear();
     }
 
-    public void setHub(Location loc) {
-        hub = loc;
-        config.set("hub.x", loc.getX());
-        config.set("hub.y", loc.getY());
-        config.set("hub.z", loc.getZ());
-        config.set("hub.yaw", loc.getYaw());
-        config.set("hub.pitch", loc.getPitch());
-        config.set("hub.world", loc.getWorld().getName());
-        try {
-            config.save(FileUtil.configurationFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static PlayerData getPlayerData(UUID uuid) {
+    public PlayerData getPlayerData(UUID uuid) {
         return playerData.get(uuid);
     }
 
@@ -258,7 +253,7 @@ public class ParkManager extends Plugin implements Listener {
         }
     }
 
-    public static Ride getRide(String name) {
+    public Ride getRide(String name) {
         for (Ride ride : getRides()) {
             if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
                 return ride;
@@ -267,28 +262,19 @@ public class ParkManager extends Plugin implements Listener {
         return null;
     }
 
-    public static Ride getRide2(String shortName) {
-        for (Ride ride : getRides()) {
-            if (ride.getShortName().equalsIgnoreCase(shortName)) {
-                return ride;
-            }
-        }
-        return null;
+    public List<Ride> getRides() {
+        return ImmutableList.copyOf(rides);
     }
 
-    public static List<Ride> getRides() {
-        return new ArrayList<>(rides).stream().collect(Collectors.toList());
+    public List<Ride> getAttractions() {
+        return ImmutableList.copyOf(attractions);
     }
 
-    public static List<Ride> getAttractions() {
-        return new ArrayList<>(attractions).stream().collect(Collectors.toList());
+    public List<Ride> getMeetAndGreets() {
+        return ImmutableList.copyOf(meetandgreets);
     }
 
-    public static List<Ride> getMeetAndGreets() {
-        return new ArrayList<>(meetandgreets).stream().collect(Collectors.toList());
-    }
-
-    public static Ride getAttraction(String name) {
+    public Ride getAttraction(String name) {
         for (Ride ride : new ArrayList<>(attractions)) {
             if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
                 return ride;
@@ -297,7 +283,7 @@ public class ParkManager extends Plugin implements Listener {
         return null;
     }
 
-    public static Ride getMeetAndGreet(String name) {
+    public Ride getMeetAndGreet(String name) {
         for (Ride ride : new ArrayList<>(meetandgreets)) {
             if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', ride.getDisplayName())).equals(name)) {
                 return ride;
@@ -306,15 +292,11 @@ public class ParkManager extends Plugin implements Listener {
         return null;
     }
 
-    private void enablePixelator() {
-        pixelator = new Pixelator();
-    }
-
-    public static void removeWarp(Warp warp) {
+    public void removeWarp(Warp warp) {
         warps.remove(warp);
     }
 
-    public static void addWarp(Warp warp) {
+    public void addWarp(Warp warp) {
         warps.add(warp);
     }
 
@@ -336,8 +318,8 @@ public class ParkManager extends Plugin implements Listener {
                 b.getType().equals(Material.WALL_SIGN);
     }
 
-    public static boolean isResort(Resort resort) {
-        return ParkManager.resort.equals(resort);
+    public boolean isResort(Resort r) {
+        return resort.equals(r);
     }
 
     public void registerCommands() {
@@ -423,5 +405,17 @@ public class ParkManager extends Plugin implements Listener {
                 break;
             }
         }
+    }
+
+    public void addToUserCache(UUID uuid, String name) {
+        userCache.put(uuid, name);
+    }
+
+    public void addPlayerData(PlayerData data) {
+        playerData.put(data.getUniqueId(), data);
+    }
+
+    public void removePlayerData(UUID uuid) {
+        playerData.remove(uuid);
     }
 }

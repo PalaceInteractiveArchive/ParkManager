@@ -21,10 +21,10 @@ public class Commandsetspawn extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        FileUtil.setSpawn(player.getLocation());
-        ParkManager.spawn = player.getLocation();
-        Location l = player.getLocation();
-        player.getLocation().getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        Location loc = player.getLocation();
+        FileUtil.setSpawn(loc);
+        ParkManager.getInstance().setSpawn(loc);
+        player.getLocation().getWorld().setSpawnLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         player.sendMessage(ChatColor.GRAY + "Spawn Set!");
     }
 }

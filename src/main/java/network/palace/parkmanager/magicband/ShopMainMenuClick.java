@@ -22,7 +22,7 @@ public class ShopMainMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.MAINMENU);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
             return;
         }
         ItemMeta meta = item.getItemMeta();
@@ -33,18 +33,18 @@ public class ShopMainMenuClick {
         if (event.getSlot() < 9) {
             switch (name) {
                 case "FastPass Shop":
-                    ParkManager.inventoryUtil.openInventory(player, InventoryType.FASTPASS);
+                    ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.FASTPASS);
                     break;
                 case "Storage Shop":
-                    ParkManager.inventoryUtil.openInventory(player, InventoryType.STORAGE);
+                    ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.STORAGE);
                     break;
                 case "Custom MagicBands":
-                    ParkManager.inventoryUtil.openInventory(player, InventoryType.CUSTOMIZE);
+                    ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.CUSTOMIZE);
                     break;
             }
             return;
         }
-        Shop shop = ParkManager.shopManager.getShop(name);
+        Shop shop = ParkManager.getInstance().getShopManager().getShop(name);
         if (shop == null) {
             player.sendMessage(ChatColor.RED + "Error finding that Shop!");
             player.closeInventory();

@@ -23,14 +23,14 @@ public class HotelCheckoutMenuClick {
         }
         Player player = (Player) event.getWhoClicked();
         if (item.equals(BandUtil.getBackItem())) {
-            ParkManager.inventoryUtil.openInventory(player, InventoryType.HOTELSANDRESORTS);
+            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELSANDRESORTS);
             return;
         }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return;
         }
-        HotelManager manager = ParkManager.hotelManager;
+        HotelManager manager = ParkManager.getInstance().getHotelManager();
         String name = ChatColor.stripColor(meta.getDisplayName()).substring(13);
         HotelRoom room = manager.getRoom(name);
         manager.checkout(room, false);

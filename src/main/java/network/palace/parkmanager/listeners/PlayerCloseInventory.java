@@ -21,7 +21,7 @@ public class PlayerCloseInventory implements Listener {
         Inventory inv = event.getInventory();
         String title = inv.getTitle().toLowerCase();
         if (title.endsWith("'s magicband")) {
-            ParkManager.bandUtil.cancelLoadPlayerData(player.getUniqueId());
+            ParkManager.getInstance().getBandUtil().cancelLoadPlayerData(player.getUniqueId());
             return;
         }
         if (title.endsWith("resource pack menu")) {
@@ -34,7 +34,7 @@ public class PlayerCloseInventory implements Listener {
             return;
         }
         if (title.endsWith("confirm")) {
-            ParkManager.shopManager.cancelPurchase(player.getBukkitPlayer());
+            ParkManager.getInstance().getShopManager().cancelPurchase(player.getBukkitPlayer());
         }
     }
 }
