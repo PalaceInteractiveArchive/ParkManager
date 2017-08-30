@@ -274,7 +274,7 @@ public class QueueManager {
             if (ride == null) {
                 return;
             }
-            String wait = ride.appxWaitTime();
+            String wait = ride.approximateWaitTime();
             particle(player, s.getLocation());
             player.sendMessage(ChatColor.GREEN + "The approximate Wait Time for " + ride.getName() + ChatColor.GREEN +
                     " is:\n" + ChatColor.AQUA + wait);

@@ -609,7 +609,7 @@ public class Commandmagic extends CoreCommand {
                         return;
                     }
                     if (args[2].equalsIgnoreCase("info")) {
-                        String wait = "Wait Time: " + ride.appxWaitTime();
+                        String wait = "Wait Time: " + ride.approximateWaitTime();
                         sender.sendMessage(ChatColor.GREEN + ride.getName() + ChatColor.YELLOW + "\n" + (ride.getQueueSize()
                                 <= 0 ? "Wait Time: No Wait" : wait) + "\nIn Queue: " + ride.getQueueSize() +
                                 "\nRiders per Group: " + ride.getAmountOfRiders() + "\nDelay between rides: " +

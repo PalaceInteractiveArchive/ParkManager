@@ -1063,7 +1063,7 @@ public class InventoryUtil {
         Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wait Times");
         List<ItemStack> items = new ArrayList<>();
         for (QueueRide ride : ParkManager.getInstance().getQueueManager().getRides()) {
-            List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + ride.appxWaitTime(), ChatColor.YELLOW +
+            List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + ride.approximateWaitTime(), ChatColor.YELLOW +
                     "Players in Queue: " + (ride.getQueueSize() <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW +
                     "Warp: " + ChatColor.GREEN + "/warp " + ride.getWarp());
             items.add(ItemUtil.create(Material.SIGN, ride.getName(), lore));

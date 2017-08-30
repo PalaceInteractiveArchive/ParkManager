@@ -5,6 +5,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.FastPassData;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.RideCategory;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import network.palace.parkmanager.queue.tasks.QueueTask;
 import network.palace.parkmanager.queue.tasks.SpawnBlockSetTask;
 import network.palace.parkmanager.utils.DateUtil;
@@ -26,7 +27,7 @@ import java.util.*;
 /**
  * Created by Marc on 6/24/15
  */
-public class QueueRide {
+public class QueueRide extends AbstractQueueRide {
     protected List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
     protected final String name;
@@ -447,7 +448,7 @@ public class QueueRide {
         return new ArrayList<>(fpqueue);
     }
 
-    public String appxWaitTime() {
+    public String approximateWaitTime() {
         if (queue.isEmpty() && fpqueue.isEmpty()) {
             return "No Wait";
         }
