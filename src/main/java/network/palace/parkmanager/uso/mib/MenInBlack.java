@@ -56,7 +56,7 @@ public class MenInBlack implements Listener {
                 }
                 HitReset reset = entry.getKey();
                 ItemFrame frame = reset.getItemFrame();
-                frame.setItem(new ItemStack(Material.INK_SACK, 1, reset.getData()));
+                frame.setItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, reset.getData()));
                 resetMap.remove(reset);
             }
             for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
@@ -86,7 +86,7 @@ public class MenInBlack implements Listener {
         }
         sessions.put(player.getUniqueId(), new ShooterSession(player.getUniqueId()));
         player.sendMessage(ChatColor.DARK_PURPLE + "----------------------------------------------------");
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Welcome to MEN IN BLACK Alient Attack!");
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "Welcome to MEN IN BLACK Alien Attack!");
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Right-Click with your Blaster to fire at targets.");
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Good luck, Agent!");
         player.sendMessage(ChatColor.DARK_PURPLE + "----------------------------------------------------");
@@ -212,7 +212,7 @@ public class MenInBlack implements Listener {
             return;
         }
         event.setCancelled(true);
-        if (!stack.getType().equals(Material.INK_SACK)) {
+        if (!stack.getType().equals(Material.STAINED_GLASS_PANE)) {
             return;
         }
         CPlayer player = Core.getPlayerManager().getPlayer(((Player) sb.getShooter()).getUniqueId());

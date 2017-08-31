@@ -101,43 +101,58 @@ public class ShopManager {
     @SuppressWarnings("deprecation")
     public Inventory getShopMenu(Player player, Shop shop) {
         List<ShopItem> items = shop.getItems();
-        Inventory menu = Bukkit.createInventory(player, 27, ChatColor.GREEN + "Shop - " + shop.getName());
-        menu.setItem(22, BandUtil.getBackItem());
+        Inventory menu = Bukkit.createInventory(player, 36, ChatColor.GREEN + "Shop - " + shop.getName());
+        menu.setItem(31, BandUtil.getBackItem());
         if (items.isEmpty()) {
             menu.setItem(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No items are available in this shop!"));
             return menu;
         }
         int balance = Core.getEconomy().getBalance(player.getUniqueId());
         int size = items.size();
-        int place = 13;
-        int amount = 1;
-        //If even, increase place by 1
-        if (size % 2 == 0) {
-            place++;
-            amount++;
-        }
-        for (ShopItem item : items) {
-            List<String> lore = new ArrayList<>(item.getLore());
-            int cost = item.getCost();
-            lore.add(" ");
-            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
-                    item.getCurrencyType().getIcon() + cost);
-            ItemStack i = ItemUtil.create(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
-                    lore);
-            menu.setItem(place, i);
-            if (amount % 2 == 0) {
-                place -= amount;
-            } else {
-                place += amount;
+        if (size <= 9) {
+            int place = 13;
+            int amount = 1;
+            //If even, increase place by 1
+            if (size % 2 == 0) {
+                place++;
+                amount++;
             }
-            amount++;
+            for (ShopItem item : items) {
+                List<String> lore = new ArrayList<>(item.getLore());
+                int cost = item.getCost();
+                lore.add(" ");
+                lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                        item.getCurrencyType().getIcon() + cost);
+                ItemStack i = ItemUtil.create(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
+                        lore);
+                menu.setItem(place, i);
+                if (amount % 2 == 0) {
+                    place -= amount;
+                } else {
+                    place += amount;
+                }
+                amount++;
+            }
+        } else {
+            int place = 9;
+            for (ShopItem item : items) {
+                List<String> lore = new ArrayList<>(item.getLore());
+                int cost = item.getCost();
+                lore.add(" ");
+                lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                        item.getCurrencyType().getIcon() + cost);
+                ItemStack i = ItemUtil.create(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
+                        lore);
+                menu.setItem(place, i);
+                place++;
+            }
         }
         return menu;
     }
 
     public Inventory getMenu(CPlayer player) {
-        Inventory main = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.GREEN + "Shop");
-        main.setItem(22, BandUtil.getBackItem());
+        Inventory main = Bukkit.createInventory(player.getBukkitPlayer(), 36, ChatColor.GREEN + "Shop");
+        main.setItem(31, BandUtil.getBackItem());
         ItemStack storage = ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Storage Shop",
                 Arrays.asList(ChatColor.YELLOW + "Purchase up to 3 extra rows in your ", ChatColor.AQUA + "Backpack " +
                         ChatColor.YELLOW + "and " + ChatColor.AQUA + "Locker " + ChatColor.YELLOW + "in this Shop!"));
@@ -151,22 +166,31 @@ public class ShopManager {
             return main;
         }
         int size = shops.size();
-        int place = 13;
-        int amount = 1;
-        //If even, increase place by 1
-        if (size % 2 == 0) {
-            place++;
-            amount++;
-        }
-        for (Shop s : shops) {
-            ItemStack item = new ItemStack(s.getIdentifier());
-            main.setItem(place, item);
-            if (amount % 2 == 0) {
-                place -= amount;
-            } else {
-                place += amount;
+        if (size <= 9) {
+            int place = 13;
+            int amount = 1;
+            //If even, increase place by 1
+            if (size % 2 == 0) {
+                place++;
+                amount++;
             }
-            amount++;
+            for (Shop s : shops) {
+                ItemStack item = new ItemStack(s.getIdentifier());
+                main.setItem(place, item);
+                if (amount % 2 == 0) {
+                    place -= amount;
+                } else {
+                    place += amount;
+                }
+                amount++;
+            }
+        } else {
+            int place = 9;
+            for (Shop s : shops) {
+                ItemStack item = new ItemStack(s.getIdentifier());
+                main.setItem(place, item);
+                place++;
+            }
         }
         return main;
     }
@@ -193,40 +217,55 @@ public class ShopManager {
         if (title.length() > 32) {
             title = title.substring(0, 32);
         }
-        Inventory menu = Bukkit.createInventory(player.getBukkitPlayer(), 27, title);
+        Inventory menu = Bukkit.createInventory(player.getBukkitPlayer(), 36, title);
         if (items.isEmpty()) {
             menu.setItem(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED +
                     "No items are currently available in this category!"));
-            menu.setItem(22, BandUtil.getBackItem());
+            menu.setItem(31, BandUtil.getBackItem());
             player.openInventory(menu);
             return;
         }
         int balance = Core.getEconomy().getBalance(player.getUniqueId());
         int size = items.size();
-        int place = 13;
-        int amount = 1;
-        //If even, increase place by 1
-        if (size % 2 == 0) {
-            place++;
-            amount++;
-        }
-        for (ShopItem item : items) {
-            List<String> lore = new ArrayList<>(item.getLore());
-            int cost = item.getCost();
-            lore.add(" ");
-            lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
-                    item.getCurrencyType().getIcon() + cost);
-            ItemStack i = ItemUtil.create(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
-                    lore);
-            menu.setItem(place, i);
-            if (amount % 2 == 0) {
-                place -= amount;
-            } else {
-                place += amount;
+        if (size <= 9) {
+            int place = 13;
+            int amount = 1;
+            //If even, increase place by 1
+            if (size % 2 == 0) {
+                place++;
+                amount++;
             }
-            amount++;
+            for (ShopItem item : items) {
+                List<String> lore = new ArrayList<>(item.getLore());
+                int cost = item.getCost();
+                lore.add(" ");
+                lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                        item.getCurrencyType().getIcon() + cost);
+                ItemStack i = ItemUtil.create(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
+                        lore);
+                menu.setItem(place, i);
+                if (amount % 2 == 0) {
+                    place -= amount;
+                } else {
+                    place += amount;
+                }
+                amount++;
+            }
+        } else {
+            int place = 9;
+            for (ShopItem item : items) {
+                List<String> lore = new ArrayList<>(item.getLore());
+                int cost = item.getCost();
+                lore.add(" ");
+                lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
+                        item.getCurrencyType().getIcon() + cost);
+                ItemStack i = ItemUtil.create(Material.getMaterial(item.getId()), 1, item.getData(), item.getDisplayName(),
+                        lore);
+                menu.setItem(place, i);
+                place++;
+            }
         }
-        menu.setItem(22, BandUtil.getBackItem());
+        menu.setItem(31, BandUtil.getBackItem());
         player.openInventory(menu);
     }
 
