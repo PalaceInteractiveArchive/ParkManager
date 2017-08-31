@@ -1,7 +1,7 @@
 package network.palace.parkmanager.queue.tot;
 
 import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;

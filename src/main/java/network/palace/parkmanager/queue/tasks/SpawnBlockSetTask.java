@@ -1,6 +1,6 @@
 package network.palace.parkmanager.queue.tasks;
 
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import org.bukkit.Material;
 
 /**

@@ -1,20 +1,18 @@
-package network.palace.parkmanager.queue;
+package network.palace.parkmanager.queue.handlers;
 
+import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.FastPassData;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import network.palace.parkmanager.queue.tasks.QueueTask;
 import network.palace.parkmanager.queue.tasks.SpawnBlockSetTask;
-import network.palace.parkmanager.utils.DateUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,7 +20,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Marc on 6/24/15
@@ -44,12 +44,13 @@ public class QueueRide extends AbstractQueueRide {
     protected boolean paused = false;
     private Integer timerID;
     private final Block spawnerBlock;
-    public int timeToNextRide = 0;
+    @Getter public int timeToNextRide = 0;
     private RideCategory category;
     private String shortName;
 
     public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp,
                      RideCategory category, String shortName) {
+        this.flat = false;
         this.name = name;
         this.station = station;
         this.spawner = spawner;
@@ -81,7 +82,7 @@ public class QueueRide extends AbstractQueueRide {
         return delay;
     }
 
-    public int getAmountOfRiders() {
+    public int getAmount() {
         return amountOfRiders;
     }
 
@@ -247,25 +248,13 @@ public class QueueRide extends AbstractQueueRide {
         return queue.size();
     }
 
+    public int getFPQueueSize() {
+        return fpqueue.size();
+    }
+
     public void updateSigns() {
-        for (Location loc : new ArrayList<>(signs)) {
-            Block b = loc.getBlock();
-            if (!ParkManager.getInstance().isSign(loc)) {
-                continue;
-            }
-            Sign s = (Sign) b.getState();
-            s.setLine(3, getQueueSize() + " Players");
-            s.update();
-        }
-        for (Location loc : new ArrayList<>(fpsigns)) {
-            Block b = loc.getBlock();
-            if (!ParkManager.getInstance().isSign(loc)) {
-                continue;
-            }
-            Sign s = (Sign) b.getState();
-            s.setLine(3, getFastpassSize() + " Players");
-            s.update();
-        }
+        ParkManager.getInstance().getQueueManager().updateSigns(signs, getQueueSize());
+        ParkManager.getInstance().getQueueManager().updateSigns(fpsigns, getFPQueueSize());
     }
 
     public void spawn() {
@@ -449,31 +438,11 @@ public class QueueRide extends AbstractQueueRide {
     }
 
     public String approximateWaitTime() {
-        if (queue.isEmpty() && fpqueue.isEmpty()) {
-            return "No Wait";
-        }
-        int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
-        double seconds = (delay * (groups - 1)) + timeToNextRide;
-        Calendar to = new GregorianCalendar();
-        to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
-        String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
-        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
+        return ParkManager.getInstance().getQueueManager().getWaitString(queue, fpqueue, delay, amountOfRiders, timeToNextRide);
     }
 
     public String getWaitFor(UUID uuid) {
-        int groups = (int) Math.ceil((float) (queue.size() + fpqueue.size()) / amountOfRiders);
-        if (groups < 2) {
-            Calendar to = new GregorianCalendar();
-            to.setTimeInMillis(System.currentTimeMillis() + (timeToNextRide * 1000));
-            String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
-            return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
-        }
-        int group = (int) Math.ceil((float) (getPosition(uuid) / amountOfRiders));
-        double seconds = (delay * group) + timeToNextRide;
-        Calendar to = new GregorianCalendar();
-        to.setTimeInMillis((long) (System.currentTimeMillis() + (seconds * 1000)));
-        String msg = DateUtil.formatDateDiff(new GregorianCalendar(), to);
-        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
+        return ParkManager.getInstance().getQueueManager().getWaitStringFor(uuid, this);
     }
 
     public Block getSpawnerBlock() {

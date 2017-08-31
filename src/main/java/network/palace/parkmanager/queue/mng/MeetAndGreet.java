@@ -1,7 +1,7 @@
 package network.palace.parkmanager.queue.mng;
 
 import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import org.bukkit.Location;
 
 /**

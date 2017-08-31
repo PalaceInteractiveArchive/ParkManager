@@ -2,7 +2,7 @@ package network.palace.parkmanager.queue.tot;
 
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

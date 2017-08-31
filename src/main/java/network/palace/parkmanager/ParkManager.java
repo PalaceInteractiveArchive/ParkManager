@@ -16,7 +16,7 @@ import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.queue.QueueManager;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import network.palace.parkmanager.queue.tot.TowerManager;
 import network.palace.parkmanager.resourcepack.PackManager;
 import network.palace.parkmanager.shooter.MessageTimer;
@@ -234,7 +234,7 @@ public class ParkManager extends Plugin implements Listener {
                 data = 0;
             }
             RideCategory category = RideCategory.fromString(config.getString("ride." + s + ".category"));
-            QueueRide queue = null;
+            AbstractQueueRide queue = null;
             if (config.getBoolean("ride." + s + ".has-queue")) {
                 queue = queueManager.createQueue(s, config);
             }

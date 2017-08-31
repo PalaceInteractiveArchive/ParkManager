@@ -1,6 +1,7 @@
 package network.palace.parkmanager.queue.handlers;
 
 import lombok.Getter;
+import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.ridemanager.RideManager;
 import network.palace.ridemanager.handlers.Ride;
@@ -12,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +26,13 @@ public class PluginRideQueue extends AbstractQueueRide {
     @Getter private final String shortName;
     @Getter private final Ride ride;
     @Getter private final Location station;
+    @Getter private final int delay;
     @Getter private final int amount;
     @Getter private final String warp;
     @Getter private final RideCategory category;
     @Getter private final RideType type;
+    private List<UUID> queue = new ArrayList<>();
+    private List<UUID> fpqueue = new ArrayList<>();
 
     public PluginRideQueue(String name, String displayName, Location station, Location exit, int delay, int amount,
                            String warp, RideCategory category, RideType type, YamlConfiguration config) {
@@ -38,10 +43,12 @@ public class PluginRideQueue extends AbstractQueueRide {
         this.warp = warp;
         this.category = category;
         this.type = type;
+        this.delay = delay;
         switch (type) {
             case TEACUPS:
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + name + ".queue.center"));
                 ride = new TeacupsRide(name, displayName, delay, exit, center);
+                flat = true;
                 break;
             default:
                 ride = null;
@@ -50,52 +57,52 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     @Override
     public String approximateWaitTime() {
-        return "";
+        return ParkManager.getInstance().getQueueManager().getWaitString(queue, fpqueue, delay, amount, 0);
     }
 
     @Override
-    public int getDelay() {
-        return 0;
+    public List<UUID> getQueue() {
+        return new ArrayList<>(queue);
     }
 
     @Override
-    public int getAmountOfRiders() {
-        return 0;
+    public List<UUID> getFPQueue() {
+        return new ArrayList<>(fpqueue);
     }
 
     @Override
     public int getQueueSize() {
-        return 0;
+        return queue.size();
+    }
+
+    @Override
+    public int getFPQueueSize() {
+        return fpqueue.size();
     }
 
     @Override
     public int getPosition(UUID uuid) {
+        if (fpqueue.contains(uuid)) {
+            return fpqueue.indexOf(uuid);
+        } else if (queue.contains(uuid)) {
+            return queue.indexOf(uuid);
+        }
         return 0;
     }
 
     @Override
     public void updateSigns() {
-
-    }
-
-    @Override
-    public List<UUID> getQueue() {
-        return null;
-    }
-
-    @Override
-    public List<UUID> getFPQueue() {
-        return null;
+        ParkManager.getInstance().getQueueManager().updateSigns(signs, getQueueSize());
+        ParkManager.getInstance().getQueueManager().updateSigns(fpsigns, getFPQueueSize());
     }
 
     @Override
     public String getWaitFor(UUID uuid) {
-        return null;
+        return ParkManager.getInstance().getQueueManager().getWaitStringFor(uuid, this);
     }
 
     @Override
     public void moveToStation() {
-
     }
 
     @Override
@@ -206,5 +213,10 @@ public class PluginRideQueue extends AbstractQueueRide {
     @Override
     public void setSpawner(Location location) throws IOException {
 
+    }
+
+    @Override
+    public int getTimeToNextRide() {
+        return 0;
     }
 }

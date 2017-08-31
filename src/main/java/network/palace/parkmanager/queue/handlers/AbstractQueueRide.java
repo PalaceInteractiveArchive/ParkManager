@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +15,10 @@ import java.util.UUID;
  * @since 8/25/17
  */
 public abstract class AbstractQueueRide {
+    protected List<Location> signs = new ArrayList<>();
+    protected List<Location> fpsigns = new ArrayList<>();
+
+    protected boolean flat;
 
     private boolean frozen;
 
@@ -23,9 +28,11 @@ public abstract class AbstractQueueRide {
 
     public abstract int getDelay();
 
-    public abstract int getAmountOfRiders();
+    public abstract int getAmount();
 
     public abstract int getQueueSize();
+
+    public abstract int getFPQueueSize();
 
     public abstract String getWarp();
 
@@ -88,4 +95,6 @@ public abstract class AbstractQueueRide {
     public abstract void setStation(Location location) throws IOException;
 
     public abstract void setSpawner(Location location) throws IOException;
+
+    public abstract int getTimeToNextRide();
 }

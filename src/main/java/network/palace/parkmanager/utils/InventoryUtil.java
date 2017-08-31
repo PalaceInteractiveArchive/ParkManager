@@ -9,7 +9,7 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import network.palace.parkmanager.show.handlers.ShowDay;
 import network.palace.parkmanager.show.handlers.ShowType;
 import network.palace.parkmanager.show.schedule.ScheduledShow;
@@ -1062,7 +1062,7 @@ public class InventoryUtil {
     public void openWaitTimes(Player player) {
         Inventory inv = Bukkit.createInventory(player, 54, ChatColor.BLUE + "Wait Times");
         List<ItemStack> items = new ArrayList<>();
-        for (QueueRide ride : ParkManager.getInstance().getQueueManager().getRides()) {
+        for (AbstractQueueRide ride : ParkManager.getInstance().getQueueManager().getRides()) {
             List<String> lore = Arrays.asList(ChatColor.YELLOW + "Wait Time: " + ride.approximateWaitTime(), ChatColor.YELLOW +
                     "Players in Queue: " + (ride.getQueueSize() <= 0 ? "None" : ride.getQueueSize()), ChatColor.YELLOW +
                     "Warp: " + ChatColor.GREEN + "/warp " + ride.getWarp());
