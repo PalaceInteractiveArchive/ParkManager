@@ -1,6 +1,7 @@
 package network.palace.parkmanager.queue;
 
 import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Ride;
@@ -22,7 +23,6 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -45,7 +45,7 @@ public class QueueManager {
                     List<UUID> fp = ride.getFPQueue();
                     if (ride instanceof QueueRide) {
                         QueueRide qride = (QueueRide) ride;
-                        if (qride.canSpawn() && (!q.isEmpty() || !fp.isEmpty())) {
+                        if (qride.canStart() && (!q.isEmpty() || !fp.isEmpty())) {
                             addTask(new NextRidersTask(qride, System.currentTimeMillis()));
                         } else {
                             if (qride.timeToNextRide > 0) {
@@ -54,6 +54,12 @@ public class QueueManager {
                         }
                     } else if (ride instanceof PluginRideQueue) {
                         PluginRideQueue pride = (PluginRideQueue) ride;
+                        if (pride.canStart() && (pride.getQueueSize() > 0 || pride.getFPQueueSize() > 0)) {
+                            pride.start();
+                        }
+                        if (pride.getTimeToNextRide() > 0) {
+                            pride.setTimeToNextRide(pride.getTimeToNextRide() - 1);
+                        }
                     }
                     for (UUID uuid : q) {
                         Core.getPlayerManager().getPlayer(uuid).getActionBar().show(ChatColor.GREEN + "You're #" +
@@ -243,7 +249,7 @@ public class QueueManager {
         YamlConfiguration config = FileUtil.menuYaml();
         int amount = config.getInt("fpsign-amount");
         config.set("ride." + s + ".queue.fpsign", null);
-        List<Location> signs = ride.getFPsigns();
+        List<Location> signs = ride.getFpsigns();
         for (int i = 1; i <= signs.size(); i++) {
             Location l = signs.get(i - 1);
             config.set("ride." + s + ".queue.fpsign." + i + ".x", l.getBlockX());
@@ -275,7 +281,7 @@ public class QueueManager {
     }
 
     public void handle(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
         Sign s = (Sign) event.getClickedBlock().getState();
         if (s.getLine(0).equals(PlayerInteract.wait)) {
             AbstractQueueRide ride = getRide2(s.getLine(3));
@@ -337,11 +343,11 @@ public class QueueManager {
                 .collect(Collectors.toList());
     }
 
-    public void leaveAllQueues(Player player) {
+    public void leaveAllQueues(CPlayer player) {
         getRides().stream().filter(ride -> ride.isQueued(player.getUniqueId())).forEach(ride -> ride.leaveQueue(player));
     }
 
-    public void silentLeaveAllQueues(Player player) {
+    public void silentLeaveAllQueues(CPlayer player) {
         for (AbstractQueueRide ride : getRides()) {
             if (ride.isQueued(player.getUniqueId())) {
                 ride.leaveQueueSilent(player);
@@ -408,9 +414,9 @@ public class QueueManager {
         config.save(FileUtil.menuFile());
     }
 
-    public void particle(Player player, Location loc) {
-        Core.getPlayerManager().getPlayer(player).getParticles().send(loc.add(0.5, 0.5, 0.5),
-                Particle.SPELL_WITCH, 25, 0.2f, 0.2f, 0.2f, 1);
+    public void particle(CPlayer player, Location loc) {
+        player.getParticles().send(loc.add(0.5, 0.5, 0.5), Particle.SPELL_WITCH, 25, 0.2f,
+                0.2f, 0.2f, 1);
     }
 
     public String getWaitString(List<UUID> queue, List<UUID> fpqueue, int delay, int amount, int timeToNextRide) {

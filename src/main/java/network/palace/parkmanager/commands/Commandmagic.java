@@ -18,6 +18,7 @@ import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.handlers.RideCount;
 import network.palace.parkmanager.listeners.BlockEdit;
 import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import network.palace.parkmanager.queue.tot.DropTower;
 import network.palace.parkmanager.queue.tot.TowerLayout;
 import network.palace.parkmanager.utils.WorldUtil;
@@ -630,13 +631,13 @@ public class Commandmagic extends CoreCommand {
 //                        }
                         return;
                     }
-                    if (args[2].equalsIgnoreCase("pause")) {
-                        ride.setPaused(true);
+                    if (args[2].equalsIgnoreCase("pause") && ride instanceof QueueRide) {
+                        ((QueueRide) ride).setPaused(true);
                         sender.sendMessage(ChatColor.GREEN + "Paused!");
                         return;
                     }
-                    if (args[2].equalsIgnoreCase("unpause")) {
-                        ride.setPaused(false);
+                    if (args[2].equalsIgnoreCase("unpause") && ride instanceof QueueRide) {
+                        ((QueueRide) ride).setPaused(false);
                         sender.sendMessage(ChatColor.GREEN + "Un-Paused!");
                         return;
                     }
@@ -684,9 +685,9 @@ public class Commandmagic extends CoreCommand {
                                 sender.sendMessage(ChatColor.RED + "There was an error!");
                             }
                         }
-                        if (args[3].equalsIgnoreCase("spawner")) {
+                        if (args[3].equalsIgnoreCase("spawner") && ride instanceof QueueRide) {
                             try {
-                                ride.setSpawner(((Player) sender).getLocation());
+                                ((QueueRide) ride).setSpawner(((Player) sender).getLocation());
                                 sender.sendMessage(ChatColor.GREEN + "Spawner set!");
                             } catch (IOException e) {
                                 e.printStackTrace();

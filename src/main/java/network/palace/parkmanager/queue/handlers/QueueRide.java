@@ -2,9 +2,8 @@ package network.palace.parkmanager.queue.handlers;
 
 import lombok.Getter;
 import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.FastPassData;
-import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.parkmanager.queue.tasks.QueueTask;
 import network.palace.parkmanager.queue.tasks.SpawnBlockSetTask;
@@ -17,9 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,16 +32,13 @@ public class QueueRide extends AbstractQueueRide {
     protected final int delay;
     protected final int amountOfRiders;
     private String warp;
-    protected long lastSpawn = 0;
     private List<Location> signs = new ArrayList<>();
     private List<Location> fpsigns = new ArrayList<>();
     protected boolean frozen = false;
-    private boolean fpoff = false;
     protected boolean paused = false;
     private Integer timerID;
     private final Block spawnerBlock;
     @Getter public int timeToNextRide = 0;
-    private RideCategory category;
     private String shortName;
 
     public QueueRide(String name, Location station, Location spawner, int delay, int amountOfRiders, String warp,
@@ -107,7 +100,7 @@ public class QueueRide extends AbstractQueueRide {
         this.paused = paused;
     }
 
-    public void joinQueue(final Player player) {
+    public void joinQueue(final CPlayer player) {
         ParkManager.getInstance().getQueueManager().leaveAllQueues(player);
         if (queue.isEmpty() && timeToNextRide <= 0) {
             lastSpawn = getTime() - (delay - 10);
@@ -122,7 +115,7 @@ public class QueueRide extends AbstractQueueRide {
                 + "\nYou are in position #" + (getPosition(player.getUniqueId()) + 1));
     }
 
-    public void joinFPQueue(Player player) {
+    public void joinFPQueue(CPlayer player) {
         if (fpoff) {
             player.sendMessage(ChatColor.RED + "The FastPass line for " + name + ChatColor.RED + " is closed, right now!");
             return;
@@ -138,16 +131,16 @@ public class QueueRide extends AbstractQueueRide {
                 (getPosition(player.getUniqueId()) + 1) + ". You will be charged one FastPass when you board the ride.");
     }
 
-    public boolean canSpawn() {
+    public boolean canStart() {
         return (getTime() - delay) >= lastSpawn && !paused;
     }
 
-    public void leaveQueue(Player player) {
+    public void leaveQueue(CPlayer player) {
         player.sendMessage(ChatColor.GREEN + "You have left the Queue for " + ChatColor.BLUE + name);
         leaveQueueSilent(player);
     }
 
-    public void leaveFPQueue(Player player) {
+    public void leaveFPQueue(CPlayer player) {
         player.sendMessage(ChatColor.GREEN + "You have left the FastPass Queue for " + ChatColor.BLUE + name);
         leaveQueueSilent(player);
     }
@@ -186,7 +179,7 @@ public class QueueRide extends AbstractQueueRide {
         }
         if (fullList.size() >= amountOfRiders) {
             for (int i = 0; i < amountOfRiders; i++) {
-                Player tp = Bukkit.getPlayer(fullList.get(0));
+                CPlayer tp = Core.getPlayerManager().getPlayer(fullList.get(0));
                 if (tp == null) {
                     i--;
                     continue;
@@ -205,7 +198,7 @@ public class QueueRide extends AbstractQueueRide {
             return;
         }
         for (UUID uuid : new ArrayList<>(fullList)) {
-            Player tp = Bukkit.getPlayer(uuid);
+            CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
             if (tp == null) {
                 continue;
             }
@@ -219,29 +212,6 @@ public class QueueRide extends AbstractQueueRide {
             leaveQueueSilent(tp);
             fullList.remove(tp.getUniqueId());
         }
-    }
-
-    protected void chargeFastpass(final PlayerData data) {
-        final FastPassData fpdata = data.getFastPassData();
-        fpdata.setPass(category, fpdata.getPass(category) - 1);
-        int sqlid;
-        try {
-            sqlid = Core.getPlayerManager().getPlayer(data.getUniqueId()).getSqlId();
-        } catch (Exception e) {
-            return;
-        }
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
-                        category.getSqlName() + "=? WHERE id=?");
-                sql.setInt(1, fpdata.getPass(category));
-                sql.setString(2, data.getUniqueId().toString());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     public int getQueueSize() {
@@ -271,19 +241,7 @@ public class QueueRide extends AbstractQueueRide {
         ParkManager.getInstance().getQueueManager().addTask(task);
     }
 
-    protected long getTime() {
-        return System.currentTimeMillis() / 1000;
-    }
-
-    public List<Location> getSigns() {
-        return new ArrayList<>(signs);
-    }
-
-    public List<Location> getFPsigns() {
-        return new ArrayList<>(fpsigns);
-    }
-
-    public void leaveQueueSilent(Player player) {
+    public void leaveQueueSilent(CPlayer player) {
         int pos = getPosition(player.getUniqueId());
         if (fpqueue.contains(player.getUniqueId())) {
             if (pos < fpqueue.size() - 1) {

@@ -1,16 +1,19 @@
 package network.palace.parkmanager.queue.handlers;
 
 import lombok.Getter;
+import lombok.Setter;
+import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.ridemanager.RideManager;
 import network.palace.ridemanager.handlers.Ride;
 import network.palace.ridemanager.handlers.RideType;
 import network.palace.ridemanager.handlers.TeacupsRide;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,12 +28,13 @@ public class PluginRideQueue extends AbstractQueueRide {
     @Getter private final String name;
     @Getter private final String shortName;
     @Getter private final Ride ride;
-    @Getter private final Location station;
+    @Getter private Location station;
     @Getter private final int delay;
     @Getter private final int amount;
     @Getter private final String warp;
-    @Getter private final RideCategory category;
     @Getter private final RideType type;
+    @Getter private boolean frozen = false;
+    @Getter @Setter private int timeToNextRide = 0;
     private List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
 
@@ -57,7 +61,7 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     @Override
     public String approximateWaitTime() {
-        return ParkManager.getInstance().getQueueManager().getWaitString(queue, fpqueue, delay, amount, 0);
+        return ParkManager.getInstance().getQueueManager().getWaitString(queue, fpqueue, delay, amount, timeToNextRide);
     }
 
     @Override
@@ -81,6 +85,11 @@ public class PluginRideQueue extends AbstractQueueRide {
     }
 
     @Override
+    public boolean canStart() {
+        return (getTime() - delay) >= lastSpawn;
+    }
+
+    @Override
     public int getPosition(UUID uuid) {
         if (fpqueue.contains(uuid)) {
             return fpqueue.indexOf(uuid);
@@ -101,122 +110,255 @@ public class PluginRideQueue extends AbstractQueueRide {
         return ParkManager.getInstance().getQueueManager().getWaitStringFor(uuid, this);
     }
 
-    @Override
-    public void moveToStation() {
-    }
-
-    @Override
-    public void spawn() {
-
+    public void start() {
+        if (ride instanceof TeacupsRide) {
+            if (((TeacupsRide) ride).isStarted()) {
+                return;
+            }
+        }
+        if (frozen) {
+            return;
+        }
+        List<UUID> fullList = getQueue();
+        List<UUID> fps = getFPQueue();
+        if (fps.size() > fullList.size()) {
+            int place = 1;
+            for (int i = 0; i < fullList.size(); i++) {
+                if (place > i) {
+                    break;
+                }
+                fullList.add(place, fps.remove(i));
+                place += 2;
+            }
+            fullList.addAll(fps);
+        } else {
+            int place = 1;
+            if (fullList.isEmpty()) {
+                fullList = fps;
+                fps.clear();
+            } else {
+                for (UUID uuid : fps) {
+                    fullList.add(place, uuid);
+                    place += 2;
+                }
+            }
+        }
+        if (fullList.size() >= amount) {
+            for (int i = 0; i < amount; i++) {
+                CPlayer tp = Core.getPlayerManager().getPlayer(fullList.get(0));
+                if (tp == null) {
+                    i--;
+                    continue;
+                }
+                if (fps.contains(tp.getUniqueId())) {
+                    chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
+                    tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                            getCategory().getName() + " FastPass!");
+                }
+                tp.teleport(getStation());
+                tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
+                leaveQueueSilent(tp);
+                fullList.remove(tp.getUniqueId());
+            }
+            updateSigns();
+            return;
+        }
+        List<CPlayer> riders = new ArrayList<>();
+        for (UUID uuid : new ArrayList<>(fullList)) {
+            CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+            if (tp == null) {
+                continue;
+            }
+            if (fps.contains(tp.getUniqueId())) {
+                chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
+                tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                        getCategory().getName() + " FastPass!");
+            }
+            tp.teleport(getStation());
+            tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
+            leaveQueueSilent(tp);
+            fullList.remove(tp.getUniqueId());
+            riders.add(tp);
+        }
+        ride.start(riders);
     }
 
     @Override
     public int getFastpassSize() {
-        return 0;
+        return fpqueue.size();
     }
 
     @Override
-    public void addFPSign(Location location, boolean b) {
-
+    public void addSign(Location loc, boolean updateFile) {
+        signs.add(loc);
+        if (updateFile) {
+            try {
+                ParkManager.getInstance().getQueueManager().addSign(this, loc);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
-    public void addSign(Location location, boolean b) {
-
-    }
-
-    @Override
-    public List<Location> getSigns() {
-        return null;
+    public void addFPSign(Location loc, boolean updateFile) {
+        fpsigns.add(loc);
+        if (updateFile) {
+            try {
+                ParkManager.getInstance().getQueueManager().addFPSign(this, loc);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void removeSign(Location loc) {
-
+        signs.remove(loc);
     }
 
     @Override
     public void removeFPSign(Location loc) {
-
-    }
-
-    @Override
-    public List<Location> getFPsigns() {
-        return null;
-    }
-
-    @Override
-    public void leaveFPQueue(Player player) {
-
-    }
-
-    @Override
-    public boolean isFPQueued(UUID uuid) {
-        return false;
+        fpsigns.remove(loc);
     }
 
     @Override
     public boolean isQueued(UUID uuid) {
-        return false;
+        return queue.contains(uuid);
     }
 
     @Override
-    public void leaveQueue(Player player) {
-
+    public boolean isFPQueued(UUID uuid) {
+        return fpqueue.contains(uuid);
     }
 
     @Override
-    public boolean isFrozen() {
-        return false;
+    public void leaveQueue(CPlayer player) {
+        player.sendMessage(ChatColor.GREEN + "You have left the Queue for " + ChatColor.BLUE + name);
+        leaveQueueSilent(player);
     }
 
     @Override
-    public void joinFPQueue(Player player) {
-
+    public void leaveFPQueue(CPlayer player) {
+        player.sendMessage(ChatColor.GREEN + "You have left the FastPass Queue for " + ChatColor.BLUE + name);
+        leaveQueueSilent(player);
     }
 
     @Override
-    public void joinQueue(Player player) {
-
+    public void joinQueue(CPlayer player) {
+        ParkManager.getInstance().getQueueManager().leaveAllQueues(player);
+        if (queue.isEmpty() && timeToNextRide <= 0) {
+            lastSpawn = getTime() - (delay - 10);
+            timeToNextRide = 10;
+            queue.add(player.getUniqueId());
+            return;
+        }
+        queue.add(player.getUniqueId());
+        player.sendMessage(ChatColor.GREEN + "You have joined the Queue for " + ChatColor.BLUE + name + ChatColor.GREEN
+                + "\nYou are in position #" + (getPosition(player.getUniqueId()) + 1));
     }
 
     @Override
-    public void leaveQueueSilent(Player player) {
+    public void joinFPQueue(CPlayer player) {
+        if (fpoff) {
+            player.sendMessage(ChatColor.RED + "The FastPass line for " + name + ChatColor.RED + " is closed, right now!");
+            return;
+        }
+        if (queue.isEmpty()) {
+            player.sendMessage(ChatColor.GREEN + "The queue is empty, you can't use a FastPass!");
+            return;
+        }
+        ParkManager.getInstance().getQueueManager().leaveAllQueues(player);
+        fpqueue.add(player.getUniqueId());
+        player.sendMessage(ChatColor.GREEN + "You have joined the " + ChatColor.AQUA + "FastPass Queue" +
+                ChatColor.GREEN + " for " + ChatColor.BLUE + name + ChatColor.GREEN + "\nYou are in position #" +
+                (getPosition(player.getUniqueId()) + 1) + ". You will be charged one FastPass when you board the ride.");
+    }
 
+    @Override
+    public void leaveQueueSilent(CPlayer player) {
+        int pos = getPosition(player.getUniqueId());
+        if (fpqueue.contains(player.getUniqueId())) {
+            if (pos < fpqueue.size() - 1) {
+                for (UUID uuid : new ArrayList<>(fpqueue.subList(pos + 1, fpqueue.size()))) {
+                    CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+                    if (tp == null) {
+                        fpqueue.remove(uuid);
+                        continue;
+                    }
+                    int tppos = getPosition(uuid);
+                    tp.sendMessage(ChatColor.GREEN + "You have moved in the " + ChatColor.AQUA + "FastPass " +
+                            ChatColor.GREEN + "queue from #" + (tppos + 1) + " to #" + (tppos));
+                }
+            }
+            fpqueue.remove(player.getUniqueId());
+            updateSigns();
+        } else {
+            if (pos < queue.size() - 1) {
+                for (UUID uuid : new ArrayList<>(queue.subList(pos + 1, queue.size()))) {
+                    CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+                    if (tp == null) {
+                        queue.remove(uuid);
+                        continue;
+                    }
+                    int tppos = getPosition(uuid);
+                    tp.sendMessage(ChatColor.GREEN + "You have moved in the queue from #" + (tppos + 1) + " to #" + (tppos));
+                }
+            }
+            queue.remove(player.getUniqueId());
+            updateSigns();
+        }
     }
 
     @Override
     public void ejectQueue() {
-
+        for (UUID uuid : getQueue()) {
+            queue.remove(uuid);
+            CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+            if (tp != null) {
+                tp.sendMessage(ChatColor.GREEN + "You have been ejected from " + getName() +
+                        ChatColor.GREEN + "'s Queue!");
+            }
+        }
+        for (UUID uuid : getFPQueue()) {
+            fpqueue.remove(uuid);
+            CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+            if (tp != null) {
+                tp.sendMessage(ChatColor.GREEN + "You have been ejected from " + getName() +
+                        ChatColor.GREEN + "'s FastPass Queue! You didn't use a FastPass yet.");
+            }
+        }
     }
 
     @Override
     public boolean toggleFastpass(CommandSender sender) {
-        return false;
-    }
-
-    @Override
-    public void setPaused(boolean b) {
-
+        fpoff = !fpoff;
+        if (fpoff) {
+            for (UUID uuid : getFPQueue()) {
+                CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+                if (tp == null) {
+                    continue;
+                }
+                tp.sendMessage(getName() + ChatColor.GREEN +
+                        "'s FastPass Queue has been closed. You may stay in line until you reach the ride, " +
+                        "but if you leave your place in line will be lost.");
+            }
+            sender.sendMessage(ChatColor.RED + "The FastPass line has been closed!");
+        } else {
+            sender.sendMessage(ChatColor.GREEN + "The FastPass line has been opened!");
+        }
+        return fpoff;
     }
 
     @Override
     public boolean toggleFreeze() {
-        return false;
+        frozen = !frozen;
+        return frozen;
     }
 
     @Override
-    public void setStation(Location location) throws IOException {
-
-    }
-
-    @Override
-    public void setSpawner(Location location) throws IOException {
-
-    }
-
-    @Override
-    public int getTimeToNextRide() {
-        return 0;
+    public void setStation(Location loc) throws IOException {
+        this.station = loc;
+        ParkManager.getInstance().getQueueManager().setStation(this, loc);
     }
 }
