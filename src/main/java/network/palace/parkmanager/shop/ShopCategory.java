@@ -30,13 +30,13 @@ public enum ShopCategory {
     }
 
     public static ShopCategory fromString(String s) {
-        switch (s.toLowerCase()) {
-            case "wardrobe":
-                return WARDROBE;
-            case "toys":
-                return TOYS;
-            case "dolls":
-                return DOLLS;
+        s = s.toLowerCase();
+        if ("wardrobe".startsWith(s)) {
+            return WARDROBE;
+        } else if ("toys".startsWith(s)) {
+            return TOYS;
+        } else if ("dolls".startsWith(s)) {
+            return DOLLS;
         }
         return WARDROBE;
     }
