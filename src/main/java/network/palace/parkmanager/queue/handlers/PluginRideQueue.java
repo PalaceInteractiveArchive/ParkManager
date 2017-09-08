@@ -10,6 +10,7 @@ import network.palace.ridemanager.RideManager;
 import network.palace.ridemanager.handlers.Ride;
 import network.palace.ridemanager.handlers.RideType;
 import network.palace.ridemanager.handlers.TeacupsRide;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -37,21 +38,24 @@ public class PluginRideQueue extends AbstractQueueRide {
     @Getter @Setter private int timeToNextRide = 0;
     private List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
+    private boolean loaded = false;
+    private List<CPlayer> riders = new ArrayList<>();
 
-    public PluginRideQueue(String name, String displayName, Location station, Location exit, int delay, int amount,
+    public PluginRideQueue(String shortName, String name, Location station, Location exit, int delay, int amount,
                            String warp, RideCategory category, RideType type, YamlConfiguration config) {
-        this.name = displayName;
-        this.shortName = name;
+        this.shortName = shortName;
+        this.name = name;
         this.station = station;
         this.amount = amount;
         this.warp = warp;
         this.category = category;
         this.type = type;
-        this.delay = delay;
+        this.delay = delay + 7;
         switch (type) {
             case TEACUPS:
-                Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + name + ".queue.center"));
-                ride = new TeacupsRide(name, displayName, delay, exit, center);
+                Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
+                ride = new TeacupsRide(shortName, name, delay, exit, center);
+                RideManager.getMovementUtil().addRide(ride);
                 flat = true;
                 break;
             default:
@@ -89,6 +93,20 @@ public class PluginRideQueue extends AbstractQueueRide {
         return (getTime() - delay) >= lastSpawn;
     }
 
+    public boolean isLoadPeriodOver(boolean b) {
+        if (b) {
+            return (getTime() - delay - 7) >= lastSpawn;
+        } else {
+            boolean loadPeriodOver = (getTime() - delay - 8) >= lastSpawn;
+            boolean ridersEmpty = riders.isEmpty();
+            return !ridersEmpty && loadPeriodOver;
+        }
+    }
+
+    public int getLoadTime() {
+        return 7 - (int) (getTime() - (delay + lastSpawn));
+    }
+
     @Override
     public int getPosition(UUID uuid) {
         if (fpqueue.contains(uuid)) {
@@ -119,35 +137,57 @@ public class PluginRideQueue extends AbstractQueueRide {
         if (frozen) {
             return;
         }
-        List<UUID> fullList = getQueue();
-        List<UUID> fps = getFPQueue();
-        if (fps.size() > fullList.size()) {
-            int place = 1;
-            for (int i = 0; i < fullList.size(); i++) {
-                if (place > i) {
-                    break;
-                }
-                fullList.add(place, fps.remove(i));
-                place += 2;
-            }
-            fullList.addAll(fps);
-        } else {
-            int place = 1;
-            if (fullList.isEmpty()) {
-                fullList = fps;
-                fps.clear();
-            } else {
-                for (UUID uuid : fps) {
-                    fullList.add(place, uuid);
+        Bukkit.broadcastMessage("A");
+        if (!loaded) {
+            Bukkit.broadcastMessage("B");
+            List<UUID> fullList = getQueue();
+            List<UUID> fps = getFPQueue();
+            if (fps.size() > fullList.size()) {
+                int place = 1;
+                for (int i = 0; i < fullList.size(); i++) {
+                    if (place > i) {
+                        break;
+                    }
+                    fullList.add(place, fps.remove(i));
                     place += 2;
                 }
+                fullList.addAll(fps);
+            } else {
+                int place = 1;
+                if (fullList.isEmpty()) {
+                    fullList = fps;
+                    fps.clear();
+                } else {
+                    for (UUID uuid : fps) {
+                        fullList.add(place, uuid);
+                        place += 2;
+                    }
+                }
             }
-        }
-        if (fullList.size() >= amount) {
-            for (int i = 0; i < amount; i++) {
-                CPlayer tp = Core.getPlayerManager().getPlayer(fullList.get(0));
+            if (fullList.size() >= amount) {
+                for (int i = 0; i < amount; i++) {
+                    CPlayer tp = Core.getPlayerManager().getPlayer(fullList.get(0));
+                    if (tp == null) {
+                        i--;
+                        continue;
+                    }
+                    if (fps.contains(tp.getUniqueId())) {
+                        chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
+                        tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                                getCategory().getName() + " FastPass!");
+                    }
+                    tp.teleport(getStation());
+                    tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
+                    leaveQueueSilent(tp);
+                    fullList.remove(tp.getUniqueId());
+                }
+                updateSigns();
+                return;
+            }
+            riders = new ArrayList<>();
+            for (UUID uuid : new ArrayList<>(fullList)) {
+                CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
                 if (tp == null) {
-                    i--;
                     continue;
                 }
                 if (fps.contains(tp.getUniqueId())) {
@@ -159,28 +199,19 @@ public class PluginRideQueue extends AbstractQueueRide {
                 tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
                 leaveQueueSilent(tp);
                 fullList.remove(tp.getUniqueId());
+                riders.add(tp);
             }
-            updateSigns();
-            return;
+            loaded = true;
+        } else if (isLoadPeriodOver(true)) {
+            ride.start(riders);
+            loaded = false;
+            timeToNextRide = delay;
+            lastSpawn = System.currentTimeMillis() / 1000;
+        } else {
+            for (CPlayer p : riders) {
+                p.getActionBar().show(ChatColor.GREEN + "Ride starting in " + getLoadTime() + " seconds!");
+            }
         }
-        List<CPlayer> riders = new ArrayList<>();
-        for (UUID uuid : new ArrayList<>(fullList)) {
-            CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
-            if (tp == null) {
-                continue;
-            }
-            if (fps.contains(tp.getUniqueId())) {
-                chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
-                tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
-                        getCategory().getName() + " FastPass!");
-            }
-            tp.teleport(getStation());
-            tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
-            leaveQueueSilent(tp);
-            fullList.remove(tp.getUniqueId());
-            riders.add(tp);
-        }
-        ride.start(riders);
     }
 
     @Override

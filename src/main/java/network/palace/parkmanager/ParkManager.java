@@ -17,6 +17,7 @@ import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.queue.QueueManager;
 import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
+import network.palace.parkmanager.queue.handlers.PluginRideQueue;
 import network.palace.parkmanager.queue.tot.TowerManager;
 import network.palace.parkmanager.resourcepack.PackManager;
 import network.palace.parkmanager.shooter.MessageTimer;
@@ -31,6 +32,7 @@ import network.palace.parkmanager.uso.mib.MenInBlack;
 import network.palace.parkmanager.uso.rrr.RipRideRockit;
 import network.palace.parkmanager.utils.*;
 import network.palace.parkmanager.watch.WatchTask;
+import network.palace.ridemanager.RideManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -217,10 +219,21 @@ public class ParkManager extends Plugin implements Listener {
         }
     }
 
-    public void setupRides() {
-        getRides().stream().filter(r -> r.getQueue() != null).forEach(r -> r.getQueue().ejectQueue());
+    public void removeRides() {
+        getRides().stream().filter(r -> r.getQueue() != null).forEach(r -> {
+            r.getQueue().ejectQueue();
+            if (r.getQueue() instanceof PluginRideQueue) {
+                PluginRideQueue queue = (PluginRideQueue) r.getQueue();
+                queue.getRide().despawn();
+                RideManager.getMovementUtil().removeRide(queue.getRide());
+            }
+        });
         rides.clear();
         attractions.clear();
+    }
+
+    public void setupRides() {
+        removeRides();
         YamlConfiguration config = FileUtil.menuYaml();
         List<String> locations = config.getStringList("ride-names");
         for (String s : locations) {
@@ -378,6 +391,7 @@ public class ParkManager extends Plugin implements Listener {
         registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(playerJoinAndLeave);
+        registerListener(queueManager);
         registerListener(new SignChange());
         registerListener(new PacketListener());
         registerListener(new ResourceListener());

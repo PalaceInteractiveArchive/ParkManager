@@ -26,11 +26,11 @@ import java.util.UUID;
 public abstract class AbstractQueueRide {
     @Getter protected List<Location> signs = new ArrayList<>();
     @Getter protected List<Location> fpsigns = new ArrayList<>();
-    @Getter protected long lastSpawn = 0;
+    @Getter protected long lastSpawn = System.currentTimeMillis() / 1000;
     @Getter protected RideCategory category;
     @Getter protected boolean fpoff = false;
 
-    protected boolean flat;
+    @Getter protected boolean flat;
 
     private boolean frozen;
 

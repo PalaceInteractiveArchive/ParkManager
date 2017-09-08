@@ -16,6 +16,10 @@ import network.palace.parkmanager.queue.tot.TowerPreShow;
 import network.palace.parkmanager.queue.tot.TowerStation;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.FileUtil;
+import network.palace.ridemanager.events.RideManagerStatusEvent;
+import network.palace.ridemanager.handlers.FlatState;
+import network.palace.ridemanager.handlers.RideType;
+import network.palace.ridemanager.handlers.TeacupsRide;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,6 +27,8 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -33,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Marc on 6/23/15
  */
-public class QueueManager {
+public class QueueManager implements Listener {
     private List<QueueTask> tasks = new ArrayList<>();
 
     public QueueManager() {
@@ -54,8 +60,17 @@ public class QueueManager {
                         }
                     } else if (ride instanceof PluginRideQueue) {
                         PluginRideQueue pride = (PluginRideQueue) ride;
-                        if (pride.canStart() && (pride.getQueueSize() > 0 || pride.getFPQueueSize() > 0)) {
-                            pride.start();
+                        Bukkit.broadcastMessage("C " + ride.getTimeToNextRide());
+                        if (pride.isFlat()) {
+                            if (pride.getRide() instanceof TeacupsRide) {
+                                TeacupsRide r = (TeacupsRide) pride.getRide();
+                                if (r.getState().equals(FlatState.LOADING)) {
+                                    Bukkit.broadcastMessage(pride.canStart() + " " + (pride.getQueueSize() > 0 || pride.getFPQueueSize() > 0) + " " + !pride.isLoadPeriodOver(false));
+                                    if (pride.canStart() && ((pride.getQueueSize() > 0 || pride.getFPQueueSize() > 0) || !pride.isLoadPeriodOver(false))) {
+                                        pride.start();
+                                    }
+                                }
+                            }
                         }
                         if (pride.getTimeToNextRide() > 0) {
                             pride.setTimeToNextRide(pride.getTimeToNextRide() - 1);
@@ -94,6 +109,18 @@ public class QueueManager {
         }, 0L, 1L);
     }
 
+    @EventHandler
+    public void onRideManagerStatus(RideManagerStatusEvent event) {
+        switch (event.getStatus()) {
+            case STARTING:
+                ParkManager.getInstance().setupRides();
+                break;
+            case STOPPING:
+                ParkManager.getInstance().removeRides();
+                break;
+        }
+    }
+
     public void addTask(QueueTask task) {
         tasks.add(task);
     }
@@ -101,63 +128,79 @@ public class QueueManager {
     public AbstractQueueRide createQueue(String s, YamlConfiguration config) {
         String name = config.getString("ride." + s + ".queue.name");
         AbstractQueueRide ride = null;
-        if (Core.getInstanceName().equalsIgnoreCase("dhs")) {
-            switch (s) {
-                case "totpre": {
-                    Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),
-                            config.getDouble("ride." + s + ".queue.station1.y"), config.getDouble("ride." + s + ".queue.station1.z"),
-                            config.getInt("ride." + s + ".queue.station1.yaw"), config.getInt("ride." + s + ".queue.station1.pitch"));
-                    Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station2.x"),
-                            config.getDouble("ride." + s + ".queue.station2.y"), config.getDouble("ride." + s + ".queue.station2.z"),
-                            config.getInt("ride." + s + ".queue.station2.yaw"), config.getInt("ride." + s + ".queue.station2.pitch"));
-                    Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner1.x"),
-                            config.getInt("ride." + s + ".queue.spawner1.y"), config.getInt("ride." + s + ".queue.spawner1.z"));
-                    Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner2.x"),
-                            config.getInt("ride." + s + ".queue.spawner2.y"), config.getInt("ride." + s + ".queue.spawner2.z"));
-                    ride = new TowerPreShow(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
-                            spawner1, spawner2, config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue.amount"),
-                            config.getString("ride." + s + ".queue.warp"));
-                    break;
-                }
-                case "totstation": {
-                    Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),
-                            config.getDouble("ride." + s + ".queue.station1.y"), config.getDouble("ride." + s + ".queue.station1.z"),
-                            config.getInt("ride." + s + ".queue.station1.yaw"), config.getInt("ride." + s + ".queue.station1.pitch"));
-                    Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station2.x"),
-                            config.getDouble("ride." + s + ".queue.station2.y"), config.getDouble("ride." + s + ".queue.station2.z"),
-                            config.getInt("ride." + s + ".queue.station2.yaw"), config.getInt("ride." + s + ".queue.station2.pitch"));
-                    Location station3 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station3.x"),
-                            config.getDouble("ride." + s + ".queue.station3.y"), config.getDouble("ride." + s + ".queue.station3.z"),
-                            config.getInt("ride." + s + ".queue.station3.yaw"), config.getInt("ride." + s + ".queue.station3.pitch"));
-                    Location station4 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station4.x"),
-                            config.getDouble("ride." + s + ".queue.station4.y"), config.getDouble("ride." + s + ".queue.station4.z"),
-                            config.getInt("ride." + s + ".queue.station4.yaw"), config.getInt("ride." + s + ".queue.station4.pitch"));
-                    Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner1.x"),
-                            config.getInt("ride." + s + ".queue.spawner1.y"), config.getInt("ride." + s + ".queue.spawner1.z"));
-                    Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner2.x"),
-                            config.getInt("ride." + s + ".queue.spawner2.y"), config.getInt("ride." + s + ".queue.spawner2.z"));
-                    Location spawner3 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner3.x"),
-                            config.getInt("ride." + s + ".queue.spawner3.y"), config.getInt("ride." + s + ".queue.spawner3.z"));
-                    Location spawner4 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner4.x"),
-                            config.getInt("ride." + s + ".queue.spawner4.y"), config.getInt("ride." + s + ".queue.spawner4.z"));
-                    ride = new TowerStation(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
-                            station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("ride." + s +
-                            ".queue.delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("ride."
-                            + s + ".queue.warp"));
-                    break;
-                }
-            }
-        }
-        if (ride == null) {
+        if (config.contains("ride." + s + ".queue.type")) {
+            RideType type = RideType.fromString(config.getString("ride." + s + ".queue.type"));
             Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station.x"),
                     config.getDouble("ride." + s + ".queue.station.y"), config.getDouble("ride." + s + ".queue.station.z"),
                     config.getInt("ride." + s + ".queue.station.yaw"), config.getInt("ride." + s + ".queue.station.pitch"));
-            Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner.x"),
-                    config.getInt("ride." + s + ".queue.spawner.y"), config.getInt("ride." + s + ".queue.spawner.z"));
-            ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', name), station, spawner,
-                    config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue..amount"),
-                    config.getString("ride." + s + ".queue.warp"), RideCategory.fromString(config.getString("ride." +
-                    s + ".category")), s);
+            Location exit = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.exit.x"),
+                    config.getDouble("ride." + s + ".queue.exit.y"), config.getDouble("ride." + s + ".queue.exit.z"),
+                    config.getInt("ride." + s + ".queue.exit.yaw"), config.getInt("ride." + s + ".queue.exit.pitch"));
+            int delay = config.getInt("ride." + s + ".queue.delay");
+            int amount = config.getInt("ride." + s + ".queue.amount");
+            String warp = config.getString("ride." + s + ".warp");
+            RideCategory category = RideCategory.fromString(config.getString("ride." + s + ".category"));
+            ride = new PluginRideQueue(s, ChatColor.translateAlternateColorCodes('&', name), station, exit,
+                    delay, amount, warp, category, type, config);
+        } else {
+            if (Core.getInstanceName().equalsIgnoreCase("dhs")) {
+                switch (s) {
+                    case "totpre": {
+                        Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),
+                                config.getDouble("ride." + s + ".queue.station1.y"), config.getDouble("ride." + s + ".queue.station1.z"),
+                                config.getInt("ride." + s + ".queue.station1.yaw"), config.getInt("ride." + s + ".queue.station1.pitch"));
+                        Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station2.x"),
+                                config.getDouble("ride." + s + ".queue.station2.y"), config.getDouble("ride." + s + ".queue.station2.z"),
+                                config.getInt("ride." + s + ".queue.station2.yaw"), config.getInt("ride." + s + ".queue.station2.pitch"));
+                        Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner1.x"),
+                                config.getInt("ride." + s + ".queue.spawner1.y"), config.getInt("ride." + s + ".queue.spawner1.z"));
+                        Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner2.x"),
+                                config.getInt("ride." + s + ".queue.spawner2.y"), config.getInt("ride." + s + ".queue.spawner2.z"));
+                        ride = new TowerPreShow(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
+                                spawner1, spawner2, config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue.amount"),
+                                config.getString("ride." + s + ".queue.warp"));
+                        break;
+                    }
+                    case "totstation": {
+                        Location station1 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station1.x"),
+                                config.getDouble("ride." + s + ".queue.station1.y"), config.getDouble("ride." + s + ".queue.station1.z"),
+                                config.getInt("ride." + s + ".queue.station1.yaw"), config.getInt("ride." + s + ".queue.station1.pitch"));
+                        Location station2 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station2.x"),
+                                config.getDouble("ride." + s + ".queue.station2.y"), config.getDouble("ride." + s + ".queue.station2.z"),
+                                config.getInt("ride." + s + ".queue.station2.yaw"), config.getInt("ride." + s + ".queue.station2.pitch"));
+                        Location station3 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station3.x"),
+                                config.getDouble("ride." + s + ".queue.station3.y"), config.getDouble("ride." + s + ".queue.station3.z"),
+                                config.getInt("ride." + s + ".queue.station3.yaw"), config.getInt("ride." + s + ".queue.station3.pitch"));
+                        Location station4 = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station4.x"),
+                                config.getDouble("ride." + s + ".queue.station4.y"), config.getDouble("ride." + s + ".queue.station4.z"),
+                                config.getInt("ride." + s + ".queue.station4.yaw"), config.getInt("ride." + s + ".queue.station4.pitch"));
+                        Location spawner1 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner1.x"),
+                                config.getInt("ride." + s + ".queue.spawner1.y"), config.getInt("ride." + s + ".queue.spawner1.z"));
+                        Location spawner2 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner2.x"),
+                                config.getInt("ride." + s + ".queue.spawner2.y"), config.getInt("ride." + s + ".queue.spawner2.z"));
+                        Location spawner3 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner3.x"),
+                                config.getInt("ride." + s + ".queue.spawner3.y"), config.getInt("ride." + s + ".queue.spawner3.z"));
+                        Location spawner4 = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner4.x"),
+                                config.getInt("ride." + s + ".queue.spawner4.y"), config.getInt("ride." + s + ".queue.spawner4.z"));
+                        ride = new TowerStation(ChatColor.translateAlternateColorCodes('&', name), station1, station2,
+                                station3, station4, spawner1, spawner2, spawner3, spawner4, config.getInt("ride." + s +
+                                ".queue.delay"), config.getInt("ride." + s + ".queue.amount"), config.getString("ride."
+                                + s + ".queue.warp"));
+                        break;
+                    }
+                }
+            }
+            if (ride == null) {
+                Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station.x"),
+                        config.getDouble("ride." + s + ".queue.station.y"), config.getDouble("ride." + s + ".queue.station.z"),
+                        config.getInt("ride." + s + ".queue.station.yaw"), config.getInt("ride." + s + ".queue.station.pitch"));
+                Location spawner = new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.spawner.x"),
+                        config.getInt("ride." + s + ".queue.spawner.y"), config.getInt("ride." + s + ".queue.spawner.z"));
+                ride = new QueueRide(ChatColor.translateAlternateColorCodes('&', name), station, spawner,
+                        config.getInt("ride." + s + ".queue.delay"), config.getInt("ride." + s + ".queue..amount"),
+                        config.getString("ride." + s + ".queue.warp"), RideCategory.fromString(config.getString("ride." +
+                        s + ".category")), s);
+            }
         }
         for (int i = 1; i <= config.getInt("ride." + s + ".queue.sign-amount"); i++) {
             ride.addSign(new Location(Bukkit.getWorlds().get(0), config.getInt("ride." + s + ".queue.sign." + i + ".x"),
