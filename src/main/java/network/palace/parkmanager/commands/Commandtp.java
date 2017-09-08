@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandMeta(description = "Teleport a player")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.SQUIRE)
 public class Commandtp extends CoreCommand {
 
     public Commandtp() {
