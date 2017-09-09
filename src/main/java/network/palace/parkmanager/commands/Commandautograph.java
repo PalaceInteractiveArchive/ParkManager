@@ -25,9 +25,8 @@ public class Commandautograph extends CoreCommand {
         if (args.length != 1) {
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("remove")) {
-                    Integer pageNum;
                     try {
-                        pageNum = Integer.parseInt(args[1]);
+                        Integer pageNum = Integer.parseInt(args[1]);
                         ParkManager.getInstance().getAutographManager().removeAutograph(player, pageNum);
                         return;
                     } catch (NumberFormatException ignored) {

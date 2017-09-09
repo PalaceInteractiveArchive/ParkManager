@@ -261,7 +261,8 @@ public class PlayerJoinAndLeave implements Listener {
             Bukkit.getScheduler().runTaskAsynchronously(parkManager, new Runnable() {
                 @Override
                 public void run() {
-                    parkManager.getAutographManager().setBook(player.getUniqueId());
+                    PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
+                    data.updateAutographs();
                     parkManager.getAutographManager().giveBook(player);
                 }
             });

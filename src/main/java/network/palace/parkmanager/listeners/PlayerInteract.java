@@ -5,6 +5,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.autograph.Signature;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
@@ -24,6 +25,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,22 +46,31 @@ public class PlayerInteract implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
-        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
+        PlayerData data = ParkManager.getInstance().getPlayerData(cp.getUniqueId());
         Action action = event.getAction();
-        Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
+        Rank rank = Core.getPlayerManager().getPlayer(cp.getUniqueId()).getRank();
         if (action.equals(Action.PHYSICAL)) {
             if (dl && rank.getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 event.setCancelled(true);
             }
             return;
         }
-        final ItemStack hand = player.getInventory().getItemInMainHand();
-        if (isArmor(hand)) {
-            if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
+        final ItemStack hand = cp.getInventory().getItemInMainHand();
+        if (hand.getType().equals(Material.WRITTEN_BOOK)) {
+            BookMeta meta = (BookMeta) hand.getItemMeta();
+            if (meta.getTitle().startsWith(ParkManager.getInstance().getAutographManager().BOOK_TITLE)) {
                 event.setCancelled(true);
-                player.getInventory().setItemInMainHand(hand);
+                List<Signature> autographs = data.getAutographs();
+                ParkManager.getInstance().getAutographManager().openMenu(cp, autographs, player.isSneaking());
+                return;
+            }
+        }
+        if (isArmor(hand)) {
+            if (!BlockEdit.isInBuildMode(cp.getUniqueId())) {
+                event.setCancelled(true);
+                cp.getInventory().setItemInMainHand(hand);
                 ArmorType type = getArmorType(hand);
-                PlayerInventory inv = player.getInventory();
+                PlayerInventory inv = cp.getInventory();
                 switch (type) {
                     case HELMET:
                         inv.setHelmet(inv.getHelmet());
@@ -78,7 +89,7 @@ public class PlayerInteract implements Listener {
             }
         }
         if (action.name().toLowerCase().contains("block")) {
-            if (player.getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_AXE) &&
+            if (cp.getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_AXE) &&
                     rank.getRankId() >= Rank.KNIGHT.getRankId()) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
@@ -95,21 +106,21 @@ public class PlayerInteract implements Listener {
             if (type.equals(Material.SIGN) || type.equals(Material.SIGN_POST) || type.equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) event.getClickedBlock().getState();
                 if (s.getLine(0).equals(disposal)) {
-                    player.openInventory(Bukkit.createInventory(player, 36, ChatColor.BLUE + "Disposal"));
+                    cp.openInventory(Bukkit.createInventory(player, 36, ChatColor.BLUE + "Disposal"));
                     return;
                 }
                 if (s.getLine(0).equals(warp)) {
                     Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
                     if (warp == null) {
-                        player.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
+                        cp.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
                         return;
                     }
                     if (!warp.getServer().equalsIgnoreCase(Core.getInstanceName())) {
-                        WarpUtil.crossServerWarp(player.getUniqueId(), warp.getName(), warp.getServer());
+                        WarpUtil.crossServerWarp(cp.getUniqueId(), warp.getName(), warp.getServer());
                         return;
                     }
-                    player.teleport(warp.getLocation());
-                    player.sendMessage(ChatColor.BLUE + "You have arrived at "
+                    cp.teleport(warp.getLocation());
+                    cp.sendMessage(ChatColor.BLUE + "You have arrived at "
                             + ChatColor.WHITE + "[" + ChatColor.GREEN + warp.getName()
                             + ChatColor.WHITE + "]");
                     return;
@@ -118,7 +129,7 @@ public class PlayerInteract implements Listener {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(this.suite);
                         if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
-                            player.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getFormattedName()
+                            cp.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getFormattedName()
                                     + ChatColor.RED + " or above to stay in a Suite!");
                             return;
                         }
@@ -127,23 +138,23 @@ public class PlayerInteract implements Listener {
                         HotelManager manager = ParkManager.getInstance().getHotelManager();
                         HotelRoom room = manager.getRoom(roomName);
                         if (room == null) {
-                            player.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
+                            cp.sendMessage(ChatColor.RED + "That room is out of service right now, sorry!");
                             return;
                         }
-                        if (room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())) {
+                        if (room.isOccupied() && room.getCurrentOccupant().equals(cp.getUniqueId())) {
                             ParkManager.getInstance().getInventoryUtil().openSpecificHotelRoomCheckoutPage(player, room);
-                        } else if (room.isOccupied() && !(room.getCurrentOccupant().equals(player.getUniqueId()))) {
-                            player.sendMessage(ChatColor.RED + "This room is already occupied!");
+                        } else if (room.isOccupied() && !(room.getCurrentOccupant().equals(cp.getUniqueId()))) {
+                            cp.sendMessage(ChatColor.RED + "This room is already occupied!");
                         } else {
                             boolean playerOwnsRooms = false;
                             for (HotelRoom r : manager.getHotelRooms()) {
-                                if (r.isOccupied() && r.getCurrentOccupant().equals(player.getUniqueId())) {
+                                if (r.isOccupied() && r.getCurrentOccupant().equals(cp.getUniqueId())) {
                                     playerOwnsRooms = true;
                                     break;
                                 }
                             }
                             if (playerOwnsRooms) {
-                                player.sendMessage(ChatColor.RED + "You cannot book more than one room at a time! " +
+                                cp.sendMessage(ChatColor.RED + "You cannot book more than one room at a time! " +
                                         "You need to wait for your current reservation to lapse or check out by " +
                                         "right-clicking the booked room's sign.");
                                 return;
@@ -183,18 +194,18 @@ public class PlayerInteract implements Listener {
                         if (friends.contains(room.getCurrentOccupant())) {
                             PlayerData target = ParkManager.getInstance().getPlayerData(room.getCurrentOccupant());
                             if (target == null) {
-                                player.sendMessage(ChatColor.RED +
+                                cp.sendMessage(ChatColor.RED +
                                         "Your friend must be online for you to access their room!");
                                 event.setCancelled(true);
                                 return;
                             }
                             if (!target.isHotel()) {
-                                player.sendMessage(ChatColor.RED + "That room is currently occupied.");
+                                cp.sendMessage(ChatColor.RED + "That room is currently occupied.");
                                 event.setCancelled(true);
                             }
                             return;
                         }
-                        if (room.getCurrentOccupant().equals(player.getUniqueId())) {
+                        if (room.getCurrentOccupant().equals(cp.getUniqueId())) {
                             if (room.getCheckoutTime() <= (System.currentTimeMillis() / 1000)) {
                                 event.setCancelled(true);
                                 manager.checkout(room, true);
@@ -202,11 +213,11 @@ public class PlayerInteract implements Listener {
                             }
                             return;
                         } else {
-                            player.sendMessage(ChatColor.RED + "That room is currently occupied.");
+                            cp.sendMessage(ChatColor.RED + "That room is currently occupied.");
                             event.setCancelled(true);
                         }
                     } else {
-                        player.sendMessage(ChatColor.GREEN + "That room is currently unoccupied. Book your stay by " +
+                        cp.sendMessage(ChatColor.GREEN + "That room is currently unoccupied. Book your stay by " +
                                 "right-clicking the sign or viewing the room in your MagicBand.");
                         event.setCancelled(true);
                     }
@@ -214,10 +225,10 @@ public class PlayerInteract implements Listener {
                 return;
             }
         }
-        if (BlockEdit.isInBuildMode(player.getUniqueId())) {
+        if (BlockEdit.isInBuildMode(cp.getUniqueId())) {
             return;
         }
-        PlayerInventory pi = player.getInventory();
+        PlayerInventory pi = cp.getInventory();
         if (pi.getHeldItemSlot() == 5) {
             if (pi.getItemInMainHand().getType().equals(Material.CHEST)) {
                 event.setCancelled(true);
@@ -236,10 +247,10 @@ public class PlayerInteract implements Listener {
             if (pi.getItemInMainHand().getType().equals(ParkManager.getInstance().getBandUtil().getBandMaterial(data.getBandColor()))) {
                 event.setCancelled(true);
                 ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.MAINMENU);
-                Core.getPlayerManager().getPlayer(player.getUniqueId()).giveAchievement(2);
+                Core.getPlayerManager().getPlayer(cp.getUniqueId()).giveAchievement(2);
             }
         }
-        if (dl && Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+        if (dl && Core.getPlayerManager().getPlayer(cp.getUniqueId()).getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
             event.setCancelled(true);
         }
     }

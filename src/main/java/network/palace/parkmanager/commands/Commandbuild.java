@@ -11,7 +11,6 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.listeners.BlockEdit;
 import network.palace.parkmanager.watch.WatchTask;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -91,28 +90,25 @@ public class Commandbuild extends CoreCommand {
                 pack.addItem(i);
             }
             inv.clear();
-            Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
-                parkManager.getAutographManager().setBook(player.getUniqueId());
-                parkManager.getPlayerJoinAndLeave().setInventory(player, true);
-                if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() > Rank.SQUIRE.getRankId()) {
-                    if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
-                        inv.setItem(0, new ItemStack(Material.COMPASS));
-                    }
+            parkManager.getPlayerJoinAndLeave().setInventory(player, true);
+            if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() > Rank.SQUIRE.getRankId()) {
+                if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
+                    inv.setItem(0, new ItemStack(Material.COMPASS));
                 }
-                if (!parkManager.getStorageManager().getBuildModeHotbars().containsKey(player.getUniqueId())) {
-                    return;
+            }
+            if (!parkManager.getStorageManager().getBuildModeHotbars().containsKey(player.getUniqueId())) {
+                return;
+            }
+            for (ItemStack i : parkManager.getStorageManager().removeHotbar(player.getUniqueId())) {
+                if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
+                        i.getType().equals(Material.COMPASS)) {
+                    continue;
                 }
-                for (ItemStack i : parkManager.getStorageManager().removeHotbar(player.getUniqueId())) {
-                    if (i == null || i.getType().equals(Material.AIR) || i.getType().equals(Material.WOOD_AXE) ||
-                            i.getType().equals(Material.COMPASS)) {
-                        continue;
-                    }
-                    inv.addItem(i);
-                }
-            });
+                inv.addItem(i);
+            }
         }
         player.closeInventory();
-        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
+        Core.runTaskAsynchronously(() -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE id=?");
                 sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);
