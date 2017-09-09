@@ -8,7 +8,6 @@ import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.magicband.*;
 import network.palace.parkmanager.watch.WatchTask;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +23,7 @@ public class InventoryClick implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         Inventory inv = event.getInventory();
         ItemStack clicked = event.getCurrentItem();
         if (clicked == null) {
@@ -104,6 +103,10 @@ public class InventoryClick implements Listener {
             return;
         }
         switch (name) {
+            case "Choose an Autograph Book":
+                event.setCancelled(true);
+                parkManager.getAutographManager().openBook(player, event.getCurrentItem());
+                return;
             case "Ride List":
                 event.setCancelled(true);
                 RideListClick.handle(event);

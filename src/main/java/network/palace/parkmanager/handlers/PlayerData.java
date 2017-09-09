@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.autograph.Signature;
 import network.palace.parkmanager.storage.Backpack;
 import network.palace.parkmanager.storage.Locker;
 import org.bukkit.ChatColor;
@@ -42,6 +43,7 @@ public class PlayerData {
     @Getter @Setter private String backpackHash = "";
     @Getter @Setter private String lockerHash = "";
     @Getter @Setter private String hotbarHash = "";
+    @Getter @Setter private List<Signature> autographs = new ArrayList<>();
 
     public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, boolean special, boolean flash,
                       boolean visibility, boolean loop, boolean hotel, FastPassData fastPassData, KioskData kioskData,
@@ -100,6 +102,10 @@ public class PlayerData {
 
     public List<UUID> getFriendList() {
         return new ArrayList<>(friends);
+    }
+
+    public void updateAutographs() {
+        setAutographs(ParkManager.getInstance().getAutographManager().getSignatures(uuid));
     }
 
     public void setBandColorMaterial(Material color) {

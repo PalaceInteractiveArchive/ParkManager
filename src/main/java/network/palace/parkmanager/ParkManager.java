@@ -45,7 +45,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.1.9", depend = {"Core", "ProtocolLib", "WorldEdit"})
+@PluginInfo(name = "ParkManager", version = "2.2.0", depend = {"Core", "ProtocolLib", "WorldEdit"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -356,7 +356,6 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new Commandspawn());
         registerCommand(new Commandtp());
         registerCommand(new Commandupdate());
-        registerCommand(new CommandAutoBook());
         registerCommand(new CommandCosmetics());
         if (isResort(Resort.USO)) {
             registerCommand(new Commanduso());
