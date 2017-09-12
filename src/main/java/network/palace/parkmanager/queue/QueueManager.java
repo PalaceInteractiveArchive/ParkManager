@@ -17,6 +17,7 @@ import network.palace.parkmanager.queue.tot.TowerStation;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.FileUtil;
 import network.palace.ridemanager.events.RideManagerStatusEvent;
+import network.palace.ridemanager.handlers.CarouselRide;
 import network.palace.ridemanager.handlers.FlatState;
 import network.palace.ridemanager.handlers.RideType;
 import network.palace.ridemanager.handlers.TeacupsRide;
@@ -60,15 +61,20 @@ public class QueueManager implements Listener {
                         }
                     } else if (ride instanceof PluginRideQueue) {
                         PluginRideQueue pride = (PluginRideQueue) ride;
-                        Bukkit.broadcastMessage("C " + ride.getTimeToNextRide());
                         if (pride.isFlat()) {
+                            FlatState state = FlatState.LOADING;
                             if (pride.getRide() instanceof TeacupsRide) {
                                 TeacupsRide r = (TeacupsRide) pride.getRide();
-                                if (r.getState().equals(FlatState.LOADING)) {
-                                    Bukkit.broadcastMessage(pride.canStart() + " " + (pride.getQueueSize() > 0 || pride.getFPQueueSize() > 0) + " " + !pride.isLoadPeriodOver(false));
-                                    if (pride.canStart() && ((pride.getQueueSize() > 0 || pride.getFPQueueSize() > 0) || !pride.isLoadPeriodOver(false))) {
-                                        pride.start();
-                                    }
+                                state = r.getState();
+                            } else if (pride.getRide() instanceof CarouselRide) {
+                                CarouselRide r = (CarouselRide) pride.getRide();
+                                state = r.getState();
+                            }
+                            if (state.equals(FlatState.LOADING)) {
+                                if (pride.canStart()) {
+                                    pride.start();
+                                } else {
+                                    pride.loadPeriod();
                                 }
                             }
                         }

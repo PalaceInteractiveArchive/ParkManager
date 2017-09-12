@@ -7,10 +7,10 @@ import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.ridemanager.RideManager;
+import network.palace.ridemanager.handlers.CarouselRide;
 import network.palace.ridemanager.handlers.Ride;
 import network.palace.ridemanager.handlers.RideType;
 import network.palace.ridemanager.handlers.TeacupsRide;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -52,12 +52,20 @@ public class PluginRideQueue extends AbstractQueueRide {
         this.type = type;
         this.delay = delay + 7;
         switch (type) {
-            case TEACUPS:
+            case CAROUSEL: {
+                Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
+                ride = new CarouselRide(shortName, name, delay, exit, center);
+                RideManager.getMovementUtil().addRide(ride);
+                flat = true;
+                break;
+            }
+            case TEACUPS: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
                 ride = new TeacupsRide(shortName, name, delay, exit, center);
                 RideManager.getMovementUtil().addRide(ride);
                 flat = true;
                 break;
+            }
             default:
                 ride = null;
         }
@@ -90,16 +98,17 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     @Override
     public boolean canStart() {
-        return (getTime() - delay) >= lastSpawn;
+        return (getTime() - delay) >= lastSpawn && (getQueueSize() != 0 || getFPQueueSize() != 0);
     }
 
     public boolean isLoadPeriodOver(boolean b) {
         if (b) {
             return (getTime() - delay - 7) >= lastSpawn;
         } else {
-            boolean loadPeriodOver = (getTime() - delay - 8) >= lastSpawn;
-            boolean ridersEmpty = riders.isEmpty();
-            return !ridersEmpty && loadPeriodOver;
+            return (getTime() - delay - 8) >= lastSpawn;
+//            boolean loadPeriodOver = (getTime() - delay - 8) >= lastSpawn;
+//            boolean ridersEmpty = riders.isEmpty();
+//            return !ridersEmpty && loadPeriodOver;
         }
     }
 
@@ -128,18 +137,41 @@ public class PluginRideQueue extends AbstractQueueRide {
         return ParkManager.getInstance().getQueueManager().getWaitStringFor(uuid, this);
     }
 
+    public void loadPeriod() {
+        if (!loaded) return;
+        if (riders.isEmpty()) return;
+        if (isLoadPeriodOver(true)) {
+            for (CPlayer player : new ArrayList<>(riders)) {
+                if (Core.getPlayerManager().getPlayer(player.getUniqueId()) == null) {
+                    riders.remove(player);
+                }
+            }
+            ride.start(riders);
+            loaded = false;
+            timeToNextRide = delay;
+            lastSpawn = System.currentTimeMillis() / 1000;
+        } else if (!isLoadPeriodOver(false)) {
+            for (CPlayer p : riders) {
+                if (p != null)
+                    p.getActionBar().show(ChatColor.GREEN + "Ride starting in " + getLoadTime() + " seconds!");
+            }
+        }
+    }
+
     public void start() {
         if (ride instanceof TeacupsRide) {
             if (((TeacupsRide) ride).isStarted()) {
+                return;
+            }
+        } else if (ride instanceof CarouselRide) {
+            if (((CarouselRide) ride).isStarted()) {
                 return;
             }
         }
         if (frozen) {
             return;
         }
-        Bukkit.broadcastMessage("A");
         if (!loaded) {
-            Bukkit.broadcastMessage("B");
             List<UUID> fullList = getQueue();
             List<UUID> fps = getFPQueue();
             if (fps.size() > fullList.size()) {
@@ -164,6 +196,7 @@ public class PluginRideQueue extends AbstractQueueRide {
                     }
                 }
             }
+            riders = new ArrayList<>();
             if (fullList.size() >= amount) {
                 for (int i = 0; i < amount; i++) {
                     CPlayer tp = Core.getPlayerManager().getPlayer(fullList.get(0));
@@ -180,11 +213,11 @@ public class PluginRideQueue extends AbstractQueueRide {
                     tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
                     leaveQueueSilent(tp);
                     fullList.remove(tp.getUniqueId());
+                    riders.add(tp);
                 }
                 updateSigns();
                 return;
             }
-            riders = new ArrayList<>();
             for (UUID uuid : new ArrayList<>(fullList)) {
                 CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
                 if (tp == null) {
@@ -201,16 +234,8 @@ public class PluginRideQueue extends AbstractQueueRide {
                 fullList.remove(tp.getUniqueId());
                 riders.add(tp);
             }
+            updateSigns();
             loaded = true;
-        } else if (isLoadPeriodOver(true)) {
-            ride.start(riders);
-            loaded = false;
-            timeToNextRide = delay;
-            lastSpawn = System.currentTimeMillis() / 1000;
-        } else {
-            for (CPlayer p : riders) {
-                p.getActionBar().show(ChatColor.GREEN + "Ride starting in " + getLoadTime() + " seconds!");
-            }
         }
     }
 
