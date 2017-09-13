@@ -47,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.1.9", depend = {"Core", "ProtocolLib", "WorldEdit"})
+@PluginInfo(name = "ParkManager", version = "2.2.0", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -64,6 +64,7 @@ public class ParkManager extends Plugin implements Listener {
     @Getter private boolean spawnOnJoin;
     @Getter private boolean crossServerInv;
     @Getter private boolean hotelServer;
+    @Getter private boolean rideManager;
     @Getter private YamlConfiguration config = FileUtil.configurationYaml();
     @Getter private TeleportUtil teleportUtil;
     private List<String> joinMessages = config.getStringList("join-messages");
@@ -108,6 +109,7 @@ public class ParkManager extends Plugin implements Listener {
         blockChanger = new BlockChanger();
         wardrobeManager = new WardrobeManager();
         playerJoinAndLeave = new PlayerJoinAndLeave();
+        rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -395,6 +397,9 @@ public class ParkManager extends Plugin implements Listener {
         registerListener(new SignChange());
         registerListener(new PacketListener());
         registerListener(new ResourceListener());
+        if (rideManager) {
+            registerListener(new RideListener());
+        }
         switch (resort) {
             case WDW: {
                 if (Core.getServerType().equals("MK")) {

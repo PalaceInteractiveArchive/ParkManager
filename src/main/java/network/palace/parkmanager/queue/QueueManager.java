@@ -16,7 +16,6 @@ import network.palace.parkmanager.queue.tot.TowerPreShow;
 import network.palace.parkmanager.queue.tot.TowerStation;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.FileUtil;
-import network.palace.ridemanager.events.RideManagerStatusEvent;
 import network.palace.ridemanager.handlers.CarouselRide;
 import network.palace.ridemanager.handlers.FlatState;
 import network.palace.ridemanager.handlers.RideType;
@@ -28,7 +27,6 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -59,7 +57,7 @@ public class QueueManager implements Listener {
                                 qride.timeToNextRide -= 1;
                             }
                         }
-                    } else if (ride instanceof PluginRideQueue) {
+                    } else if (ride instanceof PluginRideQueue && ParkManager.getInstance().isRideManager()) {
                         PluginRideQueue pride = (PluginRideQueue) ride;
                         if (pride.isFlat()) {
                             FlatState state = FlatState.LOADING;
@@ -115,18 +113,6 @@ public class QueueManager implements Listener {
         }, 0L, 1L);
     }
 
-    @EventHandler
-    public void onRideManagerStatus(RideManagerStatusEvent event) {
-        switch (event.getStatus()) {
-            case STARTING:
-                ParkManager.getInstance().setupRides();
-                break;
-            case STOPPING:
-                ParkManager.getInstance().removeRides();
-                break;
-        }
-    }
-
     public void addTask(QueueTask task) {
         tasks.add(task);
     }
@@ -134,7 +120,7 @@ public class QueueManager implements Listener {
     public AbstractQueueRide createQueue(String s, YamlConfiguration config) {
         String name = config.getString("ride." + s + ".queue.name");
         AbstractQueueRide ride = null;
-        if (config.contains("ride." + s + ".queue.type")) {
+        if (config.contains("ride." + s + ".queue.type") && ParkManager.getInstance().isRideManager()) {
             RideType type = RideType.fromString(config.getString("ride." + s + ".queue.type"));
             Location station = new Location(Bukkit.getWorlds().get(0), config.getDouble("ride." + s + ".queue.station.x"),
                     config.getDouble("ride." + s + ".queue.station.y"), config.getDouble("ride." + s + ".queue.station.z"),
