@@ -1,5 +1,6 @@
 package network.palace.parkmanager.shooter;
 
+import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.utils.FileUtil;
@@ -293,11 +294,11 @@ public class Shooter implements Listener {
         }
     }
 
-    public void warp(Player tp) {
+    public void warp(CPlayer tp) {
         if (!ingame.contains(tp.getUniqueId())) {
             return;
         }
-        done(tp);
+        done(tp.getBukkitPlayer());
     }
 
     public List<UUID> getIngame() {

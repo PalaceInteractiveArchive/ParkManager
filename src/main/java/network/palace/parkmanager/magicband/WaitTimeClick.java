@@ -2,7 +2,7 @@ package network.palace.parkmanager.magicband;
 
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.InventoryType;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import network.palace.parkmanager.utils.BandUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -38,7 +38,7 @@ public class WaitTimeClick {
             player.sendMessage(ChatColor.RED + "Sorry, but there are no rides setup on this server!");
             return;
         }
-        QueueRide ride = ParkManager.getInstance().getQueueManager().getRide2(name);
+        AbstractQueueRide ride = ParkManager.getInstance().getQueueManager().getRide2(name);
         player.performCommand("warp " + ride.getWarp());
     }
 }

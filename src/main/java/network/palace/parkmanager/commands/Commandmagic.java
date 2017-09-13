@@ -17,7 +17,8 @@ import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.handlers.RideCount;
 import network.palace.parkmanager.listeners.BlockEdit;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import network.palace.parkmanager.queue.tot.DropTower;
 import network.palace.parkmanager.queue.tot.TowerLayout;
 import network.palace.parkmanager.utils.WorldUtil;
@@ -603,16 +604,16 @@ public class Commandmagic extends CoreCommand {
                 return;
             case "queue":
                 if (args.length == 3) {
-                    QueueRide ride = parkManager.getQueueManager().getRide(args[1]);
+                    AbstractQueueRide ride = parkManager.getQueueManager().getRide(args[1]);
                     if (ride == null) {
                         sender.sendMessage(ChatColor.RED + "Ride not found!");
                         return;
                     }
                     if (args[2].equalsIgnoreCase("info")) {
-                        String wait = "Wait Time: " + ride.appxWaitTime();
+                        String wait = "Wait Time: " + ride.approximateWaitTime();
                         sender.sendMessage(ChatColor.GREEN + ride.getName() + ChatColor.YELLOW + "\n" + (ride.getQueueSize()
                                 <= 0 ? "Wait Time: No Wait" : wait) + "\nIn Queue: " + ride.getQueueSize() +
-                                "\nRiders per Group: " + ride.getAmountOfRiders() + "\nDelay between rides: " +
+                                "\nRiders per Group: " + ride.getAmount() + "\nDelay between rides: " +
                                 ride.getDelay());
                         return;
                     }
@@ -630,13 +631,13 @@ public class Commandmagic extends CoreCommand {
 //                        }
                         return;
                     }
-                    if (args[2].equalsIgnoreCase("pause")) {
-                        ride.setPaused(true);
+                    if (args[2].equalsIgnoreCase("pause") && ride instanceof QueueRide) {
+                        ((QueueRide) ride).setPaused(true);
                         sender.sendMessage(ChatColor.GREEN + "Paused!");
                         return;
                     }
-                    if (args[2].equalsIgnoreCase("unpause")) {
-                        ride.setPaused(false);
+                    if (args[2].equalsIgnoreCase("unpause") && ride instanceof QueueRide) {
+                        ((QueueRide) ride).setPaused(false);
                         sender.sendMessage(ChatColor.GREEN + "Un-Paused!");
                         return;
                     }
@@ -673,7 +674,7 @@ public class Commandmagic extends CoreCommand {
                     return;
                 }
                 if (args.length == 4) {
-                    QueueRide ride = parkManager.getQueueManager().getRide(args[1]);
+                    AbstractQueueRide ride = parkManager.getQueueManager().getRide(args[1]);
                     if (args[2].equalsIgnoreCase("set")) {
                         if (args[3].equalsIgnoreCase("station")) {
                             try {
@@ -684,9 +685,9 @@ public class Commandmagic extends CoreCommand {
                                 sender.sendMessage(ChatColor.RED + "There was an error!");
                             }
                         }
-                        if (args[3].equalsIgnoreCase("spawner")) {
+                        if (args[3].equalsIgnoreCase("spawner") && ride instanceof QueueRide) {
                             try {
-                                ride.setSpawner(((Player) sender).getLocation());
+                                ((QueueRide) ride).setSpawner(((Player) sender).getLocation());
                                 sender.sendMessage(ChatColor.GREEN + "Spawner set!");
                             } catch (IOException e) {
                                 e.printStackTrace();

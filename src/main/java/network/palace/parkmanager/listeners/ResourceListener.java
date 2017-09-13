@@ -11,10 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 /**
  * Created by Marc on 1/14/17.
  */
@@ -33,11 +29,6 @@ public class ResourceListener implements Listener {
             } else if (preferred.equals("blank") && !current.equals("none")) {
                 //Send blank
                 Core.getResourceManager().sendPack(player, "Blank");
-                try (Connection connection = Core.getSqlUtil().getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             } else if (!preferred.equals("yes")) {
                 //Choose a pack
                 player.sendMessage(ChatColor.GREEN + "Please choose a Resource Pack setting for Theme Parks.");

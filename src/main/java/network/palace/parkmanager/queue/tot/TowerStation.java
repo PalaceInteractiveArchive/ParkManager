@@ -1,13 +1,13 @@
 package network.palace.parkmanager.queue.tot;
 
+import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.RideCategory;
-import network.palace.parkmanager.queue.QueueRide;
-import org.bukkit.Bukkit;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +82,7 @@ public class TowerStation extends QueueRide {
         Location loc = getStation(stationNumber);
         if (fullList.size() >= amountOfRiders) {
             for (int i = 0; i < amountOfRiders; i++) {
-                Player tp = Bukkit.getPlayer(fullList.get(0));
+                CPlayer tp = Core.getPlayerManager().getPlayer(fullList.get(0));
                 if (tp == null) {
                     i--;
                     continue;
@@ -100,7 +100,7 @@ public class TowerStation extends QueueRide {
             return;
         }
         for (UUID uuid : new ArrayList<>(fullList)) {
-            Player tp = Bukkit.getPlayer(uuid);
+            CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
             if (tp == null) {
                 continue;
             }

@@ -1,6 +1,6 @@
 package network.palace.parkmanager.queue.tasks;
 
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.QueueRide;
 
 /**
  * Created by Marc on 10/6/15

@@ -322,7 +322,7 @@ public class PlayerJoinAndLeave implements Listener {
             ParkManager.getInstance().getHotelManager().closeDoor(player);
         }
         BlockEdit.logout(player.getUniqueId());
-        ParkManager.getInstance().getQueueManager().silentLeaveAllQueues(player);
+        ParkManager.getInstance().getQueueManager().silentLeaveAllQueues(cp);
         ParkManager.getInstance().getAutographManager().logout(cp);
         ParkManager.getInstance().getBandUtil().cancelLoadPlayerData(player.getUniqueId());
         ParkManager.getInstance().getVisibilityUtil().logout(Core.getPlayerManager().getPlayer(player));

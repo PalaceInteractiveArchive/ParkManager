@@ -4,6 +4,7 @@ import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.Bukkit;
@@ -39,9 +40,10 @@ public class Commandspawn extends CoreCommand {
             return;
         }
         Player player = (Player) sender;
+        CPlayer cp = Core.getPlayerManager().getPlayer(player);
         if (args.length == 1) {
             if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() >= Rank.KNIGHT.getRankId()) {
-                Player tp = Bukkit.getPlayer(args[0]);
+                CPlayer tp = Core.getPlayerManager().getPlayer(args[0]);
                 if (tp == null) {
                     player.sendMessage(ChatColor.RED + "Player not found!");
                 }
@@ -50,9 +52,9 @@ public class Commandspawn extends CoreCommand {
                     parkManager.getShooter().warp(tp);
                 }
                 if (parkManager.getToyStoryMania() != null) {
-                    parkManager.getToyStoryMania().done(tp);
+                    parkManager.getToyStoryMania().done(tp.getBukkitPlayer());
                 }
-                if (tp.isInsideVehicle()) {
+                if (tp.getBukkitPlayer().isInsideVehicle()) {
                     tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
                     return;
                 }
@@ -61,9 +63,9 @@ public class Commandspawn extends CoreCommand {
                 return;
             }
         }
-        parkManager.getQueueManager().leaveAllQueues(player);
+        parkManager.getQueueManager().leaveAllQueues(cp);
         if (parkManager.getShooter() != null) {
-            parkManager.getShooter().warp(player);
+            parkManager.getShooter().warp(cp);
         }
         if (parkManager.getToyStoryMania() != null) {
             parkManager.getToyStoryMania().done(player);

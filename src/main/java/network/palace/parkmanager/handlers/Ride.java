@@ -2,7 +2,7 @@ package network.palace.parkmanager.handlers;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -16,7 +16,7 @@ public class Ride {
     @Getter private int id;
     @Getter private byte data;
     @Getter private RideCategory category;
-    @Getter private QueueRide queue;
+    @Getter private AbstractQueueRide queue;
     @Getter private String shortName;
     private boolean item;
 

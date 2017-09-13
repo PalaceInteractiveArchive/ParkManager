@@ -16,7 +16,8 @@ import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.queue.QueueManager;
-import network.palace.parkmanager.queue.QueueRide;
+import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
+import network.palace.parkmanager.queue.handlers.PluginRideQueue;
 import network.palace.parkmanager.queue.tot.TowerManager;
 import network.palace.parkmanager.resourcepack.PackManager;
 import network.palace.parkmanager.shooter.MessageTimer;
@@ -31,6 +32,7 @@ import network.palace.parkmanager.uso.mib.MenInBlack;
 import network.palace.parkmanager.uso.rrr.RipRideRockit;
 import network.palace.parkmanager.utils.*;
 import network.palace.parkmanager.watch.WatchTask;
+import network.palace.ridemanager.RideManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -45,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.2.0", depend = {"Core", "ProtocolLib", "WorldEdit"})
+@PluginInfo(name = "ParkManager", version = "2.2.1", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -62,6 +64,7 @@ public class ParkManager extends Plugin implements Listener {
     @Getter private boolean spawnOnJoin;
     @Getter private boolean crossServerInv;
     @Getter private boolean hotelServer;
+    @Getter private boolean rideManager;
     @Getter private YamlConfiguration config = FileUtil.configurationYaml();
     @Getter private TeleportUtil teleportUtil;
     private List<String> joinMessages = config.getStringList("join-messages");
@@ -106,6 +109,7 @@ public class ParkManager extends Plugin implements Listener {
         blockChanger = new BlockChanger();
         wardrobeManager = new WardrobeManager();
         playerJoinAndLeave = new PlayerJoinAndLeave();
+        rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
         registerListeners();
         registerCommands();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -217,10 +221,21 @@ public class ParkManager extends Plugin implements Listener {
         }
     }
 
-    public void setupRides() {
-        getRides().stream().filter(r -> r.getQueue() != null).forEach(r -> r.getQueue().ejectQueue());
+    public void removeRides() {
+        getRides().stream().filter(r -> r.getQueue() != null).forEach(r -> {
+            r.getQueue().ejectQueue();
+            if (r.getQueue() instanceof PluginRideQueue) {
+                PluginRideQueue queue = (PluginRideQueue) r.getQueue();
+                queue.getRide().despawn();
+                RideManager.getMovementUtil().removeRide(queue.getRide());
+            }
+        });
         rides.clear();
         attractions.clear();
+    }
+
+    public void setupRides() {
+        removeRides();
         YamlConfiguration config = FileUtil.menuYaml();
         List<String> locations = config.getStringList("ride-names");
         for (String s : locations) {
@@ -234,7 +249,7 @@ public class ParkManager extends Plugin implements Listener {
                 data = 0;
             }
             RideCategory category = RideCategory.fromString(config.getString("ride." + s + ".category"));
-            QueueRide queue = null;
+            AbstractQueueRide queue = null;
             if (config.getBoolean("ride." + s + ".has-queue")) {
                 queue = queueManager.createQueue(s, config);
             }
@@ -377,9 +392,13 @@ public class ParkManager extends Plugin implements Listener {
         registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(playerJoinAndLeave);
+        registerListener(queueManager);
         registerListener(new SignChange());
         registerListener(new PacketListener());
         registerListener(new ResourceListener());
+        if (rideManager) {
+            registerListener(new RideListener());
+        }
         switch (resort) {
             case WDW: {
                 if (Core.getServerType().equals("MK")) {
