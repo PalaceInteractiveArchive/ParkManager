@@ -220,7 +220,7 @@ public class Commandmagic extends CoreCommand {
                         tp.sendMessage(ChatColor.GREEN + "--------------" + ChatColor.GOLD + "" + ChatColor.BOLD +
                                 "Ride Counter" + ChatColor.GREEN + "-------------\n" + ChatColor.YELLOW +
                                 "Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
-                                "is now at " + ChatColor.AQUA + data.getRideCounts().get(finalRideName).getCount() +
+                                " is now at " + ChatColor.AQUA + data.getRideCounts().get(finalRideName).getCount() +
                                 ChatColor.GREEN + "\n----------------------------------------");
                         tp.playSound(tp.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100f, 0.75f);
                     });

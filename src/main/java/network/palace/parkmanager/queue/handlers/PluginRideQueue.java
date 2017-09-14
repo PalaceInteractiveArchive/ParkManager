@@ -7,10 +7,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.RideCategory;
 import network.palace.ridemanager.RideManager;
-import network.palace.ridemanager.handlers.CarouselRide;
-import network.palace.ridemanager.handlers.Ride;
-import network.palace.ridemanager.handlers.RideType;
-import network.palace.ridemanager.handlers.TeacupsRide;
+import network.palace.ridemanager.handlers.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -38,11 +35,12 @@ public class PluginRideQueue extends AbstractQueueRide {
     @Getter @Setter private int timeToNextRide = 0;
     private List<UUID> queue = new ArrayList<>();
     private List<UUID> fpqueue = new ArrayList<>();
-    private boolean loaded = false;
+    @Getter private boolean loaded = false;
     private List<CPlayer> riders = new ArrayList<>();
 
     public PluginRideQueue(String shortName, String name, Location station, Location exit, int delay, int amount,
-                           String warp, RideCategory category, RideType type, YamlConfiguration config) {
+                           String warp, RideCategory category, RideType type, YamlConfiguration config,
+                           CurrencyType currencyType, int currencyAmount) {
         this.shortName = shortName;
         this.name = name;
         this.station = station;
@@ -54,14 +52,14 @@ public class PluginRideQueue extends AbstractQueueRide {
         switch (type) {
             case CAROUSEL: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
-                ride = new CarouselRide(shortName, name, delay, exit, center);
+                ride = new CarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount);
                 RideManager.getMovementUtil().addRide(ride);
                 flat = true;
                 break;
             }
             case TEACUPS: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
-                ride = new TeacupsRide(shortName, name, delay, exit, center);
+                ride = new TeacupsRide(shortName, name, delay, exit, center, currencyType, currencyAmount);
                 RideManager.getMovementUtil().addRide(ride);
                 flat = true;
                 break;
@@ -98,7 +96,7 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     @Override
     public boolean canStart() {
-        return (getTime() - delay) >= lastSpawn && (getQueueSize() != 0 || getFPQueueSize() != 0);
+        return (getTime() - delay) >= lastSpawn && (getQueueSize() != 0 || getFPQueueSize() != 0) && !isLoaded();
     }
 
     public boolean isLoadPeriodOver(boolean b) {
@@ -139,7 +137,6 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     public void loadPeriod() {
         if (!loaded) return;
-        if (riders.isEmpty()) return;
         if (isLoadPeriodOver(true)) {
             for (CPlayer player : new ArrayList<>(riders)) {
                 if (Core.getPlayerManager().getPlayer(player.getUniqueId()) == null) {
@@ -216,6 +213,7 @@ public class PluginRideQueue extends AbstractQueueRide {
                     riders.add(tp);
                 }
                 updateSigns();
+                loaded = true;
                 return;
             }
             for (UUID uuid : new ArrayList<>(fullList)) {
@@ -303,7 +301,7 @@ public class PluginRideQueue extends AbstractQueueRide {
     @Override
     public void joinQueue(CPlayer player) {
         ParkManager.getInstance().getQueueManager().leaveAllQueues(player);
-        if (queue.isEmpty() && timeToNextRide <= 0) {
+        if (queue.isEmpty() && timeToNextRide <= 0 && !loaded) {
             lastSpawn = getTime() - (delay - 10);
             timeToNextRide = 10;
             queue.add(player.getUniqueId());

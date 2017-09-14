@@ -111,12 +111,14 @@ public abstract class AbstractQueueRide {
         } catch (Exception e) {
             return;
         }
+        CPlayer p = Core.getPlayerManager().getPlayer(data.getUniqueId());
+        if (p == null) return;
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
             try (Connection connection = Core.getSqlUtil().getConnection()) {
                 PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
                         category.getSqlName() + "=? WHERE id=?");
                 sql.setInt(1, fpdata.getPass(category));
-                sql.setString(2, data.getUniqueId().toString());
+                sql.setInt(2, p.getSqlId());
                 sql.execute();
                 sql.close();
             } catch (SQLException e) {

@@ -46,6 +46,10 @@ public class PlayerInteract implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
+        if (cp == null) {
+            event.setCancelled(true);
+            return;
+        }
         PlayerData data = ParkManager.getInstance().getPlayerData(cp.getUniqueId());
         Action action = event.getAction();
         Rank rank = Core.getPlayerManager().getPlayer(cp.getUniqueId()).getRank();

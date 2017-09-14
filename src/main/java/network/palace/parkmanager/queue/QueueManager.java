@@ -16,10 +16,7 @@ import network.palace.parkmanager.queue.tot.TowerPreShow;
 import network.palace.parkmanager.queue.tot.TowerStation;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.FileUtil;
-import network.palace.ridemanager.handlers.CarouselRide;
-import network.palace.ridemanager.handlers.FlatState;
-import network.palace.ridemanager.handlers.RideType;
-import network.palace.ridemanager.handlers.TeacupsRide;
+import network.palace.ridemanager.handlers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -132,8 +129,10 @@ public class QueueManager implements Listener {
             int amount = config.getInt("ride." + s + ".queue.amount");
             String warp = config.getString("ride." + s + ".warp");
             RideCategory category = RideCategory.fromString(config.getString("ride." + s + ".category"));
+            CurrencyType currency = CurrencyType.fromString(config.getString("ride." + s + ".queue.currency"));
+            int currencyAmount = config.getInt("ride." + s + ".queue.currencyAmount");
             ride = new PluginRideQueue(s, ChatColor.translateAlternateColorCodes('&', name), station, exit,
-                    delay, amount, warp, category, type, config);
+                    delay, amount, warp, category, type, config, currency, currencyAmount);
         } else {
             if (Core.getInstanceName().equalsIgnoreCase("dhs")) {
                 switch (s) {
