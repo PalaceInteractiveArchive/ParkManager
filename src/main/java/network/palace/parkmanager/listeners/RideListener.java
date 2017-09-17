@@ -50,6 +50,7 @@ public class RideListener implements Listener {
             UUID[] players = event.getPlayers();
             for (UUID uuid : players) {
                 CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+                if (tp == null) continue;
                 PlayerData data = parkManager.getPlayerData(tp.getUniqueId());
                 TreeMap<String, RideCount> rides = data.getRideCounts();
                 try (Connection connection = Core.getSqlUtil().getConnection()) {

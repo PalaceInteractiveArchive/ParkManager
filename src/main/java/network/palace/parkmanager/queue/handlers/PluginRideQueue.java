@@ -144,8 +144,8 @@ public class PluginRideQueue extends AbstractQueueRide {
                 }
             }
             ride.start(riders);
-            loaded = false;
             timeToNextRide = delay;
+            loaded = false;
             lastSpawn = System.currentTimeMillis() / 1000;
         } else if (!isLoadPeriodOver(false)) {
             for (CPlayer p : riders) {
