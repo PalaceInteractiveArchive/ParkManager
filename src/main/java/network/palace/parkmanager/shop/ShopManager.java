@@ -5,10 +5,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.InventoryType;
-import network.palace.parkmanager.handlers.Outfit;
-import network.palace.parkmanager.handlers.PlayerData;
-import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.utils.BandUtil;
 import network.palace.parkmanager.utils.WarpUtil;
 import org.bukkit.Bukkit;
@@ -156,11 +153,16 @@ public class ShopManager {
         ItemStack storage = ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Storage Shop",
                 Arrays.asList(ChatColor.YELLOW + "Purchase up to 3 extra rows in your ", ChatColor.AQUA + "Backpack " +
                         ChatColor.YELLOW + "and " + ChatColor.AQUA + "Locker " + ChatColor.YELLOW + "in this Shop!"));
-        ItemStack custom = ItemUtil.create(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Custom MagicBands",
-                Arrays.asList(ChatColor.YELLOW + "Select different MagicBands and ", ChatColor.YELLOW +
-                        "find the one that is right for you!"));
-        main.setItem(2, storage);
-        main.setItem(6, custom);
+        Resort resort = ParkManager.getInstance().getResort();
+        if (resort.getId() == Resort.WDW.getId() || resort.getId() == Resort.DLR.getId()) {
+            ItemStack custom = ItemUtil.create(Material.FIREWORK_CHARGE, ChatColor.GREEN + "Custom MagicBands",
+                    Arrays.asList(ChatColor.YELLOW + "Select different MagicBands and ", ChatColor.YELLOW +
+                            "find the one that is right for you!"));
+            main.setItem(2, storage);
+            main.setItem(6, custom);
+        } else {
+            main.setItem(4, storage);
+        }
         if (shops.isEmpty()) {
             main.setItem(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No shops are available!"));
             return main;
