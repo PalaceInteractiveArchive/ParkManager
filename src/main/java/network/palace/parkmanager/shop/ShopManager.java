@@ -1,13 +1,18 @@
 package network.palace.parkmanager.shop;
 
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.*;
+import network.palace.parkmanager.handlers.InventoryType;
+import network.palace.parkmanager.handlers.Outfit;
+import network.palace.parkmanager.handlers.PlayerData;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.utils.BandUtil;
-import network.palace.parkmanager.utils.WarpUtil;
+import network.palace.parkwarp.ParkWarp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -64,7 +69,7 @@ public class ShopManager {
                 }
                 outfits.addAll(config.getIntegerList("shop." + s + ".outfits").stream().map(i -> new OutfitItem(i,
                         config.getInt("outfits." + i + ".cost"))).collect(Collectors.toList()));
-                Warp warp = WarpUtil.findWarp(config.getString("shop." + s + ".warp"));
+                Warp warp = ParkWarp.getInstance().getWarpUtil().findWarp(config.getString("shop." + s + ".warp"));
                 if (warp == null) {
                     continue;
                 }
@@ -104,7 +109,7 @@ public class ShopManager {
             menu.setItem(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No items are available in this shop!"));
             return menu;
         }
-        int balance = Core.getEconomy().getBalance(player.getUniqueId());
+        int balance = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE);
         int size = items.size();
         if (size <= 9) {
             int place = 13;
@@ -227,7 +232,7 @@ public class ShopManager {
             player.openInventory(menu);
             return;
         }
-        int balance = Core.getEconomy().getBalance(player.getUniqueId());
+        int balance = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE);
         int size = items.size();
         if (size <= 9) {
             int place = 13;
@@ -285,7 +290,7 @@ public class ShopManager {
             player.openInventory(inv);
             return;
         }
-        int balance = Core.getEconomy().getBalance(player.getUniqueId());
+        int balance = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE);
         int size = outfits.size();
         int place = 13;
         int amount = 1;
@@ -298,7 +303,7 @@ public class ShopManager {
             List<String> lore = new ArrayList<>();
             int cost = item.getCost();
             lore.add(ChatColor.YELLOW + "Price: " + (balance >= cost ? ChatColor.GREEN : ChatColor.RED) +
-                    CurrencyType.TOKEN.getIcon() + cost);
+                    CurrencyType.TOKENS.getIcon() + cost);
             Outfit o = ParkManager.getInstance().getWardrobeManager().getOutfit(item.getOutfitId());
             ItemStack it = o.getHead() == null ? (o.getShirt() == null ? (o.getPants() == null ? o.getBoots() :
                     o.getPants()) : o.getShirt()) : o.getHead();
@@ -436,7 +441,7 @@ public class ShopManager {
         PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         if (confirmations.containsKey(player.getUniqueId())) {
             ShopItem item = confirmations.remove(player.getUniqueId());
-            int balance = Core.getEconomy().getBalance(player.getUniqueId());
+            int balance = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE);
             if (balance < item.getCost()) {
                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cannot afford that item!");
                 player.closeInventory();
@@ -469,21 +474,15 @@ public class ShopManager {
             } else {
                 player.getInventory().addItem(item.getItem());
             }
-            switch (item.getCurrencyType()) {
-                case MONEY:
-                    Core.getEconomy().addBalance(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store");
-                    break;
-                case TOKEN:
-                    Core.getEconomy().addTokens(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store");
-                    break;
-            }
+            Core.getEconomy().changeAmount(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store",
+                    item.getCurrencyType(), false);
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased " + item.getDisplayName() +
                     ChatColor.GREEN + "!");
             player.closeInventory();
         } else if (outfitConfirm.containsKey(player.getUniqueId())) {
             OutfitItem item = outfitConfirm.remove(player.getUniqueId());
             final Outfit o = ParkManager.getInstance().getWardrobeManager().getOutfit(item.getOutfitId());
-            int tkn = Core.getEconomy().getTokens(player.getUniqueId());
+            int tkn = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.TOKENS);
             if (tkn < item.getCost()) {
                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You cannot afford that item!");
                 player.closeInventory();
@@ -494,7 +493,7 @@ public class ShopManager {
                 player.sendMessage(ChatColor.RED + "You already own that Outfit!");
                 return;
             }
-            Core.getEconomy().addTokens(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store");
+            Core.getEconomy().changeAmount(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store", CurrencyType.TOKENS, false);
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased the " + o.getName() + " Outfit" +
                     ChatColor.GREEN + "!");
             player.closeInventory();
@@ -528,7 +527,7 @@ public class ShopManager {
             Inventory inv = Bukkit.createInventory(player.getBukkitPlayer(), 27, ChatColor.GREEN + "Shop - " + ChatColor.RED + "Confirm");
             ItemStack name = ItemUtil.create(Material.WOOL, 1, (byte) 9, ChatColor.GREEN + "Please confirm your Purchase.",
                     Arrays.asList(ChatColor.GREEN + "You are about to purchase the ", o.getName() + " Outfit", ChatColor.GREEN +
-                            "for " + ChatColor.YELLOW + CurrencyType.TOKEN.getIcon() + itm.getCost() + ChatColor.GREEN + "."));
+                            "for " + ChatColor.YELLOW + CurrencyType.TOKENS.getIcon() + itm.getCost() + ChatColor.GREEN + "."));
             ItemStack yes = ItemUtil.create(Material.WOOL, 1, (byte) 13, ChatColor.GREEN + "Confirm Purchase",
                     Collections.singletonList(ChatColor.GRAY + "This cannot be undone!"));
             ItemStack no = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Cancel Purchase",

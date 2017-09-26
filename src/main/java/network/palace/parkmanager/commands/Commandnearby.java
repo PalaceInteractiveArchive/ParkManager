@@ -8,7 +8,7 @@ import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 

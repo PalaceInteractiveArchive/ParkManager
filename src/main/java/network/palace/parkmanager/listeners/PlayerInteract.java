@@ -9,7 +9,8 @@ import network.palace.parkmanager.autograph.Signature;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
-import network.palace.parkmanager.utils.WarpUtil;
+import network.palace.parkwarp.ParkWarp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -114,13 +115,13 @@ public class PlayerInteract implements Listener {
                     return;
                 }
                 if (s.getLine(0).equals(warp)) {
-                    Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
+                    Warp warp = ParkWarp.getInstance().getWarpUtil().findWarp(ChatColor.stripColor(s.getLine(1)));
                     if (warp == null) {
                         cp.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
                         return;
                     }
                     if (!warp.getServer().equalsIgnoreCase(Core.getInstanceName())) {
-                        WarpUtil.crossServerWarp(cp.getUniqueId(), warp.getName(), warp.getServer());
+                        ParkWarp.getInstance().getWarpUtil().crossServerWarp(cp.getUniqueId(), warp.getName(), warp.getServer());
                         return;
                     }
                     cp.teleport(warp.getLocation());

@@ -3,7 +3,7 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.HotelRoom;
-import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

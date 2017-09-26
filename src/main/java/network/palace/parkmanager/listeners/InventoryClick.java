@@ -119,10 +119,6 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 MeetAndGreetListClick.handle(event);
                 return;
-            case "Advent Calendar":
-                event.setCancelled(true);
-                AdventCalendarClick.handle(event);
-                return;
             case "Player Settings":
                 event.setCancelled(true);
                 PlayerSettingsClick.handle(event);

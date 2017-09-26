@@ -10,7 +10,7 @@ import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.HotelRoom;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Resort;
-import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkwarp.handlers.Warp;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.watch.WatchTask;
 import org.bukkit.*;
