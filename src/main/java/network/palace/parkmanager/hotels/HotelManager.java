@@ -3,7 +3,7 @@ package network.palace.parkmanager.hotels;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.HotelRoom;
-import network.palace.parkmanager.handlers.Warp;
+import network.palace.parkwarp.handlers.Warp;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.utils.PlayerUtil;
 import org.bukkit.*;

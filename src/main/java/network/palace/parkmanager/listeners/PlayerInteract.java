@@ -14,6 +14,8 @@ import network.palace.parkmanager.mural.Mural;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.MuralUtil;
 import network.palace.parkmanager.utils.WarpUtil;
+import network.palace.parkwarp.ParkWarp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -140,13 +142,13 @@ public class PlayerInteract implements Listener {
                     }
                 }
                 if (s.getLine(0).equals(warp)) {
-                    Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
+                    Warp warp = ParkWarp.getInstance().getWarpUtil().findWarp(ChatColor.stripColor(s.getLine(1)));
                     if (warp == null) {
                         cp.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
                         return;
                     }
                     if (!warp.getServer().equalsIgnoreCase(Core.getInstanceName())) {
-                        WarpUtil.crossServerWarp(cp.getUniqueId(), warp.getName(), warp.getServer());
+                        ParkWarp.getInstance().getWarpUtil().crossServerWarp(cp.getUniqueId(), warp.getName(), warp.getServer());
                         return;
                     }
                     cp.teleport(warp.getLocation());

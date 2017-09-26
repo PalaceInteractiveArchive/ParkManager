@@ -35,6 +35,11 @@
         </dependency>
         <dependency>
             <groupId>network.palace</groupId>
+            <artifactId>ParkWarp</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>network.palace</groupId>
             <artifactId>vanish</artifactId>
             <version>1.0</version>
         </dependency>

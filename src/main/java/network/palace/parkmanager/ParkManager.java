@@ -54,7 +54,6 @@ public class ParkManager extends Plugin implements Listener {
     private HashMap<UUID, PlayerData> playerData = new HashMap<>();
     @Getter private Resort resort;
     @Getter private Stitch stitch;
-    private List<Warp> warps = new ArrayList<>();
     private List<Ride> rides = new ArrayList<>();
     private List<Ride> attractions = new ArrayList<>();
     private List<Ride> meetandgreets = new ArrayList<>();
@@ -127,8 +126,6 @@ public class ParkManager extends Plugin implements Listener {
                 e.printStackTrace();
             }
         }*/
-        warps.clear();
-        WarpUtil.refreshWarps();
         shopManager = new ShopManager();
         String sn = Core.getServerType();
         hotelServer = FileUtil.isHotelServer();
@@ -170,7 +167,6 @@ public class ParkManager extends Plugin implements Listener {
             tp.kickPlayer(Bukkit.getShutdownMessage());
         }
         hotelManager.serverStop();
-        warps.clear();
         for (World world : Bukkit.getWorlds()) {
             world.getEntities().stream().filter(e -> e instanceof Minecart).forEach(org.bukkit.entity.Entity::remove);
         }
@@ -191,14 +187,6 @@ public class ParkManager extends Plugin implements Listener {
 
     public HashMap<UUID, String> getUserCache() {
         return new HashMap<>(userCache);
-    }
-
-    public List<Warp> getWarps() {
-        return ImmutableList.copyOf(warps);
-    }
-
-    public void clearWarps() {
-        warps.clear();
     }
 
     public PlayerData getPlayerData(UUID uuid) {
@@ -312,14 +300,6 @@ public class ParkManager extends Plugin implements Listener {
             }
         }
         return null;
-    }
-
-    public void removeWarp(Warp warp) {
-        warps.remove(warp);
-    }
-
-    public void addWarp(Warp warp) {
-        warps.add(warp);
     }
 
     public void logActivity(Player player, String activity, String description) {
