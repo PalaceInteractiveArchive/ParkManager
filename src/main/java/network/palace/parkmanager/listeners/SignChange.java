@@ -38,6 +38,14 @@ public class SignChange implements Listener {
                 event.setLine(3, "");
                 return;
             }
+            if (l1.equalsIgnoreCase("[server]")) {
+                String name = event.getLine(1);
+                event.setLine(0, PlayerInteract.server);
+                event.setLine(1, "Click to join");
+                event.setLine(2, name);
+                event.setLine(3, "");
+                return;
+            }
             if (l1.equalsIgnoreCase("[hotel]") || l1.equalsIgnoreCase("[suite]")) {
                 if (!ParkManager.getInstance().isHotelServer()) {
                     return;

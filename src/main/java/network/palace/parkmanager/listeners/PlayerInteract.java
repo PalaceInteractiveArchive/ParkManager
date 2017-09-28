@@ -40,6 +40,7 @@ public class PlayerInteract implements Listener {
     public static String queue = ChatColor.BLUE + "[Queue]";
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
+    public static String server = ChatColor.BLUE + "[Server]";
     private boolean dl = ParkManager.getInstance().isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -129,6 +130,30 @@ public class PlayerInteract implements Listener {
                             + ChatColor.WHITE + "]");
                     return;
                 }
+                if (s.getLine(0).equals(shop)) {
+                    String shop = ChatColor.stripColor(s.getLine(1));
+                    ParkManager.getInstance().getShopManager().openMenu(cp, shop);
+                    return;
+                }
+                if (s.getLine(0).equals(queue) || s.getLine(0).equals(fastpass) || s.getLine(0).equals(wait)) {
+                    ParkManager.getInstance().getQueueManager().handle(event);
+                    return;
+                }
+                if (s.getLine(0).equals(server)) {
+                    String server = s.getLine(2);
+                    Core.getPlayerManager().getPlayer(player).sendToServer(server);
+                    return;
+                }
+                if (Core.getInstanceName().contains("Epcot")) {
+                    if (s.getLine(0).equals(designStation)) {
+                        if (MiscUtil.checkIfInt(ChatColor.stripColor(s.getLine(1)))) {
+                            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.DESIGNSTATION);
+                            return;
+                        }
+                        DesignStation.showStats(player);
+                        return;
+                    }
+                }
                 if (ParkManager.getInstance().isHotelServer()) {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(this.suite);
@@ -166,25 +191,6 @@ public class PlayerInteract implements Listener {
 
                             ParkManager.getInstance().getInventoryUtil().openSpecificHotelRoomPage(player, manager.getRoom(roomName));
                         }
-                        return;
-                    }
-                }
-                if (s.getLine(0).equals(shop)) {
-                    String shop = ChatColor.stripColor(s.getLine(1));
-                    ParkManager.getInstance().getShopManager().openMenu(cp, shop);
-                    return;
-                }
-                if (s.getLine(0).equals(queue) || s.getLine(0).equals(fastpass) || s.getLine(0).equals(wait)) {
-                    ParkManager.getInstance().getQueueManager().handle(event);
-                    return;
-                }
-                if (Core.getInstanceName().contains("Epcot")) {
-                    if (s.getLine(0).equals(designStation)) {
-                        if (MiscUtil.checkIfInt(ChatColor.stripColor(s.getLine(1)))) {
-                            ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.DESIGNSTATION);
-                            return;
-                        }
-                        DesignStation.showStats(player);
                         return;
                     }
                 }
