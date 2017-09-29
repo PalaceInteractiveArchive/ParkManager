@@ -10,7 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 @CommandMeta(description = "Broadcast to the server")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandbc extends CoreCommand {
 
     public Commandbc() {
@@ -23,11 +23,11 @@ public class Commandbc extends CoreCommand {
             sender.sendMessage(ChatColor.RED + "/bc [Message]");
             return;
         }
-        String message = "";
+        StringBuilder message = new StringBuilder();
         for (String s : args) {
-            message += s + " ";
+            message.append(s).append(" ");
         }
         Bukkit.broadcastMessage(ChatColor.WHITE + "[" + ChatColor.AQUA + "Information" + ChatColor.WHITE + "] " +
-                ChatColor.GREEN + ChatColor.translateAlternateColorCodes('&', message.trim()));
+                ChatColor.GREEN + ChatColor.translateAlternateColorCodes('&', message.toString().trim()));
     }
 }

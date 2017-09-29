@@ -17,7 +17,7 @@ import org.bukkit.command.CommandSender;
  * Created by Marc on 4/13/17.
  */
 @CommandMeta(description = "USO-related features")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commanduso extends CoreCommand {
 
     public Commanduso() {

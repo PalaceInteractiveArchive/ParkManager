@@ -42,7 +42,7 @@ public class Commandspawn extends CoreCommand {
         Player player = (Player) sender;
         CPlayer cp = Core.getPlayerManager().getPlayer(player);
         if (args.length == 1) {
-            if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() >= Rank.KNIGHT.getRankId()) {
+            if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() >= Rank.MOD.getRankId()) {
                 CPlayer tp = Core.getPlayerManager().getPlayer(args[0]);
                 if (tp == null) {
                     player.sendMessage(ChatColor.RED + "Player not found!");

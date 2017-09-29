@@ -13,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @CommandMeta(description = "Look into a player's inventory")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandinvsee extends CoreCommand {
 
     public Commandinvsee() {

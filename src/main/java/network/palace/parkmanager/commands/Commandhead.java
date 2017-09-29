@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
  * Created by Marc on 3/10/15
  */
 @CommandMeta(description = "Get a player head")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandhead extends CoreCommand {
 
     public Commandhead() {

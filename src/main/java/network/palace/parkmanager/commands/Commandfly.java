@@ -47,7 +47,7 @@ public class Commandfly extends CoreCommand {
         Player player = (Player) sender;
         if (args.length == 1) {
             Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
-            if (rank.getRankId() < Rank.KNIGHT.getRankId()) {
+            if (rank.getRankId() < Rank.MOD.getRankId()) {
                 if (player.getAllowFlight()) {
                     player.setAllowFlight(false);
                     player.setFlying(false);

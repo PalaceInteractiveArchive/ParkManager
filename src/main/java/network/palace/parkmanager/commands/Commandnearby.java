@@ -39,7 +39,7 @@ public class Commandnearby extends CoreCommand {
             if (warp.getName().startsWith("char") && player.getRank().getRankId() < Rank.CHARACTER.getRankId()) {
                 continue;
             }
-            if (warp.getName().startsWith("staff") && player.getRank().getRankId() < Rank.SQUIRE.getRankId()) {
+            if (warp.getName().startsWith("staff") && player.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
                 continue;
             }
             int distance = (int) warp.getLocation().distance(center);

@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
  * Created by Marc on 2/19/16
  */
 @CommandMeta(description = "Mute and unmute chat")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandmc extends CoreCommand {
 
     public Commandmc() {

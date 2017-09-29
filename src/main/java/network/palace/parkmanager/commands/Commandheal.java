@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
 @CommandMeta(description = "Heal a player")
-@CommandPermission(rank = Rank.SQUIRE)
+@CommandPermission(rank = Rank.TRAINEE)
 public class Commandheal extends CoreCommand {
 
     public Commandheal() {

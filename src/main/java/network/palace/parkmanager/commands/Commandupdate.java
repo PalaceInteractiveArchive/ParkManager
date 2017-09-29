@@ -15,7 +15,7 @@ import org.bukkit.block.Sign;
  * Created by Marc on 5/5/17.
  */
 @CommandMeta(description = "Temporary sign update command")
-@CommandPermission(rank = Rank.WIZARD)
+@CommandPermission(rank = Rank.DEVELOPER)
 public class Commandupdate extends CoreCommand {
 
     public Commandupdate() {

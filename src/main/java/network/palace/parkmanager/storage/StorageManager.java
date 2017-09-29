@@ -266,7 +266,7 @@ public class StorageManager {
             System.arraycopy(hotbar, 0, cont, 0, hotbar.length >= 4 ? 4 : hotbar.length);
             inv.setContents(Arrays.copyOfRange(cont, 0, 36));
         }
-        if (player.getRank().getRankId() > Rank.SQUIRE.getRankId()) {
+        if (player.getRank().getRankId() > Rank.TRAINEE.getRankId()) {
             if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                 inv.setItem(0, new ItemStack(Material.COMPASS));
             }

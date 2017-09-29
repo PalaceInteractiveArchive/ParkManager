@@ -35,7 +35,7 @@ public class EntityDamage implements Listener {
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
                 Player player = (Player) damager;
-                if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() < Rank.KNIGHT.getRankId()) {
+                if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() < Rank.MOD.getRankId()) {
                     event.setCancelled(true);
                     return;
                 }
@@ -53,7 +53,7 @@ public class EntityDamage implements Listener {
                     }
                 }
                 CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
-                if (cplayer.getRank().getRankId() >= Rank.KNIGHT.getRankId()) {
+                if (cplayer.getRank().getRankId() >= Rank.MOD.getRankId()) {
                     if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You must be in Build Mode to break entities!");

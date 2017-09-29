@@ -15,7 +15,7 @@ import org.bukkit.Location;
  * Created by Marc on 3/10/15
  */
 @CommandMeta(description = "Set hub location")
-@CommandPermission(rank = Rank.WIZARD)
+@CommandPermission(rank = Rank.DEVELOPER)
 public class Commandsethub extends CoreCommand {
 
     public Commandsethub() {

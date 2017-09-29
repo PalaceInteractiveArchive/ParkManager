@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
  * Created by Marc on 2/19/16
  */
 @CommandMeta(description = "Broadcast to the network")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandb extends CoreCommand {
 
     public Commandb() {
@@ -30,15 +30,15 @@ public class Commandb extends CoreCommand {
             return;
         }
         if (args.length > 0) {
-            String message = "";
+            StringBuilder message = new StringBuilder();
             for (String arg : args) {
-                message += arg + " ";
+                message.append(arg).append(" ");
             }
             String source = sender.getName();
             if (!(sender instanceof Player)) {
                 source = "Console on " + Core.getInstanceName();
             }
-            PacketBroadcast packet = new PacketBroadcast(message, source);
+            PacketBroadcast packet = new PacketBroadcast(message.toString(), source);
             Core.getDashboardConnection().send(packet);
             return;
         }

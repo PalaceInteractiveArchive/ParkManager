@@ -95,7 +95,7 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        if (Bukkit.hasWhitelist() && user.getRank().getRankId() < Rank.SQUIRE.getRankId()) {
+        if (Bukkit.hasWhitelist() && user.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
             event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
             return;
         }
@@ -163,14 +163,14 @@ public class PlayerJoinAndLeave implements Listener {
                 player.removePotionEffect(type.getType());
             }
             GameMode mode = player.getGameMode();
-            if (cp.getRank().getRankId() >= Rank.KNIGHT.getRankId()) {
+            if (cp.getRank().getRankId() >= Rank.MOD.getRankId()) {
                 player.setGameMode(GameMode.SURVIVAL);
                 if (!player.getAllowFlight()) {
                     player.setAllowFlight(true);
                 }
             } else {
                 player.setGameMode(GameMode.ADVENTURE);
-                boolean fly = cp.getRank().getRankId() >= Rank.SQUIRE.getRankId();
+                boolean fly = cp.getRank().getRankId() >= Rank.TRAINEE.getRankId();
                 if (player.getAllowFlight() != fly) {
                     player.setAllowFlight(fly);
                 }

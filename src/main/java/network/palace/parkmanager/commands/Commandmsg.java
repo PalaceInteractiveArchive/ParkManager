@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
  * Created by Marc on 12/16/14
  */
 @CommandMeta(description = "Send message", aliases = {"tell", "t", "w", "whisper", "m"})
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandmsg extends CoreCommand {
 
     public Commandmsg() {
@@ -28,15 +28,15 @@ public class Commandmsg extends CoreCommand {
                 sender.sendMessage(ChatColor.RED + "/msg [Player] [Message]");
                 return;
             }
-            String msg = "";
+            StringBuilder msg = new StringBuilder();
             for (int i = 1; i < args.length; i++) {
-                msg += args[i] + " ";
+                msg.append(args[i]).append(" ");
             }
             Player player = Bukkit.getPlayer(args[0]);
             if (player == null) {
                 return;
             }
-            player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', msg));
+            player.sendMessage(ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', msg.toString()));
         }
     }
 }

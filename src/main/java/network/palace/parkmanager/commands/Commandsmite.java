@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.HashSet;
 
 @CommandMeta(description = "Spawn lightning")
-@CommandPermission(rank = Rank.WIZARD)
+@CommandPermission(rank = Rank.DEVELOPER)
 public class Commandsmite extends CoreCommand {
 
     public Commandsmite() {

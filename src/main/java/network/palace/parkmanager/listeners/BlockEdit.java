@@ -29,7 +29,7 @@ public class BlockEdit implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         CPlayer user = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
+        if (user.getRank().getRankId() < Rank.MOD.getRankId()) {
             event.setCancelled(true);
             return;
         } else {
@@ -102,7 +102,7 @@ public class BlockEdit implements Listener {
             }
         }
 
-        if (cplayer.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
+        if (cplayer.getRank().getRankId() < Rank.MOD.getRankId()) {
             event.setCancelled(true);
         } else {
             if (!isInBuildMode(player.getUniqueId())) {

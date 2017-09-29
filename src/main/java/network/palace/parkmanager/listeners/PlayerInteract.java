@@ -95,7 +95,7 @@ public class PlayerInteract implements Listener {
         }
         if (action.name().toLowerCase().contains("block")) {
             if (cp.getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_AXE) &&
-                    rank.getRankId() >= Rank.KNIGHT.getRankId()) {
+                    rank.getRankId() >= Rank.MOD.getRankId()) {
                 if (action.equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
                     ParkManager.getInstance().getBlockChanger().setSelection(0, player, event.getClickedBlock().getLocation());
@@ -313,7 +313,7 @@ public class PlayerInteract implements Listener {
             return;
         }
         CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cplayer.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
+        if (cplayer.getRank().getRankId() < Rank.MOD.getRankId()) {
             if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
             }

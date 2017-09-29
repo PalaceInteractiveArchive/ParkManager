@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandMeta(description = "Delay placing a block (not recommended)")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commanddelay extends CoreCommand {
 
     public Commanddelay() {

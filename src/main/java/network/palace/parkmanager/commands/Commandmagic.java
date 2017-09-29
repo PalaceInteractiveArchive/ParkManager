@@ -44,7 +44,7 @@ import java.util.*;
  * Created by Marc on 1/7/15
  */
 @CommandMeta(description = "Command with magical stuff")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandmagic extends CoreCommand {
     public Location location;
 
@@ -61,7 +61,7 @@ public class Commandmagic extends CoreCommand {
         }
         if (sender instanceof Player) {
             CPlayer player = Core.getPlayerManager().getPlayer(((Player) sender).getUniqueId());
-            if (player.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
+            if (player.getRank().getRankId() < Rank.MOD.getRankId()) {
                 return;
             }
         }
@@ -474,9 +474,9 @@ public class Commandmagic extends CoreCommand {
                                     return;
                                 }
                                 Rank rank = Core.getPlayerManager().getPlayer(tp.getUniqueId()).getRank();
-                                if (rank.getRankId() < Rank.KNIGHT.getRankId()) {
+                                if (rank.getRankId() < Rank.MOD.getRankId()) {
                                     sender.sendMessage(ChatColor.RED + "Could not toggle for user " + tp.getName() +
-                                            ", that user is not at least the " + Rank.KNIGHT.getFormattedName()
+                                            ", that user is not at least the " + Rank.MOD.getFormattedName()
                                             + ChatColor.RED + " Rank!");
                                     return;
                                 }

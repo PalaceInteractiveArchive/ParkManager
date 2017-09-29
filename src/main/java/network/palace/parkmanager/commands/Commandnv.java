@@ -17,7 +17,7 @@ import java.util.Collection;
  * Created by Marc on 4/11/15
  */
 @CommandMeta(description = "Night vision")
-@CommandPermission(rank = Rank.SQUIRE)
+@CommandPermission(rank = Rank.TRAINEE)
 public class Commandnv extends CoreCommand {
 
     public Commandnv() {

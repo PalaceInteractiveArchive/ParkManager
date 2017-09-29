@@ -15,7 +15,7 @@ public class PlayerDropItem implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cplayer.getRank().getRankId() < Rank.KNIGHT.getRankId()) {
+        if (cplayer.getRank().getRankId() < Rank.MOD.getRankId()) {
             event.setCancelled(true);
             return;
         }

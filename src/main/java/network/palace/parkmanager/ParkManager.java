@@ -32,7 +32,6 @@ import network.palace.parkmanager.uso.mib.MenInBlack;
 import network.palace.parkmanager.uso.rrr.RipRideRockit;
 import network.palace.parkmanager.utils.*;
 import network.palace.parkmanager.watch.WatchTask;
-import network.palace.ridemanager.RideManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -47,7 +46,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.2.2", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.2.3", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -227,7 +226,7 @@ public class ParkManager extends Plugin implements Listener {
             if (r.getQueue() instanceof PluginRideQueue) {
                 PluginRideQueue queue = (PluginRideQueue) r.getQueue();
                 queue.getRide().despawn();
-                RideManager.getMovementUtil().removeRide(queue.getRide());
+                network.palace.ridemanager.RideManager.getMovementUtil().removeRide(queue.getRide());
             }
         });
         rides.clear();

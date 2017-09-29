@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  * Created by Marc on 3/10/15
  */
 @CommandMeta(description = "Give player an item", aliases = "i")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commanditem extends CoreCommand {
 
     public Commanditem() {

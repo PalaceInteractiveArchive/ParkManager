@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @CommandMeta(description = "View a player's enderchest")
-@CommandPermission(rank = Rank.KNIGHT)
+@CommandPermission(rank = Rank.MOD)
 public class Commandenderchest extends CoreCommand {
 
     public Commandenderchest() {
