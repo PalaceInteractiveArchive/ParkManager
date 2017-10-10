@@ -386,6 +386,7 @@ public class HotelManager {
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
         boolean hotelServer = ParkManager.getInstance().isHotelServer();
+        if (room == null || room.getWarp() == null) return;
         if (hotelServer && room.getWarp().getWorld().equals(Bukkit.getWorlds().get(0))) {
             closeDoors.add(room);
         }
