@@ -102,7 +102,6 @@ public class QueueManager implements Listener {
                     }
                     task.execute();
                     tasks.remove(i);
-                    i++;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
