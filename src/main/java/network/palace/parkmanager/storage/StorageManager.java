@@ -101,7 +101,7 @@ public class StorageManager {
         if (data == null || data.getBackpack() == null || data.getLocker() == null) {
             return;
         }
-        if (System.currentTimeMillis() - data.getLastInventoryUpdate() > (5 * 60 * 1000) && !force) {
+        if (System.currentTimeMillis() - data.getLastInventoryUpdate() < (5 * 60 * 1000) && !force) {
             return;
         }
         long cur = System.currentTimeMillis();

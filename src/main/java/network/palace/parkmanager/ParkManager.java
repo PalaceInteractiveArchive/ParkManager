@@ -15,6 +15,7 @@ import network.palace.parkmanager.fastpasskiosk.FPKioskManager;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.listeners.*;
+import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.queue.QueueManager;
 import network.palace.parkmanager.queue.handlers.AbstractQueueRide;
 import network.palace.parkmanager.queue.handlers.PluginRideQueue;
@@ -46,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.2.5", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.2.6", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -86,6 +87,7 @@ public class ParkManager extends Plugin implements Listener {
     @Getter private ToyStoryMania toyStoryMania;
     @Getter private MenInBlack menInBlack;
     @Getter private RipRideRockit ripRideRockit;
+    @Getter private OutlineManager outlineManager;
     @Setter private String activityURL;
     @Setter private String activityUser;
     @Setter private String activityPassword;
@@ -134,6 +136,7 @@ public class ParkManager extends Plugin implements Listener {
         setupRides();
         fpKioskManager = new FPKioskManager();
         scheduleManager = new ScheduleManager();
+        outlineManager = new OutlineManager();
         //enablePixelator();
         setActivityURL(config.getString("activity.url"));
         setActivityUser(config.getString("activity.user"));
@@ -360,6 +363,7 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new Commandnight());
         registerCommand(new Commandnoon());
         registerCommand(new Commandnv());
+        registerCommand(new Commandoutline());
         registerCommand(new Commandpack());
         registerCommand(new Commandptime());
         registerCommand(new Commandpweather());

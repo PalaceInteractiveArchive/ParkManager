@@ -78,12 +78,16 @@ public class QueueManager implements Listener {
                         }
                     }
                     for (UUID uuid : q) {
-                        Core.getPlayerManager().getPlayer(uuid).getActionBar().show(ChatColor.GREEN + "You're #" +
+                        CPlayer p = Core.getPlayerManager().getPlayer(uuid);
+                        if (p == null) continue;
+                        p.getActionBar().show(ChatColor.GREEN + "You're #" +
                                 (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
                                 ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
                     }
                     for (UUID uuid : fp) {
-                        Core.getPlayerManager().getPlayer(uuid).getActionBar().show(ChatColor.GREEN + "You're #" +
+                        CPlayer p = Core.getPlayerManager().getPlayer(uuid);
+                        if (p == null) continue;
+                        p.getActionBar().show(ChatColor.GREEN + "You're #" +
                                 (ride.getPosition(uuid) + 1) + " in queue for " + ride.getName() + " " +
                                 ChatColor.LIGHT_PURPLE + "Wait: " + ride.getWaitFor(uuid));
                     }

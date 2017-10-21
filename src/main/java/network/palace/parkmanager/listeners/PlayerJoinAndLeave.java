@@ -325,7 +325,8 @@ public class PlayerJoinAndLeave implements Listener {
         ParkManager.getInstance().getQueueManager().silentLeaveAllQueues(cp);
         ParkManager.getInstance().getAutographManager().logout(cp);
         ParkManager.getInstance().getBandUtil().cancelLoadPlayerData(player.getUniqueId());
-        ParkManager.getInstance().getVisibilityUtil().logout(Core.getPlayerManager().getPlayer(player));
+        ParkManager.getInstance().getVisibilityUtil().logout(cp);
+        ParkManager.getInstance().getOutlineManager().removeSession(player.getUniqueId());
         WatchTask.removeFromMessage(player.getUniqueId());
         parkManager.getBlockChanger().logout(player);
         if (Core.getServerType().equals("MK")) {

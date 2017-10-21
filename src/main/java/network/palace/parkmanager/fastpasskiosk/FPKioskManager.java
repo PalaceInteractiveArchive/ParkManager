@@ -83,19 +83,22 @@ public class FPKioskManager implements Listener {
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             for (UUID uuid : new ArrayList<>(firstOpenMenu)) {
                 CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
-                if (tp != null) {
-                    firstOpenMenu.remove(uuid);
-                    openKiosk(tp);
-                    openMenu.add(uuid);
+                firstOpenMenu.remove(uuid);
+                if (tp == null) {
+                    return;
                 }
+                openKiosk(tp);
+                openMenu.add(uuid);
             }
         }, 0L, 1L);
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             for (UUID uuid : new ArrayList<>(openMenu)) {
                 CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
-                if (tp != null) {
-                    updateKioskMenu(tp);
+                if (tp == null) {
+                    openMenu.remove(uuid);
+                    return;
                 }
+                updateKioskMenu(tp);
             }
         }, 0L, 20L);
     }

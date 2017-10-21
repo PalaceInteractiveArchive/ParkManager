@@ -21,6 +21,7 @@ public class WatchTask implements Runnable {
                 ParkManager.getInstance().getBandUtil().currentTime();
         for (UUID uuid : new ArrayList<>(message)) {
             CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+            if (tp == null) message.remove(uuid);
             tp.getActionBar().show(msg);
         }
     }

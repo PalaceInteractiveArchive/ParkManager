@@ -240,11 +240,16 @@ public class AutographManager {
                     " has timed out!");
             target.sendMessage(name + "'s " + ChatColor.RED + "Autograph Request sent to you has timed out!");
         }, 400L).getTaskId());
+        UUID uuid = sender.getUniqueId();
         receiverMap.put(sender.getUniqueId(), Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
             int i = 20;
 
             @Override
             public void run() {
+                if (target == null || sender == null) {
+                    Bukkit.getScheduler().cancelTask(receiverMap.remove(uuid));
+                    return;
+                }
                 if (i <= 0) {
                     target.getActionBar().show(ChatColor.RED + sender.getName() + "'s Autograph Request Expired!");
                     sender.getActionBar().show(ChatColor.RED + "Your Autograph Request to " + target.getName() +

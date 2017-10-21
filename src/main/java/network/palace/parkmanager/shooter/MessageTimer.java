@@ -34,6 +34,7 @@ public class MessageTimer {
             for (UUID uuid : parkManager.getShooter().getIngame()) {
                 CPlayer player = Core.getPlayerManager().getPlayer(uuid);
                 if (player == null) {
+                    parkManager.getShooter().removeFromHashMap(uuid);
                     continue;
                 }
                 player.getActionBar().show(msg + player.getBukkitPlayer().getMetadata("shooter").get(0).asInt());
