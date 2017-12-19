@@ -25,6 +25,6 @@ public enum StorageSize {
             case 1:
                 return LARGE;
         }
-        return null;
+        return SMALL;
     }
 }

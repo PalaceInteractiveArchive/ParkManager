@@ -64,8 +64,19 @@ public class QueueManager implements Listener {
                             } else if (pride.getRide() instanceof CarouselRide) {
                                 CarouselRide r = (CarouselRide) pride.getRide();
                                 state = r.getState();
+                            } else if (pride.getRide() instanceof AerialCarouselRide) {
+                                AerialCarouselRide r = (AerialCarouselRide) pride.getRide();
+                                state = r.getState();
                             }
                             if (state.equals(FlatState.LOADING)) {
+                                if (pride.canStart()) {
+                                    pride.start();
+                                } else {
+                                    pride.loadPeriod();
+                                }
+                            }
+                        } else {
+                            if ((System.currentTimeMillis() - pride.getLastSpawn()) > 2000) {
                                 if (pride.canStart()) {
                                     pride.start();
                                 } else {
@@ -333,10 +344,8 @@ public class QueueManager implements Listener {
         }
         String rideName = s.getLine(2);
         AbstractQueueRide ride = getRide2(rideName);
+        if (ride == null) return;
         Ride rideObject = ParkManager.getInstance().getRide(ride.getShortName());
-        if (ride == null) {
-            return;
-        }
         if (ride.isFPQueued(player.getUniqueId())) {
             ride.leaveFPQueue(player);
             return;
@@ -373,9 +382,9 @@ public class QueueManager implements Listener {
         List<Ride> rides = parkManager.getRides();
         List<Ride> attractions = parkManager.getAttractions();
         List<Ride> mngs = parkManager.getMeetAndGreets();
-        List<Ride> finalList = rides.stream().collect(Collectors.toList());
-        finalList.addAll(attractions.stream().collect(Collectors.toList()));
-        finalList.addAll(mngs.stream().collect(Collectors.toList()));
+        List<Ride> finalList = new ArrayList<>(rides);
+        finalList.addAll(attractions);
+        finalList.addAll(mngs);
         return finalList.stream().filter(ride -> ride.getQueue() != null).map(Ride::getQueue)
                 .collect(Collectors.toList());
     }

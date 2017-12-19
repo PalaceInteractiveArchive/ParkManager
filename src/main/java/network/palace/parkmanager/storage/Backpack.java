@@ -1,5 +1,6 @@
 package network.palace.parkmanager.storage;
 
+import lombok.Getter;
 import network.palace.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,8 +15,8 @@ import java.util.UUID;
  */
 public class Backpack {
     private UUID uuid;
-    private StorageSize size;
-    private Inventory inv;
+    @Getter private StorageSize size;
+    @Getter private Inventory inventory;
 
     public Backpack(CPlayer player, StorageSize size, ItemStack[] contents) {
         this.uuid = player.getUniqueId();
@@ -31,8 +32,7 @@ public class Backpack {
                 arr[i] = item;
                 i++;
             }
-        }
-        if (contents.length > size.getSlots()) {
+        } else if (contents.length > size.getSlots()) {
             arr = new ItemStack[size.getSlots()];
             int i = 0;
             for (ItemStack item : contents) {
@@ -45,21 +45,11 @@ public class Backpack {
         } else {
             arr = contents;
         }
-        inv = Bukkit.createInventory(player.getBukkitPlayer(), size.getSlots(), ChatColor.BLUE + "Your Backpack");
-        if (arr != null) {
-            inv.setContents(arr);
-        }
+        inventory = Bukkit.createInventory(player.getBukkitPlayer(), size.getSlots(), ChatColor.BLUE + "Your Backpack");
+        inventory.setContents(arr);
     }
 
     public UUID getUniqueId() {
         return uuid;
-    }
-
-    public StorageSize getSize() {
-        return size;
-    }
-
-    public Inventory getInventory() {
-        return inv;
     }
 }

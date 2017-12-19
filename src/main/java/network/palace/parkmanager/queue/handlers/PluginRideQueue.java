@@ -53,20 +53,37 @@ public class PluginRideQueue extends AbstractQueueRide {
             case CAROUSEL: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
                 ride = new CarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount);
-                RideManager.getMovementUtil().addRide(ride);
                 flat = true;
                 break;
             }
             case TEACUPS: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
                 ride = new TeacupsRide(shortName, name, delay, exit, center, currencyType, currencyAmount);
-                RideManager.getMovementUtil().addRide(ride);
                 flat = true;
+                break;
+            }
+            case AERIAL_CAROUSEL: {
+                Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
+                double aerialRadius = config.getDouble("ride." + shortName + ".queue.aerialRadius");
+                double supportRadius = config.getDouble("ride." + shortName + ".queue.supportRadius");
+                boolean small = config.getBoolean("ride." + shortName + ".queue.small");
+                double angle = config.getDouble("ride." + shortName + ".queue.angle");
+                double height = config.getDouble("ride." + shortName + ".queue.height");
+                double movein = config.getDouble("ride." + shortName + ".queue.movein");
+                ride = new AerialCarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount,
+                        aerialRadius, supportRadius, small, angle, height, movein);
+                flat = true;
+                break;
+            }
+            case FILE: {
+                String file = config.getString("ride." + shortName + ".queue.file");
+                ride = new FileRide(shortName, name, amount, delay, exit, file);
                 break;
             }
             default:
                 ride = null;
         }
+        if (ride != null) RideManager.getMovementUtil().addRide(ride);
     }
 
     @Override
@@ -148,9 +165,10 @@ public class PluginRideQueue extends AbstractQueueRide {
             loaded = false;
             lastSpawn = System.currentTimeMillis() / 1000;
         } else if (!isLoadPeriodOver(false)) {
+            int loadTime = getLoadTime();
             for (CPlayer p : riders) {
                 if (p != null)
-                    p.getActionBar().show(ChatColor.GREEN + "Ride starting in " + getLoadTime() + " seconds!");
+                    p.getActionBar().show(ChatColor.GREEN + "Ride starting in " + loadTime + " seconds!");
             }
         }
     }
@@ -162,6 +180,10 @@ public class PluginRideQueue extends AbstractQueueRide {
             }
         } else if (ride instanceof CarouselRide) {
             if (((CarouselRide) ride).isStarted()) {
+                return;
+            }
+        } else if (ride instanceof AerialCarouselRide) {
+            if (((AerialCarouselRide) ride).isStarted()) {
                 return;
             }
         }
@@ -234,6 +256,9 @@ public class PluginRideQueue extends AbstractQueueRide {
             }
             updateSigns();
             loaded = true;
+            if (ride instanceof FileRide) {
+                ((FileRide) ride).spawn(7000);
+            }
         }
     }
 

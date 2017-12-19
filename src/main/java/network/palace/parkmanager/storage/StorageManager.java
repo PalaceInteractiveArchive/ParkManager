@@ -101,32 +101,26 @@ public class StorageManager {
         if (data == null || data.getBackpack() == null || data.getLocker() == null) {
             return;
         }
-        if (System.currentTimeMillis() - data.getLastInventoryUpdate() < (5 * 60 * 1000) && !force) {
-            return;
-        }
-        long cur = System.currentTimeMillis();
+        if (System.currentTimeMillis() - data.getLastInventoryUpdate() < (5 * 60 * 1000) && !force) return;
+        long currentTime = System.currentTimeMillis();
         Backpack pack = data.getBackpack();
         Locker locker = data.getLocker();
-        if (pack == null || locker == null) {
-            return;
-        }
-        Inventory bp = pack.getInventory();
+        if (pack == null || locker == null) return;
+        Inventory backpackInventory = pack.getInventory();
         if (build) {
-            final PlayerInventory inv = player.getInventory();
-            bp.clear();
-            for (ItemStack i : inv.getContents()) {
-                if (i == null) {
-                    i = new ItemStack(Material.AIR);
-                }
-                bp.addItem(i);
+            final PlayerInventory playerInventory = player.getInventory();
+            backpackInventory.clear();
+            for (ItemStack i : playerInventory.getContents()) {
+                if (i == null) i = new ItemStack(Material.AIR);
+                backpackInventory.addItem(i);
             }
         }
         ItemStack[] hotbar = new ItemStack[4];
         if (build) {
-            ItemStack[] h = getBuildModeHotbars().get(player.getUniqueId());
+            ItemStack[] currentHotbar = getBuildModeHotbars().get(player.getUniqueId());
             for (int i = 0; i < 4; i++) {
                 try {
-                    hotbar[i] = h[i];
+                    hotbar[i] = currentHotbar[i];
                 } catch (Exception ignored) {
                 }
             }
@@ -134,7 +128,7 @@ public class StorageManager {
             ItemStack[] cont = player.getInventory().getContents();
             System.arraycopy(cont, 0, hotbar, 0, 4);
         }
-        String packjson = ItemUtil.getJsonFromInventory(bp).toString();
+        String packjson = ItemUtil.getJsonFromInventory(backpackInventory).toString();
         String packhash = generateHash(packjson);
         String lockerjson = ItemUtil.getJsonFromInventory(locker.getInventory()).toString();
         String lockerhash = generateHash(lockerjson);
@@ -167,7 +161,8 @@ public class StorageManager {
                 lockerjson, lockerhash, data.getLocker().getSize().ordinal(),
                 hotbarjson, hotbarhash);
         Core.getDashboardConnection().send(packet);
-        Bukkit.getLogger().info("Updated " + player.getName() + "'s inventory in " + (System.currentTimeMillis() - cur) + "ms");
+        Bukkit.getLogger().info("Inventory packet for " + player.getName() + " generated and sent in " +
+                (System.currentTimeMillis() - currentTime) + "ms");
     }
 
     public void setLoadingPack(Player player) {

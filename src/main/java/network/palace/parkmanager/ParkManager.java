@@ -47,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.2.6", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.2.7", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -98,7 +98,6 @@ public class ParkManager extends Plugin implements Listener {
         resort = Resort.fromString(FileUtil.getResort());
         stitch = new Stitch();
         packManager = new PackManager();
-        //universeEnergyRide = new UniverseEnergyRide();
         autographManager = new AutographManager();
         queueManager = new QueueManager();
         ttcServer = Core.getServerType().equalsIgnoreCase("ttc");
@@ -263,6 +262,10 @@ public class ParkManager extends Plugin implements Listener {
                 Ride attraction = new Ride(name, warp, type, data, category, queue, s, config.getBoolean("ride." + s + ".has-item"));
                 attractions.add(attraction);
             } else if (otype.equalsIgnoreCase("meetandgreet")) {
+                if (queue == null) {
+                    Core.logMessage("Queue Manager", "Queue cannot be null for a meet and greet: " + s);
+                    continue;
+                }
                 queue.toggleFreeze();
                 Ride meetandgreet = new Ride(name, warp, type, data, RideCategory.SLOW, queue, s, true);
                 meetandgreets.add(meetandgreet);
