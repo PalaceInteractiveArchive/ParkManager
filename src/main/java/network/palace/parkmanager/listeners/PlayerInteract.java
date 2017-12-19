@@ -5,6 +5,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.autograph.AutographManager;
 import network.palace.parkmanager.autograph.Signature;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
@@ -63,7 +64,7 @@ public class PlayerInteract implements Listener {
         final ItemStack hand = cp.getInventory().getItemInMainHand();
         if (hand.getType().equals(Material.WRITTEN_BOOK)) {
             BookMeta meta = (BookMeta) hand.getItemMeta();
-            if (meta.getTitle().startsWith(ParkManager.getInstance().getAutographManager().BOOK_TITLE)) {
+            if (meta.getTitle().startsWith(AutographManager.BOOK_TITLE)) {
                 event.setCancelled(true);
                 List<Signature> autographs = data.getAutographs();
                 ParkManager.getInstance().getAutographManager().openMenu(cp, autographs, player.isSneaking());
@@ -75,6 +76,7 @@ public class PlayerInteract implements Listener {
                 event.setCancelled(true);
                 cp.getInventory().setItemInMainHand(hand);
                 ArmorType type = getArmorType(hand);
+                if (type == null) return;
                 PlayerInventory inv = cp.getInventory();
                 switch (type) {
                     case HELMET:
@@ -92,6 +94,11 @@ public class PlayerInteract implements Listener {
                 }
                 return;
             }
+        }
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType().equals(Material.ANVIL) &&
+                cp.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
+            event.setCancelled(true);
+            return;
         }
         if (action.name().toLowerCase().contains("block")) {
             if (cp.getInventory().getItemInMainHand().getType().equals(Material.DIAMOND_AXE) &&
@@ -156,7 +163,7 @@ public class PlayerInteract implements Listener {
                 }
                 if (ParkManager.getInstance().isHotelServer()) {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
-                        boolean suite = s.getLine(0).equals(this.suite);
+                        boolean suite = s.getLine(0).equals(PlayerInteract.suite);
                         if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
                             cp.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getFormattedName()
                                     + ChatColor.RED + " or above to stay in a Suite!");

@@ -95,18 +95,6 @@ public class PlayerJoinAndLeave implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        if (Bukkit.hasWhitelist() && user.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
-            event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
-            return;
-        }
-        // If Disneyland and user rank is below Noble, don't allow them to connect
-        if ((ParkManager.getInstance().isResort(Resort.DLR)) &&
-                user.getRank().getRankId() < Rank.NOBLE.getRankId()) {
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(ChatColor.AQUA + "You must be the " + Rank.NOBLE.getFormattedName() +
-                    ChatColor.AQUA + " rank or above to preview Disneyland!");
-            return;
-        }
         if (event.getResult().equals(PlayerLoginEvent.Result.ALLOWED)) {
             player.getInventory().clear();
         }
@@ -258,13 +246,10 @@ public class PlayerJoinAndLeave implements Listener {
         inv.setItem(6, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                 Arrays.asList(ChatColor.GRAY + "Right-Click to open the", ChatColor.GRAY + "Show Schedule Menu")));
         if (book) {
-            Bukkit.getScheduler().runTaskAsynchronously(parkManager, new Runnable() {
-                @Override
-                public void run() {
-                    PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
-                    data.updateAutographs();
-                    parkManager.getAutographManager().giveBook(player);
-                }
+            Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
+                PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
+                data.updateAutographs();
+                parkManager.getAutographManager().giveBook(player);
             });
         }
         parkManager.getBandUtil().giveBandToPlayer(player);
