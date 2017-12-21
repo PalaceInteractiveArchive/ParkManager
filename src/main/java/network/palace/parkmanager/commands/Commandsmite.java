@@ -47,7 +47,7 @@ public class Commandsmite extends CoreCommand {
             strike(tp);
             return;
         }
-        player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<Byte>(), 50).getLocation());
+        player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<>(), 50).getLocation());
     }
 
     private void strike(Player tp) {

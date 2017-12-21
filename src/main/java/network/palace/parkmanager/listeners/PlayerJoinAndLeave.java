@@ -147,6 +147,7 @@ public class PlayerJoinAndLeave implements Listener {
             if (!data.isVisibility()) {
                 parkManager.getVisibilityUtil().addToHideAll(cp);
             }
+            parkManager.getVisibilityUtil().login(cp);
             for (PotionEffect type : player.getActivePotionEffects()) {
                 player.removePotionEffect(type.getType());
             }

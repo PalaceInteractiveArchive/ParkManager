@@ -84,8 +84,10 @@ public class InventoryUtil {
             Collections.singletonList(ChatColor.GREEN + "Coming Soon!"));
     private ItemStack uso = ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Universal Orlando Resort",
             Collections.singletonList(ChatColor.GREEN + "/join USO"));
-    private ItemStack seasonal = ItemUtil.create(Material.RED_ROSE, 1, (byte) 2, ChatColor.AQUA +
-            "Seasonal", Collections.singletonList(ChatColor.GREEN + "Opening again soon!"));
+    //    private ItemStack seasonal = ItemUtil.create(Material.RED_ROSE, 1, (byte) 2, ChatColor.AQUA +
+//            "Seasonal", Collections.singletonList(ChatColor.GREEN + "Opening again soon!"));
+    private ItemStack seasonal = ItemUtil.create(Material.SNOW_BALL, ChatColor.AQUA + "Seasonal",
+            Collections.singletonList(ChatColor.GREEN + "/join Seasonal"));
     //My Profile
     private ItemStack store = ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Store");
     private ItemStack web = ItemUtil.create(Material.REDSTONE, ChatColor.GREEN + "Website");

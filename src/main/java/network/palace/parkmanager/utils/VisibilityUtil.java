@@ -5,7 +5,6 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class VisibilityUtil {
             if (tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
-            tp.hidePlayer(player);
+            tp.hidePlayer(ParkManager.getInstance(), player);
         }
     }
 
@@ -35,7 +34,7 @@ public class VisibilityUtil {
                 continue;
             }
             if (ParkManager.getInstance().getPlayerData(tp.getUniqueId()).isVisibility()) {
-                tp.showPlayer(player);
+                tp.showPlayer(ParkManager.getInstance(), player);
             }
         }
     }
@@ -54,21 +53,19 @@ public class VisibilityUtil {
                 continue;
             }
             if (tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                player.hidePlayer(tp);
+                player.hidePlayer(ParkManager.getInstance(), tp);
             }
         }
     }
 
     public void removeFromHideAll(CPlayer player) {
-        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
-        List<UUID> friends = data.getFriendList();
         hideall.remove(player.getUniqueId());
         for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
             if (tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
             if (tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                player.showPlayer(tp);
+                player.showPlayer(ParkManager.getInstance(), tp);
             }
         }
     }
@@ -85,7 +82,7 @@ public class VisibilityUtil {
                 if (friends.contains(uuid)) {
                     continue;
                 }
-                Core.getPlayerManager().getPlayer(Bukkit.getPlayer(uuid)).hidePlayer(player);
+                Core.getPlayerManager().getPlayer(uuid).hidePlayer(ParkManager.getInstance(), player);
             }
         }
     }
