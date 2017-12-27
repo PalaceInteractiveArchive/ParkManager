@@ -21,7 +21,8 @@ public class VisibilityUtil {
             if (tp.getUniqueId().equals(player.getUniqueId())) {
                 continue;
             }
-            tp.hidePlayer(ParkManager.getInstance(), player);
+//            tp.hidePlayer(ParkManager.getInstance(), player);
+            tp.hidePlayer(player);
         }
     }
 
@@ -34,7 +35,8 @@ public class VisibilityUtil {
                 continue;
             }
             if (ParkManager.getInstance().getPlayerData(tp.getUniqueId()).isVisibility()) {
-                tp.showPlayer(ParkManager.getInstance(), player);
+//                tp.showPlayer(ParkManager.getInstance(), player);
+                tp.showPlayer(player);
             }
         }
     }
@@ -53,7 +55,8 @@ public class VisibilityUtil {
                 continue;
             }
             if (tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                player.hidePlayer(ParkManager.getInstance(), tp);
+//                player.hidePlayer(ParkManager.getInstance(), tp);
+                player.hidePlayer(tp);
             }
         }
     }
@@ -65,7 +68,8 @@ public class VisibilityUtil {
                 continue;
             }
             if (tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                player.showPlayer(ParkManager.getInstance(), tp);
+//                player.showPlayer(ParkManager.getInstance(), tp);
+                player.showPlayer(tp);
             }
         }
     }
@@ -82,7 +86,11 @@ public class VisibilityUtil {
                 if (friends.contains(uuid)) {
                     continue;
                 }
-                Core.getPlayerManager().getPlayer(uuid).hidePlayer(ParkManager.getInstance(), player);
+                try {
+//                    Core.getPlayerManager().getPlayer(uuid).hidePlayer(ParkManager.getInstance(), player);
+                    Core.getPlayerManager().getPlayer(uuid).hidePlayer(player);
+                } catch (Exception ignored) {
+                }
             }
         }
     }

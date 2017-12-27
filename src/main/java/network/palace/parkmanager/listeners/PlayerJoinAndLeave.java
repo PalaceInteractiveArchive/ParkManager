@@ -295,7 +295,7 @@ public class PlayerJoinAndLeave implements Listener {
         player.teleport(w.getLocation());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         CPlayer cp = Core.getPlayerManager().getPlayer(event.getPlayer());
@@ -308,10 +308,12 @@ public class PlayerJoinAndLeave implements Listener {
             ParkManager.getInstance().getHotelManager().closeDoor(player);
         }
         BlockEdit.logout(player.getUniqueId());
-        ParkManager.getInstance().getQueueManager().silentLeaveAllQueues(cp);
-        ParkManager.getInstance().getAutographManager().logout(cp);
+        if (cp != null) {
+            ParkManager.getInstance().getQueueManager().silentLeaveAllQueues(cp);
+            ParkManager.getInstance().getAutographManager().logout(cp);
+            ParkManager.getInstance().getVisibilityUtil().logout(cp);
+        }
         ParkManager.getInstance().getBandUtil().cancelLoadPlayerData(player.getUniqueId());
-        ParkManager.getInstance().getVisibilityUtil().logout(cp);
         ParkManager.getInstance().getOutlineManager().removeSession(player.getUniqueId());
         WatchTask.removeFromMessage(player.getUniqueId());
         parkManager.getBlockChanger().logout(player);

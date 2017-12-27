@@ -7,10 +7,11 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
+import java.util.Set;
 
 @CommandMeta(description = "Spawn lightning")
 @CommandPermission(rank = Rank.DEVELOPER)
@@ -47,7 +48,7 @@ public class Commandsmite extends CoreCommand {
             strike(tp);
             return;
         }
-        player.getWorld().strikeLightning(player.getTargetBlock(new HashSet<>(), 50).getLocation());
+        player.getWorld().strikeLightning(player.getTargetBlock((Set<Material>) null, 50).getLocation());
     }
 
     private void strike(Player tp) {
