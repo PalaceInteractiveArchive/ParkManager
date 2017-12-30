@@ -58,11 +58,15 @@ public class FileUtil {
         return configurationYaml().getString("resort");
     }
 
+    public static boolean isHotelServer() {
+        return configurationYaml().getBoolean("hotel");
+    }
+
     public static void setupConfig() {
         try {
             File file = FileUtil.configurationFile();
             if (file.exists()) {
-                YamlConfiguration config = new YamlConfiguration().loadConfiguration(file);
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
                 if (!config.contains("resort")) {
                     config.set("resort", "wdw");
                     config.save(file);
