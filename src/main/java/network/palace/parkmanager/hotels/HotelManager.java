@@ -51,7 +51,7 @@ public class HotelManager {
                 .filter(room -> room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000))
                 .forEach(room -> checkout(room, true)), 0L, 6000L);
         final List<HotelRoom> closeDoorsList = new ArrayList<>(closeDoors);
-        Bukkit.getScheduler().runTaskTimer(parkManager, () -> closeDoorsList.stream().forEach(room -> {
+        Bukkit.getScheduler().runTaskTimer(parkManager, () -> closeDoorsList.forEach(room -> {
             closeDoor(room);
             closeDoors.remove(room);
         }), 0L, 5L);
@@ -68,11 +68,11 @@ public class HotelManager {
             ResultSet result = sql.executeQuery();
             while (result.next()) {
                 HotelRoom room = new HotelRoom(result.getString("hotelName"), result.getInt("roomNumber"),
-                        result.getString("currentOccupant") == "" ? null :
+                        result.getString("currentOccupant").isEmpty() ? null :
                                 UUID.fromString(result.getString("currentOccupant")), result.getString("occupantName"),
-                        result.getLong("checkoutTime"), Warp.fromDatabaseString(result.getString("roomWarp") != "" ?
+                        result.getLong("checkoutTime"), Warp.fromDatabaseString(!result.getString("roomWarp").isEmpty() ?
                         result.getString("roomWarp") : null), result.getInt("cost"),
-                        result.getString("checkoutNotificationRecipient") != "" ?
+                        !result.getString("checkoutNotificationRecipient").isEmpty() ?
                                 UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
                         result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"),
                         result.getInt("suite") == 1);
@@ -386,9 +386,13 @@ public class HotelManager {
     public void checkout(HotelRoom room, boolean lapsed) {
         Player tp = Bukkit.getPlayer(room.getCurrentOccupant());
         boolean hotelServer = ParkManager.getInstance().isHotelServer();
-        if (room == null || room.getWarp() == null) return;
-        if (hotelServer && room.getWarp().getWorld().equals(Bukkit.getWorlds().get(0))) {
-            closeDoors.add(room);
+        if (room == null || room.getWarp() == null || room.getWarp().getWorld() == null) return;
+        try {
+            if (hotelServer && room.getWarp().getWorld().equals(Bukkit.getWorlds().get(0))) {
+                closeDoors.add(room);
+            }
+        } catch (NullPointerException ignored) {
+            return;
         }
         room.setCheckoutTime(0);
         if (tp != null) {
