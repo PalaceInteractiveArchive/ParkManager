@@ -127,6 +127,9 @@ public class PlayerJoinAndLeave implements Listener {
                 case "DCL":
                     cp.giveAchievement(8);
                     break;
+                case "USO":
+                    cp.giveAchievement(21);
+                    break;
             }
             parkManager.getStorageManager().join(player.getUniqueId(), true);
             parkManager.addToUserCache(player.getUniqueId(), player.getName());
