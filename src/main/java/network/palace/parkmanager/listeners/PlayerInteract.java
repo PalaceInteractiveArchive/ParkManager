@@ -10,14 +10,15 @@ import network.palace.parkmanager.autograph.Signature;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.mural.Mural;
+import network.palace.parkmanager.utils.DateUtil;
+import network.palace.parkmanager.utils.MuralUtil;
 import network.palace.parkmanager.utils.WarpUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,6 +29,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +45,7 @@ public class PlayerInteract implements Listener {
     public static String fastpass = ChatColor.BLUE + "[Fastpass]";
     public static String wait = ChatColor.BLUE + "[Wait Times]";
     public static String server = ChatColor.BLUE + "[Server]";
+    public static String mural = ChatColor.BLUE + "[Mural]";
     private boolean dl = ParkManager.getInstance().isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -120,6 +124,20 @@ public class PlayerInteract implements Listener {
                 if (s.getLine(0).equals(disposal)) {
                     cp.openInventory(Bukkit.createInventory(player, 36, ChatColor.BLUE + "Disposal"));
                     return;
+                }
+                if (s.getLine(0).equalsIgnoreCase(mural)) {
+                    if (s.getLine(1).startsWith("Return")) {
+                        ParkManager.getMuralUtil().done(cp);
+                        return;
+                    } else {
+                        if (BlockEdit.isInBuildMode(player.getUniqueId())) {
+                            player.performCommand("build");
+                            Core.runTaskLater(() -> ParkManager.getMuralUtil().join(cp), 20L);
+                            return;
+                        }
+                        ParkManager.getMuralUtil().join(cp);
+                        return;
+                    }
                 }
                 if (s.getLine(0).equals(warp)) {
                     Warp warp = WarpUtil.findWarp(ChatColor.stripColor(s.getLine(1)));
@@ -301,8 +319,41 @@ public class PlayerInteract implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
-        if (player == null) {
-            return;
+        if (player == null) return;
+        ItemStack hand = player.getInventory().getItemInMainHand();
+        if (hand != null && hand.getType().equals(Material.SPECTRAL_ARROW)) {
+            Entity e = event.getRightClicked();
+            if (e != null && e.getType().equals(EntityType.ITEM_FRAME)) {
+                if (player.getRank().getRankId() < Rank.MOD.getRankId() && !BlockEdit.isInBuildMode(player.getUniqueId())) {
+                    event.setCancelled(true);
+                }
+                ItemFrame frame = (ItemFrame) e;
+                ItemStack map = frame.getItem();
+                if (map != null && map.getType().equals(Material.MAP)) {
+                    int id = map.getDurability();
+                    Mural mural = null;
+                    for (Mural m : ParkManager.getMuralUtil().getMurals()) {
+                        if (!m.isInMural(id)) continue;
+                        mural = m;
+                        break;
+                    }
+                    if (mural != null) {
+                        event.setCancelled(true);
+                        long lastPaint = MuralUtil.getLastPaint(player.getUniqueId(), mural);
+                        if (System.currentTimeMillis() - lastPaint < 12 * 60 * 60 * 1000) {
+                            Date date = new Date(lastPaint);
+                            Calendar to = Calendar.getInstance();
+                            to.setTime(date);
+                            to.add(Calendar.HOUR, 12);
+                            player.sendMessage(ChatColor.RED + "You've already painted on this mural in the last 12 hours! Come back in " +
+                                    DateUtil.formatDateDiff(Calendar.getInstance(), to));
+                        } else {
+                            mural.paint(player, id, frame);
+                        }
+                    }
+                    return;
+                }
+            }
         }
         EntityType etype = event.getRightClicked().getType();
         if (etype.equals(EntityType.ARMOR_STAND)) {
@@ -319,11 +370,8 @@ public class PlayerInteract implements Listener {
         if (!etype.equals(EntityType.ITEM_FRAME)) {
             return;
         }
-        CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cplayer.getRank().getRankId() < Rank.MOD.getRankId()) {
-            if (!BlockEdit.isInBuildMode(player.getUniqueId())) {
-                event.setCancelled(true);
-            }
+        if (player.getRank().getRankId() < Rank.MOD.getRankId() && !BlockEdit.isInBuildMode(player.getUniqueId())) {
+            event.setCancelled(true);
         }
     }
 }

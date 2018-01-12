@@ -4,15 +4,19 @@ import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.mural.Mural;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Marc on 4/12/15
@@ -45,7 +49,20 @@ public class EntityDamage implements Listener {
                 type.equals(EntityType.ARMOR_STAND)) {
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
-                Player player = (Player) damager;
+                CPlayer player = Core.getPlayerManager().getPlayer(damager.getUniqueId());
+                if (type.equals(EntityType.ITEM_FRAME)) {
+                    ItemFrame frame = (ItemFrame) entity;
+                    ItemStack stack = frame.getItem();
+                    if (stack != null && stack.getType().equals(Material.MAP)) {
+                        int id = stack.getDurability();
+                        for (Mural m : ParkManager.getMuralUtil().getMurals()) {
+                            if (m.getIntList().contains(id)) {
+                                event.setCancelled(true);
+                                return;
+                            }
+                        }
+                    }
+                }
                 if (ParkManager.getInstance().getToyStoryMania() != null) {
                     if (ParkManager.getInstance().getToyStoryMania().isInGame(player)) {
                         event.setCancelled(true);

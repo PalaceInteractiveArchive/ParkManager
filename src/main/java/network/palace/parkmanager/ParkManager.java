@@ -47,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.3.1", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.3.2", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -91,6 +91,7 @@ public class ParkManager extends Plugin implements Listener {
     @Setter private String activityURL;
     @Setter private String activityUser;
     @Setter private String activityPassword;
+    @Getter private static MuralUtil muralUtil;
 
     @Override
     protected void onPluginEnable() throws Exception {
@@ -109,6 +110,7 @@ public class ParkManager extends Plugin implements Listener {
         blockChanger = new BlockChanger();
         wardrobeManager = new WardrobeManager();
         playerJoinAndLeave = new PlayerJoinAndLeave();
+        muralUtil = new MuralUtil();
         rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
         registerListeners();
         registerCommands();
@@ -378,6 +380,7 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new Commandtp());
         registerCommand(new Commandupdate());
         registerCommand(new CommandCosmetics());
+        registerCommand(new MuralCommand());
         if (isResort(Resort.USO)) {
             registerCommand(new Commanduso());
         }

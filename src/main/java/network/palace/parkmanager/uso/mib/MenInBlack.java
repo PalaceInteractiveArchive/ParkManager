@@ -6,6 +6,7 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.tsm.handlers.Hit;
 import network.palace.parkmanager.tsm.handlers.ShooterSession;
+import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -110,11 +111,7 @@ public class MenInBlack implements Listener {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "You hit " + ChatColor.GREEN + hits.size() + ChatColor.YELLOW + " targets");
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Total Points: " + ChatColor.GREEN + points);
         player.sendMessage(ChatColor.DARK_PURPLE + "----------------------------------------------------");
-        player.getInventory().setItem(4, ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +
-                "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
-                "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
-                "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
-                "Toy Story Midway Mania.")));
+        player.getInventory().setItem(4, InventoryUtil.getRideItem());
     }
 
     @EventHandler

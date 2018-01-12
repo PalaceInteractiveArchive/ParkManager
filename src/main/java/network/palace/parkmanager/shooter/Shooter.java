@@ -4,6 +4,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.utils.FileUtil;
+import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -216,11 +217,7 @@ public class Shooter implements Listener {
                         + player.getMetadata("shooter").get(0).asInt() + "!");
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
         }
-        player.getInventory().setItem(4, ItemUtil.create(Material.INK_SACK, 1, (byte) 7, ChatColor.GRAY +
-                "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
-                "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
-                "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
-                "Toy Story Midway Mania.")));
+        player.getInventory().setItem(4, InventoryUtil.getRideItem());
     }
 
     public ItemStack getItem() {

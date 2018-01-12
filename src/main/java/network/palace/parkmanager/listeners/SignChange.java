@@ -85,6 +85,18 @@ public class SignChange implements Listener {
                 ParkManager.getInstance().getQueueManager().createSign(event);
                 return;
             }
+            if (l1.equalsIgnoreCase("[mural]")) {
+                if (event.getLine(1).equalsIgnoreCase("return")) {
+                    event.setLine(0, PlayerInteract.mural);
+                    event.setLine(1, "Return your");
+                    event.setLine(2, "paintbrush here!");
+                } else if (event.getLine(1).equalsIgnoreCase("claim")) {
+                    event.setLine(0, PlayerInteract.mural);
+                    event.setLine(1, "Claim your");
+                    event.setLine(2, "paintbrush here!");
+                }
+                return;
+            }
             if (Core.getInstanceName().contains("Epcot")) {
                 if (l1.equalsIgnoreCase("[design station]")) {
                     if (event.getLine(1).equalsIgnoreCase("stats")) {

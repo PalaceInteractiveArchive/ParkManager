@@ -897,7 +897,7 @@ public class Commandmagic extends CoreCommand {
                             return;
                         }
                         if (args[1].equalsIgnoreCase("remove")) {
-                            Player player = Bukkit.getPlayer(args[2]);
+                            CPlayer player = Core.getPlayerManager().getPlayer(Bukkit.getPlayer(args[2]));
                             if (player == null) {
                                 sender.sendMessage(ChatColor.RED + "Could not find Player!");
                                 return;

@@ -1234,4 +1234,12 @@ public class InventoryUtil {
         }
         player.openInventory(inv);
     }
+
+    public static ItemStack getRideItem() {
+        return ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +
+                "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
+                "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
+                "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
+                "Toy Story Midway Mania."));
+    }
 }

@@ -52,7 +52,8 @@ public class Commandspawn extends CoreCommand {
                     parkManager.getShooter().warp(tp);
                 }
                 if (parkManager.getToyStoryMania() != null) {
-                    parkManager.getToyStoryMania().done(tp.getBukkitPlayer());
+                    parkManager.getToyStoryMania().done(tp);
+                    ParkManager.getMuralUtil().done(tp);
                 }
                 if (tp.getBukkitPlayer().isInsideVehicle()) {
                     tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
@@ -68,7 +69,8 @@ public class Commandspawn extends CoreCommand {
             parkManager.getShooter().warp(cp);
         }
         if (parkManager.getToyStoryMania() != null) {
-            parkManager.getToyStoryMania().done(player);
+            parkManager.getToyStoryMania().done(cp);
+            ParkManager.getMuralUtil().done(cp);
         }
         if (player.isInsideVehicle()) {
             player.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");

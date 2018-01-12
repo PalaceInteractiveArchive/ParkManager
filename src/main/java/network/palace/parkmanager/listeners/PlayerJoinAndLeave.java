@@ -12,6 +12,7 @@ import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.handlers.Warp;
 import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.utils.InventoryUtil;
 import network.palace.parkmanager.watch.WatchTask;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -257,11 +258,7 @@ public class PlayerJoinAndLeave implements Listener {
             });
         }
         parkManager.getBandUtil().giveBandToPlayer(player);
-        inv.setItem(4, ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.GRAY +
-                "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
-                "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
-                "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
-                "Toy Story Midway Mania.")));
+        inv.setItem(4, InventoryUtil.getRideItem());
     }
 
     private void warpToNearestWarp(Player player) {
@@ -320,8 +317,12 @@ public class PlayerJoinAndLeave implements Listener {
         ParkManager.getInstance().getOutlineManager().removeSession(player.getUniqueId());
         WatchTask.removeFromMessage(player.getUniqueId());
         parkManager.getBlockChanger().logout(player);
+        ParkManager.getMuralUtil().done(cp);
         if (Core.getServerType().equals("MK")) {
             parkManager.getStitch().logout(player);
+        }
+        if (Core.getServerType().equals("DHS")) {
+            parkManager.getToyStoryMania().done(player);
         }
         if (Core.getServerType().equals("Epcot")) {
             DesignStation.removePlayerVehicle(player.getUniqueId());

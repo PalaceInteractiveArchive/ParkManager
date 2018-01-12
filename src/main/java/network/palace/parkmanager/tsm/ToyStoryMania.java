@@ -6,6 +6,7 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.tsm.handlers.Hit;
 import network.palace.parkmanager.tsm.handlers.ShooterSession;
+import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -44,43 +45,40 @@ public class ToyStoryMania implements Listener {
     public ToyStoryMania() {
         item = ItemUtil.create(Material.STONE_HOE, ChatColor.YELLOW + "Toy Cannon",
                 Arrays.asList(ChatColor.YELLOW + "Right-Click to Shoot!"));
-        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                long cur = System.currentTimeMillis();
-                for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
-                    CPlayer player = Core.getPlayerManager().getPlayer(entry.getKey());
-                    ShooterSession session = entry.getValue();
-                    List<Hit> hits = session.getHits();
-                    int total = 0;
-                    for (Hit h : hits) {
-                        total += h.getPoints();
-                    }
-                    String m = "";
-                    if (!hits.isEmpty()) {
-                        Hit h = hits.get(hits.size() - 1);
-                        long t = h.getTime();
-                        if (t + 2000 > cur) {
-                            ChatColor color = ChatColor.GREEN;
-                            switch (h.getPoints()) {
-                                case 25:
-                                    color = ChatColor.RED;
-                                    return;
-                                case 50:
-                                    color = ChatColor.BLUE;
-                                    return;
-                                case 75:
-                                    color = ChatColor.GREEN;
-                                    return;
-                                case 100:
-                                    color = ChatColor.LIGHT_PURPLE;
-                                    return;
-                            }
-                            m = color + " +" + h.getPoints() + " Points";
-                        }
-                    }
-                    player.getActionBar().show(ChatColor.YELLOW + "TSM Score: " + total + m);
+        Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
+            long cur = System.currentTimeMillis();
+            for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
+                CPlayer player = Core.getPlayerManager().getPlayer(entry.getKey());
+                ShooterSession session = entry.getValue();
+                List<Hit> hits = session.getHits();
+                int total = 0;
+                for (Hit h : hits) {
+                    total += h.getPoints();
                 }
+                String m = "";
+                if (!hits.isEmpty()) {
+                    Hit h = hits.get(hits.size() - 1);
+                    long t = h.getTime();
+                    if (t + 2000 > cur) {
+                        ChatColor color = ChatColor.GREEN;
+                        switch (h.getPoints()) {
+                            case 25:
+                                color = ChatColor.RED;
+                                break;
+                            case 50:
+                                color = ChatColor.BLUE;
+                                break;
+                            case 75:
+                                color = ChatColor.GREEN;
+                                break;
+                            case 100:
+                                color = ChatColor.LIGHT_PURPLE;
+                                break;
+                        }
+                        m = color + " +" + h.getPoints() + " Points";
+                    }
+                }
+                player.getActionBar().show(ChatColor.YELLOW + "TSM Score: " + total + m);
             }
         }, 0L, 10L);
     }
@@ -101,6 +99,10 @@ public class ToyStoryMania implements Listener {
     }
 
     public void done(Player player) {
+        done(Core.getPlayerManager().getPlayer(player));
+    }
+
+    public void done(CPlayer player) {
         if (!sessions.containsKey(player.getUniqueId())) {
             return;
         }
@@ -115,11 +117,7 @@ public class ToyStoryMania implements Listener {
         player.sendMessage(ChatColor.YELLOW + "You hit " + ChatColor.GREEN + hits.size() + ChatColor.YELLOW + " targets");
         player.sendMessage(ChatColor.YELLOW + "Total Points: " + ChatColor.GREEN + points);
         player.sendMessage(ChatColor.GOLD + "----------------------------------------------------");
-        player.getInventory().setItem(4, ItemUtil.create(Material.INK_SACK, 1, (byte) 7, ChatColor.GRAY +
-                "This Slot is Reserved for " + ChatColor.BLUE + "Ride Items", Arrays.asList(ChatColor.GRAY +
-                "This is for games such as " + ChatColor.GREEN + "Buzz", ChatColor.GREEN +
-                "Lightyear's Space Ranger Spin ", ChatColor.GRAY + "and " + ChatColor.YELLOW +
-                "Toy Story Midway Mania.")));
+        player.getInventory().setItem(4, InventoryUtil.getRideItem());
     }
 
     @EventHandler
@@ -262,7 +260,7 @@ public class ToyStoryMania implements Listener {
         session.addHit(hit);
     }
 
-    public boolean isInGame(Player player) {
+    public boolean isInGame(CPlayer player) {
         return sessions.containsKey(player.getUniqueId());
     }
 
