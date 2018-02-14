@@ -257,7 +257,7 @@ public class PluginRideQueue extends AbstractQueueRide {
             updateSigns();
             loaded = true;
             if (ride instanceof FileRide) {
-                ((FileRide) ride).spawn(7000);
+//                ((FileRide) ride).spawn(7000);
             }
         }
     }

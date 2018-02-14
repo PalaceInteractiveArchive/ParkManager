@@ -66,7 +66,7 @@ public class QueueManager implements Listener {
                                 state = r.getState();
                             } else if (pride.getRide() instanceof AerialCarouselRide) {
                                 AerialCarouselRide r = (AerialCarouselRide) pride.getRide();
-                                state = r.getState();
+//                                state = r.getState();
                             }
                             if (state.equals(FlatState.LOADING)) {
                                 if (pride.canStart()) {
