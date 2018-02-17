@@ -570,7 +570,6 @@ public class InventoryUtil {
                     List<String> disab = Collections.singletonList(ChatColor.RED + "Disabled");
                     ItemStack flash;
                     ItemStack visibility;
-                    ItemStack loop;
                     ItemStack hotel;
                     if (data.isFlash()) {
                         flash = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Flash Effects", enab);
@@ -582,19 +581,13 @@ public class InventoryUtil {
                     } else {
                         visibility = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Player Visibility", disab);
                     }
-                    if (data.isLoop()) {
-                        loop = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Park Loop Music", enab);
-                    } else {
-                        loop = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Park Loop Music", disab);
-                    }
                     if (data.isHotel()) {
                         hotel = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Friends Access Hotel Room", enab);
                     } else {
                         hotel = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Friends Access Hotel Room", disab);
                     }
                     settings.setItem(10, flash);
-                    settings.setItem(12, visibility);
-                    settings.setItem(14, loop);
+                    settings.setItem(13, visibility);
                     settings.setItem(16, hotel);
                     settings.setItem(22, BandUtil.getBackItem());
                     player.openInventory(settings);

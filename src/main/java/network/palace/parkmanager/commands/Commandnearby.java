@@ -7,7 +7,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.ParkManager;
+import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,7 +26,7 @@ public class Commandnearby extends CoreCommand {
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         Location center = player.getLocation().clone();
         HashMap<Warp, Integer> nearby = new HashMap<>();
-        for (Warp warp : ParkManager.getInstance().getWarps()) {
+        for (Warp warp : ParkWarp.getInstance().getWarps()) {
             if (!warp.getServer().equals(Core.getInstanceName())) {
                 continue;
             }

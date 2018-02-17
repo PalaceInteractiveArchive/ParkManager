@@ -18,10 +18,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 /**
  * Created by Marc on 10/11/15
  */
@@ -108,16 +104,7 @@ public class Commandbuild extends CoreCommand {
             }
         }
         player.closeInventory();
-        Core.runTaskAsynchronously(() -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET buildmode=? WHERE id=?");
-                sql.setInt(1, BlockEdit.isInBuildMode(player.getUniqueId()) ? 1 : 0);
-                sql.setInt(2, player.getSqlId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+
+        Core.getMongoHandler().setBuildMode(player.getUniqueId(), BlockEdit.isInBuildMode(player.getUniqueId()));
     }
 }

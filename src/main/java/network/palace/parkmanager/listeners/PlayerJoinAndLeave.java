@@ -10,10 +10,11 @@ import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.HotelRoom;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Resort;
-import network.palace.parkwarp.handlers.Warp;
 import network.palace.parkmanager.hotels.HotelManager;
 import network.palace.parkmanager.utils.InventoryUtil;
 import network.palace.parkmanager.watch.WatchTask;
+import network.palace.parkwarp.ParkWarp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -266,7 +267,7 @@ public class PlayerJoinAndLeave implements Listener {
         loc.setWorld(Bukkit.getWorlds().get(0));
         Warp w = null;
         double distance = -1;
-        for (Warp warp : new ArrayList<>(ParkManager.getInstance().getWarps())) {
+        for (Warp warp : new ArrayList<>(ParkWarp.getInstance().getWarps())) {
             if (!warp.getServer().equals(Core.getServerType())) {
                 continue;
             }

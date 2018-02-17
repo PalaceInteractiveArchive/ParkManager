@@ -34,9 +34,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -187,19 +184,12 @@ public class Commandmagic extends CoreCommand {
                         }
                     }
                     final String finalRideName = rideName.toString();
-                    Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
+                    Core.runTaskAsynchronously(() -> {
                         PlayerData data = parkManager.getPlayerData(tp.getUniqueId());
                         TreeMap<String, RideCount> rides = data.getRideCounts();
-                        try (Connection connection = Core.getSqlUtil().getConnection()) {
-                            PreparedStatement sql = connection.prepareStatement("INSERT INTO ride_counter (uuid, name, server, time) VALUES (?,?,?,?)");
-                            sql.setString(1, tp.getUniqueId().toString());
-                            sql.setString(2, finalRideName);
-                            sql.setString(3, Core.getInstanceName());
-                            sql.setInt(4, (int) (System.currentTimeMillis() / 1000));
-                            sql.execute();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
+
+                        Core.getMongoHandler().logRideCounter(tp.getUniqueId(), finalRideName);
+
                         if (rides.containsKey(finalRideName)) {
                             rides.get(finalRideName).addCount(1);
                         } else {
@@ -395,30 +385,14 @@ public class Commandmagic extends CoreCommand {
                                 resort = 0;
                                 break;
                         }
-                        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
-                            try (Connection conneciton = Core.getSqlUtil().getConnection()) {
-                                PreparedStatement sql = conneciton.prepareStatement("INSERT INTO outfits (id,name," +
-                                        "hid,hdata,head,cid,cdata,chestplate,lid,ldata,leggings,bid,bdata,boots,resort) " +
-                                        "VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                                sql.setString(1, finalName);
-                                sql.setInt(2, h.getTypeId());
-                                sql.setInt(3, h.getData().getData());
-                                sql.setString(4, htag == null ? "" : htag);
-                                sql.setInt(5, c.getTypeId());
-                                sql.setInt(6, c.getData().getData());
-                                sql.setString(7, ctag == null ? "" : ctag);
-                                sql.setInt(8, p.getTypeId());
-                                sql.setInt(9, p.getData().getData());
-                                sql.setString(10, ptag == null ? "" : ptag);
-                                sql.setInt(11, b.getTypeId());
-                                sql.setInt(12, b.getData().getData());
-                                sql.setString(13, btag == null ? "" : btag);
-                                sql.setInt(14, resort);
-                                sql.execute();
-                                sql.close();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+
+                        Core.runTaskAsynchronously(() -> {
+                            Core.getMongoHandler().createOutfit(finalName,
+                                    h.getTypeId(), h.getData().getData(), htag == null ? "" : htag,
+                                    c.getTypeId(), c.getData().getData(), ctag == null ? "" : ctag,
+                                    p.getTypeId(), p.getData().getData(), ptag == null ? "" : ptag,
+                                    b.getTypeId(), b.getData().getData(), btag == null ? "" : btag,
+                                    resort);
                             parkManager.getWardrobeManager().initialize();
                             player.sendMessage(ChatColor.GREEN + "Created outfit!");
                         });

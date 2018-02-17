@@ -3,18 +3,13 @@ package network.palace.parkmanager.queue.handlers;
 import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
-import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.FastPassData;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.RideCategory;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -105,25 +100,10 @@ public abstract class AbstractQueueRide {
     protected void chargeFastpass(final PlayerData data) {
         final FastPassData fpdata = data.getFastPassData();
         fpdata.setPass(category, fpdata.getPass(category) - 1);
-        int sqlid;
-        try {
-            sqlid = Core.getPlayerManager().getPlayer(data.getUniqueId()).getSqlId();
-        } catch (Exception e) {
-            return;
-        }
+
         CPlayer p = Core.getPlayerManager().getPlayer(data.getUniqueId());
         if (p == null) return;
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " +
-                        category.getSqlName() + "=? WHERE id=?");
-                sql.setInt(1, fpdata.getPass(category));
-                sql.setInt(2, p.getSqlId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+
+        Core.getMongoHandler().chargeFastPass(p.getUniqueId(), category.getDBName(), -1);
     }
 }

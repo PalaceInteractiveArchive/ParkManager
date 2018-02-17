@@ -18,11 +18,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Marc on 3/14/15
@@ -53,19 +51,19 @@ public class PackManager {
         PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         String rp = "";
         if (name.equalsIgnoreCase("no")) {
-            setResourcePack(player.getSqlId(), "no");
+            setResourcePack(player.getUniqueId(), "no");
             data.setPack("no");
             player.sendMessage(ChatColor.GREEN + "You will not be sent a Resource Pack when you join a Park server.");
             player.closeInventory();
             return;
         } else if (name.equalsIgnoreCase("yes")) {
-            setResourcePack(player.getSqlId(), "yes");
+            setResourcePack(player.getUniqueId(), "yes");
             data.setPack("yes");
             player.sendMessage(ChatColor.GREEN + "You will be sent the Park Resource Pack when you join a Park server.");
             player.closeInventory();
             rp = serverPack;
         } else if (name.equalsIgnoreCase("Blank")) {
-            setResourcePack(player.getSqlId(), "blank");
+            setResourcePack(player.getUniqueId(), "blank");
             data.setPack("blank");
             player.sendMessage(ChatColor.GREEN + "You will be sent a Blank Resource Pack when you join a Park server.");
             player.closeInventory();
@@ -84,21 +82,8 @@ public class PackManager {
         }
     }
 
-    private void setResourcePack(int id, String pack) {
-        Core.runTaskAsynchronously(new Runnable() {
-            @Override
-            public void run() {
-                try (Connection connection = Core.getSqlUtil().getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET pack=? WHERE id=?");
-                    sql.setString(1, pack);
-                    sql.setInt(2, id);
-                    sql.execute();
-                    sql.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    private void setResourcePack(UUID uuid, String pack) {
+        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setParkSetting(uuid, "pack", pack));
     }
 
     public void openMenu(CPlayer player) {

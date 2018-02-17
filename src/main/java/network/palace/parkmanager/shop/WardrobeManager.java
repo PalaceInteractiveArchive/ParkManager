@@ -12,6 +12,7 @@ import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.BandUtil;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,10 +24,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,40 +43,22 @@ public class WardrobeManager {
     public void initialize() {
         StorageManager sm = ParkManager.getInstance().getStorageManager();
         outfits.clear();
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            String extra;
-            Resort resort = ParkManager.getInstance().getResort();
-            switch (resort) {
-                case WDW:
-                case DLR:
-                    extra = " OR resort=?";
-                    break;
-                default:
-                    extra = "";
-                    break;
-            }
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM outfits WHERE resort=?" + extra);
-            if (resort.equals(Resort.WDW) || resort.equals(Resort.DLR)) {
-                sql.setInt(1, 0);
-                sql.setInt(2, 1);
-            } else {
-                sql.setInt(1, resort.getId());
-            }
-            ResultSet result = sql.executeQuery();
-            while (result.next()) {
-                Integer id = result.getInt("id");
-                int hid = result.getInt("hid");
-                int hdata = result.getInt("hdata");
-                String ht = result.getString("head");
-                int cid = result.getInt("cid");
-                int cdata = result.getInt("cdata");
-                String st = result.getString("chestplate");
-                int lid = result.getInt("lid");
-                int ldata = result.getInt("ldata");
-                String pt = result.getString("leggings");
-                int bid = result.getInt("bid");
-                int bdata = result.getInt("bdata");
-                String bt = result.getString("boots");
+        Resort resort = ParkManager.getInstance().getResort();
+        for (Document d : Core.getMongoHandler().getOutfits(resort.getId())) {
+            try {
+                int id = d.getInteger("id");
+                int hid = d.getInteger("hid");
+                int hdata = d.getInteger("hdata");
+                String ht = d.getString("head");
+                int cid = d.getInteger("cid");
+                int cdata = d.getInteger("cdata");
+                String st = d.getString("chestplate");
+                int lid = d.getInteger("lid");
+                int ldata = d.getInteger("ldata");
+                String pt = d.getString("leggings");
+                int bid = d.getInteger("bid");
+                int bdata = d.getInteger("bdata");
+                String bt = d.getString("boots");
                 ItemStack h = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(hid), 1, (short) hdata));
                 if (!ht.equals("")) {
                     NbtFactory.setItemTag(h, new NbtTextSerializer().deserializeCompound(ht));
@@ -96,8 +75,8 @@ public class WardrobeManager {
                 if (!bt.equals("")) {
                     NbtFactory.setItemTag(b, new NbtTextSerializer().deserializeCompound(bt));
                 }
-                String name = result.getString("name");
-                String cname = ChatColor.translateAlternateColorCodes('&', result.getString("name"));
+                String name = d.getString("name");
+                String cname = ChatColor.translateAlternateColorCodes('&', name);
                 ItemMeta hm = h.getItemMeta();
                 hm.setDisplayName(cname + " Head");
                 h.setItemMeta(hm);
@@ -111,11 +90,9 @@ public class WardrobeManager {
                 bm.setDisplayName(cname + " Boots");
                 b.setItemMeta(bm);
                 outfits.put(id, new Outfit(id, ChatColor.translateAlternateColorCodes('&', name), h, s, l, b));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            result.close();
-            sql.close();
-        } catch (SQLException | IOException | IllegalArgumentException e) {
-            e.printStackTrace();
         }
     }
 
@@ -383,7 +360,7 @@ public class WardrobeManager {
         String code = c.getHeadID() + "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID();
         data.setClothing(c);
         data.setOutfitCode(code);
-        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> setOutfitCode(player, data.getOutfitCode()));
+        Core.runTaskAsynchronously(() -> setOutfitCode(player, data.getOutfitCode()));
     }
 
     private boolean equals(ItemStack head, ItemStack item) {
@@ -392,18 +369,10 @@ public class WardrobeManager {
     }
 
     private void setOutfitCode(CPlayer player, String code) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET outfit=? WHERE id=?");
-            sql.setString(1, code);
-            sql.setInt(2, player.getSqlId());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Core.getMongoHandler().setOutfitCode(player.getUniqueId(), code);
     }
 
-    private void reset(Player player, ClothingType type) {
+    private void reset(CPlayer player, ClothingType type) {
         PlayerInventory inv = player.getInventory();
         ItemStack air = new ItemStack(Material.AIR);
         switch (type) {
@@ -424,28 +393,11 @@ public class WardrobeManager {
     }
 
     protected void purchaseOutfit(Player player, Integer id) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO purchases (id,uuid,item,time,outfit) VALUES" +
-                    " (0,?,?,?,1)");
-            sql.setString(1, player.getUniqueId().toString());
-            sql.setInt(2, id);
-            sql.setLong(3, System.currentTimeMillis() / 1000);
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Core.getMongoHandler().purchaseOutfit(player.getUniqueId(), id);
     }
 
     public void removeOutfit(Integer id) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("DELETE FROM outfits WHERE id=?");
-            sql.setInt(1, id);
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Core.getMongoHandler().deleteOutfit(id);
         initialize();
     }
 

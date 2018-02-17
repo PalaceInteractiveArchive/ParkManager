@@ -13,9 +13,6 @@ import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -53,16 +50,9 @@ public class RideListener implements Listener {
                 if (tp == null) continue;
                 PlayerData data = parkManager.getPlayerData(tp.getUniqueId());
                 TreeMap<String, RideCount> rides = data.getRideCounts();
-                try (Connection connection = Core.getSqlUtil().getConnection()) {
-                    PreparedStatement sql = connection.prepareStatement("INSERT INTO ride_counter (uuid, name, server, time) VALUES (?,?,?,?)");
-                    sql.setString(1, tp.getUniqueId().toString());
-                    sql.setString(2, name);
-                    sql.setString(3, Core.getInstanceName());
-                    sql.setInt(4, (int) (System.currentTimeMillis() / 1000));
-                    sql.execute();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+
+                Core.getMongoHandler().logRideCounter(tp.getUniqueId(), name);
+
                 if (rides.containsKey(name)) {
                     rides.get(name).addCount(1);
                 } else {

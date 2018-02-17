@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 public class Signature {
-    @Getter private final int id;
     @Getter private final String signer;
     @Getter private final String message;
+    @Getter private final long time;
 }

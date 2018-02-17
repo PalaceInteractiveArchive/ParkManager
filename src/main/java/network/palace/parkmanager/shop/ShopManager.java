@@ -50,9 +50,8 @@ public class ShopManager {
             for (String s : config.getStringList("shops")) {
                 List<String> lore = config.getStringList("items." + s + ".lore").stream().map(ss -> ChatColor.translateAlternateColorCodes('&', ss)).collect(Collectors.toList());
                 List<ShopItem> items = new ArrayList<>();
-                List<OutfitItem> outfits = new ArrayList<>();
                 for (String i : config.getStringList("shop." + s + ".items")) {
-                    int id = 0;
+                    int id;
                     byte data = 0;
                     String[] list = config.getString("items." + i + ".id").split(":");
                     if (list.length == 1) {
@@ -67,14 +66,14 @@ public class ShopManager {
                             CurrencyType.fromString(config.getString("items." + i + ".currency")));
                     items.add(item);
                 }
-                outfits.addAll(config.getIntegerList("shop." + s + ".outfits").stream().map(i -> new OutfitItem(i,
-                        config.getInt("outfits." + i + ".cost"))).collect(Collectors.toList()));
+                List<OutfitItem> outfits = config.getIntegerList("shop." + s + ".outfits").stream().map(i -> new OutfitItem(i,
+                        config.getInt("outfits." + i + ".cost"))).collect(Collectors.toList());
                 Warp warp = ParkWarp.getInstance().getWarpUtil().findWarp(config.getString("shop." + s + ".warp"));
                 if (warp == null) {
                     continue;
                 }
                 String display = ChatColor.translateAlternateColorCodes('&', config.getString("shop." + s + ".display"));
-                int id = 0;
+                int id;
                 byte data = 0;
                 String[] list = config.getString("shop." + s + ".id").split(":");
                 if (list.length == 1) {
@@ -403,8 +402,7 @@ public class ShopManager {
     }
 
     private void purchaseOutfit(CPlayer player, Shop shop, String name, InventoryClickEvent event) {
-        List<OutfitItem> items = new ArrayList<>();
-        items.addAll(shop.getOutfits());
+        List<OutfitItem> items = new ArrayList<>(shop.getOutfits());
         Outfit ou = null;
         OutfitItem item = null;
         for (Outfit o : ParkManager.getInstance().getWardrobeManager().getOutfits()) {
@@ -474,7 +472,7 @@ public class ShopManager {
             } else {
                 player.getInventory().addItem(item.getItem());
             }
-            Core.getEconomy().changeAmount(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store",
+            Core.getMongoHandler().changeAmount(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store",
                     item.getCurrencyType(), false);
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased " + item.getDisplayName() +
                     ChatColor.GREEN + "!");
@@ -493,7 +491,7 @@ public class ShopManager {
                 player.sendMessage(ChatColor.RED + "You already own that Outfit!");
                 return;
             }
-            Core.getEconomy().changeAmount(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store", CurrencyType.TOKENS, false);
+            Core.getMongoHandler().changeAmount(player.getUniqueId(), -item.getCost(), Core.getInstanceName() + " Store", CurrencyType.TOKENS, false);
             player.sendMessage(ChatColor.GREEN + "You have successfully purchased the " + o.getName() + " Outfit" +
                     ChatColor.GREEN + "!");
             player.closeInventory();
