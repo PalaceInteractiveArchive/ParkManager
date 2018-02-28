@@ -573,7 +573,7 @@ public class Commandmagic extends CoreCommand {
                 return;
             case "hotel":
                 sender.sendMessage(ChatColor.BLUE + "Reloading hotel rooms...");
-                parkManager.getHotelManager().refreshRooms();
+//                parkManager.getHotelManager().refreshRooms();
                 sender.sendMessage(ChatColor.BLUE + "Hotel rooms reloaded!");
                 return;
             case "queue":
@@ -972,7 +972,7 @@ public class Commandmagic extends CoreCommand {
                 parkManager.setupRides();
                 parkManager.getStitch().initialize();
                 parkManager.getScheduleManager().update();
-                parkManager.getHotelManager().refreshRooms();
+//                parkManager.getHotelManager().refreshRooms();
                 /*
                 try {
                     parkManager.getBlockChanger().reload();

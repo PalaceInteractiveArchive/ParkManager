@@ -58,12 +58,12 @@ public class BlockEdit implements Listener {
                 }
                 String hotelName = ChatColor.stripColor(s.getLine(2));
                 String fullRoomName = hotelName + " #" + ChatColor.stripColor(s.getLine(1));
-                HotelManager manager = ParkManager.getInstance().getHotelManager();
-                if (manager.getRoom(fullRoomName) != null) {
-                    manager.removeRoom(manager.getRoom(fullRoomName));
-                    manager.refreshRooms();
-                    manager.updateRooms();
-                }
+//                HotelManager manager = ParkManager.getInstance().getHotelManager();
+//                if (manager.getRoom(fullRoomName) != null) {
+//                    manager.removeRoom(manager.getRoom(fullRoomName));
+//                    manager.refreshRooms();
+//                    manager.updateRooms();
+//                }
                 return;
             }
             if (l1.equalsIgnoreCase("[queue]")) {

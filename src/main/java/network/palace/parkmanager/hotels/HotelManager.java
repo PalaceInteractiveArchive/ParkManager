@@ -3,9 +3,10 @@ package network.palace.parkmanager.hotels;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.HotelRoom;
-import network.palace.parkwarp.handlers.Warp;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.utils.PlayerUtil;
+import network.palace.parkwarp.handlers.Warp;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,12 +15,9 @@ import org.bukkit.entity.Player;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,27 +32,27 @@ public class HotelManager {
     }
 
     private void initialize() {
-        ParkManager parkManager = ParkManager.getInstance();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(parkManager, () -> hotelRooms.stream()
-                .filter(room -> room.getCheckoutNotificationRecipient() != null).forEach(room -> {
-                    UUID uuid = room.getCheckoutNotificationRecipient();
-                    Player tp = Bukkit.getPlayer(uuid);
-                    if (tp != null && tp.isOnline()) {
-                        checkout(room, true);
-                    }
-                }), 10L, 6000L);
-        if (!parkManager.isHotelServer()) {
-            return;
-        }
-        refreshRooms();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(parkManager, () -> hotelRooms.stream()
-                .filter(room -> room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000))
-                .forEach(room -> checkout(room, true)), 0L, 6000L);
-        final List<HotelRoom> closeDoorsList = new ArrayList<>(closeDoors);
-        Bukkit.getScheduler().runTaskTimer(parkManager, () -> closeDoorsList.forEach(room -> {
-            closeDoor(room);
-            closeDoors.remove(room);
-        }), 0L, 5L);
+//        ParkManager parkManager = ParkManager.getInstance();
+//        Bukkit.getScheduler().runTaskTimerAsynchronously(parkManager, () -> hotelRooms.stream()
+//                .filter(room -> room.getCheckoutNotificationRecipient() != null).forEach(room -> {
+//                    UUID uuid = room.getCheckoutNotificationRecipient();
+//                    Player tp = Bukkit.getPlayer(uuid);
+//                    if (tp != null && tp.isOnline()) {
+//                        checkout(room, true);
+//                    }
+//                }), 10L, 6000L);
+//        if (!parkManager.isHotelServer()) {
+//            return;
+//        }
+//        refreshRooms();
+//        Bukkit.getScheduler().runTaskTimerAsynchronously(parkManager, () -> hotelRooms.stream()
+//                .filter(room -> room.isOccupied() && room.getCheckoutTime() <= (System.currentTimeMillis() / 1000))
+//                .forEach(room -> checkout(room, true)), 0L, 6000L);
+//        final List<HotelRoom> closeDoorsList = new ArrayList<>(closeDoors);
+//        Bukkit.getScheduler().runTaskTimer(parkManager, () -> closeDoorsList.forEach(room -> {
+//            closeDoor(room);
+//            closeDoors.remove(room);
+//        }), 0L, 5L);
     }
 
     public List<HotelRoom> getHotelRooms() {
@@ -62,29 +60,52 @@ public class HotelManager {
     }
 
     public List<HotelRoom> getRooms() {
+        Document hotelDoc = Core.getMongoHandler().getHotels();
+
         List<HotelRoom> rooms = new ArrayList<>();
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM hotelrooms");
-            ResultSet result = sql.executeQuery();
-            while (result.next()) {
-                HotelRoom room = new HotelRoom(result.getString("hotelName"), result.getInt("roomNumber"),
-                        result.getString("currentOccupant").isEmpty() ? null :
-                                UUID.fromString(result.getString("currentOccupant")), result.getString("occupantName"),
-                        result.getLong("checkoutTime"), Warp.fromDatabaseString(!result.getString("roomWarp").isEmpty() ?
-                        result.getString("roomWarp") : null), result.getInt("cost"),
-                        !result.getString("checkoutNotificationRecipient").isEmpty() ?
-                                UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
-                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"),
-                        result.getInt("suite") == 1);
-                rooms.add(room);
+
+        for (Map.Entry<String, Object> entry : hotelDoc.entrySet()) {
+            Document hotel = (Document) entry.getValue();
+            String name = hotel.getString("name");
+            int staylength = hotel.getInteger("staylength");
+            double cph = hotel.getDouble("costperhour");
+            int resortid = hotel.getInteger("resort");
+            Document roomsDoc = (Document) hotel.get("rooms");
+            for (Map.Entry<String, Object> entry2 : roomsDoc.entrySet()) {
+                Document room = (Document) entry2.getValue();
+                int num = room.getInteger("number");
+                UUID occupant = UUID.fromString(room.getString("occupant"));
+                String occupantName = "";
+                Warp.fromDatabaseString("");
+                long checkout = room.getLong("checkout");
+//                rooms.add(new HotelRoom(name, num, occupant, occupantName, checkout, warp, cost, null));
             }
-            result.close();
-            sql.close();
-            return rooms;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
         }
+
+//        List<HotelRoom> rooms = new ArrayList<>();
+//        try (Connection connection = Core.getSqlUtil().getConnection()) {
+//            PreparedStatement sql = connection.prepareStatement("SELECT * FROM hotelrooms");
+//            ResultSet result = sql.executeQuery();
+//            while (result.next()) {
+//                HotelRoom room = new HotelRoom(result.getString("hotelName"), result.getInt("roomNumber"),
+//                        result.getString("currentOccupant").isEmpty() ? null :
+//                                UUID.fromString(result.getString("currentOccupant")), result.getString("occupantName"),
+//                        result.getLong("checkoutTime"), Warp.fromDatabaseString(!result.getString("roomWarp").isEmpty() ?
+//                        result.getString("roomWarp") : null), result.getInt("cost"),
+//                        !result.getString("checkoutNotificationRecipient").isEmpty() ?
+//                                UUID.fromString(result.getString("checkoutNotificationRecipient")) : null,
+//                        result.getLong("stayLength"), result.getInt("x"), result.getInt("y"), result.getInt("z"),
+//                        result.getInt("suite") == 1);
+//                rooms.add(room);
+//            }
+//            result.close();
+//            sql.close();
+//            return rooms;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            return new ArrayList<>();
+//        }
+        return new ArrayList<>();
     }
 
     @SuppressWarnings("deprecation")
@@ -181,54 +202,54 @@ public class HotelManager {
             updateHotelRoom(room);
             return;
         }
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms (hotelName,roomNumber,currentOccupant,occupantName,checkoutTime,roomWarp,cost,checkoutNotificationRecipient,name,stayLength,x,z,y) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            sql.setString(1, room.getHotelName());
-            sql.setInt(2, room.getRoomNumber());
-            sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");
-            sql.setString(4, room.getOccupantName() != null ? room.getOccupantName() : "");
-            sql.setLong(5, room.getCheckoutTime());
-            sql.setString(6, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
-            sql.setInt(7, room.getCost());
-            sql.setString(8, room.getCheckoutNotificationRecipient() != null ? room.getCheckoutNotificationRecipient().toString() : "");
-            sql.setString(9, room.getName());
-            sql.setLong(10, room.getStayLength());
-            sql.setInt(11, room.getX());
-            sql.setInt(12, room.getY());
-            sql.setInt(13, room.getZ());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try (Connection connection = Core.getSqlUtil().getConnection()) {
+//            PreparedStatement sql = connection.prepareStatement("INSERT INTO hotelrooms (hotelName,roomNumber,currentOccupant,occupantName,checkoutTime,roomWarp,cost,checkoutNotificationRecipient,name,stayLength,x,z,y) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+//            sql.setString(1, room.getHotelName());
+//            sql.setInt(2, room.getRoomNumber());
+//            sql.setString(3, room.getCurrentOccupant() != null ? room.getCurrentOccupant().toString() : "");
+//            sql.setString(4, room.getOccupantName() != null ? room.getOccupantName() : "");
+//            sql.setLong(5, room.getCheckoutTime());
+//            sql.setString(6, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
+//            sql.setInt(7, room.getCost());
+//            sql.setString(8, room.getCheckoutNotificationRecipient() != null ? room.getCheckoutNotificationRecipient().toString() : "");
+//            sql.setString(9, room.getName());
+//            sql.setLong(10, room.getStayLength());
+//            sql.setInt(11, room.getX());
+//            sql.setInt(12, room.getY());
+//            sql.setInt(13, room.getZ());
+//            sql.execute();
+//            sql.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
         hotelRooms.add(room);
     }
 
     public void updateHotelRoom(HotelRoom room) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("UPDATE hotelrooms SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=?, roomWarp=? WHERE name=?");
-            sql.setString(1, room.getCurrentOccupant() == null ? "" : room.getCurrentOccupant().toString());
-            sql.setString(2, room.getOccupantName() == null ? "" : room.getOccupantName());
-            sql.setLong(3, room.getCheckoutTime());
-            sql.setString(4, room.getCheckoutNotificationRecipient() == null ? "" : room.getCheckoutNotificationRecipient().toString());
-            sql.setString(5, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
-            sql.setString(6, room.getName());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try (Connection connection = Core.getSqlUtil().getConnection()) {
+//            PreparedStatement sql = connection.prepareStatement("UPDATE hotelrooms SET currentOccupant=?, occupantName=?, checkoutTime=?, checkoutNotificationRecipient=?, roomWarp=? WHERE name=?");
+//            sql.setString(1, room.getCurrentOccupant() == null ? "" : room.getCurrentOccupant().toString());
+//            sql.setString(2, room.getOccupantName() == null ? "" : room.getOccupantName());
+//            sql.setLong(3, room.getCheckoutTime());
+//            sql.setString(4, room.getCheckoutNotificationRecipient() == null ? "" : room.getCheckoutNotificationRecipient().toString());
+//            sql.setString(5, room.getWarp() != null ? room.getWarp().toDatabaseString() : "");
+//            sql.setString(6, room.getName());
+//            sql.execute();
+//            sql.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void removeRoom(HotelRoom room) {
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("DELETE FROM hotelrooms WHERE name=?");
-            sql.setString(1, room.getName());
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try (Connection connection = Core.getSqlUtil().getConnection()) {
+//            PreparedStatement sql = connection.prepareStatement("DELETE FROM hotelrooms WHERE name=?");
+//            sql.setString(1, room.getName());
+//            sql.execute();
+//            sql.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void updateRooms() {

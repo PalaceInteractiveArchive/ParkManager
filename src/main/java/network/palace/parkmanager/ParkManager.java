@@ -47,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.3.2", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.4-mongo", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -128,7 +128,7 @@ public class ParkManager extends Plugin implements Listener {
         }*/
         shopManager = new ShopManager();
         String sn = Core.getServerType();
-        hotelServer = FileUtil.isHotelServer();
+//        hotelServer = FileUtil.isHotelServer();
         hotelManager = new HotelManager();
         setupFoodLocations();
         setupRides();

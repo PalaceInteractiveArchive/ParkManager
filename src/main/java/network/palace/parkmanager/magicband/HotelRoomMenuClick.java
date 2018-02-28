@@ -28,6 +28,8 @@ public class HotelRoomMenuClick {
             ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELS);
             return;
         }
+        ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELS);
+        /*
         boolean playerOwnsRooms = false;
         HotelManager manager = ParkManager.getInstance().getHotelManager();
         for (HotelRoom room : manager.getHotelRooms()) {
@@ -58,6 +60,6 @@ public class HotelRoomMenuClick {
         } else {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You don't have enough money to book this room!");
-        }
+        }*/
     }
 }

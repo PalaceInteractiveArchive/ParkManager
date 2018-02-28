@@ -56,7 +56,7 @@ public class PacketListener implements Listener {
                 if (packet.getServer().equals(Core.getInstanceName())) {
                     return;
                 }
-                parkManager.getHotelManager().refreshRooms();
+//                parkManager.getHotelManager().refreshRooms();
                 break;
             }
             /**
