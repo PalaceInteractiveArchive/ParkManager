@@ -267,7 +267,7 @@ public class PlayerJoinAndLeave implements Listener {
         loc.setWorld(Bukkit.getWorlds().get(0));
         Warp w = null;
         double distance = -1;
-        for (Warp warp : new ArrayList<>(ParkWarp.getInstance().getWarps())) {
+        for (Warp warp : new ArrayList<>(ParkWarp.getInstance().getWarpUtil().getWarps())) {
             if (!warp.getServer().equals(Core.getServerType())) {
                 continue;
             }

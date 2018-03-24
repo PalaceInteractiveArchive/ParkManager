@@ -23,7 +23,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,31 +46,31 @@ public class WardrobeManager {
         for (Document d : Core.getMongoHandler().getOutfits(resort.getId())) {
             try {
                 int id = d.getInteger("id");
-                int hid = d.getInteger("hid");
-                int hdata = d.getInteger("hdata");
+                int headID = d.getInteger("headID");
+                int headData = d.getInteger("headData");
                 String ht = d.getString("head");
-                int cid = d.getInteger("cid");
-                int cdata = d.getInteger("cdata");
-                String st = d.getString("chestplate");
-                int lid = d.getInteger("lid");
-                int ldata = d.getInteger("ldata");
-                String pt = d.getString("leggings");
-                int bid = d.getInteger("bid");
-                int bdata = d.getInteger("bdata");
+                int chestID = d.getInteger("chestID");
+                int chestData = d.getInteger("chestData");
+                String ct = d.getString("chest");
+                int leggingsID = d.getInteger("leggingsID");
+                int leggingsData = d.getInteger("leggingsData");
+                String lt = d.getString("leggings");
+                int bootsID = d.getInteger("bootsID");
+                int bootsData = d.getInteger("bootsData");
                 String bt = d.getString("boots");
-                ItemStack h = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(hid), 1, (short) hdata));
+                ItemStack h = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(headID), 1, (short) headData));
                 if (!ht.equals("")) {
                     NbtFactory.setItemTag(h, new NbtTextSerializer().deserializeCompound(ht));
                 }
-                ItemStack s = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(cid), 1, (short) cdata));
-                if (!st.equals("")) {
-                    NbtFactory.setItemTag(s, new NbtTextSerializer().deserializeCompound(st));
+                ItemStack s = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(chestID), 1, (short) chestData));
+                if (!ct.equals("")) {
+                    NbtFactory.setItemTag(s, new NbtTextSerializer().deserializeCompound(ct));
                 }
-                ItemStack l = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(lid), 1, (short) ldata));
-                if (!pt.equals("")) {
-                    NbtFactory.setItemTag(l, new NbtTextSerializer().deserializeCompound(pt));
+                ItemStack l = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(leggingsID), 1, (short) leggingsData));
+                if (!lt.equals("")) {
+                    NbtFactory.setItemTag(l, new NbtTextSerializer().deserializeCompound(lt));
                 }
-                ItemStack b = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(bid), 1, (short) bdata));
+                ItemStack b = MinecraftReflection.getBukkitItemStack(new ItemStack(Material.getMaterial(bootsID), 1, (short) bootsData));
                 if (!bt.equals("")) {
                     NbtFactory.setItemTag(b, new NbtTextSerializer().deserializeCompound(bt));
                 }
@@ -90,8 +89,7 @@ public class WardrobeManager {
                 bm.setDisplayName(cname + " Boots");
                 b.setItemMeta(bm);
                 outfits.put(id, new Outfit(id, ChatColor.translateAlternateColorCodes('&', name), h, s, l, b));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
         }
     }

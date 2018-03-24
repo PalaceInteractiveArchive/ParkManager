@@ -47,7 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.4-mongo", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.4-mongo", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -94,27 +94,28 @@ public class ParkManager extends Plugin implements Listener {
 
     @Override
     protected void onPluginEnable() throws Exception {
-        instance = this;
-        resort = Resort.fromString(FileUtil.getResort());
-        stitch = new Stitch();
-        packManager = new PackManager();
-        autographManager = new AutographManager();
-        queueManager = new QueueManager();
-        ttcServer = Core.getServerType().equalsIgnoreCase("ttc");
-        bandUtil = new BandUtil();
-        storageManager = new StorageManager();
-        inventoryUtil = new InventoryUtil();
-        visibilityUtil = new VisibilityUtil();
-        teleportUtil = new TeleportUtil();
-        blockChanger = new BlockChanger();
-        wardrobeManager = new WardrobeManager();
-        playerJoinAndLeave = new PlayerJoinAndLeave();
-        muralUtil = new MuralUtil();
-        rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
-        registerListeners();
-        registerCommands();
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        FileUtil.setupConfig();
+        try {
+            instance = this;
+            resort = Resort.fromString(FileUtil.getResort());
+            stitch = new Stitch();
+            packManager = new PackManager();
+            autographManager = new AutographManager();
+            queueManager = new QueueManager();
+            ttcServer = Core.getServerType().equalsIgnoreCase("ttc");
+            bandUtil = new BandUtil();
+            storageManager = new StorageManager();
+            inventoryUtil = new InventoryUtil();
+            visibilityUtil = new VisibilityUtil();
+            teleportUtil = new TeleportUtil();
+            blockChanger = new BlockChanger();
+            wardrobeManager = new WardrobeManager();
+            playerJoinAndLeave = new PlayerJoinAndLeave();
+            muralUtil = new MuralUtil();
+            rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
+            registerListeners();
+            registerCommands();
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            FileUtil.setupConfig();
         /*
         try {
             blockChanger.initialize();
@@ -126,39 +127,42 @@ public class ParkManager extends Plugin implements Listener {
                 e.printStackTrace();
             }
         }*/
-        shopManager = new ShopManager();
-        String sn = Core.getServerType();
+            shopManager = new ShopManager();
+            String sn = Core.getServerType();
 //        hotelServer = FileUtil.isHotelServer();
-        hotelManager = new HotelManager();
-        setupFoodLocations();
-        setupRides();
-        fpKioskManager = new FPKioskManager();
-        scheduleManager = new ScheduleManager();
-        outlineManager = new OutlineManager();
-        //enablePixelator();
-        setActivityURL(config.getString("activity.url"));
-        setActivityUser(config.getString("activity.user"));
-        setActivityPassword(config.getString("activity.password"));
-        try {
-            hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
-                    config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
+            hotelManager = new HotelManager();
+            setupFoodLocations();
+            setupRides();
+            fpKioskManager = new FPKioskManager();
+            scheduleManager = new ScheduleManager();
+            outlineManager = new OutlineManager();
+            //enablePixelator();
+            setActivityURL(config.getString("activity.url"));
+            setActivityUser(config.getString("activity.user"));
+            setActivityPassword(config.getString("activity.password"));
+            try {
+                hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
+                        config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
+            } catch (Exception e) {
+                Core.logMessage("ParkManager", "Could not load Hub location!");
+            }
+            try {
+                spawn = new Location(Bukkit.getWorld(config.getString("spawn.world")), config.getDouble("spawn.x"),
+                        config.getDouble("spawn.y"), config.getDouble("spawn.z"), config.getInt("spawn.yaw"),
+                        config.getInt("spawn.pitch"));
+            } catch (Exception e) {
+                Core.logMessage("ParkManager", "Could not load Spawn location!");
+            }
+            spawnOnJoin = getConfig().getBoolean("spawn-on-join");
+            crossServerInv = getConfig().getBoolean("transfer-inventories");
+            packManager.initialize();
+            DesignStation.initialize();
+            long curr = System.currentTimeMillis();
+            long time = (curr % 1000) / 50;
+            Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
         } catch (Exception e) {
-            Core.logMessage("ParkManager", "Could not load Hub location!");
+            e.printStackTrace();
         }
-        try {
-            spawn = new Location(Bukkit.getWorld(config.getString("spawn.world")), config.getDouble("spawn.x"),
-                    config.getDouble("spawn.y"), config.getDouble("spawn.z"), config.getInt("spawn.yaw"),
-                    config.getInt("spawn.pitch"));
-        } catch (Exception e) {
-            Core.logMessage("ParkManager", "Could not load Spawn location!");
-        }
-        spawnOnJoin = getConfig().getBoolean("spawn-on-join");
-        crossServerInv = getConfig().getBoolean("transfer-inventories");
-        packManager.initialize();
-        DesignStation.initialize();
-        long curr = System.currentTimeMillis();
-        long time = (curr % 1000) / 50;
-        Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
     }
 
     @Override

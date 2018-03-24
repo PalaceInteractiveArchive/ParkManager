@@ -29,6 +29,11 @@
             <version>1.16.10</version>
         </dependency>
         <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.11.2-R0.1-SNAPSHOT</version>
@@ -41,7 +46,7 @@
         <dependency>
             <groupId>network.palace</groupId>
             <artifactId>ParkWarp</artifactId>
-            <version>1.0.4</version>
+            <version>1.1-mongo</version>
         </dependency>
         <dependency>
             <groupId>network.palace</groupId>

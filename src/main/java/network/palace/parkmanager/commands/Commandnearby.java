@@ -26,7 +26,7 @@ public class Commandnearby extends CoreCommand {
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         Location center = player.getLocation().clone();
         HashMap<Warp, Integer> nearby = new HashMap<>();
-        for (Warp warp : ParkWarp.getInstance().getWarps()) {
+        for (Warp warp : ParkWarp.getInstance().getWarpUtil().getWarps()) {
             if (!warp.getServer().equals(Core.getInstanceName())) {
                 continue;
             }

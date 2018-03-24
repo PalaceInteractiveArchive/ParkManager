@@ -73,61 +73,84 @@ public class BandUtil {
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
-        ParkManager parkManager = ParkManager.getInstance();
+        try {
+            ParkManager parkManager = ParkManager.getInstance();
 
-        ChatColor bandNameColor = getBandNameColor(Core.getMongoHandler().getMagicBandNameColor(uuid));
-        BandColor bandColor = !parkManager.isResort(Resort.USO) ? getBandColor(Core.getMongoHandler().getMagicBandType(uuid)) : BandColor.USO;
-        boolean special = bandColor.getName().startsWith("s") || parkManager.isResort(Resort.USO);
+            ChatColor bandNameColor = getBandNameColor(Core.getMongoHandler().getMagicBandNameColor(uuid));
+            BandColor bandColor = !parkManager.isResort(Resort.USO) ? getBandColor(Core.getMongoHandler().getMagicBandType(uuid)) : BandColor.USO;
+            boolean special = bandColor.getName().startsWith("s") || parkManager.isResort(Resort.USO);
 
-        boolean flash = Boolean.valueOf(Core.getMongoHandler().getParkSetting(uuid, "flash"));
-        boolean visibility = Boolean.valueOf(Core.getMongoHandler().getParkSetting(uuid, "visibility"));
-        boolean hotel = Boolean.valueOf(Core.getMongoHandler().getParkSetting(uuid, "hotel"));
+            boolean flash = (Boolean) Core.getMongoHandler().getParkSetting(uuid, "flash");
+            boolean visibility = (Boolean) Core.getMongoHandler().getParkSetting(uuid, "visibility");
+            boolean hotel = (Boolean) Core.getMongoHandler().getParkSetting(uuid, "hotel");
 
-        Document fpDoc = Core.getMongoHandler().getParkData(uuid, new Document("fastpass", 1));
-        Document monthly = Core.getMongoHandler().getMonthlyRewards(uuid);
-        Document vote = Core.getMongoHandler().getVoteData(uuid);
+            Document fpDoc = Core.getMongoHandler().getParkData(uuid, "fastpass");
+            Document monthly = Core.getMongoHandler().getMonthlyRewards(uuid);
+            Document vote = Core.getMongoHandler().getVoteData(uuid);
 
-        FastPassData fpData = new FastPassData(fpDoc.getInteger("slow"), fpDoc.getInteger("moderate"),
-                fpDoc.getInteger("thrill"), fpDoc.getInteger("sday"), fpDoc.getInteger("mday"),
-                fpDoc.getInteger("tday"));
-        KioskData kioskData = new KioskData(monthly.getLong("settler"), monthly.getLong("dweller"),
-                monthly.getLong("noble"), monthly.getLong("majestic"), monthly.getLong("honorable"),
-                vote.getLong("lastVote"), vote.getInteger("lastSite"));
-
-        String outfit = Core.getMongoHandler().getParkData(uuid, "outfit");
-        String pack = Core.getMongoHandler().getParkSetting(uuid, "pack");
-
-        PlayerData data = new PlayerData(uuid, bandNameColor, bandColor, special, flash, visibility, hotel, fpData, kioskData, outfit, pack);
-
-        List<UUID> friends = Core.getMongoHandler().getFriendList(uuid);
-        data.setFriends(friends);
-
-        List<Integer> purchases = new ArrayList<>();
-        Document outfits = Core.getMongoHandler().getOutfitPurchases(uuid);
-        for (Map.Entry<String, Object> entry : outfits.entrySet()) {
-            Document purch = (Document) entry.getValue();
-            purchases.add(purch.getInteger("id"));
-        }
-        data.setPurchases(purchases);
-
-        TreeMap<String, RideCount> rides = new TreeMap<>();
-        Document rideData = Core.getMongoHandler().getRideCounterData(uuid);
-        for (Map.Entry<String, Object> entry : rideData.entrySet()) {
-            Document ride = (Document) entry.getValue();
-            String name = ride.getString("name");
-            String server = ride.getString("server");
-            if (rides.containsKey(name) && rides.get(name).getServer().equalsIgnoreCase(server)) {
-                rides.get(name).addCount(1);
-            } else {
-                rides.put(name, new RideCount(name, server));
+            FastPassData fpData = new FastPassData(fpDoc.getInteger("slow"), fpDoc.getInteger("moderate"),
+                    fpDoc.getInteger("thrill"), fpDoc.getInteger("sday"), fpDoc.getInteger("mday"),
+                    fpDoc.getInteger("tday"));
+            long settler = 0;
+            long dweller = 0;
+            long noble = 0;
+            long majestic = 0;
+            long honorable = 0;
+            if (monthly.containsKey("settler")) {
+                settler = monthly.getLong("settler");
             }
+            if (monthly.containsKey("dweller")) {
+                dweller = monthly.getLong("dweller");
+            }
+            if (monthly.containsKey("noble")) {
+                noble = monthly.getLong("noble");
+            }
+            if (monthly.containsKey("majestic")) {
+                majestic = monthly.getLong("majestic");
+            }
+            if (monthly.containsKey("honorable")) {
+                honorable = monthly.getLong("honorable");
+            }
+            KioskData kioskData = new KioskData(settler, dweller, noble, majestic, honorable,
+                    vote.getLong("lastTime"), vote.getInteger("lastSite"));
+
+            String outfit = Core.getMongoHandler().getParkValue(uuid, "outfit");
+            String pack = (String) Core.getMongoHandler().getParkSetting(uuid, "pack");
+
+            PlayerData data = new PlayerData(uuid, bandNameColor, bandColor, special, flash, visibility, hotel, fpData, kioskData, outfit, pack);
+
+            List<UUID> friends = Core.getMongoHandler().getFriendList(uuid);
+            data.setFriends(friends);
+
+            List<Integer> purchases = new ArrayList<>();
+            for (Object o : Core.getMongoHandler().getOutfitPurchases(uuid)) {
+                Document doc = (Document) o;
+                int id = doc.getInteger("id");
+                purchases.add(id);
+            }
+            data.setPurchases(purchases);
+
+            TreeMap<String, RideCount> rides = new TreeMap<>();
+            for (Object o : Core.getMongoHandler().getRideCounterData(uuid)) {
+                Document doc = (Document) o;
+                String name = doc.getString("name");
+                String server = doc.getString("server");
+                if (rides.containsKey(name) && rides.get(name).getServer().equalsIgnoreCase(server)) {
+                    rides.get(name).addCount(1);
+                } else {
+                    rides.put(name, new RideCount(name, server));
+                }
+            }
+            data.setRideCounts(rides);
+
+            parkManager.addPlayerData(data);
+            dataResponses.remove(uuid);
+
+            return data;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        data.setRideCounts(rides);
-
-        parkManager.addPlayerData(data);
-        dataResponses.remove(uuid);
-
-        return data;
+        return null;
     }
 
     public void setSetting(final CPlayer player, final String name, final boolean value) {
