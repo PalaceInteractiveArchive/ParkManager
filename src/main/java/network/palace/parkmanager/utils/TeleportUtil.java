@@ -20,7 +20,7 @@ public class TeleportUtil {
     }
 
     public void log(CPlayer player, Location location) {
-        if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() < Rank.MOD.getRankId()) {
+        if (player.getRank().getRankId() < Rank.MOD.getRankId()) {
             return;
         }
         if (locations.containsKey(player.getUniqueId())) {

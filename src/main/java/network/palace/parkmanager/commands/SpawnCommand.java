@@ -1,0 +1,82 @@
+package network.palace.parkmanager.commands;
+
+import network.palace.core.Core;
+import network.palace.core.command.CommandException;
+import network.palace.core.command.CommandMeta;
+import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
+import network.palace.core.player.Rank;
+import network.palace.parkmanager.ParkManager;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+@CommandMeta(description = "Teleport to spawn")
+public class SpawnCommand extends CoreCommand {
+
+    public SpawnCommand() {
+        super("spawn");
+    }
+
+    @Override
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        ParkManager parkManager = ParkManager.getInstance();
+        if (!(sender instanceof Player)) {
+            if (args.length == 1) {
+                Player tp = Bukkit.getPlayer(args[0]);
+                if (tp == null) {
+                    sender.sendMessage(ChatColor.RED + "Player not found!");
+                }
+                if (tp.isInsideVehicle()) {
+                    tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
+                    return;
+                }
+                parkManager.getTeleportUtil().log(tp, tp.getLocation());
+                tp.teleport(parkManager.getSpawn());
+                return;
+            }
+            sender.sendMessage(ChatColor.RED + "/spawn [Username]");
+            return;
+        }
+        Player player = (Player) sender;
+        CPlayer cp = Core.getPlayerManager().getPlayer(player);
+        if (args.length == 1) {
+            if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() >= Rank.MOD.getRankId()) {
+                CPlayer tp = Core.getPlayerManager().getPlayer(args[0]);
+                if (tp == null) {
+                    player.sendMessage(ChatColor.RED + "Player not found!");
+                }
+                parkManager.getQueueManager().leaveAllQueues(tp);
+                if (parkManager.getShooter() != null) {
+                    parkManager.getShooter().warp(tp);
+                }
+                if (parkManager.getToyStoryMania() != null) {
+                    parkManager.getToyStoryMania().done(tp);
+                    ParkManager.getMuralUtil().done(tp);
+                }
+                if (tp.getBukkitPlayer().isInsideVehicle()) {
+                    tp.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
+                    return;
+                }
+                parkManager.getTeleportUtil().log(tp, tp.getLocation());
+                tp.teleport(parkManager.getSpawn());
+                return;
+            }
+        }
+        parkManager.getQueueManager().leaveAllQueues(cp);
+        if (parkManager.getShooter() != null) {
+            parkManager.getShooter().warp(cp);
+        }
+        if (parkManager.getToyStoryMania() != null) {
+            parkManager.getToyStoryMania().done(cp);
+            ParkManager.getMuralUtil().done(cp);
+        }
+        if (player.isInsideVehicle()) {
+            player.sendMessage(ChatColor.RED + "You can't teleport while on a ride!");
+            return;
+        }
+        parkManager.getTeleportUtil().log(player, player.getLocation());
+        player.teleport(parkManager.getSpawn());
+    }
+}

@@ -12,10 +12,10 @@ public class ChunkUnload implements Listener {
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
-        for (Entity entity : event.getChunk().getEntities()) {
-            if (entity.getType().name().toLowerCase().contains("minecart")) {
-                entity.remove();
-            }
-        }
+//        for (Entity entity : event.getChunk().getEntities()) {
+//            if (entity.getType().name().toLowerCase().contains("minecart")) {
+//                entity.remove();
+//            }
+//        }
     }
 }

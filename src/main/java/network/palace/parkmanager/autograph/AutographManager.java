@@ -44,8 +44,9 @@ public class AutographManager {
 
     public List<Signature> getSignatures(UUID uuid) {
         List<Signature> list = new ArrayList<>();
-        for (Document doc : Core.getMongoHandler().getAutographs(uuid)) {
-            list.add(new Signature(doc.getString("sender"), doc.getString("message"), doc.getLong("time")));
+        for (Object o : Core.getMongoHandler().getAutographs(uuid)) {
+            Document doc = (Document) o;
+            list.add(new Signature(doc.getString("author"), doc.getString("message"), doc.getLong("time")));
         }
         return list;
     }

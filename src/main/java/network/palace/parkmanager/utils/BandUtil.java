@@ -89,8 +89,8 @@ public class BandUtil {
             Document vote = Core.getMongoHandler().getVoteData(uuid);
 
             FastPassData fpData = new FastPassData(fpDoc.getInteger("slow"), fpDoc.getInteger("moderate"),
-                    fpDoc.getInteger("thrill"), fpDoc.getInteger("sday"), fpDoc.getInteger("mday"),
-                    fpDoc.getInteger("tday"));
+                    fpDoc.getInteger("thrill"), fpDoc.getInteger("slowday"), fpDoc.getInteger("moderateday"),
+                    fpDoc.getInteger("thrillday"));
             long settler = 0;
             long dweller = 0;
             long noble = 0;
@@ -164,7 +164,7 @@ public class BandUtil {
                 (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
 
         Core.runTaskAsynchronously(() -> {
-            Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "bandcolor", color.getName());
+            Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "bandtype", color.getName());
             data.setBandColor(color);
             data.setSpecial(color.getName().startsWith("s"));
             giveBandToPlayer(player);

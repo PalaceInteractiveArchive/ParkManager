@@ -39,7 +39,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -329,49 +328,47 @@ public class ParkManager extends Plugin implements Listener {
     }
 
     public void registerCommands() {
-        registerCommand(new Commandautograph());
-        registerCommand(new Commandb());
-        registerCommand(new Commandback());
-        registerCommand(new Commandbc());
-        registerCommand(new Commandbuild());
-        registerCommand(new Commandday());
-        registerCommand(new Commanddelay());
-        registerCommand(new Commandenderchest());
-        registerCommand(new Commandfly());
-        registerCommand(new Commandgive());
-        registerCommand(new Commandhead());
-        registerCommand(new Commandheal());
-        registerCommand(new Commandhub());
-        registerCommand(new Commandinvsee());
-        registerCommand(new Commanditem());
-        registerCommand(new Commandmagic());
-        registerCommand(new Commandmc());
-        registerCommand(new Commandmore());
-        registerCommand(new Commandmsg());
-        registerCommand(new Commandnearby());
-        registerCommand(new Commandnight());
-        registerCommand(new Commandnoon());
-        registerCommand(new Commandnv());
-        registerCommand(new Commandoutline());
-        registerCommand(new Commandpack());
-        registerCommand(new Commandptime());
-        registerCommand(new Commandpweather());
-        registerCommand(new Commandsethub());
-        registerCommand(new Commandsetspawn());
-        registerCommand(new Commandsign());
-        registerCommand(new Commandsmite());
-        registerCommand(new Commandspawn());
-        registerCommand(new Commandtp());
-        registerCommand(new Commandupdate());
-        registerCommand(new CommandCosmetics());
+        registerCommand(new AutographCommand());
+        registerCommand(new BroadcastGlobalCommand());
+        registerCommand(new BackCommand());
+        registerCommand(new BroadcastCommand());
+        registerCommand(new BuildCommand());
+        registerCommand(new DayCommand());
+        registerCommand(new DelayCommand());
+        registerCommand(new EnderchestCommand());
+        registerCommand(new FlyCommand());
+        registerCommand(new GiveCommand());
+        registerCommand(new HeadCommand());
+        registerCommand(new HealCommand());
+        registerCommand(new HubCommand());
+        registerCommand(new InvSeeCommand());
+        registerCommand(new ItemCommand());
+        registerCommand(new MagicCommand());
+        registerCommand(new MuteChatCommand());
+        registerCommand(new MoreCommand());
+        registerCommand(new MsgCommand());
+        registerCommand(new NearbyCommand());
+        registerCommand(new NightCommand());
+        registerCommand(new NoonCommand());
+        registerCommand(new NightVisionCommand());
+        registerCommand(new OutlineCommand());
+        registerCommand(new PackCommand());
+        registerCommand(new PlayerTimeCommand());
+        registerCommand(new PlayerWeatherCommand());
+        registerCommand(new SetHubCommand());
+        registerCommand(new SetSpawnCommand());
+        registerCommand(new SignCommand());
+        registerCommand(new SmiteCommand());
+        registerCommand(new SpawnCommand());
+        registerCommand(new TeleportCommand());
+        registerCommand(new CosmeticsCommand());
         registerCommand(new MuralCommand());
         if (isResort(Resort.USO)) {
-            registerCommand(new Commanduso());
+            registerCommand(new USOCommand());
         }
     }
 
     public void registerListeners() {
-        PluginManager pm = getServer().getPluginManager();
         registerListener(this);
         registerListener(new BlockEdit());
         registerListener(new ChatListener());
@@ -385,10 +382,11 @@ public class ParkManager extends Plugin implements Listener {
         registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(playerJoinAndLeave);
+        registerListener(new PlayerTeleport());
         registerListener(queueManager);
+        registerListener(new ResourceListener());
         registerListener(new SignChange());
         registerListener(new PacketListener());
-        registerListener(new ResourceListener());
         if (rideManager) {
             registerListener(new RideListener());
         }

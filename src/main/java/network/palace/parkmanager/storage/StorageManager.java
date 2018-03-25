@@ -154,9 +154,8 @@ public class StorageManager {
         }
         data.setLastInventoryUpdate(System.currentTimeMillis());
         PacketInventoryContent packet = new PacketInventoryContent(player.getUniqueId(), ParkManager.getInstance().getResort(),
-                packjson, packhash, data.getBackpack().getSize().ordinal(),
-                lockerjson, lockerhash, data.getLocker().getSize().ordinal(),
-                hotbarjson, hotbarhash);
+                packjson, packhash, data.getBackpack().getSize().getSize(), lockerjson, lockerhash,
+                data.getLocker().getSize().getSize(), hotbarjson, hotbarhash);
         Core.getDashboardConnection().send(packet);
         Bukkit.getLogger().info("Inventory packet for " + player.getName() + " generated and sent in " +
                 (System.currentTimeMillis() - currentTime) + "ms");
@@ -218,7 +217,7 @@ public class StorageManager {
             return;
         }
 
-        StorageSize bsize = StorageSize.fromInt(packet.getLockerSize());
+        StorageSize bsize = StorageSize.fromInt(packet.getBackpackSize());
         StorageSize lsize = StorageSize.fromInt(packet.getLockerSize());
 
         ItemStack[] packItems = ItemUtil.getInventoryFromJson(packet.getBackpackJson());
