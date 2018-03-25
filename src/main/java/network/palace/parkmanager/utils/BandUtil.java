@@ -76,6 +76,10 @@ public class BandUtil {
         try {
             ParkManager parkManager = ParkManager.getInstance();
 
+            if (Core.getMongoHandler().getBuildMode(uuid)) {
+                ParkManager.getInstance().getStorageManager().makeBuildMode.add(uuid);
+            }
+
             ChatColor bandNameColor = getBandNameColor(Core.getMongoHandler().getMagicBandNameColor(uuid));
             BandColor bandColor = !parkManager.isResort(Resort.USO) ? getBandColor(Core.getMongoHandler().getMagicBandType(uuid)) : BandColor.USO;
             boolean special = bandColor.getName().startsWith("s") || parkManager.isResort(Resort.USO);
