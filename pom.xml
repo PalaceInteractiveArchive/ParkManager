@@ -41,7 +41,7 @@
         <dependency>
             <groupId>network.palace</groupId>
             <artifactId>RideManager</artifactId>
-            <version>1.0</version>
+            <version>1.0-mongo</version>
         </dependency>
         <dependency>
             <groupId>network.palace</groupId>

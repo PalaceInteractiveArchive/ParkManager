@@ -93,8 +93,8 @@ public class BandUtil {
             Document vote = Core.getMongoHandler().getVoteData(uuid);
 
             FastPassData fpData = new FastPassData(fpDoc.getInteger("slow"), fpDoc.getInteger("moderate"),
-                    fpDoc.getInteger("thrill"), fpDoc.getInteger("slowday"), fpDoc.getInteger("moderateday"),
-                    fpDoc.getInteger("thrillday"));
+                    fpDoc.getInteger("thrill"), fpDoc.getInteger("sday"), fpDoc.getInteger("mday"),
+                    fpDoc.getInteger("tday"));
             long settler = 0;
             long dweller = 0;
             long noble = 0;

@@ -7,7 +7,7 @@ import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.handlers.RideCount;
 import network.palace.ridemanager.events.RideEndEvent;
 import network.palace.ridemanager.events.RideManagerStatusEvent;
-import network.palace.ridemanager.handlers.Ride;
+import network.palace.ridemanager.handlers.ride.Ride;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;

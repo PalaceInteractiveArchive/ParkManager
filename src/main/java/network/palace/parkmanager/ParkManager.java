@@ -128,7 +128,7 @@ public class ParkManager extends Plugin implements Listener {
         }*/
             shopManager = new ShopManager();
             String sn = Core.getServerType();
-//        hotelServer = FileUtil.isHotelServer();
+            hotelServer = FileUtil.isHotelServer();
             hotelManager = new HotelManager();
             setupFoodLocations();
             setupRides();
