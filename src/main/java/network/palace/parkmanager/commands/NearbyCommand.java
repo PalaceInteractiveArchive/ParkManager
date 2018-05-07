@@ -27,7 +27,7 @@ public class NearbyCommand extends CoreCommand {
         Location center = player.getLocation().clone();
         HashMap<Warp, Integer> nearby = new HashMap<>();
         for (Warp warp : ParkWarp.getInstance().getWarpUtil().getWarps()) {
-            if (!warp.getServer().equals(Core.getInstanceName())) {
+            if (!warp.getServer().equals(Core.getServerType())) {
                 continue;
             }
             if (warp.getLocation() == null) {

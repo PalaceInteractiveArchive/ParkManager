@@ -40,10 +40,6 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 
 @PluginInfo(name = "ParkManager", version = "2.4-mongo", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
@@ -86,9 +82,6 @@ public class ParkManager extends Plugin implements Listener {
     @Getter private MenInBlack menInBlack;
     @Getter private RipRideRockit ripRideRockit;
     @Getter private OutlineManager outlineManager;
-    @Setter private String activityURL;
-    @Setter private String activityUser;
-    @Setter private String activityPassword;
     @Getter private static MuralUtil muralUtil;
 
     @Override
@@ -135,10 +128,6 @@ public class ParkManager extends Plugin implements Listener {
             fpKioskManager = new FPKioskManager();
             scheduleManager = new ScheduleManager();
             outlineManager = new OutlineManager();
-            //enablePixelator();
-            setActivityURL(config.getString("activity.url"));
-            setActivityUser(config.getString("activity.user"));
-            setActivityPassword(config.getString("activity.password"));
             try {
                 hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
                         config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
@@ -303,18 +292,6 @@ public class ParkManager extends Plugin implements Listener {
             }
         }
         return null;
-    }
-
-    public void logActivity(Player player, String activity, String description) {
-        try (Connection connection = DriverManager.getConnection(activityURL, activityUser, activityPassword)) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO activity (uuid, action, description) VALUES (?,?,?)");
-            sql.setString(1, player.getUniqueId().toString());
-            sql.setString(2, activity);
-            sql.setString(3, description);
-            sql.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isSign(Location loc) {
