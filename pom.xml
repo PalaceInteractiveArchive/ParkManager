@@ -6,7 +6,7 @@
 
     <groupId>network.palace</groupId>
     <artifactId>ParkManager</artifactId>
-    <version>2.5-mongo</version>
+    <version>2.6-mongo</version>
     <repositories>
         <repository>
             <id>palace</id>

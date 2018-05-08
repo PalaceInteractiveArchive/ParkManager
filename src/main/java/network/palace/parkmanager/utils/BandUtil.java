@@ -137,7 +137,7 @@ public class BandUtil {
             TreeMap<String, RideCount> rides = new TreeMap<>();
             for (Object o : Core.getMongoHandler().getRideCounterData(uuid)) {
                 Document doc = (Document) o;
-                String name = doc.getString("name");
+                String name = doc.getString("name").trim();
                 String server = doc.getString("server").replaceAll("[^A-Za-z ]", "");
                 if (rides.containsKey(name) && rides.get(name).serverEquals(server)) {
                     rides.get(name).addCount(1);
