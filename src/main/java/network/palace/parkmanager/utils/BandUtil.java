@@ -138,8 +138,8 @@ public class BandUtil {
             for (Object o : Core.getMongoHandler().getRideCounterData(uuid)) {
                 Document doc = (Document) o;
                 String name = doc.getString("name");
-                String server = doc.getString("server");
-                if (rides.containsKey(name) && rides.get(name).getServer().equalsIgnoreCase(server)) {
+                String server = doc.getString("server").replaceAll("[^A-Za-z ]", "");
+                if (rides.containsKey(name) && rides.get(name).serverEquals(server)) {
                     rides.get(name).addCount(1);
                 } else {
                     rides.put(name, new RideCount(name, server));

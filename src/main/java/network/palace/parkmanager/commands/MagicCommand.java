@@ -193,7 +193,7 @@ public class MagicCommand extends CoreCommand {
                         if (rides.containsKey(finalRideName)) {
                             rides.get(finalRideName).addCount(1);
                         } else {
-                            rides.put(finalRideName, new RideCount(finalRideName, Core.getInstanceName()));
+                            rides.put(finalRideName, new RideCount(finalRideName, Core.getServerType()));
                         }
                         if (rides.size() >= 30) {
                             tp.giveAchievement(15);
