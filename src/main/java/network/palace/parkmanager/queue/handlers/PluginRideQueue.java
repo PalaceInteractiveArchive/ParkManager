@@ -54,7 +54,7 @@ public class PluginRideQueue extends AbstractQueueRide {
         this.warp = warp;
         this.category = category;
         this.type = type;
-        this.delay = delay + 7;
+        this.delay = delay + 10;
         switch (type) {
             case CAROUSEL: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
@@ -124,17 +124,17 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     public boolean isLoadPeriodOver(boolean b) {
         if (b) {
-            return (getTime() - delay - 7) >= lastSpawn;
+            return (getTime() - delay - 10) >= lastSpawn;
         } else {
-            return (getTime() - delay - 8) >= lastSpawn;
-//            boolean loadPeriodOver = (getTime() - delay - 8) >= lastSpawn;
+            return (getTime() - delay - 11) >= lastSpawn;
+//            boolean loadPeriodOver = (getTime() - delay - 11) >= lastSpawn;
 //            boolean ridersEmpty = riders.isEmpty();
 //            return !ridersEmpty && loadPeriodOver;
         }
     }
 
     public int getLoadTime() {
-        return 7 - (int) (getTime() - (delay + lastSpawn));
+        return 10 - (int) (getTime() - (delay + lastSpawn));
     }
 
     @Override
@@ -263,7 +263,7 @@ public class PluginRideQueue extends AbstractQueueRide {
             updateSigns();
             loaded = true;
             if (ride instanceof FileRide) {
-//                ((FileRide) ride).spawn(7000);
+                ((FileRide) ride).spawn(10000);
             }
         }
     }
