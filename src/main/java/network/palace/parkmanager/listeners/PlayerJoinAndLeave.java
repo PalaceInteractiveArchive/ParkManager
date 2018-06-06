@@ -157,7 +157,7 @@ public class PlayerJoinAndLeave implements Listener {
                 player.removePotionEffect(type.getType());
             }
             GameMode mode = player.getGameMode();
-            if (cp.getRank().getRankId() >= Rank.MOD.getRankId()) {
+            if (cp.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId()) {
                 player.setGameMode(GameMode.SURVIVAL);
                 if (!player.getAllowFlight()) {
                     player.setAllowFlight(true);

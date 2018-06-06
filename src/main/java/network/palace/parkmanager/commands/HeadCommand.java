@@ -22,7 +22,7 @@ public class HeadCommand extends CoreCommand {
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         sender.sendMessage(ChatColor.RED + "This command has been disabled. Visit " + ChatColor.AQUA +
-                "heads.legobuilder.net " + ChatColor.RED + "or " + ChatColor.AQUA + "skins.legobuilder.net " +
+                "heads.legobuilder.me " + ChatColor.RED + "or " + ChatColor.AQUA + "skins.legobuilder.me " +
                 ChatColor.RED + "to get player heads.");
     }
 }

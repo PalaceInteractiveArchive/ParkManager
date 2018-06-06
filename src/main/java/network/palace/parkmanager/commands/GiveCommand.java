@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @CommandMeta(description = "Give a player an item")
-@CommandPermission(rank = Rank.MOD)
+@CommandPermission(rank = Rank.TRAINEEBUILD)
 public class GiveCommand extends CoreCommand {
 
     public GiveCommand() {

@@ -4,13 +4,12 @@ import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.hotels.HotelManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -25,14 +24,14 @@ public class BlockEdit implements Listener {
     private static List<UUID> buildMode = new ArrayList<>();
     private HashMap<UUID, Long> delay = new HashMap<>();
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        CPlayer user = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (user.getRank().getRankId() < Rank.MOD.getRankId()) {
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
+        if (player.getRank().getRankId() < Rank.TRAINEEBUILD.getRankId()) {
             event.setCancelled(true);
             return;
         } else {
+            event.setCancelled(false);
             if (!isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
                 if (delay.containsKey(player.getUniqueId())) {
@@ -84,10 +83,9 @@ public class BlockEdit implements Listener {
 
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
         if (event.getBlockPlaced().getType().equals(Material.THIN_GLASS)) {
             Location loc = player.getLocation();
             if (loc.getBlock().getType().equals(Material.AIR) && (loc.clone().add(0, -0.5, 0).getBlock()
@@ -102,9 +100,10 @@ public class BlockEdit implements Listener {
             }
         }
 
-        if (cplayer.getRank().getRankId() < Rank.MOD.getRankId()) {
+        if (player.getRank().getRankId() < Rank.TRAINEEBUILD.getRankId()) {
             event.setCancelled(true);
         } else {
+            event.setCancelled(false);
             if (!isInBuildMode(player.getUniqueId())) {
                 event.setCancelled(true);
                 if (delay.containsKey(player.getUniqueId())) {

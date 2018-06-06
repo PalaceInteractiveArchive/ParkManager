@@ -371,7 +371,7 @@ public class PlayerInteract implements Listener {
         if (!etype.equals(EntityType.ITEM_FRAME)) {
             return;
         }
-        if (player.getRank().getRankId() < Rank.MOD.getRankId() && !BlockEdit.isInBuildMode(player.getUniqueId())) {
+        if (player.getRank().getRankId() < Rank.TRAINEEBUILD.getRankId() && !BlockEdit.isInBuildMode(player.getUniqueId())) {
             event.setCancelled(true);
         }
     }

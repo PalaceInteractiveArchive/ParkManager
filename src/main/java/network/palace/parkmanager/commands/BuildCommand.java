@@ -22,7 +22,7 @@ import org.bukkit.inventory.PlayerInventory;
  * Created by Marc on 10/11/15
  */
 @CommandMeta(description = "Toggle build mode")
-@CommandPermission(rank = Rank.MOD)
+@CommandPermission(rank = Rank.TRAINEEBUILD)
 public class BuildCommand extends CoreCommand {
 
     public BuildCommand() {
@@ -87,7 +87,7 @@ public class BuildCommand extends CoreCommand {
             }
             inv.clear();
             parkManager.getPlayerJoinAndLeave().setInventory(player, true);
-            if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() > Rank.TRAINEE.getRankId()) {
+            if (player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId()) {
                 if (inv.getItem(0) == null || inv.getItem(0).getType().equals(Material.AIR)) {
                     inv.setItem(0, new ItemStack(Material.COMPASS));
                 }

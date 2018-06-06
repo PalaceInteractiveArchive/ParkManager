@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandMeta(description = "Set player time")
-@CommandPermission(rank = Rank.MOD)
+@CommandPermission(rank = Rank.TRAINEEBUILD)
 public class PlayerTimeCommand extends CoreCommand {
 
     public PlayerTimeCommand() {
