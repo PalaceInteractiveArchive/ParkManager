@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -14,6 +15,7 @@ import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.*;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -25,10 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -369,7 +367,7 @@ public class FPKioskManager implements Listener {
                     fpd.setSlowDay(today);
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + ChatColor.YELLOW + "Daily Slow FastPass!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    updateFPData(player.getSqlId(), fpd);
+                    updateFPData(player.getUniqueId(), fpd);
                 }
                 break;
             }
@@ -379,7 +377,7 @@ public class FPKioskManager implements Listener {
                     fpd.setModerateDay(today);
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + ChatColor.YELLOW + "Daily Moderate FastPass!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    updateFPData(player.getSqlId(), fpd);
+                    updateFPData(player.getUniqueId(), fpd);
                 }
                 break;
             }
@@ -389,7 +387,7 @@ public class FPKioskManager implements Listener {
                     fpd.setThrillDay(today);
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + ChatColor.YELLOW + "Daily Thrill FastPass!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    updateFPData(player.getSqlId(), fpd);
+                    updateFPData(player.getUniqueId(), fpd);
                 }
                 break;
             }
@@ -401,8 +399,9 @@ public class FPKioskManager implements Listener {
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.SETTLER.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Settler");
-                    updateMonthlyData(player.getSqlId(), kioskData);
+                    Core.getMongoHandler().changeAmount(player.getUniqueId(), 20, "Monthly Settler",
+                            CurrencyType.TOKENS, false);
+                    updateMonthlyData(player.getUniqueId(), kioskData);
                 }
                 break;
             }
@@ -420,8 +419,9 @@ public class FPKioskManager implements Listener {
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.DWELLER.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Dweller");
-                    updateMonthlyData(player.getSqlId(), kioskData);
+                    Core.getMongoHandler().changeAmount(player.getUniqueId(), 20, "Monthly Dweller",
+                            CurrencyType.TOKENS, false);
+                    updateMonthlyData(player.getUniqueId(), kioskData);
                 }
                 break;
             }
@@ -439,8 +439,9 @@ public class FPKioskManager implements Listener {
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.NOBLE.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Noble");
-                    updateMonthlyData(player.getSqlId(), kioskData);
+                    Core.getMongoHandler().changeAmount(player.getUniqueId(), 20, "Monthly Noble",
+                            CurrencyType.TOKENS, false);
+                    updateMonthlyData(player.getUniqueId(), kioskData);
                 }
                 break;
             }
@@ -458,8 +459,9 @@ public class FPKioskManager implements Listener {
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.MAJESTIC.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Majestic");
-                    updateMonthlyData(player.getSqlId(), kioskData);
+                    Core.getMongoHandler().changeAmount(player.getUniqueId(), 20, "Monthly Majestic",
+                            CurrencyType.TOKENS, false);
+                    updateMonthlyData(player.getUniqueId(), kioskData);
                 }
                 break;
             }
@@ -477,51 +479,24 @@ public class FPKioskManager implements Listener {
                     player.sendMessage(ChatColor.GREEN + "You claimed your " + Rank.HONORABLE.getFormattedName() +
                             ChatColor.YELLOW + " Monthly Tokens!");
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    Core.getEconomy().addTokens(player.getUniqueId(), 20, "Monthly Honorable");
-                    updateMonthlyData(player.getSqlId(), kioskData);
+                    Core.getMongoHandler().changeAmount(player.getUniqueId(), 20, "Monthly Honorable",
+                            CurrencyType.TOKENS, false);
+                    updateMonthlyData(player.getUniqueId(), kioskData);
                 }
                 break;
             }
         }
     }
 
-    private void updateMonthlyData(final int id, final KioskData data) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET monthsettler=?," +
-                        "monthdweller=?,monthnoble=?,monthmajestic=?,monthhonorable=? WHERE id=?");
-                sql.setLong(1, data.getMonthSettler());
-                sql.setLong(2, data.getMonthDweller());
-                sql.setLong(3, data.getMonthNoble());
-                sql.setLong(4, data.getMonthMajestic());
-                sql.setLong(5, data.getMonthHonorable());
-                sql.setInt(6, id);
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+    private void updateMonthlyData(final UUID uuid, final KioskData data) {
+        Core.runTaskAsynchronously(() -> Core.getMongoHandler().updateMonthlyRewardData(uuid, data.getMonthSettler(),
+                data.getMonthDweller(), data.getMonthNoble(), data.getMonthMajestic(), data.getMonthHonorable()));
     }
 
-    private void updateFPData(final int id, final FastPassData fastPassData) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET slow=?,moderate=?," +
-                        "thrill=?,sday=?,mday=?,tday=? WHERE id=?");
-                sql.setInt(1, fastPassData.getSlow());
-                sql.setInt(2, fastPassData.getModerate());
-                sql.setInt(3, fastPassData.getThrill());
-                sql.setInt(4, fastPassData.getSlowDay());
-                sql.setInt(5, fastPassData.getModerateDay());
-                sql.setInt(6, fastPassData.getThrillDay());
-                sql.setInt(7, id);
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+    private void updateFPData(final UUID uuid, final FastPassData fastPassData) {
+        Core.runTaskAsynchronously(() -> Core.getMongoHandler().updateFPData(uuid, fastPassData.getSlow(), fastPassData.getModerate(),
+                fastPassData.getThrill(), fastPassData.getSlowDay(), fastPassData.getModerateDay(),
+                fastPassData.getThrillDay()));
     }
 
     public void updateVoteData(final UUID uuid) {
@@ -531,21 +506,11 @@ public class FPKioskManager implements Listener {
             return;
         }
         Core.runTaskAsynchronously(() -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("SELECT vote,lastvote FROM player_data WHERE uuid=?");
-                sql.setString(1, uuid.toString());
-                ResultSet result = sql.executeQuery();
-                if (!result.next()) {
-                    return;
-                }
-                KioskData kioskData = data.getKioskData();
-                kioskData.setVote(result.getLong("vote"));
-                kioskData.setLastVote(result.getInt("lastvote"));
-                result.close();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            Document doc = Core.getMongoHandler().getVoteData(uuid);
+            if (doc == null) return;
+            KioskData kioskData = data.getKioskData();
+            kioskData.setVote(doc.getLong("lastTime"));
+            kioskData.setLastVote(doc.getInteger("lastSite"));
         });
     }
 

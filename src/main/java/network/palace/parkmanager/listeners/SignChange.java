@@ -2,13 +2,9 @@ package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.HotelRoom;
-import network.palace.parkmanager.handlers.Warp;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,7 +42,7 @@ public class SignChange implements Listener {
                 event.setLine(3, "");
                 return;
             }
-            if (l1.equalsIgnoreCase("[hotel]") || l1.equalsIgnoreCase("[suite]")) {
+            /*if (l1.equalsIgnoreCase("[hotel]") || l1.equalsIgnoreCase("[suite]")) {
                 if (!ParkManager.getInstance().isHotelServer()) {
                     return;
                 }
@@ -75,7 +71,7 @@ public class SignChange implements Listener {
                     ParkManager.getInstance().getHotelManager().updateRooms();
                 }
                 return;
-            }
+            }*/
             if (l1.equalsIgnoreCase("[shop]")) {
                 event.setLine(0, PlayerInteract.shop);
                 event.setLine(1, ChatColor.DARK_GREEN + event.getLine(1));

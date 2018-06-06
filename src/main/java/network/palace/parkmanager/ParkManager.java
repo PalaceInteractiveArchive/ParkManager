@@ -39,22 +39,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.3.2", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "2.7", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
     private HashMap<UUID, PlayerData> playerData = new HashMap<>();
     @Getter private Resort resort;
     @Getter private Stitch stitch;
-    private List<Warp> warps = new ArrayList<>();
     private List<Ride> rides = new ArrayList<>();
     private List<Ride> attractions = new ArrayList<>();
     private List<Ride> meetandgreets = new ArrayList<>();
@@ -88,34 +82,32 @@ public class ParkManager extends Plugin implements Listener {
     @Getter private MenInBlack menInBlack;
     @Getter private RipRideRockit ripRideRockit;
     @Getter private OutlineManager outlineManager;
-    @Setter private String activityURL;
-    @Setter private String activityUser;
-    @Setter private String activityPassword;
     @Getter private static MuralUtil muralUtil;
 
     @Override
     protected void onPluginEnable() throws Exception {
-        instance = this;
-        resort = Resort.fromString(FileUtil.getResort());
-        stitch = new Stitch();
-        packManager = new PackManager();
-        autographManager = new AutographManager();
-        queueManager = new QueueManager();
-        ttcServer = Core.getServerType().equalsIgnoreCase("ttc");
-        bandUtil = new BandUtil();
-        storageManager = new StorageManager();
-        inventoryUtil = new InventoryUtil();
-        visibilityUtil = new VisibilityUtil();
-        teleportUtil = new TeleportUtil();
-        blockChanger = new BlockChanger();
-        wardrobeManager = new WardrobeManager();
-        playerJoinAndLeave = new PlayerJoinAndLeave();
-        muralUtil = new MuralUtil();
-        rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
-        registerListeners();
-        registerCommands();
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        FileUtil.setupConfig();
+        try {
+            instance = this;
+            resort = Resort.fromString(FileUtil.getResort());
+            stitch = new Stitch();
+            packManager = new PackManager();
+            autographManager = new AutographManager();
+            queueManager = new QueueManager();
+            ttcServer = Core.getServerType().equalsIgnoreCase("ttc");
+            bandUtil = new BandUtil();
+            storageManager = new StorageManager();
+            inventoryUtil = new InventoryUtil();
+            visibilityUtil = new VisibilityUtil();
+            teleportUtil = new TeleportUtil();
+            blockChanger = new BlockChanger();
+            wardrobeManager = new WardrobeManager();
+            playerJoinAndLeave = new PlayerJoinAndLeave();
+            muralUtil = new MuralUtil();
+            rideManager = Bukkit.getPluginManager().getPlugin("RideManager") != null;
+            registerListeners();
+            registerCommands();
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            FileUtil.setupConfig();
         /*
         try {
             blockChanger.initialize();
@@ -127,41 +119,38 @@ public class ParkManager extends Plugin implements Listener {
                 e.printStackTrace();
             }
         }*/
-        warps.clear();
-        WarpUtil.refreshWarps();
-        shopManager = new ShopManager();
-        String sn = Core.getServerType();
-        hotelServer = FileUtil.isHotelServer();
-        hotelManager = new HotelManager();
-        setupFoodLocations();
-        setupRides();
-        fpKioskManager = new FPKioskManager();
-        scheduleManager = new ScheduleManager();
-        outlineManager = new OutlineManager();
-        //enablePixelator();
-        setActivityURL(config.getString("activity.url"));
-        setActivityUser(config.getString("activity.user"));
-        setActivityPassword(config.getString("activity.password"));
-        try {
-            hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
-                    config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
+            shopManager = new ShopManager();
+            String sn = Core.getServerType();
+            hotelServer = FileUtil.isHotelServer();
+            hotelManager = new HotelManager();
+            setupFoodLocations();
+            setupRides();
+            fpKioskManager = new FPKioskManager();
+            scheduleManager = new ScheduleManager();
+            outlineManager = new OutlineManager();
+            try {
+                hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
+                        config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
+            } catch (Exception e) {
+                Core.logMessage("ParkManager", "Could not load Hub location!");
+            }
+            try {
+                spawn = new Location(Bukkit.getWorld(config.getString("spawn.world")), config.getDouble("spawn.x"),
+                        config.getDouble("spawn.y"), config.getDouble("spawn.z"), config.getInt("spawn.yaw"),
+                        config.getInt("spawn.pitch"));
+            } catch (Exception e) {
+                Core.logMessage("ParkManager", "Could not load Spawn location!");
+            }
+            spawnOnJoin = getConfig().getBoolean("spawn-on-join");
+            crossServerInv = getConfig().getBoolean("transfer-inventories");
+            packManager.initialize();
+            DesignStation.initialize();
+            long curr = System.currentTimeMillis();
+            long time = (curr % 1000) / 50;
+            Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
         } catch (Exception e) {
-            Core.logMessage("ParkManager", "Could not load Hub location!");
+            e.printStackTrace();
         }
-        try {
-            spawn = new Location(Bukkit.getWorld(config.getString("spawn.world")), config.getDouble("spawn.x"),
-                    config.getDouble("spawn.y"), config.getDouble("spawn.z"), config.getInt("spawn.yaw"),
-                    config.getInt("spawn.pitch"));
-        } catch (Exception e) {
-            Core.logMessage("ParkManager", "Could not load Spawn location!");
-        }
-        spawnOnJoin = getConfig().getBoolean("spawn-on-join");
-        crossServerInv = getConfig().getBoolean("transfer-inventories");
-        packManager.initialize();
-        DesignStation.initialize();
-        long curr = System.currentTimeMillis();
-        long time = (curr % 1000) / 50;
-        Bukkit.getScheduler().runTaskTimer(this, new WatchTask(), time, 20L);
     }
 
     @Override
@@ -170,7 +159,6 @@ public class ParkManager extends Plugin implements Listener {
             tp.kickPlayer(Bukkit.getShutdownMessage());
         }
         hotelManager.serverStop();
-        warps.clear();
         for (World world : Bukkit.getWorlds()) {
             world.getEntities().stream().filter(e -> e instanceof Minecart).forEach(org.bukkit.entity.Entity::remove);
         }
@@ -191,14 +179,6 @@ public class ParkManager extends Plugin implements Listener {
 
     public HashMap<UUID, String> getUserCache() {
         return new HashMap<>(userCache);
-    }
-
-    public List<Warp> getWarps() {
-        return ImmutableList.copyOf(warps);
-    }
-
-    public void clearWarps() {
-        warps.clear();
     }
 
     public PlayerData getPlayerData(UUID uuid) {
@@ -314,26 +294,6 @@ public class ParkManager extends Plugin implements Listener {
         return null;
     }
 
-    public void removeWarp(Warp warp) {
-        warps.remove(warp);
-    }
-
-    public void addWarp(Warp warp) {
-        warps.add(warp);
-    }
-
-    public void logActivity(Player player, String activity, String description) {
-        try (Connection connection = DriverManager.getConnection(activityURL, activityUser, activityPassword)) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO activity (uuid, action, description) VALUES (?,?,?)");
-            sql.setString(1, player.getUniqueId().toString());
-            sql.setString(2, activity);
-            sql.setString(3, description);
-            sql.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean isSign(Location loc) {
         Block b = loc.getBlock();
         return b.getType().equals(Material.SIGN_POST) || b.getType().equals(Material.SIGN) ||
@@ -345,49 +305,47 @@ public class ParkManager extends Plugin implements Listener {
     }
 
     public void registerCommands() {
-        registerCommand(new Commandautograph());
-        registerCommand(new Commandb());
-        registerCommand(new Commandback());
-        registerCommand(new Commandbc());
-        registerCommand(new Commandbuild());
-        registerCommand(new Commandday());
-        registerCommand(new Commanddelay());
-        registerCommand(new Commandenderchest());
-        registerCommand(new Commandfly());
-        registerCommand(new Commandgive());
-        registerCommand(new Commandhead());
-        registerCommand(new Commandheal());
-        registerCommand(new Commandhub());
-        registerCommand(new Commandinvsee());
-        registerCommand(new Commanditem());
-        registerCommand(new Commandmagic());
-        registerCommand(new Commandmc());
-        registerCommand(new Commandmore());
-        registerCommand(new Commandmsg());
-        registerCommand(new Commandnearby());
-        registerCommand(new Commandnight());
-        registerCommand(new Commandnoon());
-        registerCommand(new Commandnv());
-        registerCommand(new Commandoutline());
-        registerCommand(new Commandpack());
-        registerCommand(new Commandptime());
-        registerCommand(new Commandpweather());
-        registerCommand(new Commandsethub());
-        registerCommand(new Commandsetspawn());
-        registerCommand(new Commandsign());
-        registerCommand(new Commandsmite());
-        registerCommand(new Commandspawn());
-        registerCommand(new Commandtp());
-        registerCommand(new Commandupdate());
-        registerCommand(new CommandCosmetics());
+        registerCommand(new AutographCommand());
+        registerCommand(new BroadcastGlobalCommand());
+        registerCommand(new BackCommand());
+        registerCommand(new BroadcastCommand());
+        registerCommand(new BuildCommand());
+        registerCommand(new DayCommand());
+        registerCommand(new DelayCommand());
+        registerCommand(new EnderchestCommand());
+        registerCommand(new FlyCommand());
+        registerCommand(new GiveCommand());
+        registerCommand(new HeadCommand());
+        registerCommand(new HealCommand());
+        registerCommand(new HubCommand());
+        registerCommand(new InvSeeCommand());
+        registerCommand(new ItemCommand());
+        registerCommand(new MagicCommand());
+        registerCommand(new MuteChatCommand());
+        registerCommand(new MoreCommand());
+        registerCommand(new MsgCommand());
+        registerCommand(new NearbyCommand());
+        registerCommand(new NightCommand());
+        registerCommand(new NoonCommand());
+        registerCommand(new NightVisionCommand());
+        registerCommand(new OutlineCommand());
+        registerCommand(new PackCommand());
+        registerCommand(new PlayerTimeCommand());
+        registerCommand(new PlayerWeatherCommand());
+        registerCommand(new SetHubCommand());
+        registerCommand(new SetSpawnCommand());
+        registerCommand(new SignCommand());
+        registerCommand(new SmiteCommand());
+        registerCommand(new SpawnCommand());
+        registerCommand(new TeleportCommand());
+        registerCommand(new CosmeticsCommand());
         registerCommand(new MuralCommand());
         if (isResort(Resort.USO)) {
-            registerCommand(new Commanduso());
+            registerCommand(new USOCommand());
         }
     }
 
     public void registerListeners() {
-        PluginManager pm = getServer().getPluginManager();
         registerListener(this);
         registerListener(new BlockEdit());
         registerListener(new ChatListener());
@@ -401,10 +359,11 @@ public class ParkManager extends Plugin implements Listener {
         registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(playerJoinAndLeave);
+        registerListener(new PlayerTeleport());
         registerListener(queueManager);
+        registerListener(new ResourceListener());
         registerListener(new SignChange());
         registerListener(new PacketListener());
-        registerListener(new ResourceListener());
         if (rideManager) {
             registerListener(new RideListener());
         }

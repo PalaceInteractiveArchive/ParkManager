@@ -516,6 +516,7 @@ public class InventoryUtil {
                     List<HotelRoom> rooms = parkManager.getHotelManager().getHotelRooms().stream().filter(room -> room.isOccupied() && room.getCurrentOccupant().equals(player.getUniqueId())).collect(Collectors.toList());
                     int roomItemPlacement = 13 - ((rooms.size() - 1) / 2);
                     for (HotelRoom room : rooms) {
+                        if (room.getWarp().getWorld() == null) continue;
                         ItemStack roomItem = ItemUtil.create(Material.BED, 1);
                         ItemMeta rim = roomItem.getItemMeta();
                         rim.setDisplayName(ChatColor.GREEN + room.getName());
@@ -543,8 +544,11 @@ public class InventoryUtil {
                 case HOTELS: {
                     Inventory viewAvailableHotels = Bukkit.createInventory(player, 27, ChatColor.BLUE + "Hotels");
                     List<String> availableHotels = new ArrayList<>();
-                    parkManager.getHotelManager().getHotelRooms().stream().filter(room -> !availableHotels
-                            .contains(room.getHotelName())).forEach(room -> availableHotels.add(room.getHotelName()));
+                    for (HotelRoom room : parkManager.getHotelManager().getHotelRooms()) {
+                        if (room.getWarp().getWorld() == null || availableHotels.contains(room.getHotelName()))
+                            continue;
+                        availableHotels.add(room.getHotelName());
+                    }
                     int hotelItemPlacement = 10;
                     for (String hotel : availableHotels) {
                         ItemStack hotelItem = ItemUtil.create(Material.BED, 1);
@@ -570,7 +574,6 @@ public class InventoryUtil {
                     List<String> disab = Collections.singletonList(ChatColor.RED + "Disabled");
                     ItemStack flash;
                     ItemStack visibility;
-                    ItemStack loop;
                     ItemStack hotel;
                     if (data.isFlash()) {
                         flash = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Flash Effects", enab);
@@ -582,19 +585,13 @@ public class InventoryUtil {
                     } else {
                         visibility = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Player Visibility", disab);
                     }
-                    if (data.isLoop()) {
-                        loop = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Park Loop Music", enab);
-                    } else {
-                        loop = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Park Loop Music", disab);
-                    }
                     if (data.isHotel()) {
                         hotel = ItemUtil.create(Material.WOOL, 1, (byte) 5, ChatColor.GREEN + "Friends Access Hotel Room", enab);
                     } else {
                         hotel = ItemUtil.create(Material.WOOL, 1, (byte) 14, ChatColor.RED + "Friends Access Hotel Room", disab);
                     }
                     settings.setItem(10, flash);
-                    settings.setItem(12, visibility);
-                    settings.setItem(14, loop);
+                    settings.setItem(13, visibility);
                     settings.setItem(16, hotel);
                     settings.setItem(22, BandUtil.getBackItem());
                     player.openInventory(settings);

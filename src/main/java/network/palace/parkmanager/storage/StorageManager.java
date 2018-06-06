@@ -20,9 +20,6 @@ import org.bukkit.inventory.PlayerInventory;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -157,9 +154,8 @@ public class StorageManager {
         }
         data.setLastInventoryUpdate(System.currentTimeMillis());
         PacketInventoryContent packet = new PacketInventoryContent(player.getUniqueId(), ParkManager.getInstance().getResort(),
-                packjson, packhash, data.getBackpack().getSize().ordinal(),
-                lockerjson, lockerhash, data.getLocker().getSize().ordinal(),
-                hotbarjson, hotbarhash);
+                packjson, packhash, data.getBackpack().getSize().getSize(), lockerjson, lockerhash,
+                data.getLocker().getSize().getSize(), hotbarjson, hotbarhash);
         Core.getDashboardConnection().send(packet);
         Bukkit.getLogger().info("Inventory packet for " + player.getName() + " generated and sent in " +
                 (System.currentTimeMillis() - currentTime) + "ms");
@@ -176,18 +172,7 @@ public class StorageManager {
     }
 
     public void setValue(final UUID uuid, final String key, final int value) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE storage SET " + key + "=? WHERE uuid=? AND resort=?");
-                sql.setInt(1, value);
-                sql.setString(2, uuid.toString());
-                sql.setInt(3, ParkManager.getInstance().getResort().getId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setInventorySize(uuid, key, value, ParkManager.getInstance().getResort().getId()));
     }
 
     public HashMap<UUID, ItemStack[]> getBuildModeHotbars() {
@@ -232,7 +217,7 @@ public class StorageManager {
             return;
         }
 
-        StorageSize bsize = StorageSize.fromInt(packet.getLockerSize());
+        StorageSize bsize = StorageSize.fromInt(packet.getBackpackSize());
         StorageSize lsize = StorageSize.fromInt(packet.getLockerSize());
 
         ItemStack[] packItems = ItemUtil.getInventoryFromJson(packet.getBackpackJson());

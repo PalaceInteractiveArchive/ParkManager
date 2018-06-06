@@ -3,6 +3,7 @@ package network.palace.parkmanager.handlers;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import network.palace.parkwarp.handlers.Warp;
 
 import java.util.UUID;
 

@@ -30,9 +30,9 @@ public class HotelCheckoutMenuClick {
         if (meta == null) {
             return;
         }
-        HotelManager manager = ParkManager.getInstance().getHotelManager();
-        String name = ChatColor.stripColor(meta.getDisplayName()).substring(13);
-        HotelRoom room = manager.getRoom(name);
-        manager.checkout(room, false);
+//        HotelManager manager = ParkManager.getInstance().getHotelManager();
+//        String name = ChatColor.stripColor(meta.getDisplayName()).substring(13);
+//        HotelRoom room = manager.getRoom(name);
+//        manager.checkout(room, false);
     }
 }

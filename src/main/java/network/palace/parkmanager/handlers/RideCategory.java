@@ -26,7 +26,7 @@ public enum RideCategory {
         return SLOW;
     }
 
-    public String getSqlName() {
+    public String getDBName() {
         return name().toLowerCase();
     }
 }

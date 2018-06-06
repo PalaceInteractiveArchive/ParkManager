@@ -1,5 +1,6 @@
 package network.palace.parkmanager.shop;
 
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.utils.ItemUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

@@ -1,10 +1,12 @@
 package network.palace.parkmanager.utils;
 
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.*;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -12,10 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -75,113 +73,102 @@ public class BandUtil {
     }
 
     public PlayerData setupPlayerData(UUID uuid) {
-        ParkManager parkManager = ParkManager.getInstance();
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT bandcolor,rank,namecolor,flash,visibility," +
-                    "parkloop,hotel,fastpass,dailyfp,fpday,buildmode,outfit,slow,moderate,thrill,sday,mday,tday,pack," +
-                    "vote,lastvote,monthsettler,monthdweller,monthnoble,monthmajestic,monthhonorable FROM player_data WHERE uuid=?");
-            sql.setString(1, uuid.toString());
-            ResultSet result = sql.executeQuery();
-            if (!result.next()) {
-                return null;
+        try {
+            ParkManager parkManager = ParkManager.getInstance();
+
+            if (Core.getMongoHandler().getBuildMode(uuid)) {
+                ParkManager.getInstance().getStorageManager().makeBuildMode.add(uuid);
             }
-            FastPassData fpdata = new FastPassData(result.getInt("slow"), result.getInt("moderate"),
-                    result.getInt("thrill"), result.getInt("sday"), result.getInt("mday"),
-                    result.getInt("tday"));
-            KioskData kioskData = new KioskData(result.getLong("monthsettler"), result.getLong("monthdweller"),
-                    result.getLong("monthnoble"), result.getLong("monthmajestic"),
-                    result.getLong("monthhonorable"), result.getLong("vote"), result.getInt("lastvote"));
-            boolean special = getBandColor(result.getString("bandcolor")).getName().startsWith("s") || parkManager.isResort(Resort.USO);
-            BandColor bandColor = !parkManager.isResort(Resort.USO) ? getBandColor(result.getString("bandcolor")) : BandColor.USO;
-            PlayerData data = new PlayerData(uuid, getBandNameColor(result.getString("namecolor")),
-                    bandColor, special, result.getInt("flash") == 1,
-                    result.getInt("visibility") == 1, result.getInt("parkloop") == 1,
-                    result.getInt("hotel") == 1, fpdata, kioskData, result.getString("outfit"),
-                    result.getString("pack"));
-            if (result.getInt("buildmode") == 1) {
-                parkManager.getStorageManager().makeBuildMode.add(uuid);
+
+            ChatColor bandNameColor = getBandNameColor(Core.getMongoHandler().getMagicBandNameColor(uuid));
+            BandColor bandColor = !parkManager.isResort(Resort.USO) ? getBandColor(Core.getMongoHandler().getMagicBandType(uuid)) : BandColor.USO;
+            boolean special = bandColor.getName().startsWith("s") || parkManager.isResort(Resort.USO);
+
+            boolean flash = (Boolean) Core.getMongoHandler().getParkSetting(uuid, "flash");
+            boolean visibility = (Boolean) Core.getMongoHandler().getParkSetting(uuid, "visibility");
+            boolean hotel = (Boolean) Core.getMongoHandler().getParkSetting(uuid, "hotel");
+
+            Document fpDoc = Core.getMongoHandler().getParkData(uuid, "fastpass");
+            Document monthly = Core.getMongoHandler().getMonthlyRewards(uuid);
+            Document vote = Core.getMongoHandler().getVoteData(uuid);
+
+            FastPassData fpData = new FastPassData(fpDoc.getInteger("slow"), fpDoc.getInteger("moderate"),
+                    fpDoc.getInteger("thrill"), fpDoc.getInteger("sday"), fpDoc.getInteger("mday"),
+                    fpDoc.getInteger("tday"));
+            long settler = 0;
+            long dweller = 0;
+            long noble = 0;
+            long majestic = 0;
+            long honorable = 0;
+            if (monthly.containsKey("settler")) {
+                settler = monthly.getLong("settler");
             }
-            result.close();
-            sql.close();
-            List<UUID> friendlist = new ArrayList<>();
-            PreparedStatement fri = connection.prepareStatement("SELECT sender,receiver FROM friends WHERE (sender=? OR receiver=?) AND status=1");
-            fri.setString(1, uuid.toString());
-            fri.setString(2, uuid.toString());
-            ResultSet frir = fri.executeQuery();
-            while (frir.next()) {
-                if (frir.getString("sender").equalsIgnoreCase(uuid.toString())) {
-                    friendlist.add(UUID.fromString(frir.getString("receiver")));
-                } else {
-                    friendlist.add(UUID.fromString(frir.getString("sender")));
-                }
+            if (monthly.containsKey("dweller")) {
+                dweller = monthly.getLong("dweller");
             }
-            frir.close();
-            fri.close();
-            data.setFriends(friendlist);
-            List<Integer> purch = new ArrayList<>();
-            PreparedStatement pur = connection.prepareStatement("SELECT item FROM purchases WHERE uuid=?");
-            pur.setString(1, uuid.toString());
-            ResultSet purr = pur.executeQuery();
-            while (purr.next()) {
-                purch.add(purr.getInt("item"));
+            if (monthly.containsKey("noble")) {
+                noble = monthly.getLong("noble");
             }
-            purr.close();
-            pur.close();
-            data.setPurchases(purch);
+            if (monthly.containsKey("majestic")) {
+                majestic = monthly.getLong("majestic");
+            }
+            if (monthly.containsKey("honorable")) {
+                honorable = monthly.getLong("honorable");
+            }
+            KioskData kioskData = new KioskData(settler, dweller, noble, majestic, honorable,
+                    vote.getLong("lastTime"), vote.getInteger("lastSite"));
+
+            String outfit = Core.getMongoHandler().getParkValue(uuid, "outfit");
+            String pack = (String) Core.getMongoHandler().getParkSetting(uuid, "pack");
+
+            PlayerData data = new PlayerData(uuid, bandNameColor, bandColor, special, flash, visibility, hotel, fpData, kioskData, outfit, pack);
+
+            List<UUID> friends = Core.getMongoHandler().getFriendList(uuid);
+            data.setFriends(friends);
+
+            List<Integer> purchases = new ArrayList<>();
+            for (Object o : Core.getMongoHandler().getOutfitPurchases(uuid)) {
+                Document doc = (Document) o;
+                int id = doc.getInteger("id");
+                purchases.add(id);
+            }
+            data.setPurchases(purchases);
+
             TreeMap<String, RideCount> rides = new TreeMap<>();
-            PreparedStatement counts = connection.prepareStatement("SELECT name,server FROM ride_counter WHERE uuid=? ORDER BY server DESC");
-            counts.setString(1, uuid.toString());
-            ResultSet results = counts.executeQuery();
-            while (results.next()) {
-                String name = results.getString("name");
-                String server = results.getString("server");
-                if (rides.containsKey(name) && rides.get(name).getServer().equalsIgnoreCase(server)) {
+            for (Object o : Core.getMongoHandler().getRideCounterData(uuid)) {
+                Document doc = (Document) o;
+                String name = doc.getString("name").trim();
+                String server = doc.getString("server").replaceAll("[^A-Za-z ]", "");
+                if (rides.containsKey(name) && rides.get(name).serverEquals(server)) {
                     rides.get(name).addCount(1);
                 } else {
                     rides.put(name, new RideCount(name, server));
                 }
             }
-            results.close();
-            counts.close();
             data.setRideCounts(rides);
+
             parkManager.addPlayerData(data);
             dataResponses.remove(uuid);
+
             return data;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public void setSetting(final CPlayer player, final String name, final boolean value) {
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET " + name + "=? WHERE id=?");
-                sql.setInt(1, value ? 1 : 0);
-                sql.setInt(2, player.getSqlId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Core.getMongoHandler().setParkSetting(player.getUniqueId(), name, value);
     }
 
     public void setBandColor(final CPlayer player, final BandColor color) {
         ParkManager parkManager = ParkManager.getInstance();
-        final PlayerData data = parkManager.getPlayerData(player.getUniqueId());
+        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() +
                 (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
-        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE id=?");
-                sql.setString(1, color.getName());
-                sql.setInt(2, player.getSqlId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+        Core.runTaskAsynchronously(() -> {
+            Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "bandtype", color.getName());
             data.setBandColor(color);
             data.setSpecial(color.getName().startsWith("s"));
             giveBandToPlayer(player);
@@ -189,25 +176,9 @@ public class BandUtil {
     }
 
     public void setBandColor(final CPlayer player, Material color) {
-        ParkManager parkManager = ParkManager.getInstance();
-        PlayerData data = parkManager.getPlayerData(player.getUniqueId());
         final String name = getBandName(color);
-        data.setBandColor(getBandColor(name));
-        data.setSpecial(getBandColor(name).getName().startsWith("s"));
-        player.sendMessage(ChatColor.GREEN + "You have changed the color of your " + data.getBandName() +
-                (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
-        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET bandcolor=? WHERE id=?");
-                sql.setString(1, name);
-                sql.setInt(2, player.getSqlId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            giveBandToPlayer(player);
-        });
+        BandColor bandColor = getBandColor(name);
+        setBandColor(player, bandColor);
     }
 
     public void giveBandToPlayer(CPlayer player) {
@@ -241,8 +212,8 @@ public class BandUtil {
         }
         final UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            DataResponse response = new DataResponse(uuid, Core.getEconomy().getBalance(uuid),
-                    Core.getEconomy().getTokens(uuid));
+            DataResponse response = new DataResponse(uuid, Core.getMongoHandler().getCurrency(uuid, CurrencyType.BALANCE),
+                    Core.getMongoHandler().getCurrency(uuid, CurrencyType.TOKENS));
             dataResponses.put(uuid, response);
         });
     }
@@ -274,16 +245,9 @@ public class BandUtil {
         data.setBandName(color);
         player.sendMessage(ChatColor.GREEN + "You have changed the name color of your " + data.getBandName() +
                 (parkManager.isResort(Resort.WDW) || parkManager.isResort(Resort.DLR) ? "MagicBand!" : "Power Pass!"));
-        Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> {
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE player_data SET namecolor=? WHERE id=?");
-                sql.setString(1, getBandNameColor(color));
-                sql.setInt(2, player.getSqlId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+        Core.runTaskAsynchronously(() -> {
+            Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", getBandNameColor(color));
             giveBandToPlayer(player);
         });
     }

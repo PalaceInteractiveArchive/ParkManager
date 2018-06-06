@@ -55,12 +55,6 @@ public class PlayerSettingsClick {
                 ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
                 ParkManager.getInstance().getBandUtil().setSetting(player, "visibility", data.isVisibility());
                 return;
-            case "Park Loop Music":
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
-                data.setLoop(!data.isLoop());
-                ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.PLAYERSETTINGS);
-                ParkManager.getInstance().getBandUtil().setSetting(player, "parkloop", data.isLoop());
-                return;
             case "Friends Access Hotel Room":
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                 data.setHotel(!data.isHotel());

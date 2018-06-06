@@ -7,6 +7,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
 import network.palace.parkmanager.listeners.BlockEdit;
 import network.palace.parkmanager.utils.ReflectionUtils;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,10 +17,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 public class AutographManager {
@@ -47,18 +44,9 @@ public class AutographManager {
 
     public List<Signature> getSignatures(UUID uuid) {
         List<Signature> list = new ArrayList<>();
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM autographs WHERE user=?");
-            sql.setString(1, uuid.toString());
-            ResultSet result = sql.executeQuery();
-            while (result.next()) {
-                list.add(new Signature(result.getInt("id"), result.getString("sender"),
-                        result.getString("message")));
-            }
-            result.close();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (Object o : Core.getMongoHandler().getAutographs(uuid)) {
+            Document doc = (Document) o;
+            list.add(new Signature(doc.getString("author"), doc.getString("message"), doc.getLong("time")));
         }
         return list;
     }
@@ -66,14 +54,11 @@ public class AutographManager {
     public List<Book> getBooks(CPlayer player) {
         PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
         List<Signature> autographs = data.getAutographs();
-        autographs.sort(new Comparator<Signature>() {
-            @Override
-            public int compare(Signature o1, Signature o2) {
-                if (o1.getSigner().equals(o2.getSigner())) {
-                    return o1.getId() - o2.getId();
-                }
-                return o1.getSigner().toLowerCase().compareTo(o2.getSigner().toLowerCase());
+        autographs.sort((o1, o2) -> {
+            if (o1.getSigner().equals(o2.getSigner())) {
+                return (int) (o1.getTime() - o2.getTime());
             }
+            return o1.getSigner().toLowerCase().compareTo(o2.getSigner().toLowerCase());
         });
         List<Book> books = new ArrayList<>();
         int start = 0;
@@ -122,14 +107,11 @@ public class AutographManager {
 
     public void openMenu(CPlayer player, List<Signature> autographs, boolean sneaking) {
         autographs = new ArrayList<>(autographs);
-        autographs.sort(new Comparator<Signature>() {
-            @Override
-            public int compare(Signature o1, Signature o2) {
-                if (o1.getSigner().equals(o2.getSigner())) {
-                    return o1.getId() - o2.getId();
-                }
-                return o1.getSigner().toLowerCase().compareTo(o2.getSigner().toLowerCase());
+        autographs.sort((o1, o2) -> {
+            if (o1.getSigner().equals(o2.getSigner())) {
+                return (int) (o1.getTime() - o2.getTime());
             }
+            return o1.getSigner().toLowerCase().compareTo(o2.getSigner().toLowerCase());
         });
         if (autographs.size() < 50) {
             Book book = new Book(1, player.getUniqueId(), player.getName(), autographs);
@@ -192,20 +174,8 @@ public class AutographManager {
             player.sendMessage(ChatColor.RED + "You're not signing anyone's book right now!");
             return;
         }
-        String name = "";
-        name = player.getName();
-        try (Connection connection = Core.getSqlUtil().getConnection()) {
-            PreparedStatement sql = connection.prepareStatement("INSERT INTO autographs (user, sender, message) VALUES (?,?,?)");
-            sql.setString(1, tp.getUniqueId().toString());
-            sql.setString(2, name);
-            sql.setString(3, message);
-            sql.execute();
-            sql.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "There was an error signing this book!");
-            return;
-        }
+        String name = player.getName();
+        Core.getMongoHandler().signBook(tp.getUniqueId(), name, message);
         ParkManager.getInstance().getPlayerData(tp.getUniqueId()).updateAutographs();
         giveBook(tp);
         tp.sendMessage(player.getRank().getTagColor() + player.getName() + ChatColor.GREEN +
@@ -361,14 +331,11 @@ public class AutographManager {
                         ChatColor.ITALIC + "current book!");
                 return;
             }
-            autos.sort(new Comparator<Signature>() {
-                @Override
-                public int compare(Signature o1, Signature o2) {
-                    if (o1.getSigner().equals(o2.getSigner())) {
-                        return o1.getId() - o2.getId();
-                    }
-                    return o1.getSigner().toLowerCase().compareTo(o2.getSigner().toLowerCase());
+            autos.sort((o1, o2) -> {
+                if (o1.getSigner().equals(o2.getSigner())) {
+                    return (int) (o1.getTime() - o2.getTime());
                 }
+                return o1.getSigner().toLowerCase().compareTo(o2.getSigner().toLowerCase());
             });
             if (getSignatures(player.getUniqueId()).size() != autos.size()) {
                 data.updateAutographs();
@@ -377,14 +344,7 @@ public class AutographManager {
                 return;
             }
             Signature remove = autos.get(pageNumber - 2);
-            try (Connection connection = Core.getSqlUtil().getConnection()) {
-                PreparedStatement sql = connection.prepareStatement("DELETE FROM autographs WHERE id=?");
-                sql.setInt(1, remove.getId());
-                sql.execute();
-                sql.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            Core.getMongoHandler().deleteAutograph(player.getUniqueId(), remove.getSigner(), remove.getTime());
             data.updateAutographs();
             giveBook(player);
             player.sendMessage(ChatColor.GREEN + "You removed the Autograph from " + ChatColor.BLUE + remove.getSigner() +

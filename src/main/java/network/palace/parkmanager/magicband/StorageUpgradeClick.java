@@ -1,6 +1,7 @@
 package network.palace.parkmanager.magicband;
 
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
@@ -41,14 +42,15 @@ public class StorageUpgradeClick {
                     player.closeInventory();
                     return;
                 }
-                int bal = Core.getEconomy().getBalance(player.getUniqueId());
+
+                int bal = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE);
                 if (bal < 500) {
                     player.sendMessage(ChatColor.RED + "You can't afford that!");
                     player.closeInventory();
                     return;
                 }
                 player.closeInventory();
-                Core.getEconomy().addBalance(player.getUniqueId(), -500);
+                Core.getMongoHandler().changeAmount(player.getUniqueId(), -500, "backpack upgrade", CurrencyType.BALANCE, false);
                 ItemStack[] cont = data.getBackpack().getInventory().getContents();
                 data.setBackpack(new Backpack(player, StorageSize.LARGE, cont));
                 ParkManager.getInstance().getStorageManager().setValue(player.getUniqueId(), "packsize", 1);
@@ -60,14 +62,14 @@ public class StorageUpgradeClick {
                     player.closeInventory();
                     return;
                 }
-                int bal = Core.getEconomy().getBalance(player.getUniqueId());
+                int bal = Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE);
                 if (bal < 500) {
                     player.sendMessage(ChatColor.RED + "You can't afford that!");
                     player.closeInventory();
                     return;
                 }
                 player.closeInventory();
-                Core.getEconomy().addBalance(player.getUniqueId(), -500);
+                Core.getMongoHandler().changeAmount(player.getUniqueId(), -500, "locker upgrade", CurrencyType.BALANCE, false);
                 ItemStack[] cont = data.getLocker().getInventory().getContents();
                 data.setLocker(new Locker(player, StorageSize.LARGE, cont));
                 ParkManager.getInstance().getStorageManager().setValue(player.getUniqueId(), "lockersize", 1);

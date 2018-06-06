@@ -3,9 +3,9 @@ package network.palace.parkmanager.hotels;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.HotelRoom;
-import network.palace.parkmanager.handlers.Warp;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.utils.PlayerUtil;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -379,7 +379,8 @@ public class HotelManager {
         player.sendMessage(ChatColor.GREEN + "You have booked the " + room.getName() + " room for $" + room.getCost() +
                 "!");
         player.sendMessage(ChatColor.GREEN + "You can travel to your room using the My Hotel Rooms menu on your MagicBand.");
-        ParkManager.getInstance().logActivity(player, "Reserve Hotel Room", room.getHotelName() + " #" + room.getRoomNumber());
+        Core.getMongoHandler().logActivity(player.getUniqueId(), "Reserve Hotel Room",
+                room.getHotelName() + " #" + room.getRoomNumber());
         Core.getPlayerManager().getPlayer(player.getUniqueId()).giveAchievement(10);
     }
 
@@ -408,10 +409,10 @@ public class HotelManager {
                         " room has lapsed and you have been checked out. Please come stay with us again soon!");
                 tp.sendTitle(ChatColor.RED + "Your Hotel Room Expired", "", 40, 60, 40);
                 tp.playSound(tp.getLocation(), Sound.ENTITY_BLAZE_DEATH, 10f, 1f);
-                ParkManager.getInstance().logActivity(tp, "Hotel Room Checkout", "Reservation Expired");
+                Core.getMongoHandler().logActivity(tp.getUniqueId(), "Hotel Room Checkout", "Reservation Expired");
             } else {
                 tp.sendMessage(ChatColor.GREEN + "You have checked out of your room. Have a wonderful rest of your visit!");
-                ParkManager.getInstance().logActivity(tp, "Hotel Room Checkout", "Manual Checkout");
+                Core.getMongoHandler().logActivity(tp.getUniqueId(), "Hotel Room Checkout", "Manual Checkout");
             }
         } else {
             room.setCheckoutNotificationRecipient(room.getCurrentOccupant());

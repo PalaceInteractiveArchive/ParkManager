@@ -2,10 +2,10 @@ package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
 import network.palace.core.message.FormattedMessage;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -23,7 +23,7 @@ public class PlayerGameModeChange implements Listener {
 
     @EventHandler
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-        Player player = event.getPlayer();
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
         GameMode newMode = event.getNewGameMode();
         switch (newMode) {
             case SPECTATOR:
@@ -35,7 +35,7 @@ public class PlayerGameModeChange implements Listener {
                 }
                 break;
             case ADVENTURE:
-                if (Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank().getRankId() <= Rank.MOD.getRankId()) {
+                if (player.getRank().getRankId() <= Rank.TRAINEEBUILD.getRankId()) {
                     return;
                 }
                 event.setCancelled(true);

@@ -17,4 +17,9 @@ public class RideCount {
     public void addCount(int i) {
         this.count += i;
     }
+
+    public boolean serverEquals(String s) {
+        if (server.equalsIgnoreCase(s)) return true;
+        return s.replaceAll("[^A-Za-z]", "").equalsIgnoreCase(s);
+    }
 }

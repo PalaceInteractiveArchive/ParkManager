@@ -4,9 +4,8 @@ import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.HotelRoom;
 import network.palace.parkmanager.handlers.InventoryType;
-import network.palace.parkmanager.handlers.Warp;
 import network.palace.parkmanager.utils.BandUtil;
-import network.palace.parkmanager.utils.WarpUtil;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
@@ -48,7 +47,7 @@ public class MyHotelRoomsMenuClick {
                     }
                     player.teleport(warp.getLocation());
                 } else {
-                    WarpUtil.crossServerWarp(player.getUniqueId(), warp.getName(), warp.getServer());
+                    Core.getPlayerManager().getPlayer(player).sendToServer(warp.getServer());
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "This room does not have a warp set!");

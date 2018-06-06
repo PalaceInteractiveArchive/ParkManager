@@ -1,6 +1,7 @@
 package network.palace.parkmanager.queue;
 
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.PlayerData;
@@ -16,7 +17,11 @@ import network.palace.parkmanager.queue.tot.TowerPreShow;
 import network.palace.parkmanager.queue.tot.TowerStation;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.FileUtil;
-import network.palace.ridemanager.handlers.*;
+import network.palace.ridemanager.handlers.ride.RideType;
+import network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide;
+import network.palace.ridemanager.handlers.ride.flat.CarouselRide;
+import network.palace.ridemanager.handlers.ride.flat.FlatState;
+import network.palace.ridemanager.handlers.ride.flat.TeacupsRide;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -66,7 +71,7 @@ public class QueueManager implements Listener {
                                 state = r.getState();
                             } else if (pride.getRide() instanceof AerialCarouselRide) {
                                 AerialCarouselRide r = (AerialCarouselRide) pride.getRide();
-                                state = r.getState();
+//                                state = r.getState();
                             }
                             if (state.equals(FlatState.LOADING)) {
                                 if (pride.canStart()) {

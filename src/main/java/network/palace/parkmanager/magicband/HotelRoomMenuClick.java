@@ -1,6 +1,7 @@
 package network.palace.parkmanager.magicband;
 
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.HotelRoom;
 import network.palace.parkmanager.handlers.InventoryType;
@@ -27,6 +28,7 @@ public class HotelRoomMenuClick {
             ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELS);
             return;
         }
+        ParkManager.getInstance().getInventoryUtil().openInventory(player, InventoryType.HOTELS);
         boolean playerOwnsRooms = false;
         HotelManager manager = ParkManager.getInstance().getHotelManager();
         for (HotelRoom room : manager.getHotelRooms()) {
@@ -50,9 +52,9 @@ public class HotelRoomMenuClick {
         if (room == null) {
             return;
         }
-        if (Core.getEconomy().getBalance(player.getUniqueId()) >= room.getCost()) {
-            Core.getEconomy().addBalance(player.getUniqueId(), -room.getCost(), room.getHotelName() + " #" +
-                    room.getRoomNumber());
+        if (Core.getMongoHandler().getCurrency(player.getUniqueId(), CurrencyType.BALANCE) >= room.getCost()) {
+            Core.getMongoHandler().changeAmount(player.getUniqueId(), -room.getCost(), room.getHotelName() +
+                    " #" + room.getRoomNumber(), CurrencyType.BALANCE, false);
             manager.rentRoom(room, player);
         } else {
             player.closeInventory();

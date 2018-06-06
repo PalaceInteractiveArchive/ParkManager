@@ -28,7 +28,6 @@ public class PlayerData {
     @Getter @Setter private boolean special;
     @Getter @Setter private boolean flash;
     @Getter @Setter private boolean visibility;
-    @Getter @Setter private boolean loop;
     @Getter @Setter private boolean hotel;
     @Getter private FastPassData fastPassData;
     @Getter private KioskData kioskData;
@@ -46,7 +45,7 @@ public class PlayerData {
     @Getter @Setter private List<Signature> autographs = new ArrayList<>();
 
     public PlayerData(UUID uuid, ChatColor bandName, BandColor bandColor, boolean special, boolean flash,
-                      boolean visibility, boolean loop, boolean hotel, FastPassData fastPassData, KioskData kioskData,
+                      boolean visibility, boolean hotel, FastPassData fastPassData, KioskData kioskData,
                       String outfitCode, String pack) {
         this.uuid = uuid;
         this.bandName = bandName;
@@ -54,7 +53,6 @@ public class PlayerData {
         this.special = special;
         this.flash = flash;
         this.visibility = visibility;
-        this.loop = loop;
         this.hotel = hotel;
         this.fastPassData = fastPassData;
         this.kioskData = kioskData;
