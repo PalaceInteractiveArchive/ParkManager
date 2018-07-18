@@ -46,7 +46,7 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     public PluginRideQueue(String shortName, String name, Location station, Location exit, int delay, int amount,
                            String warp, RideCategory category, RideType type, YamlConfiguration config,
-                           CurrencyType currencyType, int currencyAmount) {
+                           CurrencyType currencyType, int currencyAmount, int honorAmount) {
         this.shortName = shortName;
         this.name = name;
         this.station = station;
@@ -58,13 +58,13 @@ public class PluginRideQueue extends AbstractQueueRide {
         switch (type) {
             case CAROUSEL: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
-                ride = new CarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount);
+                ride = new CarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount, honorAmount);
                 flat = true;
                 break;
             }
             case TEACUPS: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
-                ride = new TeacupsRide(shortName, name, delay, exit, center, currencyType, currencyAmount);
+                ride = new TeacupsRide(shortName, name, delay, exit, center, currencyType, currencyAmount, honorAmount);
                 flat = true;
                 break;
             }
@@ -77,13 +77,13 @@ public class PluginRideQueue extends AbstractQueueRide {
                 double height = config.getDouble("ride." + shortName + ".queue.height");
                 double movein = config.getDouble("ride." + shortName + ".queue.movein");
                 ride = new AerialCarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount,
-                        aerialRadius, supportRadius, small, angle, height, movein);
+                        honorAmount, aerialRadius, supportRadius, small, angle, height, movein);
                 flat = true;
                 break;
             }
             case FILE: {
                 String file = config.getString("ride." + shortName + ".queue.file");
-                ride = new FileRide(shortName, name, amount, delay, exit, file);
+                ride = new FileRide(shortName, name, amount, delay, exit, file, currencyType, currencyAmount, honorAmount);
                 break;
             }
             default:

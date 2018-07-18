@@ -92,7 +92,7 @@ public class MuralUtil {
     }
 
     public void done(CPlayer player) {
-        if (!sessions.remove(player.getUniqueId())) return;
+        if (player == null || !sessions.remove(player.getUniqueId())) return;
         player.sendMessage(ChatColor.YELLOW + "Thanks for helping paint!");
         player.getInventory().setItem(4, InventoryUtil.getRideItem());
     }

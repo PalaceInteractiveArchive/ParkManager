@@ -6,7 +6,7 @@
 
     <groupId>network.palace</groupId>
     <artifactId>ParkManager</artifactId>
-    <version>2.7</version>
+    <version>2.7.1</version>
     <repositories>
         <repository>
             <id>palace</id>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>network.palace</groupId>
             <artifactId>RideManager</artifactId>
-            <version>1.0-mongo</version>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>network.palace</groupId>

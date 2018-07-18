@@ -1,20 +1,20 @@
 package network.palace.parkmanager.commands;
 
+import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.ParkManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.command.BlockCommandSender;
 
-@CommandMeta(description = "Delay placing a block (not recommended)")
+@CommandMeta(description = "Delay placing a block")
 @CommandPermission(rank = Rank.MOD)
 public class DelayCommand extends CoreCommand {
 
@@ -23,11 +23,12 @@ public class DelayCommand extends CoreCommand {
     }
 
     @Override
-    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (sender instanceof Player) {
-            sender.sendMessage(ChatColor.RED + "/delay [delay] x y z");
-            return;
-        }
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {
+        player.sendMessage(ChatColor.RED + "/delay [delay] x y z");
+    }
+
+    @Override
+    protected void handleCommand(BlockCommandSender sender, String[] args) throws CommandException {
         if (args.length != 4) {
             sender.sendMessage(ChatColor.RED + "Incorrect amount of arguments!");
             return;
@@ -42,9 +43,9 @@ public class DelayCommand extends CoreCommand {
             }
             final Block b = loc.getBlock();
             long delay = (long) (20 * (Double.parseDouble(args[0])));
-            Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> {
+            Core.runTaskLater(() -> {
                 b.setType(Material.REDSTONE_BLOCK);
-                Bukkit.getScheduler().runTaskLater(ParkManager.getInstance(), () -> b.setType(Material.AIR), 20L);
+                Core.runTaskLater(() -> b.setType(Material.AIR), 20L);
             }, delay);
             return;
         }
