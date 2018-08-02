@@ -151,8 +151,9 @@ public class QueueManager implements Listener {
             CurrencyType currency = CurrencyType.fromString(config.getString("ride." + s + ".queue.currency"));
             int currencyAmount = config.getInt("ride." + s + ".queue.currencyAmount");
             int honorAmount = config.getInt("ride." + s + ".queue.honorAmount");
+            int achievementId = config.contains("ride." + s + ".queue.achievementId") ? config.getInt("ride." + s + ".queue.achievementId") : -1;
             ride = new PluginRideQueue(s, ChatColor.translateAlternateColorCodes('&', name), station, exit,
-                    delay, amount, warp, category, type, config, currency, currencyAmount, honorAmount);
+                    delay, amount, warp, category, type, config, currency, currencyAmount, honorAmount, achievementId);
         } else {
             if (Core.getInstanceName().equalsIgnoreCase("dhs")) {
                 switch (s) {

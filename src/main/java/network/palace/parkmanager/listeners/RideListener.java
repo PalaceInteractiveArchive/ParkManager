@@ -67,6 +67,9 @@ public class RideListener implements Listener {
                 } else if (rides.size() >= 1) {
                     tp.giveAchievement(12);
                 }
+                if (ride.getAchievementId() != -1) {
+                    tp.giveAchievement(ride.getAchievementId());
+                }
                 data.setRideCounts(rides);
                 tp.sendMessage(ChatColor.GREEN + "--------------" + ChatColor.GOLD + "" + ChatColor.BOLD +
                         "Ride Counter" + ChatColor.GREEN + "-------------\n" + ChatColor.YELLOW +

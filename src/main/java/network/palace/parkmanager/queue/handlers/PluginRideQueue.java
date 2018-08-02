@@ -46,7 +46,7 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     public PluginRideQueue(String shortName, String name, Location station, Location exit, int delay, int amount,
                            String warp, RideCategory category, RideType type, YamlConfiguration config,
-                           CurrencyType currencyType, int currencyAmount, int honorAmount) {
+                           CurrencyType currencyType, int currencyAmount, int honorAmount, int achievementId) {
         this.shortName = shortName;
         this.name = name;
         this.station = station;
@@ -58,13 +58,13 @@ public class PluginRideQueue extends AbstractQueueRide {
         switch (type) {
             case CAROUSEL: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
-                ride = new CarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount, honorAmount);
+                ride = new CarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount, honorAmount, achievementId);
                 flat = true;
                 break;
             }
             case TEACUPS: {
                 Location center = RideManager.parseLocation(config.getConfigurationSection("ride." + shortName + ".queue.center"));
-                ride = new TeacupsRide(shortName, name, delay, exit, center, currencyType, currencyAmount, honorAmount);
+                ride = new TeacupsRide(shortName, name, delay, exit, center, currencyType, currencyAmount, honorAmount, achievementId);
                 flat = true;
                 break;
             }
@@ -77,13 +77,13 @@ public class PluginRideQueue extends AbstractQueueRide {
                 double height = config.getDouble("ride." + shortName + ".queue.height");
                 double movein = config.getDouble("ride." + shortName + ".queue.movein");
                 ride = new AerialCarouselRide(shortName, name, delay, exit, center, currencyType, currencyAmount,
-                        honorAmount, aerialRadius, supportRadius, small, angle, height, movein);
+                        honorAmount, achievementId, aerialRadius, supportRadius, small, angle, height, movein);
                 flat = true;
                 break;
             }
             case FILE: {
                 String file = config.getString("ride." + shortName + ".queue.file");
-                ride = new FileRide(shortName, name, amount, delay, exit, file, currencyType, currencyAmount, honorAmount);
+                ride = new FileRide(shortName, name, amount, delay, exit, file, currencyType, currencyAmount, honorAmount, achievementId);
                 break;
             }
             default:
@@ -242,23 +242,23 @@ public class PluginRideQueue extends AbstractQueueRide {
                 }
                 updateSigns();
                 loaded = true;
-                return;
-            }
-            for (UUID uuid : new ArrayList<>(fullList)) {
-                CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
-                if (tp == null) {
-                    continue;
+            } else {
+                for (UUID uuid : new ArrayList<>(fullList)) {
+                    CPlayer tp = Core.getPlayerManager().getPlayer(uuid);
+                    if (tp == null) {
+                        continue;
+                    }
+                    if (fps.contains(tp.getUniqueId())) {
+                        chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
+                        tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
+                                getCategory().getName() + " FastPass!");
+                    }
+                    tp.teleport(getStation());
+                    tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
+                    leaveQueueSilent(tp);
+                    fullList.remove(tp.getUniqueId());
+                    riders.add(tp);
                 }
-                if (fps.contains(tp.getUniqueId())) {
-                    chargeFastpass(ParkManager.getInstance().getPlayerData(tp.getUniqueId()));
-                    tp.sendMessage(ChatColor.GREEN + "You were charged " + ChatColor.YELLOW + "1 " +
-                            getCategory().getName() + " FastPass!");
-                }
-                tp.teleport(getStation());
-                tp.sendMessage(ChatColor.GREEN + "You are now ready to board " + ChatColor.BLUE + name);
-                leaveQueueSilent(tp);
-                fullList.remove(tp.getUniqueId());
-                riders.add(tp);
             }
             updateSigns();
             loaded = true;

@@ -6,7 +6,6 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
-import network.palace.core.player.Rank;
 import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.ChatColor;
@@ -33,15 +32,9 @@ public class NearbyCommand extends CoreCommand {
             if (warp.getLocation() == null) {
                 continue;
             }
-            if (warp.getName().startsWith("dvc") && player.getRank().getRankId() < Rank.DVCMEMBER.getRankId()) {
-                continue;
-            }
-            if (warp.getName().startsWith("char") && player.getRank().getRankId() < Rank.CHARACTER.getRankId()) {
-                continue;
-            }
-            if (warp.getName().startsWith("staff") && player.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
-                continue;
-            }
+
+            if (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId()) continue;
+
             int distance = (int) warp.getLocation().distance(center);
             if (distance <= DEFAULT_SEARCH_DISTANCE) {
                 nearby.put(warp, distance);

@@ -172,7 +172,7 @@ public class PlayerJoinAndLeave implements Listener {
             if (parkManager.isSpawnOnJoin() || !player.hasPlayedBefore()) {
                 player.performCommand("spawn");
             } else {
-                warpToNearestWarp(player);
+                warpToNearestWarp(cp);
             }
             for (String msg : parkManager.getJoinMessages()) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
@@ -262,20 +262,15 @@ public class PlayerJoinAndLeave implements Listener {
         inv.setItem(4, InventoryUtil.getRideItem());
     }
 
-    private void warpToNearestWarp(Player player) {
+    private void warpToNearestWarp(CPlayer player) {
         Location loc = player.getLocation();
         loc.setWorld(Bukkit.getWorlds().get(0));
         Warp w = null;
         double distance = -1;
         for (Warp warp : new ArrayList<>(ParkWarp.getInstance().getWarpUtil().getWarps())) {
-            if (!warp.getServer().equals(Core.getServerType())) {
-                continue;
-            }
-            if (warp.getLocation() == null) {
-                continue;
-            }
-            if (warp.getName().startsWith("dvc") || warp.getName().startsWith("share") ||
-                    warp.getName().startsWith("char") || warp.getName().startsWith("staff")) {
+            if (!warp.getServer().equals(Core.getServerType())
+                    || warp.getLocation() == null
+                    || (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId())) {
                 continue;
             }
             if (distance == -1) {
