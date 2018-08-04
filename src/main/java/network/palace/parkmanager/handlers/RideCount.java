@@ -20,6 +20,6 @@ public class RideCount {
 
     public boolean serverEquals(String s) {
         if (server.equalsIgnoreCase(s)) return true;
-        return s.replaceAll("[^A-Za-z]", "").equalsIgnoreCase(s);
+        return s.replaceAll("[^A-Za-z ]", "").equalsIgnoreCase(s);
     }
 }

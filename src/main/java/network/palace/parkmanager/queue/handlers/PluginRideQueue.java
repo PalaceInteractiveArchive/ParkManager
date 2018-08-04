@@ -155,14 +155,14 @@ public class PluginRideQueue extends AbstractQueueRide {
 
     @Override
     public String getWaitFor(UUID uuid) {
-        return ParkManager.getInstance().getQueueManager().getWaitStringFor(uuid, this);
+        return ParkManager.getInstance().getQueueManager().getWaitString(queue, fpqueue, delay + 10, amount, timeToNextRide);
     }
 
     public void loadPeriod() {
         if (!loaded) return;
         if (isLoadPeriodOver(true)) {
             for (CPlayer player : new ArrayList<>(riders)) {
-                if (Core.getPlayerManager().getPlayer(player.getUniqueId()) == null) {
+                if (player == null || Core.getPlayerManager().getPlayer(player.getUniqueId()) == null) {
                     riders.remove(player);
                 }
             }

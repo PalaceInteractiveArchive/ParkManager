@@ -103,7 +103,7 @@ public class ToyStoryMania implements Listener {
     }
 
     public void done(CPlayer player) {
-        if (!sessions.containsKey(player.getUniqueId())) {
+        if (player == null || !sessions.containsKey(player.getUniqueId())) {
             return;
         }
         ShooterSession session = sessions.remove(player.getUniqueId());
