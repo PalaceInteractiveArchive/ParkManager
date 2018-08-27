@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -19,8 +18,7 @@ import java.util.List;
  * @author Marc
  * @since 10/20/17
  */
-@CommandMeta(description = "Outline command", aliases = "out")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Outline command", aliases = "out", rank = Rank.MOD)
 public class OutlineCommand extends CoreCommand {
 
     public OutlineCommand() {

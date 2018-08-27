@@ -3,7 +3,6 @@ package network.palace.parkmanager.commands;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -21,8 +20,7 @@ import org.bukkit.inventory.PlayerInventory;
 /**
  * Created by Marc on 10/11/15
  */
-@CommandMeta(description = "Toggle build mode")
-@CommandPermission(rank = Rank.TRAINEEBUILD)
+@CommandMeta(description = "Toggle build mode", rank = Rank.TRAINEEBUILD)
 public class BuildCommand extends CoreCommand {
 
     public BuildCommand() {

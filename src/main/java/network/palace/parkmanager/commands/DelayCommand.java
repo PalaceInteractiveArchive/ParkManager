@@ -3,7 +3,6 @@ package network.palace.parkmanager.commands;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -14,8 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;
 
-@CommandMeta(description = "Delay placing a block")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Delay placing a block", rank = Rank.MOD)
 public class DelayCommand extends CoreCommand {
 
     public DelayCommand() {

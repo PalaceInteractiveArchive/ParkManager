@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import org.bukkit.Bukkit;
@@ -10,8 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Set player time")
-@CommandPermission(rank = Rank.TRAINEEBUILD)
+@CommandMeta(description = "Set player time", rank = Rank.TRAINEE)
 public class PlayerTimeCommand extends CoreCommand {
 
     public PlayerTimeCommand() {

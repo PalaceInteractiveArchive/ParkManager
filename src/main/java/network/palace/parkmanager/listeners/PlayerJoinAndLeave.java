@@ -29,10 +29,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerJoinAndLeave implements Listener {
     private HashMap<UUID, Long> needInvSet = new HashMap<>();
@@ -177,22 +174,29 @@ public class PlayerJoinAndLeave implements Listener {
             for (String msg : parkManager.getJoinMessages()) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
             }
-            final PlayerInventory inv = player.getInventory();
-            clearArmor(inv);
-            PlayerData.Clothing c = data.getClothing();
-            if (c.getHead() != null) {
-                inv.setHelmet(c.getHead());
-            }
-            if (c.getShirt() != null) {
-                inv.setChestplate(c.getShirt());
-            }
-            if (c.getPants() != null) {
-                inv.setLeggings(c.getPants());
-            }
-            if (c.getBoots() != null) {
-                inv.setBoots(c.getBoots());
-            }
             setInventory(cp, false);
+            Core.runTaskLater(() -> {
+                try {
+                    PlayerInventory inv = player.getInventory();
+                    clearArmor(inv);
+                    PlayerData.Clothing c = data.getClothing();
+                    if (c.getHead() != null) {
+                        inv.setHelmet(c.getHead());
+                    }
+                    if (c.getShirt() != null) {
+                        inv.setChestplate(c.getShirt());
+                    }
+                    if (c.getPants() != null) {
+                        inv.setLeggings(c.getPants());
+                    }
+                    if (c.getBoots() != null) {
+                        inv.setBoots(c.getBoots());
+                    }
+                } catch (Exception e) {
+                    Bukkit.getLogger().warning("Error loading outfit for " + cp.getName());
+                    e.printStackTrace();
+                }
+            }, 20L);
             if ((parkManager.isResort(Resort.DLR)) &&
                     cp.getRank().getRankId() >= Rank.NOBLE.getRankId() && cp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
                 player.setGameMode(GameMode.ADVENTURE);
@@ -245,7 +249,7 @@ public class PlayerJoinAndLeave implements Listener {
         ItemStack[] barrier = new ItemStack[36];
         for (int i = 9; i < barrier.length; i++) {
             barrier[i] = ItemUtil.create(Material.THIN_GLASS, 1, ChatColor.RED + "You can't use this area!",
-                    Arrays.asList(ChatColor.GREEN + "Use your Backpack for Storage."));
+                    Collections.singletonList(ChatColor.GREEN + "Use your Backpack for Storage."));
         }
         inv.setContents(barrier);
         inv.setItem(5, ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"));

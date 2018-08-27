@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -13,8 +12,7 @@ import org.bukkit.ChatColor;
 /**
  * Created by Marc on 8/14/15
  */
-@CommandMeta(description = "Sign an autograph book", aliases = "s")
-@CommandPermission(rank = Rank.SPECIALGUEST)
+@CommandMeta(description = "Sign an autograph book", aliases = "s", rank = Rank.SPECIALGUEST)
 public class SignCommand extends CoreCommand {
 
     public SignCommand() {

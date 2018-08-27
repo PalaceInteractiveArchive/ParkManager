@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -10,8 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "View a player's enderchest")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "View a player's enderchest", rank = Rank.MOD)
 public class EnderchestCommand extends CoreCommand {
 
     public EnderchestCommand() {

@@ -63,7 +63,7 @@ public class PlayerData {
         int in = 0;
         for (String s : list) {
             try {
-                Integer i = Integer.parseInt(s);
+                int i = Integer.parseInt(s);
                 Outfit o = ParkManager.getInstance().getWardrobeManager().getOutfit(i);
                 if (o == null) {
                     continue;

@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -12,8 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Look into a player's inventory")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Look into a player's inventory", rank = Rank.MOD)
 public class InvSeeCommand extends CoreCommand {
 
     public InvSeeCommand() {

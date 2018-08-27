@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -16,8 +15,7 @@ import java.util.Collection;
 /**
  * Created by Marc on 4/11/15
  */
-@CommandMeta(description = "Night vision")
-@CommandPermission(rank = Rank.TRAINEE)
+@CommandMeta(description = "Night vision", rank = Rank.TRAINEE)
 public class NightVisionCommand extends CoreCommand {
 
     public NightVisionCommand() {

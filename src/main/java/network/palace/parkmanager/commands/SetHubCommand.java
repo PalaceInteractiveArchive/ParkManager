@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -14,8 +13,7 @@ import org.bukkit.Location;
 /**
  * Created by Marc on 3/10/15
  */
-@CommandMeta(description = "Set hub location")
-@CommandPermission(rank = Rank.DEVELOPER)
+@CommandMeta(description = "Set hub location", rank = Rank.DEVELOPER)
 public class SetHubCommand extends CoreCommand {
 
     public SetHubCommand() {

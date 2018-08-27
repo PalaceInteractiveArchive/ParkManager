@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
@@ -13,8 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Teleport a player")
-@CommandPermission(rank = Rank.TRAINEE)
+@CommandMeta(description = "Teleport a player", rank = Rank.TRAINEE)
 public class TeleportCommand extends CoreCommand {
 
     public TeleportCommand() {

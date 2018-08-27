@@ -3,7 +3,6 @@ package network.palace.parkmanager.commands;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.dashboard.packets.parks.PacketBroadcast;
@@ -15,8 +14,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by Marc on 2/19/16
  */
-@CommandMeta(description = "Broadcast to the network")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Broadcast to the network", rank = Rank.MOD)
 public class BroadcastGlobalCommand extends CoreCommand {
 
     public BroadcastGlobalCommand() {

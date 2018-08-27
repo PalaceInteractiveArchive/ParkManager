@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import org.bukkit.Bukkit;
@@ -11,8 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
-@CommandMeta(description = "Heal a player")
-@CommandPermission(rank = Rank.TRAINEE)
+@CommandMeta(description = "Heal a player", rank = Rank.TRAINEE)
 public class HealCommand extends CoreCommand {
 
     public HealCommand() {

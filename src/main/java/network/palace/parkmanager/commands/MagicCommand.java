@@ -5,7 +5,6 @@ import com.comphenix.protocol.wrappers.nbt.io.NbtTextSerializer;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -40,8 +39,7 @@ import java.util.*;
 /**
  * Created by Marc on 1/7/15
  */
-@CommandMeta(description = "Command with magical stuff")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Command with magical stuff", rank = Rank.MOD)
 public class MagicCommand extends CoreCommand {
     public Location location;
 

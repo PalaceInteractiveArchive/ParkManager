@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import org.bukkit.Bukkit;
@@ -13,8 +12,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by Marc on 12/16/14
  */
-@CommandMeta(description = "Send message", aliases = {"tell", "t", "w", "whisper", "m"})
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Send message", aliases = {"tell", "t", "w", "whisper", "m"}, rank = Rank.MOD)
 public class MsgCommand extends CoreCommand {
 
     public MsgCommand() {

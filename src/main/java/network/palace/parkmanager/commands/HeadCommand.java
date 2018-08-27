@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import org.bukkit.ChatColor;
@@ -11,8 +10,7 @@ import org.bukkit.command.CommandSender;
 /**
  * Created by Marc on 3/10/15
  */
-@CommandMeta(description = "Get a player head")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Get a player head", rank = Rank.MOD)
 public class HeadCommand extends CoreCommand {
 
     public HeadCommand() {

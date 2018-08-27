@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -11,8 +10,7 @@ import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
-@CommandMeta(description = "Set spawn location")
-@CommandPermission(rank = Rank.DEVELOPER)
+@CommandMeta(description = "Set spawn location", rank = Rank.DEVELOPER)
 public class SetSpawnCommand extends CoreCommand {
 
     public SetSpawnCommand() {

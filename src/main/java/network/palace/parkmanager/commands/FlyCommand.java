@@ -3,7 +3,6 @@ package network.palace.parkmanager.commands;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import org.bukkit.Bukkit;
@@ -11,8 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Toggle fly mode")
-@CommandPermission(rank = network.palace.core.player.Rank.SPECIALGUEST)
+@CommandMeta(description = "Toggle fly mode", rank = Rank.SPECIALGUEST)
 public class FlyCommand extends CoreCommand {
 
     public FlyCommand() {

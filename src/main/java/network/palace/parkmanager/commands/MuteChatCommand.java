@@ -3,7 +3,6 @@ package network.palace.parkmanager.commands;
 import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.dashboard.packets.parks.PacketMuteChat;
@@ -15,8 +14,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by Marc on 2/19/16
  */
-@CommandMeta(description = "Mute and unmute chat")
-@CommandPermission(rank = Rank.MOD)
+@CommandMeta(description = "Mute and unmute chat", rank = Rank.MOD)
 public class MuteChatCommand extends CoreCommand {
 
     public MuteChatCommand() {

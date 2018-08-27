@@ -2,7 +2,6 @@ package network.palace.parkmanager.commands;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
-import network.palace.core.command.CommandPermission;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
@@ -14,8 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@CommandMeta(description = "Give a player an item")
-@CommandPermission(rank = Rank.TRAINEEBUILD)
+@CommandMeta(description = "Give a player an item", rank = Rank.TRAINEEBUILD)
 public class GiveCommand extends CoreCommand {
 
     public GiveCommand() {
