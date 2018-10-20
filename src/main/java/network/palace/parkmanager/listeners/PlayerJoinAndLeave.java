@@ -318,9 +318,6 @@ public class PlayerJoinAndLeave implements Listener {
         WatchTask.removeFromMessage(player.getUniqueId());
         parkManager.getBlockChanger().logout(player);
         ParkManager.getMuralUtil().done(cp);
-        if (Core.getServerType().equals("MK")) {
-            parkManager.getStitch().logout(player);
-        }
         if (Core.getServerType().equals("DHS")) {
             parkManager.getToyStoryMania().done(player);
         }

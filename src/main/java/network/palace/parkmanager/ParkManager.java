@@ -26,7 +26,6 @@ import network.palace.parkmanager.shooter.Shooter;
 import network.palace.parkmanager.shop.ShopManager;
 import network.palace.parkmanager.shop.WardrobeManager;
 import network.palace.parkmanager.show.schedule.ScheduleManager;
-import network.palace.parkmanager.stitch.Stitch;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.tsm.ToyStoryMania;
 import network.palace.parkmanager.uso.mib.MenInBlack;
@@ -42,13 +41,12 @@ import org.bukkit.event.Listener;
 
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.7.3", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
+@PluginInfo(name = "ParkManager", version = "2.7.4", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
     private HashMap<UUID, PlayerData> playerData = new HashMap<>();
     @Getter private Resort resort;
-    @Getter private Stitch stitch;
     private List<Ride> rides = new ArrayList<>();
     private List<Ride> attractions = new ArrayList<>();
     private List<Ride> meetandgreets = new ArrayList<>();
@@ -89,7 +87,6 @@ public class ParkManager extends Plugin implements Listener {
         try {
             instance = this;
             resort = Resort.fromString(FileUtil.getResort());
-            stitch = new Stitch();
             packManager = new PackManager();
             autographManager = new AutographManager();
             queueManager = new QueueManager();
@@ -370,9 +367,6 @@ public class ParkManager extends Plugin implements Listener {
         }
         switch (resort) {
             case WDW: {
-                if (Core.getServerType().equals("MK")) {
-                    registerListener(stitch);
-                }
                 if (getConfig().getBoolean("shooter-enabled")) {
                     shooter = new Shooter(this);
                     registerListener(shooter);

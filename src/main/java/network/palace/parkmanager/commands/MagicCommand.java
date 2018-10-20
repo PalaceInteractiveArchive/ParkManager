@@ -216,63 +216,6 @@ public class MagicCommand extends CoreCommand {
                 }
                 helpMenu("ride", sender);
                 return;
-            case "sge":
-                if (!parkManager.isResort(Resort.WDW)) {
-                    return;
-                }
-                switch (args.length) {
-                    case 2:
-                        if (args[1].equalsIgnoreCase("lock")) {
-                            parkManager.getStitch().toggleLock(sender);
-                        } else if (args[1].equalsIgnoreCase("eject")) {
-                            parkManager.getStitch().ejectAll(sender);
-                        } else if (args[1].equalsIgnoreCase("add")) {
-                            if (!(sender instanceof Player)) {
-                                return;
-                            }
-                            Player player = (Player) sender;
-                            try {
-                                parkManager.getStitch().addSeat(player);
-                            } catch (IOException e) {
-                                player.sendMessage(ChatColor.RED + "There was an error doing this command!");
-                                e.printStackTrace();
-                            }
-                        }
-                        return;
-                    case 3:
-                        if (args[1].equalsIgnoreCase("join")) {
-                            Player tp = Bukkit.getPlayer(args[2]);
-                            if (tp == null) {
-                                sender.sendMessage(ChatColor.RED + "Player not found!");
-                                return;
-                            }
-                            parkManager.getStitch().joinShow(tp);
-                        }
-                        return;
-                    case 4:
-                        if (args[1].equalsIgnoreCase("effect")) {
-                            if (args[2].equalsIgnoreCase("burp")) {
-                                Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + args[3]);
-                                for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-                                    tp.getParticles().send(loc, Particle.VILLAGER_HAPPY, 150, (float) 3,
-                                            (float) 3, (float) 3, 0);
-                                }
-                                return;
-                            }
-                            if (args[2].equalsIgnoreCase("spit")) {
-                                Location loc = WorldUtil.strToLoc(Bukkit.getWorlds().get(0).getName() + "," + args[3]);
-                                for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-                                    tp.getParticles().send(loc, Particle.LAVA, 150, (float) 3, (float) 3,
-                                            (float) 3, 0);
-                                }
-                                return;
-                            }
-                        }
-                        return;
-                    default:
-                        helpMenu("sge", sender);
-                        return;
-                }
             case "shooter":
                 if (parkManager.getShooter() == null) {
                     sender.sendMessage(ChatColor.RED + "Shooter is Disabled!");
@@ -968,7 +911,6 @@ public class MagicCommand extends CoreCommand {
                 sender.sendMessage(ChatColor.BLUE + "Reloading Plugin...");
                 parkManager.setupFoodLocations();
                 parkManager.setupRides();
-                parkManager.getStitch().initialize();
                 parkManager.getScheduleManager().update();
 //                parkManager.getHotelManager().refreshRooms();
                 /*
@@ -1126,7 +1068,6 @@ public class MagicCommand extends CoreCommand {
                 sender.sendMessage(ChatColor.GREEN + "/magic changer " + ChatColor.AQUA + "- Change blocks for rides!");
                 sender.sendMessage(ChatColor.GREEN + "/magic effect " + ChatColor.AQUA + "- Cool effects for shows!");
                 sender.sendMessage(ChatColor.GREEN + "/magic reload " + ChatColor.AQUA + "- Reload plugin");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge " + ChatColor.AQUA + "- Features for SGE");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter " + ChatColor.AQUA + "- Features for Shooter Games");
                 sender.sendMessage(ChatColor.GREEN + "/magic fp " + ChatColor.AQUA + "- Manage FastPass Kiosks");
                 //sender.sendMessage(ChatColor.GREEN + "/magic pin " + ChatColor.AQUA + "- Pin Trading Command");
@@ -1175,15 +1116,6 @@ public class MagicCommand extends CoreCommand {
                 sender.sendMessage(ChatColor.GREEN + "Shooter Commands:");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter add [Name] " + ChatColor.AQUA + "- Adds player to Shooter Game");
                 sender.sendMessage(ChatColor.GREEN + "/magic shooter remove [Name] " + ChatColor.AQUA + "- Removes player from Shooter Game");
-                break;
-            case "sge":
-                sender.sendMessage(ChatColor.GREEN + "Stitch Commands:");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge lock " + ChatColor.AQUA + "- Locks/Unlocks Show Room");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge eject " + ChatColor.AQUA + "- Ejects all players from their seats");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge join [Player name] " + ChatColor.AQUA + "- Adds a player to the Show");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge add " + ChatColor.AQUA + "- Add a seat to the show where you're standing");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge effect burp x,y,z" + ChatColor.AQUA + "- Displays the Burp effect at a given location");
-                sender.sendMessage(ChatColor.GREEN + "/magic sge effect spit x,y,z" + ChatColor.AQUA + "- Displays the Spit effect at a given location");
                 break;
             case "changer":
                 sender.sendMessage(ChatColor.GREEN + "Changer Commands:");
