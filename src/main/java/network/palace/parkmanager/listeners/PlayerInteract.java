@@ -47,6 +47,7 @@ public class PlayerInteract implements Listener {
     public static String wait = ChatColor.BLUE + "[Wait Times]";
     public static String server = ChatColor.BLUE + "[Server]";
     public static String mural = ChatColor.BLUE + "[Mural]";
+    public static String rideLeaderboard = ChatColor.BLUE + "[Leaderboard]";
     private boolean dl = ParkManager.getInstance().isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)

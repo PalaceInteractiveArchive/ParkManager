@@ -14,6 +14,7 @@ import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.fastpasskiosk.FPKioskManager;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.queue.QueueManager;
@@ -41,7 +42,7 @@ import org.bukkit.event.Listener;
 
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.7.4", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
+@PluginInfo(name = "ParkManager", version = "2.7.5", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
@@ -80,6 +81,7 @@ public class ParkManager extends Plugin implements Listener {
     @Getter private MenInBlack menInBlack;
     @Getter private RipRideRockit ripRideRockit;
     @Getter private OutlineManager outlineManager;
+    @Getter private LeaderboardManager leaderboardManager;
     @Getter private static MuralUtil muralUtil;
 
     @Override
@@ -125,6 +127,7 @@ public class ParkManager extends Plugin implements Listener {
             fpKioskManager = new FPKioskManager();
             scheduleManager = new ScheduleManager();
             outlineManager = new OutlineManager();
+            leaderboardManager = new LeaderboardManager();
             try {
                 hub = new Location(Bukkit.getWorld(config.getString("hub.world")), config.getDouble("hub.x"),
                         config.getDouble("hub.y"), config.getDouble("hub.z"), config.getInt("hub.yaw"), config.getInt("hub.pitch"));
