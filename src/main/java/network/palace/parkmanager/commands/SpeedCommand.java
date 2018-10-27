@@ -7,6 +7,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 @CommandMeta(description = "Set the movement speed of a player", rank = Rank.MOD)
 public class SpeedCommand extends CoreCommand {
@@ -51,6 +52,32 @@ public class SpeedCommand extends CoreCommand {
         } else {
             player.getBukkitPlayer().setWalkSpeed(getRealMoveSpeed(speed, isFly, player.getRank().getRankId() >= Rank.MOD.getRankId()));
             player.sendMessage(ChatColor.GREEN + "Set your walking speed to " + speed);
+        }
+    }
+
+    @Override
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "/speed [speed] [player]");
+            return;
+        }
+
+        CPlayer tp = Core.getPlayerManager().getPlayer(args[1]);
+        if (tp == null) {
+            sender.sendMessage(ChatColor.RED + "Player not found!");
+            return;
+        }
+
+        boolean isFlying = tp.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && tp.isFlying();
+        float speed = getMoveSpeed(args[0]);
+        float realSpeed = getRealMoveSpeed(speed, isFlying, tp.getRank().getRankId() >= Rank.MOD.getRankId());
+        if (isFlying) {
+            tp.getBukkitPlayer().setFlySpeed(realSpeed);
+            sender.sendMessage(ChatColor.GREEN + "Set " + tp.getName() + "'s flying speed to " + speed);
+        }
+        else {
+            tp.getBukkitPlayer().setWalkSpeed(realSpeed);
+            sender.sendMessage(ChatColor.GREEN + "Set " + tp.getName() + "'s walking speed to " + speed);
         }
     }
 
