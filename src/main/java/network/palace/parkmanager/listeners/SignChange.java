@@ -42,6 +42,14 @@ public class SignChange implements Listener {
                 event.setLine(3, "");
                 return;
             }
+            if (l1.equalsIgnoreCase("[rclead]")) {
+                String[] lines = ParkManager.getInstance().getLeaderboardManager().registerLeaderboardSign(event.getLines(), event.getBlock());
+                event.setLine(0, lines[0]);
+                event.setLine(1, lines[1]);
+                event.setLine(2, lines[2]);
+                event.setLine(3, lines[3]);
+                return;
+            }
             /*if (l1.equalsIgnoreCase("[hotel]") || l1.equalsIgnoreCase("[suite]")) {
                 if (!ParkManager.getInstance().isHotelServer()) {
                     return;

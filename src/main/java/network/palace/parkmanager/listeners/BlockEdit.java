@@ -65,6 +65,9 @@ public class BlockEdit implements Listener {
 //                }
                 return;
             }
+            if (l1.equalsIgnoreCase("[leaderboard]")) {
+                ParkManager.getInstance().getLeaderboardManager().deleteSign(s.getLocation());
+            }
             if (l1.equalsIgnoreCase("[queue]")) {
                 try {
                     ParkManager.getInstance().getQueueManager().deleteSign(s.getLocation());

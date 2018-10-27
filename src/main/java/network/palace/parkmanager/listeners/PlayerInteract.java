@@ -10,6 +10,8 @@ import network.palace.parkmanager.autograph.Signature;
 import network.palace.parkmanager.designstation.DesignStation;
 import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.hotels.HotelManager;
+import network.palace.parkmanager.leaderboard.LeaderboardManager;
+import network.palace.parkmanager.leaderboard.LeaderboardSign;
 import network.palace.parkmanager.mural.Mural;
 import network.palace.parkmanager.utils.DateUtil;
 import network.palace.parkmanager.utils.MuralUtil;
@@ -30,10 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerInteract implements Listener {
     public static String disposal = ChatColor.BLUE + "[Disposal]";
@@ -47,6 +46,7 @@ public class PlayerInteract implements Listener {
     public static String wait = ChatColor.BLUE + "[Wait Times]";
     public static String server = ChatColor.BLUE + "[Server]";
     public static String mural = ChatColor.BLUE + "[Mural]";
+    public static String rideLeaderboard = ChatColor.BLUE + "[Leaderboard]";
     private boolean dl = ParkManager.getInstance().isResort(Resort.DLR);
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -154,6 +154,32 @@ public class PlayerInteract implements Listener {
                     cp.sendMessage(ChatColor.BLUE + "You have arrived at "
                             + ChatColor.WHITE + "[" + ChatColor.GREEN + warp.getName()
                             + ChatColor.WHITE + "]");
+                    return;
+                }
+                if (s.getLine(0).equals(rideLeaderboard)) {
+                    LeaderboardSign leaderboard = ParkManager.getInstance().getLeaderboardManager().getSign(s.getLocation());
+                    if (leaderboard == null) return;
+                    cp.sendMessage(ChatColor.AQUA + "Gathering leaderboard data...");
+                    Core.runTaskAsynchronously(() -> {
+                        String name = leaderboard.getRideName();
+                        List<String> messages = new ArrayList<>();
+                        for (Map.Entry<UUID, Integer> entry : leaderboard.getCachedMap().entrySet()) {
+                            UUID uuid = entry.getKey();
+                            String n;
+                            if (ParkManager.getInstance().getUserCache().containsKey(uuid)) {
+                                n = ParkManager.getInstance().getUserCache().get(uuid);
+                            } else {
+                                n = Core.getMongoHandler().uuidToUsername(uuid);
+                                ParkManager.getInstance().addToUserCache(uuid, n);
+                            }
+                            Rank r = Core.getMongoHandler().getRank(uuid);
+                            int count = entry.getValue();
+                            messages.add(ChatColor.BLUE + "" + count + ": " + r.getTagColor() + n);
+                        }
+                        LeaderboardManager.sortLeaderboardMessages(messages);
+                        cp.sendMessage(ChatColor.BLUE + "Ride Counter Leaderboard for " + ChatColor.GOLD + name + ":");
+                        messages.forEach(cp::sendMessage);
+                    });
                     return;
                 }
                 if (s.getLine(0).equals(shop)) {
