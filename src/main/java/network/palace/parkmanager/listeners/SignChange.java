@@ -44,6 +44,10 @@ public class SignChange implements Listener {
             }
             if (l1.equalsIgnoreCase("[rclead]")) {
                 String[] lines = ParkManager.getInstance().getLeaderboardManager().registerLeaderboardSign(event.getLines(), event.getBlock());
+                if (lines == null) {
+                    player.sendMessage(ChatColor.RED + "There was a problem creating that leaderboard sign! This usually happens when a leaderboard sign already exists for this ride.");
+                    return;
+                }
                 event.setLine(0, lines[0]);
                 event.setLine(1, lines[1]);
                 event.setLine(2, lines[2]);

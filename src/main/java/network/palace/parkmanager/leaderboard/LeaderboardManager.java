@@ -59,6 +59,11 @@ public class LeaderboardManager {
     public String[] registerLeaderboardSign(String[] lines, Block block) {
         Sign sign = (Sign) block.getState();
         String name = (lines[1] + " " + lines[2] + " " + lines[3]).trim();
+        for (LeaderboardSign s : getSigns()) {
+            if (s.getRideName().equals(name)) {
+                return null;
+            }
+        }
         Location loc = sign.getLocation();
         LeaderboardSign signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
         signs.add(signObject);
