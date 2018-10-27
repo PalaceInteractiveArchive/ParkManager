@@ -320,6 +320,7 @@ public class ParkManager extends Plugin implements Listener {
         registerCommand(new HubCommand());
         registerCommand(new InvSeeCommand());
         registerCommand(new ItemCommand());
+        registerCommand(new LeaderboardCommand());
         registerCommand(new MagicCommand());
         registerCommand(new MuteChatCommand());
         registerCommand(new MoreCommand());

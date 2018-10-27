@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import network.palace.core.Core;
+import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import org.bson.Document;
@@ -43,6 +44,9 @@ public class LeaderboardSign {
         } catch (Exception e) {
             return;
         }
+        if (s == null) {
+            return;
+        }
         s.setLine(0, PlayerInteract.rideLeaderboard);
         if (list.size() >= 1) {
             Document doc = list.get(0);
@@ -54,7 +58,9 @@ public class LeaderboardSign {
                 name = Core.getMongoHandler().uuidToUsername(uuid);
                 ParkManager.getInstance().addToUserCache(uuid, name);
             }
-            String line = doc.getInteger("total") + ": " + name;
+            Rank rank = Core.getMongoHandler().getRank(uuid);
+            String line = doc.getInteger("total") + ": " + rank.getTagColor() + name;
+            line = line.substring(0, line.length() < 18 ? line.length() : 18);
             s.setLine(1, line);
         }
         if (list.size() >= 2) {
@@ -67,7 +73,9 @@ public class LeaderboardSign {
                 name = Core.getMongoHandler().uuidToUsername(uuid);
                 ParkManager.getInstance().addToUserCache(uuid, name);
             }
-            String line = doc.getInteger("total") + ": " + name;
+            Rank rank = Core.getMongoHandler().getRank(uuid);
+            String line = doc.getInteger("total") + ": " + rank.getTagColor() + name;
+            line = line.substring(0, line.length() < 18 ? line.length() : 18);
             s.setLine(2, line);
         }
         if (list.size() >= 3) {
@@ -80,7 +88,9 @@ public class LeaderboardSign {
                 name = Core.getMongoHandler().uuidToUsername(uuid);
                 ParkManager.getInstance().addToUserCache(uuid, name);
             }
-            String line = doc.getInteger("total") + ": " + name;
+            Rank rank = Core.getMongoHandler().getRank(uuid);
+            String line = doc.getInteger("total") + ": " + rank.getTagColor() + name;
+            line = line.substring(0, line.length() < 18 ? line.length() : 18);
             s.setLine(3, line);
         }
         Core.runTask(s::update);

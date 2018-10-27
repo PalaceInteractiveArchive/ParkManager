@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import network.palace.core.Core;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -52,10 +53,7 @@ public class LeaderboardManager {
             } catch (Exception ignored) {
             }
         }
-        Core.runTaskTimerAsynchronously(() -> {
-            List<LeaderboardSign> signs = new ArrayList<>(this.signs);
-            signs.forEach(LeaderboardSign::update);
-        }, 20L, 30 * 60 * 20L);
+        Core.runTaskTimerAsynchronously(this::update, 400L, 30 * 60 * 20L);
     }
 
     public String[] registerLeaderboardSign(String[] lines, Block block) {
@@ -67,6 +65,27 @@ public class LeaderboardManager {
         Core.runTaskAsynchronously(signObject::update);
         saveFile();
         return new String[]{PlayerInteract.rideLeaderboard, "", "", ""};
+    }
+
+    public void deleteSign(Location loc) {
+        for (LeaderboardSign sign : getSigns()) {
+            if (!sign.getLocation().equals(loc)) continue;
+            signs.remove(sign);
+            saveFile();
+        }
+    }
+
+    public LeaderboardSign getSign(Location loc) {
+        for (LeaderboardSign sign : getSigns()) {
+            if (sign.getLocation().equals(loc)) {
+                return sign;
+            }
+        }
+        return null;
+    }
+
+    private List<LeaderboardSign> getSigns() {
+        return new ArrayList<>(signs);
     }
 
     public String getJsonFromFile() {
@@ -98,5 +117,22 @@ public class LeaderboardManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void update() {
+        getSigns().forEach(LeaderboardSign::update);
+    }
+
+    public static void sortLeaderboardMessages(List<String> messages) {
+        messages.sort((o1, o2) -> {
+            String nocolor1 = ChatColor.stripColor(o1);
+            String nocolor2 = ChatColor.stripColor(o2);
+            String substr1 = nocolor1.substring(0, nocolor1.indexOf(":"));
+            String substr2 = nocolor2.substring(0, nocolor2.indexOf(":"));
+            int i1 = Integer.parseInt(substr1);
+            int i2 = Integer.parseInt(substr2);
+            return i2 - i1;
+        });
+
     }
 }
