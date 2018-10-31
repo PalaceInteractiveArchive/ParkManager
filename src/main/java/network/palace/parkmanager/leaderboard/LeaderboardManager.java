@@ -34,6 +34,7 @@ public class LeaderboardManager {
         if (!configFile.exists()) {
             configFile.createNewFile();
         }
+        Core.runTaskTimerAsynchronously(this::update, 400L, 10 * 60 * 20L);
 
         JsonArray array = new Gson().fromJson(getJsonFromFile(), JsonArray.class);
 
@@ -53,7 +54,6 @@ public class LeaderboardManager {
             } catch (Exception ignored) {
             }
         }
-        Core.runTaskTimerAsynchronously(this::update, 400L, 30 * 60 * 20L);
     }
 
     public String[] registerLeaderboardSign(String[] lines, Block block) {
@@ -125,7 +125,9 @@ public class LeaderboardManager {
     }
 
     public void update() {
+        Core.logMessage("LeaderboardManager", "Updating ride counter leaderboards...");
         getSigns().forEach(LeaderboardSign::update);
+        Core.logMessage("LeaderboardManager", "Finished updating ride counter leaderboards!");
     }
 
     public static void sortLeaderboardMessages(List<String> messages) {
