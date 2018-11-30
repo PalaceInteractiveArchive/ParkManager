@@ -1,11 +1,15 @@
 package network.palace.parkmanager.show.handlers;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 /**
  * Created by Marc on 10/29/15
  */
+@Getter
+@AllArgsConstructor
 public enum ShowType {
     //Normal Shows
     TBA(ChatColor.LIGHT_PURPLE + "To Be Announced", Material.BARRIER),
@@ -35,10 +39,19 @@ public enum ShowType {
     FHW(ChatColor.AQUA + "Frozen Holiday Wish", Material.QUARTZ),
     HOLIDAYWISHES(ChatColor.AQUA + "Holiday Wishes", Material.SNOW),
     OUACTP(ChatColor.AQUA + "Once Upon A Christmastime Parade", Material.SNOW_BALL),
+    JBJB(ChatColor.GREEN + "Jingle Bell, Jingle BAM!", Material.RECORD_5),
     //Seasonal
     BITHM(ChatColor.AQUA + "Believe in the Holiday Magic", Material.BLAZE_ROD),
     //Anniversary
     MCMD(ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST);
+
+    private String name;
+    private Material type;
+    private byte data;
+
+    ShowType(String name, Material type) {
+        this(name, type, (byte) 0);
+    }
 
     public static ShowType fromString(String name) {
         switch (name.toLowerCase()) {
@@ -84,38 +97,13 @@ public enum ShowType {
                 return HOLIDAYWISHES;
             case "ouactp":
                 return OUACTP;
+            case "jbjb":
+                return JBJB;
             case "bithm":
                 return BITHM;
             case "mcmd":
                 return MCMD;
         }
         return TBA;
-    }
-
-    private String name;
-    private Material type;
-
-    private byte data;
-
-    ShowType(String name, Material type) {
-        this(name, type, (byte) 0);
-    }
-
-    ShowType(String name, Material type, byte data) {
-        this.name = name;
-        this.type = type;
-        this.data = data;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Material getType() {
-        return type;
-    }
-
-    public byte getData() {
-        return data;
     }
 }
