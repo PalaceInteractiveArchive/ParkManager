@@ -28,6 +28,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by Marc on 6/28/16
@@ -44,7 +45,7 @@ public class ToyStoryMania implements Listener {
 
     public ToyStoryMania() {
         item = ItemUtil.create(Material.STONE_HOE, ChatColor.YELLOW + "Toy Cannon",
-                Arrays.asList(ChatColor.YELLOW + "Right-Click to Shoot!"));
+                Collections.singletonList(ChatColor.YELLOW + "Right-Click to Shoot!"));
         Bukkit.getScheduler().runTaskTimer(ParkManager.getInstance(), () -> {
             long cur = System.currentTimeMillis();
             for (Map.Entry<UUID, ShooterSession> entry : new HashMap<>(sessions).entrySet()) {
@@ -229,7 +230,7 @@ public class ToyStoryMania implements Listener {
         }
         Hit hit = null;
         switch (data) {
-            case 6: {
+            case 14: {
                 hit = new Hit(player.getUniqueId(), 25);
                 player.getActionBar().show(ChatColor.RED + "+25 Points");
                 item.setItem(black);
@@ -241,13 +242,13 @@ public class ToyStoryMania implements Listener {
                 item.setItem(black);
                 break;
             }
-            case 10: {
+            case 5: {
                 hit = new Hit(player.getUniqueId(), 75);
                 player.getActionBar().show(ChatColor.GREEN + "+75 Points");
                 item.setItem(black);
                 break;
             }
-            case 5: {
+            case 10: {
                 hit = new Hit(player.getUniqueId(), 100);
                 player.getActionBar().show(ChatColor.LIGHT_PURPLE + "+100 Points");
                 item.setItem(black);
@@ -271,19 +272,8 @@ public class ToyStoryMania implements Listener {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Location loc = new Location(world, x, y, z);
-                    Collection<ItemFrame> allItemFrames = world.getEntitiesByClass(ItemFrame.class);
-                    ItemFrame frame = null;
-                    for (ItemFrame item : allItemFrames) {
-                        Location frameLoc = item.getLocation();
-                        if (loc.getBlockX() == frameLoc.getBlockX() && loc.getBlockY() == frameLoc.getBlockY() &&
-                                loc.getBlockZ() == frameLoc.getBlockZ()) {
-                            frame = item;
-                            break;
-                        }
-                    }
-                    if (frame == null) {
-                        continue;
-                    }
+                    ItemFrame frame = getFrame(loc);
+                    if (frame == null) continue;
                     byte data = random(hasPurple);
                     if (data == 10) {
                         hasPurple = true;
@@ -310,6 +300,17 @@ public class ToyStoryMania implements Listener {
         }
     }
 
+    private ItemFrame getFrame(Location loc) {
+        Stream<ItemFrame> stream = loc.getWorld().getEntitiesByClass(ItemFrame.class).stream().filter(item -> {
+            Location frameLoc = item.getLocation();
+            return loc.getBlockX() == frameLoc.getBlockX() &&
+                    loc.getBlockY() == frameLoc.getBlockY() &&
+                    loc.getBlockZ() == frameLoc.getBlockZ();
+        });
+        if (stream.findFirst().isPresent()) return stream.findFirst().get();
+        return null;
+    }
+
     public void reset(Location min, Location max) {
         World world = min.getWorld();
         boolean hasPurple = false;
@@ -318,18 +319,8 @@ public class ToyStoryMania implements Listener {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Location loc = new Location(world, x, y, z);
                     Collection<ItemFrame> allItemFrames = world.getEntitiesByClass(ItemFrame.class);
-                    ItemFrame frame = null;
-                    for (ItemFrame item : allItemFrames) {
-                        Location frameLoc = item.getLocation();
-                        if (loc.getBlockX() == frameLoc.getBlockX() && loc.getBlockY() == frameLoc.getBlockY() &&
-                                loc.getBlockZ() == frameLoc.getBlockZ()) {
-                            frame = item;
-                            break;
-                        }
-                    }
-                    if (frame == null) {
-                        continue;
-                    }
+                    ItemFrame frame = getFrame(loc);
+                    if (frame == null) continue;
                     frame.setItem(black);
                 }
             }
@@ -380,18 +371,8 @@ public class ToyStoryMania implements Listener {
                 for (int y = max.getBlockY(); y >= min.getBlockY(); y--) {
                     for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
                         Location loc = new Location(world, x, y, z);
-                        ItemFrame frame = null;
-                        for (ItemFrame item : allItemFrames) {
-                            Location frameLoc = item.getLocation();
-                            if (loc.getBlockX() == frameLoc.getBlockX() && loc.getBlockY() == frameLoc.getBlockY() &&
-                                    loc.getBlockZ() == frameLoc.getBlockZ()) {
-                                frame = item;
-                                break;
-                            }
-                        }
-                        if (frame == null) {
-                            continue;
-                        }
+                        ItemFrame frame = getFrame(loc);
+                        if (frame == null) continue;
                         frame.setItem(maps.get(i));
                         i++;
                     }
@@ -403,18 +384,8 @@ public class ToyStoryMania implements Listener {
                 for (int y = max.getBlockY(); y >= min.getBlockY(); y--) {
                     for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                         Location loc = new Location(world, x, y, z);
-                        ItemFrame frame = null;
-                        for (ItemFrame item : allItemFrames) {
-                            Location frameLoc = item.getLocation();
-                            if (loc.getBlockX() == frameLoc.getBlockX() && loc.getBlockY() == frameLoc.getBlockY() &&
-                                    loc.getBlockZ() == frameLoc.getBlockZ()) {
-                                frame = item;
-                                break;
-                            }
-                        }
-                        if (frame == null) {
-                            continue;
-                        }
+                        ItemFrame frame = getFrame(loc);
+                        if (frame == null) continue;
                         frame.setItem(maps.get(i));
                         i++;
                     }
@@ -426,18 +397,8 @@ public class ToyStoryMania implements Listener {
                 for (int y = max.getBlockY(); y >= min.getBlockY(); y--) {
                     for (int x = max.getBlockX(); x >= min.getBlockX(); x--) {
                         Location loc = new Location(world, x, y, z);
-                        ItemFrame frame = null;
-                        for (ItemFrame item : allItemFrames) {
-                            Location frameLoc = item.getLocation();
-                            if (loc.getBlockX() == frameLoc.getBlockX() && loc.getBlockY() == frameLoc.getBlockY() &&
-                                    loc.getBlockZ() == frameLoc.getBlockZ()) {
-                                frame = item;
-                                break;
-                            }
-                        }
-                        if (frame == null) {
-                            continue;
-                        }
+                        ItemFrame frame = getFrame(loc);
+                        if (frame == null) continue;
                         frame.setItem(maps.get(i));
                         i++;
                     }
@@ -449,18 +410,8 @@ public class ToyStoryMania implements Listener {
                 for (int y = max.getBlockY(); y >= min.getBlockY(); y--) {
                     for (int z = max.getBlockZ(); z >= min.getBlockZ(); z--) {
                         Location loc = new Location(world, x, y, z);
-                        ItemFrame frame = null;
-                        for (ItemFrame item : allItemFrames) {
-                            Location frameLoc = item.getLocation();
-                            if (loc.getBlockX() == frameLoc.getBlockX() && loc.getBlockY() == frameLoc.getBlockY() &&
-                                    loc.getBlockZ() == frameLoc.getBlockZ()) {
-                                frame = item;
-                                break;
-                            }
-                        }
-                        if (frame == null) {
-                            continue;
-                        }
+                        ItemFrame frame = getFrame(loc);
+                        if (frame == null) continue;
                         frame.setItem(maps.get(i));
                         i++;
                     }
