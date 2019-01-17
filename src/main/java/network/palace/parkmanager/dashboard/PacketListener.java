@@ -45,7 +45,7 @@ public class PacketListener implements Listener {
              */
             case 58: {
                 PacketInventoryContent packet = new PacketInventoryContent().fromJSON(object);
-                parkManager.getStorageManager().updateInventory(packet);
+                Core.runTask(() -> parkManager.getStorageManager().updateInventory(packet));
                 break;
             }
             /**
