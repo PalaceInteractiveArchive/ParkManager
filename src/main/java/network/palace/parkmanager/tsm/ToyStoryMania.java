@@ -28,7 +28,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Created by Marc on 6/28/16
@@ -301,14 +300,17 @@ public class ToyStoryMania implements Listener {
     }
 
     private ItemFrame getFrame(Location loc) {
-        Stream<ItemFrame> stream = loc.getWorld().getEntitiesByClass(ItemFrame.class).stream().filter(item -> {
-            Location frameLoc = item.getLocation();
-            return loc.getBlockX() == frameLoc.getBlockX() &&
+        ItemFrame frame = null;
+        for (ItemFrame worldFrame : loc.getWorld().getEntitiesByClass(ItemFrame.class)) {
+            Location frameLoc = worldFrame.getLocation();
+            if (loc.getBlockX() == frameLoc.getBlockX() &&
                     loc.getBlockY() == frameLoc.getBlockY() &&
-                    loc.getBlockZ() == frameLoc.getBlockZ();
-        });
-        if (stream.findFirst().isPresent()) return stream.findFirst().get();
-        return null;
+                    loc.getBlockZ() == frameLoc.getBlockZ()) {
+                frame = worldFrame;
+                break;
+            }
+        }
+        return frame;
     }
 
     public void reset(Location min, Location max) {

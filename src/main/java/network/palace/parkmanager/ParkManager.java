@@ -42,7 +42,7 @@ import org.bukkit.event.Listener;
 
 import java.util.*;
 
-@PluginInfo(name = "ParkManager", version = "2.7.8", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
+@PluginInfo(name = "ParkManager", version = "2.7.9", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"})
 public class ParkManager extends Plugin implements Listener {
     public static ParkManager instance;
     private List<FoodLocation> foodLocations = new ArrayList<>();
