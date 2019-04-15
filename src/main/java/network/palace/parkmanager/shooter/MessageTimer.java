@@ -30,6 +30,9 @@ public class MessageTimer {
                     msg = ChatColor.RED + "" + ChatColor.BOLD + "Monstropolis Mayhem Points: " + ChatColor.YELLOW +
                             "" + ChatColor.BOLD;
                     break;
+                case "brave":
+                    msg = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Archery Points: " + ChatColor.GREEN + "" + ChatColor.BOLD;
+                    break;
             }
             for (UUID uuid : parkManager.getShooter().getIngame()) {
                 CPlayer player = Core.getPlayerManager().getPlayer(uuid);

@@ -8,6 +8,7 @@ import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -40,20 +41,33 @@ public class Shooter implements Listener {
 
     public Shooter(ParkManager instance) {
         YamlConfiguration config = FileUtil.configurationYaml();
-        if (config.getString("shooter").equalsIgnoreCase("buzz")) {
-            stack = ItemUtil.create(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun",
-                    Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
-            game = config.getString("shooter");
-        } else if (config.getString("shooter").equalsIgnoreCase("tsm")) {
-            stack = ItemUtil.create(Material.STONE_HOE, ChatColor.GOLD + "Blaster",
-                    Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
-            game = config.getString("shooter");
-        } else if (config.getString("shooter").equalsIgnoreCase("mm")) {
-            stack = ItemUtil.create(Material.GOLD_HOE, ChatColor.RED + "Boo Blaster",
-                    Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
-            game = config.getString("shooter");
-        } else {
-            stack = null;
+        switch (config.getString("shooter").toLowerCase()) {
+            case "buzz": {
+                stack = ItemUtil.create(Material.WOOD_HOE, ChatColor.BLUE + "Ray Gun",
+                        Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
+                game = "buzz";
+                break;
+            }
+            case "tsm": {
+                stack = ItemUtil.create(Material.STONE_HOE, ChatColor.GOLD + "Blaster",
+                        Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
+                game = "tsm";
+                break;
+            }
+            case "mm": {
+                stack = ItemUtil.create(Material.GOLD_HOE, ChatColor.RED + "Boo Blaster",
+                        Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
+                game = "mm";
+                break;
+            }
+            case "brave": {
+                stack = ItemUtil.create(Material.BOW, ChatColor.DARK_GREEN + "Archery Bow",
+                        Collections.singletonList(ChatColor.GREEN + "Click to shoot!"));
+                game = "brave";
+                break;
+            }
+            default:
+                stack = null;
         }
     }
 
@@ -100,7 +114,11 @@ public class Shooter implements Listener {
         }
         String displayName = meta.getDisplayName();
         if (inHand.getType().equals(stack.getType()) && meta.getDisplayName().equals(stack.getItemMeta().getDisplayName())) {
-            player.launchProjectile(Snowball.class);
+            if (game.equals("brave")) {
+                player.launchProjectile(Arrow.class);
+            } else {
+                player.launchProjectile(Snowball.class);
+            }
             event.setCancelled(true);
         }
         if (locations.containsKey(player.getUniqueId())) {
@@ -114,21 +132,20 @@ public class Shooter implements Listener {
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
-        if ((projectile instanceof Snowball) && (projectile.getShooter() instanceof Player)) {
-            Snowball snowball = (Snowball) projectile;
-            final Player player = (Player) projectile.getShooter();
-            if (!player.getInventory().contains(stack)) {
-                return;
-            }
-            final Location loc = projectile.getLocation().add(projectile.getVelocity().normalize());
-            final Block block = loc.getBlock();
+        if (((game.equals("brave") && projectile instanceof Arrow) || projectile instanceof Snowball) && (projectile.getShooter() instanceof Player)) {
+            Player player = (Player) projectile.getShooter();
+            if (!player.getInventory().contains(stack)) return;
+            event.getEntity().remove();
+            Block block = event.getHitBlock();
+            if (block == null) return;
+            Location loc = block.getLocation();
             if (locations.containsValue(block)) {
                 return;
             }
-            final int amount = getPoint(block.getType());
+            int amount = getPoint(block.getType());
             if (amount > 0) {
-                final long time = System.currentTimeMillis();
-                player.playSound(snowball.getLocation(), Sound.BLOCK_NOTE_PLING, 10.0F, 1.0F);
+                long time = System.currentTimeMillis();
+                player.playSound(projectile.getLocation(), Sound.BLOCK_NOTE_PLING, 10.0F, 1.0F);
                 player.setMetadata("shooter", new FixedMetadataValue(ParkManager.getInstance(),
                         player.getMetadata("shooter").get(0).asInt() + amount));
                 sendMessage(player, "+" + amount);
@@ -171,9 +188,9 @@ public class Shooter implements Listener {
     public int getPoint(Material type) {
         switch (type) {
             case GOLD_BLOCK:
-                return 1;
+                return 10;
             case DIAMOND_BLOCK:
-                return 5;
+                return 50;
             case EMERALD_BLOCK:
                 return 100;
             default:
@@ -183,9 +200,9 @@ public class Shooter implements Listener {
 
     public Material getMaterial(int amount) {
         switch (amount) {
-            case 1:
+            case 10:
                 return Material.GOLD_BLOCK;
-            case 5:
+            case 50:
                 return Material.DIAMOND_BLOCK;
             case 100:
                 return Material.EMERALD_BLOCK;
@@ -216,6 +233,14 @@ public class Shooter implements Listener {
                 player.sendMessage(ChatColor.RED + "Good job! Your final score is "
                         + player.getMetadata("shooter").get(0).asInt() + "!");
                 player.sendMessage(ChatColor.YELLOW + "----------------------------------------------------");
+                break;
+            case "brave":
+                player.sendMessage(ChatColor.DARK_GREEN + "----------------------------------------------------");
+                player.sendMessage(ChatColor.GREEN + "Good job! Your final score is "
+                        + player.getMetadata("shooter").get(0).asInt() + "!");
+                player.sendMessage(ChatColor.DARK_GREEN + "----------------------------------------------------");
+                break;
+
         }
         player.getInventory().setItem(4, InventoryUtil.getRideItem());
     }
@@ -254,9 +279,6 @@ public class Shooter implements Listener {
     }
 
     public void addToHashMap(UUID uuid, ItemStack stack) {
-        if (itemMap.containsKey(uuid)) {
-            itemMap.remove(uuid);
-        }
         itemMap.put(uuid, stack);
     }
 
@@ -273,15 +295,19 @@ public class Shooter implements Listener {
             case "buzz":
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.BLUE + "" + ChatColor.BOLD + "Buzz"
                         + ChatColor.WHITE + "] " + ChatColor.AQUA + msg);
-                return;
+                break;
             case "tsm":
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "" + ChatColor.BOLD + "Toy Story Mania"
                         + ChatColor.WHITE + "] " + ChatColor.YELLOW + msg);
-                return;
+                break;
             case "mm":
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW + "" + ChatColor.BOLD + "Monstropolis Mayhem"
                         + ChatColor.WHITE + "] " + ChatColor.RED + msg);
-
+                break;
+            case "brave":
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Brave: Quest of the Wisps"
+                        + ChatColor.WHITE + "] " + ChatColor.GREEN + msg);
+                break;
         }
     }
 

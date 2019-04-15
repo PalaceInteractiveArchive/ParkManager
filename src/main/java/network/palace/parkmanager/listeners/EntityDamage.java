@@ -25,8 +25,13 @@ public class EntityDamage implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-        if (entity.getType().equals(EntityType.PLAYER)) {
+        boolean cancel = false;
+        if (event.getEntityType().equals(EntityType.PLAYER)) {
+            cancel = true;
+        } else if (event.getCause().equals(EntityDamageEvent.DamageCause.PROJECTILE)) {
+            cancel = true;
+        }
+        if (cancel) {
             event.setCancelled(true);
         }
     }
@@ -43,6 +48,9 @@ public class EntityDamage implements Listener {
                     event.setCancelled(true);
                     return;
                 }
+            } else if (damager.getType().equals(EntityType.ARROW)) {
+                event.setCancelled(true);
+                return;
             }
         }
         if (type.equals(EntityType.ITEM_FRAME) || type.equals(EntityType.PAINTING) ||
