@@ -24,11 +24,13 @@ public class PlayerInteract implements Listener {
         if (ParkManager.getBuildUtil().isInBuildMode(player)) {
             return;
         }
+        boolean cancel = false;
         switch (slot) {
             case 5:
                 //open watch menu
                 break;
             case 6:
+                cancel = true;
                 ParkManager.getInventoryUtil().openMenu(player, MenuType.BACKPACK);
                 break;
             case 7:
@@ -38,5 +40,6 @@ public class PlayerInteract implements Listener {
                 //open magicband
                 break;
         }
+        if (cancel) event.setCancelled(true);
     }
 }

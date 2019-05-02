@@ -27,11 +27,18 @@ public class InventoryUtil {
                 break;
             case WATCH:
                 break;
-            case BACKPACK:
+            case BACKPACK: {
                 if (!player.getRegistry().hasEntry("storageData")) return;
                 StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
                 player.openInventory(data.getBackpack());
                 break;
+            }
+            case LOCKER: {
+                if (!player.getRegistry().hasEntry("storageData")) return;
+                StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
+                player.openInventory(data.getLocker());
+                break;
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
+import network.palace.parkmanager.listeners.InventoryListener;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.listeners.PlayerJoinAndLeave;
 import network.palace.parkmanager.storage.StorageManager;
@@ -48,6 +49,7 @@ public class ParkManager extends Plugin {
     }
 
     public void registerListeners() {
+        registerListener(new InventoryListener());
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
         registerListener(new PacketListener());

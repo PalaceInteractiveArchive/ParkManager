@@ -67,6 +67,7 @@ public class StorageManager {
         player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
 
         PlayerInventory inv = player.getInventory();
+        inv.clear();
         inv.setItem(5, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                 Arrays.asList(ChatColor.GRAY + "Right-Click to open the", ChatColor.GRAY + "Show Schedule Menu")));
         inv.setItem(6, ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"));
