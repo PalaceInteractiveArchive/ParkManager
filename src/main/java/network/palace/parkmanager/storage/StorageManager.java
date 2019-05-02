@@ -1,5 +1,7 @@
 package network.palace.parkmanager.storage;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
@@ -18,11 +20,13 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class StorageManager {
-    private HashMap<UUID, StorageData> savedStorageData = new HashMap<>();
+    private static final List<Material> bannedItems = Arrays.asList(Material.MINECART, Material.SNOWBALL, Material.ARROW);
+    private Cache<UUID, StorageData> savedStorageData = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
     /**
      * Handle inventory setting when a player joins
@@ -30,11 +34,12 @@ public class StorageManager {
      * @param player the player
      */
     public void handleJoin(CPlayer player) {
-        StorageData data = savedStorageData.remove(player.getUniqueId());
+        StorageData data = savedStorageData.getIfPresent(player.getUniqueId());
         if (data == null) {
             player.getRegistry().addEntry("waitingForInventory", true);
             return;
         }
+        savedStorageData.invalidate(player.getUniqueId());
         player.getRegistry().addEntry("storageData", data);
         updateInventory(player, true);
     }
@@ -119,6 +124,10 @@ public class StorageManager {
         ItemStack[] lockerItems = ItemUtil.getInventoryFromJson(packet.getLockerJson());
         ItemStack[] hotbar = ItemUtil.getInventoryFromJson(packet.getHotbarJson());
 
+        filterItems(packItems);
+        filterItems(lockerItems);
+        filterItems(hotbar);
+
         Inventory backpack = Bukkit.createInventory(null, backpackSize.getSlots(), ChatColor.BLUE + "Your Backpack");
         Inventory locker = Bukkit.createInventory(null, backpackSize.getSlots(), ChatColor.BLUE + "Your Locker");
 
@@ -134,6 +143,14 @@ public class StorageManager {
             updateInventory(player, true);
         } else {
             savedStorageData.put(packet.getUuid(), data);
+        }
+    }
+
+    private void filterItems(ItemStack[] items) {
+        for (int i = 0; i < items.length; i++) {
+            if (bannedItems.contains(items[i].getType())) {
+                items[i] = null;
+            }
         }
     }
 
