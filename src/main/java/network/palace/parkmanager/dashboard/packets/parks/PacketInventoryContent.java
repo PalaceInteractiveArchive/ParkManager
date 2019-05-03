@@ -16,8 +16,8 @@ import java.util.UUID;
  */
 public class PacketInventoryContent extends BasePacket {
     @Getter private UUID uuid;
-
     @Getter private Resort resort;
+    @Getter @Setter private boolean disconnect = false;
 
     @Getter private String backpackJson;
     @Getter private String backpackHash;
@@ -58,6 +58,7 @@ public class PacketInventoryContent extends BasePacket {
         this.id = PacketID.Inventory.INVENTORY_CONTENT.getID();
         this.uuid = UUID.fromString(obj.get("uuid").getAsString());
         this.resort = Resort.fromId(obj.get("resort").getAsInt());
+        this.disconnect = obj.get("disconnect").getAsBoolean();
 
         if (obj.get("backpackJson").isJsonNull()) {
             this.backpackJson = "";
@@ -111,6 +112,7 @@ public class PacketInventoryContent extends BasePacket {
             obj.addProperty("id", this.id);
             obj.addProperty("uuid", this.uuid.toString());
             obj.addProperty("resort", this.resort.getId());
+            obj.addProperty("disconnect", this.disconnect);
             obj.addProperty("backpackJson", this.backpackJson);
             obj.addProperty("backpackHash", this.backpackHash);
             obj.addProperty("backpackSize", this.backpackSize);

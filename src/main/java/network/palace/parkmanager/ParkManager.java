@@ -6,6 +6,7 @@ import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.listeners.InventoryListener;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.listeners.PlayerJoinAndLeave;
@@ -32,6 +33,7 @@ public class ParkManager extends Plugin {
         instance = this;
         registerListeners();
         registerCommands();
+        storageManager.initialize();
         Core.getDashboardConnection().send(new PacketImAPark());
     }
 
@@ -53,5 +55,9 @@ public class ParkManager extends Plugin {
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
         registerListener(new PacketListener());
+    }
+
+    public static Resort getResort() {
+        return Resort.WDW;
     }
 }

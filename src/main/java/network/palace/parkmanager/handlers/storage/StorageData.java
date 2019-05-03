@@ -10,9 +10,13 @@ import org.bukkit.inventory.ItemStack;
 @RequiredArgsConstructor
 public class StorageData {
     private final Inventory backpack;
-    private StorageSize backpackSize;
+    @Setter private StorageSize backpackSize;
+    @Setter private String backpackHash = "";
     private final Inventory locker;
-    private StorageSize lockerSize;
+    @Setter private StorageSize lockerSize;
+    @Setter private String lockerHash = "";
     private final ItemStack[] hotbar;
+    @Setter private String hotbarHash = "";
     @Setter private boolean needsUpdate = false;
+    @Getter @Setter private long lastInventoryUpdate = System.currentTimeMillis();
 }

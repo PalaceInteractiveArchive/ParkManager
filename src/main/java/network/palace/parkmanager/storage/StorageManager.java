@@ -10,6 +10,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent;
 import network.palace.parkmanager.handlers.storage.StorageData;
 import network.palace.parkmanager.handlers.storage.StorageSize;
+import network.palace.parkmanager.utils.HashUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -27,6 +28,17 @@ import java.util.concurrent.TimeUnit;
 public class StorageManager {
     private static final List<Material> bannedItems = Arrays.asList(Material.MINECART, Material.SNOWBALL, Material.ARROW);
     private Cache<UUID, StorageData> savedStorageData = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+    private int updaterTaskID = -1;
+
+    public void initialize() {
+        if (updaterTaskID != -1) {
+            Core.cancelTask(updaterTaskID);
+        }
+        updaterTaskID = Core.runTaskTimer(() -> {
+            Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory);
+            Bukkit.broadcastMessage("HI");
+        }, 0L, 1200L);
+    }
 
     /**
      * Handle inventory setting when a player joins
@@ -42,6 +54,85 @@ public class StorageManager {
         savedStorageData.invalidate(player.getUniqueId());
         player.getRegistry().addEntry("storageData", data);
         updateInventory(player, true);
+    }
+
+    public void updateCachedInventory(CPlayer player) {
+        updateCachedInventory(player, ParkManager.getBuildUtil().isInBuildMode(player));
+    }
+
+    public void updateCachedInventory(CPlayer player, boolean build) {
+        updateCachedInventory(player, build, false);
+    }
+
+    public void updateCachedInventory(CPlayer player, boolean build, boolean disconnect) {
+        if (!player.getRegistry().hasEntry("storageData")) return;
+        StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
+
+        if (System.currentTimeMillis() - data.getLastInventoryUpdate() < (5 * 60 * 1000) && !disconnect) return;
+        long currentTime = System.currentTimeMillis();
+
+        Inventory backpackInventory = data.getBackpack();
+        ItemStack[] hotbar = new ItemStack[5];
+
+        if (build) {
+            PlayerInventory playerInventory = player.getInventory();
+            backpackInventory.clear();
+            backpackInventory.setContents(playerInventory.getContents());
+            if (player.getRegistry().hasEntry("buildHotbar")) {
+                hotbar = (ItemStack[]) player.getRegistry().getEntry("buildHotbar");
+            } else {
+                hotbar = new ItemStack[5];
+            }
+        } else {
+            ItemStack[] cont = player.getInventory().getContents();
+            System.arraycopy(cont, 0, hotbar, 0, 5);
+        }
+
+        String backpackJson = ItemUtil.getJsonFromInventory(backpackInventory).toString();
+        String backpackHash = HashUtil.generateHash(backpackJson);
+
+        String lockerJson = ItemUtil.getJsonFromInventory(data.getLocker()).toString();
+        String lockerHash = HashUtil.generateHash(lockerJson);
+
+        String hotbarJson = ItemUtil.getJsonFromArray(hotbar).toString();
+        String hotbarHash = HashUtil.generateHash(hotbarJson);
+
+        if (backpackHash.equals(data.getBackpackHash())) {
+            backpackJson = "";
+            backpackHash = "";
+        } else {
+            data.setBackpackHash(backpackHash);
+        }
+
+        if (lockerHash.equals(data.getLockerHash())) {
+            lockerJson = "";
+            lockerHash = "";
+        } else {
+            data.setLockerHash(lockerHash);
+        }
+
+        if (hotbarHash.equals(data.getHotbarHash())) {
+            hotbarJson = "";
+            hotbarHash = "";
+        } else {
+            data.setHotbarHash(hotbarHash);
+        }
+
+        data.setLastInventoryUpdate(System.currentTimeMillis());
+
+        if (backpackHash.isEmpty() && lockerHash.isEmpty() && hotbarHash.isEmpty() && !disconnect) {
+            Core.logInfo("Skipped updating " + player.getName() + "'s inventory, no change!");
+            return;
+        }
+
+        PacketInventoryContent packet = new PacketInventoryContent(player.getUniqueId(), ParkManager.getResort(),
+                backpackJson, backpackHash, data.getBackpackSize().getSize(), lockerJson, lockerHash,
+                data.getLockerSize().getSize(), hotbarJson, hotbarHash);
+        packet.setDisconnect(disconnect);
+        Core.getDashboardConnection().send(packet);
+
+        Core.logInfo("Inventory packet for " + player.getName() + " generated and sent in " +
+                (System.currentTimeMillis() - currentTime) + "ms");
     }
 
     /**
@@ -135,6 +226,11 @@ public class StorageManager {
         fillInventory(locker, lockerSize, lockerItems);
 
         StorageData data = new StorageData(backpack, locker, hotbar);
+        data.setBackpackSize(StorageSize.fromInt(packet.getBackpackSize()));
+        data.setLockerSize(StorageSize.fromInt(packet.getLockerSize()));
+        data.setBackpackHash(packet.getBackpackHash());
+        data.setLockerHash(packet.getLockerHash());
+        data.setHotbarHash(packet.getHotbarHash());
 
         CPlayer player = Core.getPlayerManager().getPlayer(packet.getUuid());
         if (player != null && player.getRegistry().hasEntry("waitingForInventory")) {
@@ -144,6 +240,11 @@ public class StorageManager {
         } else {
             savedStorageData.put(packet.getUuid(), data);
         }
+    }
+
+    public void logout(CPlayer player) {
+        savedStorageData.invalidate(player.getUniqueId());
+        updateCachedInventory(player, ParkManager.getBuildUtil().isInBuildMode(player), true);
     }
 
     private void filterItems(ItemStack[] items) {
