@@ -34,10 +34,7 @@ public class StorageManager {
         if (updaterTaskID != -1) {
             Core.cancelTask(updaterTaskID);
         }
-        updaterTaskID = Core.runTaskTimer(() -> {
-            Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory);
-            Bukkit.broadcastMessage("HI");
-        }, 0L, 1200L);
+        updaterTaskID = Core.runTaskTimer(() -> Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory), 0L, 1200L);
     }
 
     /**
