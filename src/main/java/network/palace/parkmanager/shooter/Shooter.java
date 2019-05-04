@@ -8,7 +8,6 @@ import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -114,11 +113,7 @@ public class Shooter implements Listener {
         }
         String displayName = meta.getDisplayName();
         if (inHand.getType().equals(stack.getType()) && meta.getDisplayName().equals(stack.getItemMeta().getDisplayName())) {
-            if (game.equals("brave")) {
-                player.launchProjectile(Arrow.class);
-            } else {
-                player.launchProjectile(Snowball.class);
-            }
+            player.launchProjectile(Snowball.class);
             event.setCancelled(true);
         }
         if (locations.containsKey(player.getUniqueId())) {
@@ -132,7 +127,7 @@ public class Shooter implements Listener {
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
-        if (((game.equals("brave") && projectile instanceof Arrow) || projectile instanceof Snowball) && (projectile.getShooter() instanceof Player)) {
+        if (projectile instanceof Snowball && projectile.getShooter() instanceof Player) {
             Player player = (Player) projectile.getShooter();
             if (!player.getInventory().contains(stack)) return;
             event.getEntity().remove();
