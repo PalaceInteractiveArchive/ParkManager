@@ -41,4 +41,14 @@ public class InventoryUtil {
             }
         }
     }
+
+    /**
+     * Determine whether the slot provided is reserved for static items in 'guest' mode
+     *
+     * @param slot the slot
+     * @return true if slot is reserved for static items in 'guest' mode
+     */
+    public static boolean isReservedSlot(int slot) {
+        return slot >= 5 && slot <= 8;
+    }
 }

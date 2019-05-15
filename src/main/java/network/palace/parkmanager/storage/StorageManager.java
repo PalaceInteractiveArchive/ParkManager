@@ -11,9 +11,9 @@ import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent
 import network.palace.parkmanager.handlers.storage.StorageData;
 import network.palace.parkmanager.handlers.storage.StorageSize;
 import network.palace.parkmanager.utils.HashUtil;
+import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +42,7 @@ public class StorageManager {
      *
      * @param player the player
      */
-    public void handleJoin(CPlayer player) {
+    public void handleJoin(CPlayer player, boolean buildMode) {
         StorageData data = savedStorageData.getIfPresent(player.getUniqueId());
         if (data == null) {
             player.getRegistry().addEntry("waitingForInventory", true);
@@ -50,7 +50,11 @@ public class StorageManager {
         }
         savedStorageData.invalidate(player.getUniqueId());
         player.getRegistry().addEntry("storageData", data);
-        updateInventory(player, true);
+        if (buildMode) {
+            ParkManager.getBuildUtil().toggleBuildMode(player, true);
+        } else {
+            updateInventory(player, true);
+        }
     }
 
     public void updateCachedInventory(CPlayer player) {
@@ -61,7 +65,7 @@ public class StorageManager {
         updateCachedInventory(player, build, false);
     }
 
-    public void updateCachedInventory(CPlayer player, boolean build, boolean disconnect) {
+    public void updateCachedInventory(CPlayer player, boolean buildMode, boolean disconnect) {
         if (!player.getRegistry().hasEntry("storageData")) return;
         StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
 
@@ -69,36 +73,50 @@ public class StorageManager {
         long currentTime = System.currentTimeMillis();
 
         Inventory backpackInventory = data.getBackpack();
-        ItemStack[] hotbar = new ItemStack[5];
+        ItemStack[] base = new ItemStack[36];
+        ItemStack[] build = new ItemStack[34];
 
-        if (build) {
-            PlayerInventory playerInventory = player.getInventory();
-            backpackInventory.clear();
-            backpackInventory.setContents(playerInventory.getContents());
-            if (player.getRegistry().hasEntry("buildHotbar")) {
-                hotbar = (ItemStack[]) player.getRegistry().getEntry("buildHotbar");
-            } else {
-                hotbar = new ItemStack[5];
-            }
+        PlayerInventory inv = player.getInventory();
+        ItemStack[] invContents = inv.getStorageContents();
+        if (buildMode) {
+            //Store current inventory items into 'build' array
+            if (invContents.length - 2 >= 0) System.arraycopy(invContents, 2, build, 0, invContents.length - 2);
+            base = data.getBase();
         } else {
-            ItemStack[] cont = player.getInventory().getContents();
-            System.arraycopy(cont, 0, hotbar, 0, 5);
+            //Store current inventory items (except reserved slots) into 'base' array
+            for (int i = 0; i < invContents.length; i++) {
+                if (InventoryUtil.isReservedSlot(i)) continue;
+                base[i] = invContents[i];
+            }
+            build = data.getBuild();
         }
 
         String backpackJson = ItemUtil.getJsonFromInventory(backpackInventory).toString();
         String backpackHash = HashUtil.generateHash(backpackJson);
+        int backpackSize;
 
         String lockerJson = ItemUtil.getJsonFromInventory(data.getLocker()).toString();
         String lockerHash = HashUtil.generateHash(lockerJson);
+        int lockerSize;
 
-        String hotbarJson = ItemUtil.getJsonFromArray(hotbar).toString();
-        String hotbarHash = HashUtil.generateHash(hotbarJson);
+        String baseJson = ItemUtil.getJsonFromArray(base).toString();
+        String baseHash = HashUtil.generateHash(baseJson);
+
+        String buildJson = ItemUtil.getJsonFromArray(build).toString();
+        String buildHash = HashUtil.generateHash(buildJson);
 
         if (backpackHash.equals(data.getBackpackHash())) {
             backpackJson = "";
             backpackHash = "";
         } else {
             data.setBackpackHash(backpackHash);
+        }
+
+        if (data.getBackpackSize().getSize() == data.getDbBackpackSize()) {
+            backpackSize = -1;
+        } else {
+            backpackSize = data.getBackpackSize().getSize();
+            data.setDbBackpackSize(backpackSize);
         }
 
         if (lockerHash.equals(data.getLockerHash())) {
@@ -108,23 +126,39 @@ public class StorageManager {
             data.setLockerHash(lockerHash);
         }
 
-        if (hotbarHash.equals(data.getHotbarHash())) {
-            hotbarJson = "";
-            hotbarHash = "";
+        if (data.getLockerSize().getSize() == data.getDbLockerSize()) {
+            lockerSize = -1;
         } else {
-            data.setHotbarHash(hotbarHash);
+            lockerSize = data.getLockerSize().getSize();
+            data.setDbLockerSize(lockerSize);
+        }
+
+        if (baseHash.equals(data.getBaseHash())) {
+            baseJson = "";
+            baseHash = "";
+        } else {
+            data.setBaseHash(baseHash);
+        }
+
+        if (buildHash.equals(data.getBuildHash())) {
+            buildJson = "";
+            buildHash = "";
+        } else {
+            data.setBuildHash(buildHash);
         }
 
         data.setLastInventoryUpdate(System.currentTimeMillis());
 
-        if (backpackHash.isEmpty() && lockerHash.isEmpty() && hotbarHash.isEmpty() && !disconnect) {
+        if (backpackHash.isEmpty() && lockerHash.isEmpty() && baseHash.isEmpty() && buildHash.isEmpty() && backpackSize == -1 && lockerSize == -1 && !disconnect) {
             Core.logInfo("Skipped updating " + player.getName() + "'s inventory, no change!");
             return;
         }
 
         PacketInventoryContent packet = new PacketInventoryContent(player.getUniqueId(), ParkManager.getResort(),
-                backpackJson, backpackHash, data.getBackpackSize().getSize(), lockerJson, lockerHash,
-                data.getLockerSize().getSize(), hotbarJson, hotbarHash);
+                backpackJson, backpackHash, backpackSize,
+                lockerJson, lockerHash, lockerSize,
+                baseJson, baseHash,
+                buildJson, buildHash);
         packet.setDisconnect(disconnect);
         Core.getDashboardConnection().send(packet);
 
@@ -146,18 +180,14 @@ public class StorageManager {
      *
      * @param player       the player
      * @param storageCheck true if it's been verified the player's registry contains an entry for storageData
-     * @implNote only set storageCheck to true if you're certain the registry has an entry for storageData!
+     * @implNote Only set storageCheck to true if you're certain the registry has an entry for storageData!
+     * @implNote When player is in build mode, this method does nothing!
      */
     public void updateInventory(CPlayer player, boolean storageCheck) {
-        if (!storageCheck && !player.getRegistry().hasEntry("storageData")) return;
+        if ((!storageCheck && !player.getRegistry().hasEntry("storageData")) || ParkManager.getBuildUtil().isInBuildMode(player))
+            return;
 
         StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
-
-        if (ParkManager.getBuildUtil().isInBuildMode(player)) {
-            player.setGamemode(GameMode.CREATIVE);
-            return;
-        }
-        player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
 
         PlayerInventory inv = player.getInventory();
         inv.clear();
@@ -177,10 +207,10 @@ public class StorageManager {
         inv.setItem(8, ParkManager.getMagicBandUtil().getMagicBandItem("red", "gold"));
 
         if (data != null) {
-            ItemStack[] hotbar = data.getHotbar();
-            int max = hotbar.length > 5 ? 5 : hotbar.length;
-            for (int i = 0; i < max; i++) {
-                inv.setItem(i, hotbar[i]);
+            ItemStack[] base = data.getBase();
+            for (int i = 0; i < base.length; i++) {
+                if (InventoryUtil.isReservedSlot(i)) continue;
+                inv.setItem(i, base[i]);
             }
         }
 
@@ -199,35 +229,25 @@ public class StorageManager {
     public void processIncomingPacket(PacketInventoryContent packet) {
         ItemStack[] backpackArray = ItemUtil.getInventoryFromJson(packet.getBackpackJson());
         ItemStack[] lockerArray = ItemUtil.getInventoryFromJson(packet.getLockerJson());
-        ItemStack[] hotbarArray = ItemUtil.getInventoryFromJson(packet.getHotbarJson());
-
-        packet.setBackpack(backpackArray);
-        packet.setLocker(lockerArray);
-        packet.setHotbar(hotbarArray);
+        ItemStack[] baseArray = ItemUtil.getInventoryFromJson(packet.getBaseJson());
+        ItemStack[] buildArray = ItemUtil.getInventoryFromJson(packet.getBuildJson());
 
         StorageSize backpackSize = StorageSize.fromInt(packet.getBackpackSize());
         StorageSize lockerSize = StorageSize.fromInt(packet.getLockerSize());
 
-        ItemStack[] packItems = ItemUtil.getInventoryFromJson(packet.getBackpackJson());
-        ItemStack[] lockerItems = ItemUtil.getInventoryFromJson(packet.getLockerJson());
-        ItemStack[] hotbar = ItemUtil.getInventoryFromJson(packet.getHotbarJson());
-
-        filterItems(packItems);
-        filterItems(lockerItems);
-        filterItems(hotbar);
+        filterItems(backpackArray);
+        filterItems(lockerArray);
+        filterItems(baseArray);
 
         Inventory backpack = Bukkit.createInventory(null, backpackSize.getSlots(), ChatColor.BLUE + "Your Backpack");
         Inventory locker = Bukkit.createInventory(null, backpackSize.getSlots(), ChatColor.BLUE + "Your Locker");
 
-        fillInventory(backpack, backpackSize, packItems);
-        fillInventory(locker, lockerSize, lockerItems);
+        fillInventory(backpack, backpackSize, backpackArray);
+        fillInventory(locker, lockerSize, lockerArray);
 
-        StorageData data = new StorageData(backpack, locker, hotbar);
-        data.setBackpackSize(StorageSize.fromInt(packet.getBackpackSize()));
-        data.setLockerSize(StorageSize.fromInt(packet.getLockerSize()));
-        data.setBackpackHash(packet.getBackpackHash());
-        data.setLockerHash(packet.getLockerHash());
-        data.setHotbarHash(packet.getHotbarHash());
+        StorageData data = new StorageData(backpack, backpackSize, packet.getBackpackHash(), packet.getBackpackSize(),
+                locker, lockerSize, packet.getLockerHash(), packet.getLockerSize(),
+                baseArray, packet.getBaseHash(), buildArray, packet.getBuildHash());
 
         CPlayer player = Core.getPlayerManager().getPlayer(packet.getUuid());
         if (player != null && player.getRegistry().hasEntry("waitingForInventory")) {

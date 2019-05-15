@@ -4,6 +4,7 @@ import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
+import network.palace.parkmanager.commands.BuildCommand;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.handlers.Resort;
@@ -14,6 +15,7 @@ import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.BuildUtil;
 import network.palace.parkmanager.utils.InventoryUtil;
 import network.palace.parkmanager.utils.MagicBandUtil;
+import network.palace.parkmanager.utils.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -27,6 +29,7 @@ public class ParkManager extends Plugin {
     @Getter private static InventoryUtil inventoryUtil = new InventoryUtil();
     @Getter private static MagicBandUtil magicBandUtil = new MagicBandUtil();
     @Getter private static StorageManager storageManager = new StorageManager();
+    @Getter private static PlayerUtil playerUtil = new PlayerUtil();
 
     @Override
     protected void onPluginEnable() throws Exception {
@@ -48,6 +51,7 @@ public class ParkManager extends Plugin {
     }
 
     public void registerCommands() {
+        registerCommand(new BuildCommand());
     }
 
     public void registerListeners() {

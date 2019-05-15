@@ -9,12 +9,14 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
+import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.List;
@@ -51,5 +53,13 @@ public class InventoryListener implements Listener {
             event.setCancelled(true);
             ParkManager.getInventoryUtil().openMenu(player, MenuType.LOCKER);
         }
+    }
+
+    @EventHandler
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        event.setCancelled(true);
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
+        if (player == null || player.getRank().getRankId() <= Rank.TRAINEEBUILD.getRankId()) return;
+        player.performCommand("build");
     }
 }

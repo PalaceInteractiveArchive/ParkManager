@@ -6,7 +6,6 @@ import lombok.Setter;
 import network.palace.core.dashboard.packets.BasePacket;
 import network.palace.parkmanager.dashboard.packets.PacketID;
 import network.palace.parkmanager.handlers.Resort;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -27,19 +26,19 @@ public class PacketInventoryContent extends BasePacket {
     @Getter private String lockerHash;
     @Getter private int lockerSize;
 
-    @Getter private String hotbarJson;
-    @Getter private String hotbarHash;
+    @Getter private String baseJson;
+    @Getter private String baseHash;
 
-    @Getter @Setter private ItemStack[] backpack;
-    @Getter @Setter private ItemStack[] locker;
-    @Getter @Setter private ItemStack[] hotbar;
+    @Getter private String buildJson;
+    @Getter private String buildHash;
 
     public PacketInventoryContent() {
-        this(null, Resort.WDW, "", "", 0, "", "", 0, "", "");
+        this(null, Resort.WDW, "", "", -1, "", "", -1, "", "", "", "");
     }
 
-    public PacketInventoryContent(UUID uuid, Resort resort, String backpackJson, String backpackHash, int backpackSize,
-                                  String lockerJson, String lockerHash, int lockerSize, String hotbarJson, String hotbarHash) {
+    public PacketInventoryContent(UUID uuid, Resort resort, String backpackJson, String backpackHash,
+                                  int backpackSize, String lockerJson, String lockerHash, int lockerSize,
+                                  String baseJson, String baseHash, String buildJson, String buildHash) {
         super(PacketID.Inventory.INVENTORY_CONTENT.getID());
         this.uuid = uuid;
         this.resort = resort;
@@ -49,8 +48,10 @@ public class PacketInventoryContent extends BasePacket {
         this.lockerJson = lockerJson;
         this.lockerHash = lockerHash;
         this.lockerSize = lockerSize;
-        this.hotbarJson = hotbarJson;
-        this.hotbarHash = hotbarHash;
+        this.baseJson = baseJson;
+        this.baseHash = baseHash;
+        this.buildJson = buildJson;
+        this.buildHash = buildHash;
     }
 
     @Override
@@ -71,7 +72,7 @@ public class PacketInventoryContent extends BasePacket {
             this.backpackHash = obj.get("backpackHash").getAsString();
         }
         if (obj.get("backpackSize").isJsonNull()) {
-            this.backpackSize = 0;
+            this.backpackSize = -1;
         } else {
             this.backpackSize = obj.get("backpackSize").getAsInt();
         }
@@ -87,20 +88,31 @@ public class PacketInventoryContent extends BasePacket {
             this.lockerHash = obj.get("lockerHash").getAsString();
         }
         if (obj.get("lockerSize").isJsonNull()) {
-            this.lockerSize = 0;
+            this.lockerSize = -1;
         } else {
             this.lockerSize = obj.get("lockerSize").getAsInt();
         }
 
-        if (obj.get("hotbarJson").isJsonNull()) {
-            this.hotbarJson = "";
+        if (obj.get("baseJson").isJsonNull()) {
+            this.baseJson = "";
         } else {
-            this.hotbarJson = obj.get("hotbarJson").getAsString();
+            this.baseJson = obj.get("baseJson").getAsString();
         }
-        if (obj.get("hotbarHash").isJsonNull()) {
-            this.hotbarHash = "";
+        if (obj.get("baseHash").isJsonNull()) {
+            this.baseHash = "";
         } else {
-            this.hotbarHash = obj.get("hotbarHash").getAsString();
+            this.baseHash = obj.get("baseHash").getAsString();
+        }
+
+        if (obj.get("buildJson").isJsonNull()) {
+            this.buildJson = "";
+        } else {
+            this.buildJson = obj.get("buildJson").getAsString();
+        }
+        if (obj.get("buildHash").isJsonNull()) {
+            this.buildHash = "";
+        } else {
+            this.buildHash = obj.get("buildHash").getAsString();
         }
         return this;
     }
@@ -119,8 +131,10 @@ public class PacketInventoryContent extends BasePacket {
             obj.addProperty("lockerJson", this.lockerJson);
             obj.addProperty("lockerHash", this.lockerHash);
             obj.addProperty("lockerSize", this.lockerSize);
-            obj.addProperty("hotbarJson", this.hotbarJson);
-            obj.addProperty("hotbarHash", this.hotbarHash);
+            obj.addProperty("baseJson", this.baseJson);
+            obj.addProperty("baseHash", this.baseHash);
+            obj.addProperty("buildJson", this.buildJson);
+            obj.addProperty("buildHash", this.buildHash);
         } catch (Exception e) {
             return null;
         }
