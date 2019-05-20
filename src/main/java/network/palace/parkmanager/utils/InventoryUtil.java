@@ -23,7 +23,7 @@ public class InventoryUtil {
                 buttons.add(new MenuButton(16, ItemUtil.create(Material.GREEN_WOOL, "Player Visibility"), ImmutableMap.of(ClickType.LEFT, p -> {
 
                 })));
-                Menu menu = new Menu(null, ChatColor.BLUE + "MagicBand", player.getBukkitPlayer(), buttons);
+                Menu menu = new Menu(null, ChatColor.BLUE + "MagicBand", player, buttons);
                 break;
             case WATCH:
                 break;

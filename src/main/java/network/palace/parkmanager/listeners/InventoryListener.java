@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -59,7 +60,18 @@ public class InventoryListener implements Listener {
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
         event.setCancelled(true);
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
-        if (player == null || player.getRank().getRankId() <= Rank.TRAINEEBUILD.getRankId()) return;
-        player.performCommand("build");
+        if (player != null && player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId())
+            player.performCommand("build");
+    }
+
+    @EventHandler
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
+        if (player == null || ParkManager.getBuildUtil().isInBuildMode(player)) return;
+        if (event.getNewSlot() == 5) {
+            ParkManager.getTimeUtil().selectWatch(player);
+        } else if (event.getPreviousSlot() == 5) {
+            ParkManager.getTimeUtil().unselectWatch(player);
+        }
     }
 }

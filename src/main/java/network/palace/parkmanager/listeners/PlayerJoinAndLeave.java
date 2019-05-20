@@ -3,7 +3,6 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.events.CorePlayerJoinedEvent;
 import network.palace.core.player.CPlayer;
-import network.palace.core.player.CPlayerRegistry;
 import network.palace.parkmanager.ParkManager;
 import org.bson.Document;
 import org.bukkit.ChatColor;
@@ -33,10 +32,7 @@ public class PlayerJoinAndLeave implements Listener {
             player.kick(ChatColor.RED + "An error occurred while you were joining, try again in a few minutes!");
             return;
         }
-        CPlayerRegistry registry = player.getRegistry();
-
         if (loginData.containsKey("buildmode")) buildMode = loginData.getBoolean("buildmode");
-
         ParkManager.getStorageManager().handleJoin(player, buildMode);
     }
 

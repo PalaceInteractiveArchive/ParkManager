@@ -53,6 +53,7 @@ public class BuildUtil {
         if (newSetting) {
             //Player is moving to build mode
             player.setGamemode(GameMode.CREATIVE);
+            ParkManager.getTimeUtil().unselectWatch(player);
 
             ItemStack[] invContents = inv.getStorageContents();
 
@@ -76,7 +77,12 @@ public class BuildUtil {
             }
         } else {
             //Player is leaving build mode
+            boolean flying = player.isFlying();
             player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
+            if (flying) {
+                player.setAllowFlight(true);
+                player.setFlying(true);
+            }
 
             ItemStack[] build = new ItemStack[34];
             ItemStack[] invContents = inv.getStorageContents();
@@ -85,6 +91,7 @@ public class BuildUtil {
             data.setBuild(build);
 
             ParkManager.getStorageManager().updateInventory(player, true);
+            if (player.getHeldItemSlot() == 5) ParkManager.getTimeUtil().selectWatch(player);
         }
         Core.runTaskAsynchronously(() -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), newSetting));
         return newSetting;

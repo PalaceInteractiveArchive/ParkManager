@@ -4,18 +4,19 @@ import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
+import network.palace.parkmanager.autograph.AutographManager;
+import network.palace.parkmanager.commands.AutographCommand;
 import network.palace.parkmanager.commands.BuildCommand;
+import network.palace.parkmanager.commands.SignCommand;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.listeners.InventoryListener;
+import network.palace.parkmanager.listeners.PlayerGameModeChange;
 import network.palace.parkmanager.listeners.PlayerInteract;
 import network.palace.parkmanager.listeners.PlayerJoinAndLeave;
 import network.palace.parkmanager.storage.StorageManager;
-import network.palace.parkmanager.utils.BuildUtil;
-import network.palace.parkmanager.utils.InventoryUtil;
-import network.palace.parkmanager.utils.MagicBandUtil;
-import network.palace.parkmanager.utils.PlayerUtil;
+import network.palace.parkmanager.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -25,18 +26,30 @@ import org.bukkit.entity.Player;
 @PluginInfo(name = "ParkManager", version = "3.0-1.13", depend = {"Core", "ProtocolLib", "WorldEdit"}, softdepend = {"RideManager", "ParkWarp"}, apiversion = "1.13")
 public class ParkManager extends Plugin {
     @Getter public static ParkManager instance;
-    @Getter private static BuildUtil buildUtil = new BuildUtil();
-    @Getter private static InventoryUtil inventoryUtil = new InventoryUtil();
-    @Getter private static MagicBandUtil magicBandUtil = new MagicBandUtil();
-    @Getter private static StorageManager storageManager = new StorageManager();
-    @Getter private static PlayerUtil playerUtil = new PlayerUtil();
+    @Getter private static AutographManager autographManager;
+    @Getter private static BuildUtil buildUtil;
+    @Getter private static InventoryUtil inventoryUtil;
+    @Getter private static MagicBandUtil magicBandUtil;
+    @Getter private static StorageManager storageManager;
+    @Getter private static PlayerUtil playerUtil;
+    @Getter private static TimeUtil timeUtil;
 
     @Override
     protected void onPluginEnable() throws Exception {
         instance = this;
+
+        autographManager = new AutographManager();
+        buildUtil = new BuildUtil();
+        inventoryUtil = new InventoryUtil();
+        magicBandUtil = new MagicBandUtil();
+        storageManager = new StorageManager();
+        playerUtil = new PlayerUtil();
+        timeUtil = new TimeUtil();
+
+        storageManager.initialize();
+
         registerListeners();
         registerCommands();
-        storageManager.initialize();
         Core.getDashboardConnection().send(new PacketImAPark());
     }
 
@@ -51,11 +64,14 @@ public class ParkManager extends Plugin {
     }
 
     public void registerCommands() {
+        registerCommand(new AutographCommand());
         registerCommand(new BuildCommand());
+        registerCommand(new SignCommand());
     }
 
     public void registerListeners() {
         registerListener(new InventoryListener());
+        registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
         registerListener(new PacketListener());

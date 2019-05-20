@@ -6,6 +6,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,6 +36,10 @@ public class PlayerInteract implements Listener {
                 break;
             case 7:
                 //autograph book
+                if (!event.getAction().equals(Action.PHYSICAL)) {
+                    cancel = true;
+                    ParkManager.getAutographManager().handleInteract(player);
+                }
                 break;
             case 8:
                 //open magicband
