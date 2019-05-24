@@ -4,9 +4,6 @@ import com.google.gson.JsonObject;
 import network.palace.core.dashboard.packets.BasePacket;
 import network.palace.parkmanager.dashboard.packets.PacketID;
 
-/**
- * Created by Marc on 9/18/16
- */
 public class PacketBroadcast extends BasePacket {
     private String message;
     private String source;

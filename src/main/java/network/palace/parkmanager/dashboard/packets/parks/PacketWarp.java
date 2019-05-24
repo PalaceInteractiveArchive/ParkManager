@@ -6,9 +6,6 @@ import network.palace.parkmanager.dashboard.packets.PacketID;
 
 import java.util.UUID;
 
-/**
- * Created by Marc on 9/18/16
- */
 public class PacketWarp extends BasePacket {
     private UUID uuid;
     private String warp;

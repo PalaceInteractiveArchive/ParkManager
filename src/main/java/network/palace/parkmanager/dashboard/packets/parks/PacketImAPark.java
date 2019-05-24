@@ -4,9 +4,6 @@ import com.google.gson.JsonObject;
 import network.palace.core.dashboard.packets.BasePacket;
 import network.palace.parkmanager.dashboard.packets.PacketID;
 
-/**
- * Created by Marc on 6/11/17.
- */
 public class PacketImAPark extends BasePacket {
 
     public PacketImAPark() {

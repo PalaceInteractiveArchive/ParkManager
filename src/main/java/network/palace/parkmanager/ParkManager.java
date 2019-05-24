@@ -9,11 +9,11 @@ import network.palace.parkmanager.commands.*;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.handlers.Resort;
-import network.palace.parkmanager.listeners.InventoryListener;
-import network.palace.parkmanager.listeners.PlayerGameModeChange;
-import network.palace.parkmanager.listeners.PlayerInteract;
-import network.palace.parkmanager.listeners.PlayerJoinAndLeave;
+import network.palace.parkmanager.leaderboard.LeaderboardManager;
+import network.palace.parkmanager.listeners.*;
+import network.palace.parkmanager.magicband.MagicBandManager;
 import network.palace.parkmanager.outline.OutlineManager;
+import network.palace.parkmanager.showschedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
 import org.bukkit.Bukkit;
@@ -28,28 +28,35 @@ public class ParkManager extends Plugin {
     @Getter private static DelayUtil delayUtil;
     @Getter private static FileUtil fileUtil;
     @Getter private static InventoryUtil inventoryUtil;
-    @Getter private static MagicBandUtil magicBandUtil;
+    @Getter private static LeaderboardManager leaderboardManager;
+    @Getter private static MagicBandManager magicBandManager;
     @Getter private static OutlineManager outlineManager;
     @Getter private static PlayerUtil playerUtil;
+    @Getter private static ScheduleManager scheduleManager;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
+    @Getter private static VisibilityUtil visibilityUtil;
 
     @Override
     protected void onPluginEnable() throws Exception {
         instance = this;
 
         fileUtil = new FileUtil();
+
         autographManager = new AutographManager();
         buildUtil = new BuildUtil();
         delayUtil = new DelayUtil();
         inventoryUtil = new InventoryUtil();
-        magicBandUtil = new MagicBandUtil();
+        leaderboardManager = new LeaderboardManager();
+        magicBandManager = new MagicBandManager();
         outlineManager = new OutlineManager();
         playerUtil = new PlayerUtil();
+        scheduleManager = new ScheduleManager();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();
+        visibilityUtil = new VisibilityUtil();
 
         storageManager.initialize();
 
@@ -76,6 +83,7 @@ public class ParkManager extends Plugin {
         registerCommand(new HealCommand());
         registerCommand(new InvSeeCommand());
         registerCommand(new ItemCommand());
+        registerCommand(new LeaderboardCommand());
         registerCommand(new MoreCommand());
         registerCommand(new MsgCommand());
         registerCommand(new MuteChatCommand());
@@ -85,17 +93,20 @@ public class ParkManager extends Plugin {
         registerCommand(new OutlineCommand());
         registerCommand(new PlayerTimeCommand());
         registerCommand(new PlayerWeatherCommand());
+        registerCommand(new ShowScheduleCommand());
         registerCommand(new SignCommand());
         registerCommand(new SpeedCommand());
         registerCommand(new TeleportCommand());
     }
 
     public void registerListeners() {
+        registerListener(new BlockEdit());
         registerListener(new InventoryListener());
         registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
         registerListener(new PacketListener());
+        registerListener(new SignChange());
     }
 
     public static Resort getResort() {

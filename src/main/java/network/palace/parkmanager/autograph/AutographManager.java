@@ -131,10 +131,7 @@ public class AutographManager {
             List<MenuButton> buttons = new ArrayList<>();
             for (int i = 0; i < books.size(); i++) {
                 ItemStack bookItem = books.get(i).getBook();
-                buttons.add(new MenuButton(i, bookItem, ImmutableMap.of(ClickType.LEFT, p -> {
-                    CPlayer tp = Core.getPlayerManager().getPlayer(p);
-                    if (tp != null) openBook(tp, bookItem);
-                })));
+                buttons.add(new MenuButton(i, bookItem, ImmutableMap.of(ClickType.LEFT, p -> openBook(p, bookItem))));
             }
 
             int size = books.size() < 10 ? 9 : (books.size() < 19 ? 18 : (books.size() < 28 ? 27 : (books.size() < 37 ? 36 : (books.size() < 46 ? 45 : 54))));
