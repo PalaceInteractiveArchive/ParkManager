@@ -20,8 +20,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -31,15 +31,24 @@ public class StorageManager {
     private Cache<UUID, StorageData> savedStorageData = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
     // Map used to store players that need their inventory set after joining
     // Boolean represents build mode
-    private List<UUID> joinList = new ArrayList<>();
+    private HashMap<UUID, Boolean> joinList = new HashMap<>();
 
     public void initialize() {
         Core.runTaskTimer(() -> Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory), 0L, 1200L);
         Core.runTaskTimer(() -> {
             if (joinList.isEmpty()) return;
-            List<UUID> list = new ArrayList<>(joinList);
+            HashMap<UUID, Boolean> map = new HashMap<>(joinList);
             joinList.clear();
-            list.forEach(uuid -> updateInventory(Core.getPlayerManager().getPlayer(uuid), true));
+            map.forEach((uuid, build) -> {
+                CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+                if (player == null) return;
+                if (build) {
+                    ParkManager.getBuildUtil().toggleBuildMode(player, true);
+                } else {
+                    player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
+                    updateInventory(player, true);
+                }
+            });
         }, 0L, 10L);
     }
 
@@ -56,12 +65,7 @@ public class StorageManager {
         }
         savedStorageData.invalidate(player.getUniqueId());
         player.getRegistry().addEntry("storageData", data);
-        if (buildMode) {
-            ParkManager.getBuildUtil().toggleBuildMode(player, true);
-        } else {
-            player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
-            joinList.add(player.getUniqueId());
-        }
+        joinList.put(player.getUniqueId(), buildMode);
     }
 
     public void updateCachedInventory(CPlayer player) {

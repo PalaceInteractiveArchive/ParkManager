@@ -17,11 +17,14 @@ public class TimeUtil {
     public TimeUtil() {
         long milliseconds = System.currentTimeMillis() - ((System.currentTimeMillis() / 1000) * 1000);
         long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000));
-        Core.runTaskTimer(() -> watchViewers.forEach(uuid -> {
-            CPlayer player = Core.getPlayerManager().getPlayer(uuid);
-            if (player == null) return;
-            player.getActionBar().show(getWatchTimeText());
-        }), delay + 100, 20L);
+        Core.runTaskTimer(() -> {
+            String watchText = getWatchTimeText();
+            watchViewers.forEach(uuid -> {
+                CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+                if (player == null) return;
+                player.getActionBar().show(watchText);
+            });
+        }, delay + 100, 20L);
     }
 
     public void selectWatch(CPlayer player) {
