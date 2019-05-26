@@ -61,13 +61,19 @@ public class VisibilityUtil {
         return ((List<UUID>) player1.getRegistry().getEntry("friends")).contains(player2.getUniqueId());
     }
 
-    public void toggleVisibility(CPlayer player) {
+    public boolean toggleVisibility(CPlayer player) {
+        if (player.getRegistry().hasEntry("visibilityDelay") && (System.currentTimeMillis() < ((long) player.getRegistry().getEntry("visibilityDelay")))) {
+            player.sendMessage(ChatColor.RED + "You must wait 5s between changing visibility settings!");
+            return false;
+        }
+        player.getRegistry().addEntry("visibilityDelay", System.currentTimeMillis() + 5000);
         Setting currentSetting = getSetting(player);
         if (currentSetting.equals(Setting.ALL_HIDDEN)) {
-            setSetting(player, Setting.ALL_VISIBLE);
+            setSetting(player, Setting.ALL_VISIBLE, true);
         } else {
-            setSetting(player, Setting.ALL_HIDDEN);
+            setSetting(player, Setting.ALL_HIDDEN, true);
         }
+        return true;
     }
 
     public Setting getSetting(CPlayer player) {
@@ -76,13 +82,21 @@ public class VisibilityUtil {
         return (Setting) player.getRegistry().getEntry("visibilitySetting");
     }
 
-    public void setSetting(CPlayer player, Setting setting) {
+    public boolean setSetting(CPlayer player, Setting setting, boolean delayBypass) {
+        if (!delayBypass) {
+            if (player.getRegistry().hasEntry("visibilityDelay") && (System.currentTimeMillis() < ((long) player.getRegistry().getEntry("visibilityDelay")))) {
+                player.sendMessage(ChatColor.RED + "You must wait 5s between changing visibility settings!");
+                return false;
+            }
+            player.getRegistry().addEntry("visibilityDelay", System.currentTimeMillis() + 5000);
+        }
         player.getRegistry().addEntry("visibilitySetting", setting);
         updatePlayerVisibility(player);
+        return true;
     }
 
     public void handleJoin(CPlayer player, String visibility) {
-        setSetting(player, Setting.fromString(visibility));
+        setSetting(player, Setting.fromString(visibility), false);
         Core.getPlayerManager().getOnlinePlayers().stream().filter(p -> !shouldSee(p, player)).forEach(p -> p.hidePlayer(player));
     }
 

@@ -46,7 +46,7 @@ public class MagicBandManager {
                                 Arrays.asList(ChatColor.GREEN + "View all of our available", ChatColor.GREEN + "theme park attractions!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.ATTRACTIONS))),
                         new MenuButton(13, ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Park Menu",
-                                Arrays.asList(ChatColor.GREEN + "Travel to all of our", ChatColor.GREEN + "theme park recreations!")),
+                                Arrays.asList(ChatColor.GREEN + "Travel to all of our", ChatColor.GREEN + "available theme parks!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PARKS))),
                         new MenuButton(14, ItemUtil.create(Material.GOLDEN_BOOTS, ChatColor.GREEN + "Shop",
                                 Arrays.asList(ChatColor.GREEN + "Purchase souveniers and", ChatColor.GREEN + "all kinds of collectibles!")),
@@ -59,9 +59,10 @@ public class MagicBandManager {
                                 Arrays.asList(ChatColor.YELLOW + "Right-Click to " + (setting.equals(VisibilityUtil.Setting.ALL_HIDDEN) ? "show" : "hide") + " all players",
                                         ChatColor.YELLOW + "Left-Click for more options")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.VISIBILITY), ClickType.RIGHT, p -> {
-                                    ParkManager.getVisibilityUtil().toggleVisibility(player);
-                                    openInventory(p, BandInventory.MAIN);
-                                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                    if (ParkManager.getVisibilityUtil().toggleVisibility(player)) {
+                                        openInventory(p, BandInventory.MAIN);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                    }
                                 }))
                 );
 
@@ -120,8 +121,39 @@ public class MagicBandManager {
                 break;
             }
             case PARKS: {
+                List<MenuButton> buttons = Arrays.asList(
+                        new MenuButton(10, ItemUtil.create(Material.FILLED_MAP, ChatColor.AQUA + "Universal Orlando Resort", Collections.singletonList(ChatColor.GREEN + "/warp USO")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp uso"))),
+                        new MenuButton(13, ItemUtil.create(Material.FILLED_MAP, ChatColor.AQUA + "Walt Disney World Resort", Collections.singletonList(ChatColor.GREEN + "/warp WDW")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.PARKS_WDW))),
+                        new MenuButton(16, ItemUtil.create(Material.SNOWBALL, ChatColor.AQUA + "Seasonal", Collections.singletonList(ChatColor.GREEN + "/warp Seasonal")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp seasonal"))),
+                        getBackButton(22, BandInventory.MAIN)
+                );
                 new Menu(Core.createInventory(27, ChatColor.BLUE + "Park Menu"),
-                        ChatColor.BLUE + "Park Menu", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                        ChatColor.BLUE + "Park Menu", player, buttons).open();
+                break;
+            }
+            case PARKS_WDW: {
+                List<MenuButton> buttons = Arrays.asList(
+                        new MenuButton(10, ItemUtil.create(Material.DIAMOND_HOE, ChatColor.AQUA + "Magic Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp MK")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp mk"))),
+                        new MenuButton(11, ItemUtil.create(Material.SNOWBALL, ChatColor.AQUA + "Epcot", Collections.singletonList(ChatColor.GREEN + "/warp Epcot")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp epcot"))),
+                        new MenuButton(12, ItemUtil.create(Material.JUKEBOX, ChatColor.AQUA + "Disney's Hollywood Studios", Collections.singletonList(ChatColor.GREEN + "/warp DHS")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp dhs"))),
+                        new MenuButton(13, ItemUtil.create(Material.OAK_SAPLING, ChatColor.AQUA + "Disney's Animal Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp AK")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp ak"))),
+                        new MenuButton(14, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.AQUA + "Resorts", Collections.singletonList(ChatColor.GREEN + "/warp Resorts")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp resorts"))),
+                        new MenuButton(15, ItemUtil.create(Material.WATER_BUCKET, ChatColor.AQUA + "Typhoon Lagoon", Collections.singletonList(ChatColor.GREEN + "/warp Typhoon")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp typhoon"))),
+                        new MenuButton(16, ItemUtil.create(Material.OAK_BOAT, ChatColor.AQUA + "Disney Cruise Line", Collections.singletonList(ChatColor.GREEN + "/warp DCL")),
+                                ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp dcl"))),
+                        getBackButton(22, BandInventory.PARKS)
+                );
+                new Menu(Core.createInventory(27, ChatColor.BLUE + "Park Menu - WDW"),
+                        ChatColor.BLUE + "Park Menu - WDW", player, buttons).open();
                 break;
             }
             case SHOP: {
@@ -179,23 +211,31 @@ public class MagicBandManager {
                 List<MenuButton> buttons = Arrays.asList(
                         new MenuButton(10, visible,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
-                                    ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ALL_VISIBLE);
-                                    openInventory(p, BandInventory.VISIBILITY);
+                                    if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ALL_VISIBLE, false)) {
+                                        openInventory(p, BandInventory.VISIBILITY);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                    }
                                 })),
                         new MenuButton(12, staffFriends,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
-                                    ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS);
-                                    openInventory(p, BandInventory.VISIBILITY);
+                                    if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS, false)) {
+                                        openInventory(p, BandInventory.VISIBILITY);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                    }
                                 })),
                         new MenuButton(14, friends,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
-                                    ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ONLY_FRIENDS);
-                                    openInventory(p, BandInventory.VISIBILITY);
+                                    if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ONLY_FRIENDS, false)) {
+                                        openInventory(p, BandInventory.VISIBILITY);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                    }
                                 })),
                         new MenuButton(16, none,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
-                                    ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ALL_HIDDEN);
-                                    openInventory(p, BandInventory.VISIBILITY);
+                                    if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ALL_HIDDEN, false)) {
+                                        openInventory(p, BandInventory.VISIBILITY);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                    }
                                 })),
                         getBackButton(22, BandInventory.MAIN)
                 );
