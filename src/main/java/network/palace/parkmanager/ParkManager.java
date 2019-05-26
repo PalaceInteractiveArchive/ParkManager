@@ -4,6 +4,7 @@ import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
+import network.palace.parkmanager.attractions.AttractionManager;
 import network.palace.parkmanager.autograph.AutographManager;
 import network.palace.parkmanager.commands.*;
 import network.palace.parkmanager.dashboard.PacketListener;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Minecart;
 @PluginInfo(name = "ParkManager", version = "3.0-1.13", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager"}, apiversion = "1.13")
 public class ParkManager extends Plugin {
     @Getter public static ParkManager instance;
+    @Getter private static AttractionManager attractionManager;
     @Getter private static AutographManager autographManager;
     @Getter private static BuildUtil buildUtil;
     @Getter private static DelayUtil delayUtil;
@@ -46,6 +48,7 @@ public class ParkManager extends Plugin {
 
         fileUtil = new FileUtil();
 
+        attractionManager = new AttractionManager();
         autographManager = new AutographManager();
         buildUtil = new BuildUtil();
         delayUtil = new DelayUtil();
@@ -74,6 +77,7 @@ public class ParkManager extends Plugin {
     }
 
     public void registerCommands() {
+        registerCommand(new AttractionCommand());
         registerCommand(new AutographCommand());
         registerCommand(new BackCommand());
         registerCommand(new BroadcastCommand());

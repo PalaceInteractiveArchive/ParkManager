@@ -8,6 +8,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.utils.VisibilityUtil;
@@ -71,24 +72,24 @@ public class MagicBandManager {
                 break;
             }
             case FOOD: {
-                List<MenuButton> buttons = new ArrayList<>(Collections.singletonList(getBackButton(22, BandInventory.MAIN)));
-                int i = 10;
-                int size = 27;
+                List<MenuButton> buttons = new ArrayList<>();
+                int i = 0;
+                int size = 18;
                 for (FoodLocation food : ParkManager.getFoodManager().getFoodLocations()) {
                     ItemStack item = food.getItem();
                     ItemMeta meta = item.getItemMeta();
                     meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + food.getWarp()));
                     item.setItemMeta(meta);
-                    buttons.add(new MenuButton(i, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + food.getWarp()))));
-                    if (i++ >= (size - 10)) {
-                        i += 2;
+                    if (i != 0 && i % 9 == 0) {
                         size += 9;
                     }
                     if (size > 54) {
                         size = 54;
                         break;
                     }
+                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + food.getWarp()))));
                 }
+                buttons.add(getBackButton(size - 5, BandInventory.MAIN));
                 new Menu(Core.createInventory(size, ChatColor.BLUE + "Food Locations"),
                         ChatColor.BLUE + "Food Locations", player, buttons).open();
                 break;
@@ -116,8 +117,26 @@ public class MagicBandManager {
                 break;
             }
             case ATTRACTIONS: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Attractions List"),
-                        ChatColor.BLUE + "Attractions List", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                List<MenuButton> buttons = new ArrayList<>();
+                int i = 10;
+                int size = 27;
+                for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
+                    ItemStack item = attraction.getItem();
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + attraction.getWarp()));
+                    item.setItemMeta(meta);
+                    if (i != 0 && i % 9 == 0) {
+                        size += 9;
+                    }
+                    if (size > 54) {
+                        size = 54;
+                        break;
+                    }
+                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + attraction.getWarp()))));
+                }
+                buttons.add(getBackButton(size - 5, BandInventory.MAIN));
+                new Menu(Core.createInventory(size, ChatColor.BLUE + "Attractions List"),
+                        ChatColor.BLUE + "Attractions List", player, buttons).open();
                 break;
             }
             case PARKS: {

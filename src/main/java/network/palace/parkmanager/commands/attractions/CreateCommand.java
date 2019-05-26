@@ -1,17 +1,17 @@
-package network.palace.parkmanager.commands.food;
+package network.palace.parkmanager.commands.attractions;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.food.FoodLocation;
+import network.palace.parkmanager.attractions.Attraction;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-@CommandMeta(description = "Create a new food location")
+@CommandMeta(description = "Create a new attraction")
 public class CreateCommand extends CoreCommand {
 
     public CreateCommand() {
@@ -21,14 +21,14 @@ public class CreateCommand extends CoreCommand {
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "/food create [warp] [name]");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Also, hold the item for the food location in your hand!");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the food location.");
+            player.sendMessage(ChatColor.RED + "/attraction create [warp] [name]");
+            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Also, hold the item for the attraction in your hand!");
+            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the attraction.");
             return;
         }
         ItemStack item = player.getItemInMainHand().clone();
         if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) {
-            player.sendMessage(ChatColor.RED + "Hold the item in your hand that will represent the food location in the menu!");
+            player.sendMessage(ChatColor.RED + "Hold the item in your hand that will represent the attraction in the menu!");
             return;
         }
         StringBuilder name = new StringBuilder();
@@ -39,7 +39,7 @@ public class CreateCommand extends CoreCommand {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getFoodManager().addFoodLocation(new FoodLocation(ParkManager.getFoodManager().getNextId(), displayName, args[0], item));
-        player.sendMessage(ChatColor.GREEN + "Created new food location " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
+        ParkManager.getAttractionManager().addAttraction(new Attraction(ParkManager.getAttractionManager().getNextId(), displayName, args[0], item));
+        player.sendMessage(ChatColor.GREEN + "Created new attraction " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
     }
 }

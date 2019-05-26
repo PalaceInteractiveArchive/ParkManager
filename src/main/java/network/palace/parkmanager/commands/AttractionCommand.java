@@ -3,16 +3,16 @@ package network.palace.parkmanager.commands;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.commands.food.CreateCommand;
-import network.palace.parkmanager.commands.food.ListCommand;
-import network.palace.parkmanager.commands.food.ReloadCommand;
-import network.palace.parkmanager.commands.food.RemoveCommand;
+import network.palace.parkmanager.commands.attractions.CreateCommand;
+import network.palace.parkmanager.commands.attractions.ListCommand;
+import network.palace.parkmanager.commands.attractions.ReloadCommand;
+import network.palace.parkmanager.commands.attractions.RemoveCommand;
 
-@CommandMeta(description = "Food location command", rank = Rank.MOD)
-public class FoodCommand extends CoreCommand {
+@CommandMeta(description = "Attraction command", rank = Rank.MOD)
+public class AttractionCommand extends CoreCommand {
 
-    public FoodCommand() {
-        super("food");
+    public AttractionCommand() {
+        super("attraction");
         registerSubCommand(new CreateCommand());
         registerSubCommand(new ListCommand());
         registerSubCommand(new ReloadCommand());

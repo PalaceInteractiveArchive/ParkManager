@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import network.palace.core.Core;
 import network.palace.core.utils.ItemUtil;
+import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.utils.FileUtil;
 
@@ -35,6 +36,7 @@ public class FoodManager {
             } else {
                 saveToFile();
             }
+            Core.logMessage("FoodManager", "Loaded " + foodLocations.size() + " food location" + TextUtil.pluralize(foodLocations.size()) + "!");
         } catch (IOException e) {
             Core.logMessage("FoodManager", "There was an error loading the FoodManager config!");
             e.printStackTrace();
