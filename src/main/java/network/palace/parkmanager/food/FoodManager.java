@@ -23,7 +23,13 @@ public class FoodManager {
 
     public void initialize() {
         foodLocations.clear();
-        FileUtil.FileSubsystem subsystem = ParkManager.getFileUtil().registerSubsystem("food");
+        nextId = 0;
+        FileUtil.FileSubsystem subsystem;
+        if (ParkManager.getFileUtil().isSubsystemRegistered("food")) {
+            subsystem = ParkManager.getFileUtil().getSubsystem("food");
+        } else {
+            subsystem = ParkManager.getFileUtil().registerSubsystem("food");
+        }
         try {
             JsonElement element = subsystem.getFileContents("locations");
             if (element.isJsonArray()) {

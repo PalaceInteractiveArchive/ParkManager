@@ -10,8 +10,10 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
+import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.utils.VisibilityUtil;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
@@ -32,27 +34,27 @@ public class MagicBandManager {
                 VisibilityUtil.Setting setting = ParkManager.getVisibilityUtil().getSetting(player);
                 ChatColor color = setting.getColor();
                 List<MenuButton> buttons = Arrays.asList(
-                        new MenuButton(2, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.GREEN + "Hotels and Resorts",
+                        new MenuButton(2, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.AQUA + "Hotels and Resorts",
                                 Arrays.asList(ChatColor.GREEN + "Visit and rent a room", ChatColor.GREEN + "from a Resort Hotel!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.HOTELS))),
-                        new MenuButton(4, HeadUtil.getPlayerHead(player.getTextureValue(), ChatColor.GREEN + "My Profile"),
+                        new MenuButton(4, HeadUtil.getPlayerHead(player.getTextureValue(), ChatColor.AQUA + "My Profile"),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
-                        new MenuButton(10, ItemUtil.create(Material.POTATO, ChatColor.GREEN + "Find Food",
+                        new MenuButton(10, ItemUtil.create(Material.POTATO, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.FOOD))),
-                        new MenuButton(11, ItemUtil.create(Material.FIREWORK_ROCKET, ChatColor.GREEN + "Shows and Events",
+                        new MenuButton(11, ItemUtil.create(Material.FIREWORK_ROCKET, ChatColor.AQUA + "Shows and Events",
                                 Arrays.asList(ChatColor.GREEN + "Watch stage shows, nighttime", ChatColor.GREEN + "spectaculars, and much more!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SHOWS))),
-                        new MenuButton(12, ItemUtil.create(Material.MINECART, ChatColor.GREEN + "Attractions",
+                        new MenuButton(12, ItemUtil.create(Material.MINECART, ChatColor.AQUA + "Attractions",
                                 Arrays.asList(ChatColor.GREEN + "View all of our available", ChatColor.GREEN + "theme park attractions!")),
-                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.ATTRACTIONS))),
-                        new MenuButton(13, ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Park Menu",
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.ATTRACTION_MENU))),
+                        new MenuButton(13, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Park Menu",
                                 Arrays.asList(ChatColor.GREEN + "Travel to all of our", ChatColor.GREEN + "available theme parks!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PARKS))),
-                        new MenuButton(14, ItemUtil.create(Material.GOLDEN_BOOTS, ChatColor.GREEN + "Shop",
+                        new MenuButton(14, ItemUtil.create(Material.GOLDEN_BOOTS, ChatColor.AQUA + "Shop",
                                 Arrays.asList(ChatColor.GREEN + "Purchase souveniers and", ChatColor.GREEN + "all kinds of collectibles!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SHOP))),
-                        new MenuButton(15, ItemUtil.create(Material.IRON_CHESTPLATE, ChatColor.GREEN + "Wardrobe Manager",
+                        new MenuButton(15, ItemUtil.create(Material.IRON_CHESTPLATE, ChatColor.AQUA + "Wardrobe Manager",
                                 Arrays.asList(ChatColor.GREEN + "Change your outfit to make you", ChatColor.GREEN + "look like your favorite characters!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.WARDROBE))),
                         new MenuButton(16, ItemUtil.create(setting.getBlock(), ChatColor.AQUA + "Guest Visibility " +
@@ -89,6 +91,10 @@ public class MagicBandManager {
                     }
                     buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + food.getWarp()))));
                 }
+                if (buttons.isEmpty()) {
+                    buttons.add(new MenuButton(4, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No Food Locations",
+                            Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no food locations on this server!"))));
+                }
                 buttons.add(getBackButton(size - 5, BandInventory.MAIN));
                 new Menu(Core.createInventory(size, ChatColor.BLUE + "Food Locations"),
                         ChatColor.BLUE + "Food Locations", player, buttons).open();
@@ -97,7 +103,7 @@ public class MagicBandManager {
             case SHOWS: {
                 new Menu(Core.createInventory(27, ChatColor.BLUE + "Shows and Events"),
                         ChatColor.BLUE + "Shows and Events", player, Arrays.asList(
-                        new MenuButton(8, ItemUtil.create(Material.BOOK, ChatColor.GREEN + "Show Timetable"),
+                        new MenuButton(8, ItemUtil.create(Material.BOOK, ChatColor.AQUA + "Show Timetable"),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.TIMETABLE))),
                         new MenuButton(10, ItemUtil.create(Material.DIAMOND_SWORD, ChatColor.RED + "Symphony in the Stars"),
                                 ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp sits"))),
@@ -116,14 +122,36 @@ public class MagicBandManager {
                         getBackButton(22, BandInventory.MAIN))).open();
                 break;
             }
-            case ATTRACTIONS: {
+            case ATTRACTION_MENU:
+                new Menu(Core.createInventory(27, ChatColor.BLUE + "Attractions Menu"),
+                        ChatColor.BLUE + "Attractions Menu", player, Arrays.asList(
+                        new MenuButton(11, ItemUtil.create(Material.MINECART, ChatColor.AQUA + "Attractions List",
+                                Arrays.asList(ChatColor.GREEN + "View all of our available", ChatColor.GREEN + "theme park attractions")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.ATTRACTION_LIST))),
+                        new MenuButton(15, ItemUtil.create(Material.CLOCK, ChatColor.AQUA + "Wait Times",
+                                Arrays.asList(ChatColor.GREEN + "View the wait times for all", ChatColor.GREEN + "queues on this server")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.WAIT_TIMES))),
+                        getBackButton(22, BandInventory.MAIN))).open();
+                break;
+            case ATTRACTION_LIST: {
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
                 int size = 18;
                 for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
                     ItemStack item = attraction.getItem();
                     ItemMeta meta = item.getItemMeta();
-                    meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + attraction.getWarp()));
+                    List<String> lore = new ArrayList<>(Collections.singletonList(""));
+                    String[] descriptionList = WordUtils.wrap(attraction.getDescription(), 30).split("\n");
+                    for (String s : descriptionList) {
+                        lore.add(ChatColor.DARK_AQUA + s);
+                    }
+                    lore.addAll(Arrays.asList("", ChatColor.GREEN + "Warp: " + ChatColor.YELLOW + "/warp " + attraction.getWarp(),
+                            "", ChatColor.GREEN + "Status: " + (attraction.isOpen() ? "OPEN" : ChatColor.RED + "CLOSED"),
+                            "", ChatColor.GREEN + "Categories:"));
+                    for (AttractionCategory category : attraction.getCategories()) {
+                        lore.add(ChatColor.AQUA + "- " + ChatColor.YELLOW + category.getFormattedName());
+                    }
+                    meta.setLore(lore);
                     item.setItemMeta(meta);
                     if (i != 0 && i % 9 == 0) {
                         size += 9;
@@ -134,9 +162,26 @@ public class MagicBandManager {
                     }
                     buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + attraction.getWarp()))));
                 }
-                buttons.add(getBackButton(size - 5, BandInventory.MAIN));
+                if (buttons.isEmpty()) {
+                    buttons.add(new MenuButton(4, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No Attractions",
+                            Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no attractions on this server!"))));
+                }
+                buttons.add(getBackButton(size - 5, BandInventory.ATTRACTION_MENU));
                 new Menu(Core.createInventory(size, ChatColor.BLUE + "Attractions List"),
                         ChatColor.BLUE + "Attractions List", player, buttons).open();
+                break;
+            }
+            case WAIT_TIMES: {
+                List<MenuButton> buttons = new ArrayList<>();
+                int i = 0;
+                int size = 18;
+                if (buttons.isEmpty()) {
+                    buttons.add(new MenuButton(4, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No Queues",
+                            Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no queues on this server!"))));
+                }
+                buttons.add(getBackButton(size - 5, BandInventory.ATTRACTION_MENU));
+                new Menu(Core.createInventory(size, ChatColor.BLUE + "Wait Times"),
+                        ChatColor.BLUE + "Wait Times", player, buttons).open();
                 break;
             }
             case PARKS: {

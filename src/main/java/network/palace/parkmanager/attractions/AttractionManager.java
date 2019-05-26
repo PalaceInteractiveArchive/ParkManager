@@ -7,6 +7,7 @@ import network.palace.core.Core;
 import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.utils.FileUtil;
 
 import java.io.IOException;
@@ -23,14 +24,26 @@ public class AttractionManager {
 
     public void initialize() {
         attractions.clear();
-        FileUtil.FileSubsystem subsystem = ParkManager.getFileUtil().registerSubsystem("attraction");
+        nextId = 0;
+        FileUtil.FileSubsystem subsystem;
+        if (ParkManager.getFileUtil().isSubsystemRegistered("attraction")) {
+            subsystem = ParkManager.getFileUtil().getSubsystem("attraction");
+        } else {
+            subsystem = ParkManager.getFileUtil().registerSubsystem("attraction");
+        }
         try {
             JsonElement element = subsystem.getFileContents("attractions");
             if (element.isJsonArray()) {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement entry : array) {
                     JsonObject object = entry.getAsJsonObject();
+
+                    JsonArray categories = object.getAsJsonArray("categories");
+                    List<AttractionCategory> categoryList = new ArrayList<>();
+                    categories.forEach(e -> categoryList.add(AttractionCategory.fromString(e.getAsString())));
+
                     attractions.add(new Attraction(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
+                            object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
                             ItemUtil.getItemFromJson(object.get("item").getAsJsonObject().toString())));
                 }
             } else {
@@ -79,6 +92,13 @@ public class AttractionManager {
             JsonObject object = new JsonObject();
             object.addProperty("name", attraction.getName());
             object.addProperty("warp", attraction.getWarp());
+            object.addProperty("description", attraction.getDescription());
+
+            JsonArray categories = new JsonArray();
+            attraction.getCategories().forEach(c -> categories.add(c.getShortName()));
+            object.add("categories", categories);
+
+            object.addProperty("open", attraction.isOpen());
             object.add("item", ItemUtil.getJsonFromItem(attraction.getItem()));
             array.add(object);
         }

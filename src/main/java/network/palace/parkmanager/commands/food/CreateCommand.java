@@ -22,8 +22,8 @@ public class CreateCommand extends CoreCommand {
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 2) {
             player.sendMessage(ChatColor.RED + "/food create [warp] [name]");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Also, hold the item for the food location in your hand!");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the food location.");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Also, hold the item for the food location in your hand!");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the food location.");
             return;
         }
         ItemStack item = player.getItemInMainHand().clone();

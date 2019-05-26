@@ -6,10 +6,14 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
+import network.palace.parkmanager.handlers.AttractionCategory;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @CommandMeta(description = "Create a new attraction")
 public class CreateCommand extends CoreCommand {
@@ -20,10 +24,11 @@ public class CreateCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "/attraction create [warp] [name]");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Also, hold the item for the attraction in your hand!");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the attraction.");
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.RED + "/attraction create [warp] [category1,category2] [name]");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Also, hold the item for the attraction in your hand!");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the attraction.");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "For a list of categories, run /attraction categories");
             return;
         }
         ItemStack item = player.getItemInMainHand().clone();
@@ -32,14 +37,25 @@ public class CreateCommand extends CoreCommand {
             return;
         }
         StringBuilder name = new StringBuilder();
-        for (int i = 1; i < args.length; i++) {
+        for (int i = 2; i < args.length; i++) {
             name.append(args[i]).append(" ");
         }
         String displayName = ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', name.toString().trim());
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getAttractionManager().addAttraction(new Attraction(ParkManager.getAttractionManager().getNextId(), displayName, args[0], item));
+
+        List<AttractionCategory> categories = new ArrayList<>();
+        for (String s : args[1].split(",")) {
+            AttractionCategory category = AttractionCategory.fromString(s);
+            if (category == null) {
+                player.sendMessage(ChatColor.RED + "Unknown category '" + s + "'!");
+                continue;
+            }
+            categories.add(category);
+        }
+
+        ParkManager.getAttractionManager().addAttraction(new Attraction(ParkManager.getAttractionManager().getNextId(), displayName, args[0], "", categories, true, item));
         player.sendMessage(ChatColor.GREEN + "Created new attraction " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
     }
 }
