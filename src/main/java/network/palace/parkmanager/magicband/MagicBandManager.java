@@ -118,8 +118,8 @@ public class MagicBandManager {
             }
             case ATTRACTIONS: {
                 List<MenuButton> buttons = new ArrayList<>();
-                int i = 10;
-                int size = 27;
+                int i = 0;
+                int size = 18;
                 for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
                     ItemStack item = attraction.getItem();
                     ItemMeta meta = item.getItemMeta();
