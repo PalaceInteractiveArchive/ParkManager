@@ -8,6 +8,7 @@ import network.palace.parkmanager.autograph.AutographManager;
 import network.palace.parkmanager.commands.*;
 import network.palace.parkmanager.dashboard.PacketListener;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
+import network.palace.parkmanager.food.FoodManager;
 import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.listeners.*;
@@ -27,6 +28,7 @@ public class ParkManager extends Plugin {
     @Getter private static BuildUtil buildUtil;
     @Getter private static DelayUtil delayUtil;
     @Getter private static FileUtil fileUtil;
+    @Getter private static FoodManager foodManager;
     @Getter private static InventoryUtil inventoryUtil;
     @Getter private static LeaderboardManager leaderboardManager;
     @Getter private static MagicBandManager magicBandManager;
@@ -47,6 +49,7 @@ public class ParkManager extends Plugin {
         autographManager = new AutographManager();
         buildUtil = new BuildUtil();
         delayUtil = new DelayUtil();
+        foodManager = new FoodManager();
         inventoryUtil = new InventoryUtil();
         leaderboardManager = new LeaderboardManager();
         magicBandManager = new MagicBandManager();
@@ -80,6 +83,7 @@ public class ParkManager extends Plugin {
         registerCommand(new DayCommand());
         registerCommand(new DelayCommand());
         registerCommand(new FlyCommand());
+        registerCommand(new FoodCommand());
         registerCommand(new HealCommand());
         registerCommand(new InvSeeCommand());
         registerCommand(new ItemCommand());

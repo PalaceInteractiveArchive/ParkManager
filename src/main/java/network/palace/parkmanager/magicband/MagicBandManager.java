@@ -8,6 +8,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.bukkit.*;
@@ -15,7 +16,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -67,8 +70,26 @@ public class MagicBandManager {
                 break;
             }
             case FOOD: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Food Locations"),
-                        ChatColor.BLUE + "Food Locations", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                List<MenuButton> buttons = new ArrayList<>(Collections.singletonList(getBackButton(22, BandInventory.MAIN)));
+                int i = 10;
+                int size = 27;
+                for (FoodLocation food : ParkManager.getFoodManager().getFoodLocations()) {
+                    ItemStack item = food.getItem();
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + food.getWarp()));
+                    item.setItemMeta(meta);
+                    buttons.add(new MenuButton(i, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + food.getWarp()))));
+                    if (i++ >= (size - 10)) {
+                        i += 2;
+                        size += 9;
+                    }
+                    if (size > 54) {
+                        size = 54;
+                        break;
+                    }
+                }
+                new Menu(Core.createInventory(size, ChatColor.BLUE + "Food Locations"),
+                        ChatColor.BLUE + "Food Locations", player, buttons).open();
                 break;
             }
             case SHOWS: {
