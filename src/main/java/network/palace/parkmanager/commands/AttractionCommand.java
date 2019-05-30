@@ -19,6 +19,7 @@ public class AttractionCommand extends CoreCommand {
         registerSubCommand(new OpenCommand());
         registerSubCommand(new ReloadCommand());
         registerSubCommand(new RemoveCommand());
+        registerSubCommand(new UnlinkCommand());
     }
 
     @Override

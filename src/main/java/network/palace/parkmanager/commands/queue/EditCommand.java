@@ -6,15 +6,11 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.attractions.Attraction;
-import network.palace.parkmanager.handlers.AttractionCategory;
+import network.palace.parkmanager.handlers.QueueType;
+import network.palace.parkmanager.queues.BlockQueue;
+import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.Location;
 
 @CommandMeta(description = "Edit an existing queue")
 public class EditCommand extends CoreCommand {
@@ -25,13 +21,8 @@ public class EditCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        // /attraction edit [id] [category1,category2] [warp] [name]
-        if (args.length < 4) {
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] name [name]");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] warp [warp]");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] description [description] (Color codes are " + ChatColor.ITALIC + "not " + ChatColor.RED + "supported in descriptions!)");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] categories [category1,category2]");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] item");
+        if (args.length < 2) {
+            helpMenu(player);
             return;
         }
         if (!MiscUtil.checkIfInt(args[0])) {
@@ -39,87 +30,114 @@ public class EditCommand extends CoreCommand {
             return;
         }
         int id = Integer.parseInt(args[0]);
-        Attraction attraction = ParkManager.getAttractionManager().getAttraction(id);
-        if (attraction == null) {
-            player.sendMessage(ChatColor.RED + "Could not find an attraction by id " + id + "!");
+        Queue queue = ParkManager.getQueueManager().getQueue(id);
+        if (queue == null) {
+            player.sendMessage(ChatColor.RED + "Could not find an queue by id " + id + "!");
             return;
         }
         switch (args[1].toLowerCase()) {
             case "name": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
                 StringBuilder name = new StringBuilder();
                 for (int i = 2; i < args.length; i++) {
                     name.append(args[i]).append(" ");
                 }
                 String displayName = ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', name.toString().trim());
 
-                player.sendMessage(ChatColor.GREEN + "Set " + attraction.getName() + "'s " + ChatColor.GREEN +
+                player.sendMessage(ChatColor.GREEN + "Set " + queue.getName() + "'s " + ChatColor.GREEN +
                         "display name to " + ChatColor.YELLOW + displayName);
 
-                attraction.setName(displayName);
+                queue.setName(displayName);
 
-                ItemStack item = attraction.getItem();
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(displayName);
-                item.setItemMeta(meta);
-
-                ParkManager.getAttractionManager().saveToFile();
-                break;
+                ParkManager.getQueueManager().saveToFile();
+                return;
             }
             case "warp": {
-                attraction.setWarp(args[2]);
-
-                player.sendMessage(ChatColor.GREEN + "Set " + attraction.getName() + "'s " + ChatColor.GREEN +
-                        "warp to " + ChatColor.YELLOW + args[2]);
-
-                ParkManager.getAttractionManager().saveToFile();
-                break;
-            }
-            case "description": {
-                StringBuilder description = new StringBuilder();
-                for (int i = 2; i < args.length; i++) {
-                    description.append(args[i]).append(" ");
-                }
-                player.sendMessage(ChatColor.GREEN + "Set " + attraction.getName() + "'s " + ChatColor.GREEN +
-                        "description to " + ChatColor.DARK_AQUA + description.toString());
-
-                attraction.setDescription(description.toString());
-
-                ParkManager.getAttractionManager().saveToFile();
-                break;
-            }
-            case "categories": {
-                List<AttractionCategory> categories = new ArrayList<>();
-                StringBuilder list = new StringBuilder();
-                for (String s : args[2].split(",")) {
-                    AttractionCategory category = AttractionCategory.fromString(s);
-                    if (category == null) {
-                        player.sendMessage(ChatColor.RED + "Unknown category '" + s + "'!");
-                        continue;
-                    }
-                    categories.add(category);
-                    list.append(category.getShortName()).append(",");
-                }
-                attraction.setCategories(categories);
-
-                player.sendMessage(ChatColor.GREEN + "Set " + attraction.getName() + "'s " + ChatColor.GREEN +
-                        "attraction categories to " + ChatColor.YELLOW + list.substring(0, list.length() - 1));
-
-                ParkManager.getAttractionManager().saveToFile();
-                break;
-            }
-            case "item": {
-                ItemStack item = player.getItemInMainHand().clone();
-                if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) {
-                    player.sendMessage(ChatColor.RED + "Hold the item in your hand that will represent the attraction in the menu!");
+                if (args.length < 3) {
+                    helpMenu(player);
                     return;
                 }
-                attraction.setItem(item);
+                queue.setWarp(args[2]);
 
-                player.sendMessage(ChatColor.GREEN + "Updated " + attraction.getName() + "'s " + ChatColor.GREEN + "item!");
+                player.sendMessage(ChatColor.GREEN + "Set " + queue.getName() + "'s " + ChatColor.GREEN +
+                        "warp to " + ChatColor.YELLOW + args[2]);
 
-                ParkManager.getAttractionManager().saveToFile();
-                break;
+                ParkManager.getQueueManager().saveToFile();
+                return;
+            }
+            case "groupsize": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
+                if (!MiscUtil.checkIfInt(args[2])) {
+                    player.sendMessage(ChatColor.RED + "'" + args[2] + "' is not an integer!");
+                    return;
+                }
+                int groupSize = Integer.parseInt(args[2]);
+
+                queue.setGroupSize(groupSize);
+
+                player.sendMessage(ChatColor.GREEN + "Set " + queue.getName() + "'s " + ChatColor.GREEN +
+                        "groupSize to " + ChatColor.YELLOW + groupSize);
+
+                ParkManager.getQueueManager().saveToFile();
+                return;
+            }
+            case "delay": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
+                if (!MiscUtil.checkIfInt(args[2])) {
+                    player.sendMessage(ChatColor.RED + "'" + args[2] + "' is not an integer!");
+                    return;
+                }
+                int delay = Integer.parseInt(args[2]);
+
+                queue.setDelay(delay);
+
+                player.sendMessage(ChatColor.GREEN + "Set " + queue.getName() + "'s " + ChatColor.GREEN +
+                        "delay to " + ChatColor.YELLOW + delay);
+
+                ParkManager.getQueueManager().saveToFile();
+                return;
+            }
+            case "station": {
+                queue.setStation(player.getLocation());
+
+                player.sendMessage(ChatColor.GREEN + "Updated " + queue.getName() + "'s " + ChatColor.GREEN + "station location to where you're standing!");
+
+                ParkManager.getQueueManager().saveToFile();
+                return;
+            }
+            case "blocklocation": {
+                if (!queue.getQueueType().equals(QueueType.BLOCK)) {
+                    player.sendMessage(ChatColor.RED + "This queue isn't a Block queue!");
+                    return;
+                }
+                Location loc = player.getLocation();
+                ((BlockQueue) queue).setBlockLocation(new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+
+                player.sendMessage(ChatColor.GREEN + "Updated " + queue.getName() + "'s " + ChatColor.GREEN + "block spawn location to where you're standing!");
+
+                ParkManager.getQueueManager().saveToFile();
+                return;
             }
         }
+        helpMenu(player);
+    }
+
+    private void helpMenu(CPlayer player) {
+        player.sendMessage(ChatColor.RED + "/queue edit [id] name [name]");
+        player.sendMessage(ChatColor.RED + "/queue edit [id] warp [warp]");
+        player.sendMessage(ChatColor.RED + "/queue edit [id] groupsize [groupSize]");
+        player.sendMessage(ChatColor.RED + "/queue edit [id] delay [delay]");
+        player.sendMessage(ChatColor.RED + "/queue edit [id] station");
+        player.sendMessage(ChatColor.RED + "Block Type:");
+        player.sendMessage(ChatColor.RED + "/queue edit [id] blocklocation");
     }
 }

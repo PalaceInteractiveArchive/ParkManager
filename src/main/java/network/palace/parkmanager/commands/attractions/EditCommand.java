@@ -25,13 +25,8 @@ public class EditCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        // /attraction edit [id] [category1,category2] [warp] [name]
-        if (args.length < 4) {
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] name [name]");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] warp [warp]");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] description [description] (Color codes are " + ChatColor.ITALIC + "not " + ChatColor.RED + "supported in descriptions!)");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] categories [category1,category2]");
-            player.sendMessage(ChatColor.RED + "/attraction edit [id] item");
+        if (args.length < 2) {
+            helpMenu(player);
             return;
         }
         if (!MiscUtil.checkIfInt(args[0])) {
@@ -46,6 +41,10 @@ public class EditCommand extends CoreCommand {
         }
         switch (args[1].toLowerCase()) {
             case "name": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
                 StringBuilder name = new StringBuilder();
                 for (int i = 2; i < args.length; i++) {
                     name.append(args[i]).append(" ");
@@ -63,18 +62,26 @@ public class EditCommand extends CoreCommand {
                 item.setItemMeta(meta);
 
                 ParkManager.getAttractionManager().saveToFile();
-                break;
+                return;
             }
             case "warp": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
                 attraction.setWarp(args[2]);
 
                 player.sendMessage(ChatColor.GREEN + "Set " + attraction.getName() + "'s " + ChatColor.GREEN +
                         "warp to " + ChatColor.YELLOW + args[2]);
 
                 ParkManager.getAttractionManager().saveToFile();
-                break;
+                return;
             }
             case "description": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
                 StringBuilder description = new StringBuilder();
                 for (int i = 2; i < args.length; i++) {
                     description.append(args[i]).append(" ");
@@ -85,9 +92,13 @@ public class EditCommand extends CoreCommand {
                 attraction.setDescription(description.toString());
 
                 ParkManager.getAttractionManager().saveToFile();
-                break;
+                return;
             }
             case "categories": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
                 List<AttractionCategory> categories = new ArrayList<>();
                 StringBuilder list = new StringBuilder();
                 for (String s : args[2].split(",")) {
@@ -105,7 +116,7 @@ public class EditCommand extends CoreCommand {
                         "attraction categories to " + ChatColor.YELLOW + list.substring(0, list.length() - 1));
 
                 ParkManager.getAttractionManager().saveToFile();
-                break;
+                return;
             }
             case "item": {
                 ItemStack item = player.getItemInMainHand().clone();
@@ -118,8 +129,17 @@ public class EditCommand extends CoreCommand {
                 player.sendMessage(ChatColor.GREEN + "Updated " + attraction.getName() + "'s " + ChatColor.GREEN + "item!");
 
                 ParkManager.getAttractionManager().saveToFile();
-                break;
+                return;
             }
         }
+        helpMenu(player);
+    }
+
+    private void helpMenu(CPlayer player) {
+        player.sendMessage(ChatColor.RED + "/attraction edit [id] name [name]");
+        player.sendMessage(ChatColor.RED + "/attraction edit [id] warp [warp]");
+        player.sendMessage(ChatColor.RED + "/attraction edit [id] description [description] (Color codes are " + ChatColor.ITALIC + "not " + ChatColor.RED + "supported in descriptions!)");
+        player.sendMessage(ChatColor.RED + "/attraction edit [id] categories [category1,category2]");
+        player.sendMessage(ChatColor.RED + "/attraction edit [id] item");
     }
 }

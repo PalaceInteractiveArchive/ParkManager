@@ -16,9 +16,9 @@ import java.util.*;
 public abstract class Queue {
     private int id;
     private final UUID uuid;
-    protected String name, warp;
-    protected int groupSize, delay;
-    protected Location station;
+    @Setter protected String name, warp;
+    @Setter protected int groupSize, delay;
+    @Setter protected Location station;
     @Setter protected boolean open;
     private LinkedList<UUID> queueMembers = new LinkedList<>();
     private List<QueueSign> signs;
