@@ -1,7 +1,10 @@
 package network.palace.parkmanager.listeners;
 
+import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.ServerSign;
+import network.palace.parkmanager.queues.Queue;
+import network.palace.parkmanager.queues.QueueSign;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -51,6 +54,21 @@ public class SignChange implements Listener {
                     event.setLine(1, "Click to join");
                     event.setLine(2, name);
                     event.setLine(3, "");
+                    break;
+                case QUEUE:
+                    if (!MiscUtil.checkIfInt(event.getLine(1))) {
+                        player.sendMessage(ChatColor.RED + "'" + event.getLine(1) + "' is not a queue id, it's not an integer!");
+                        return;
+                    }
+                    int id = Integer.parseInt(event.getLine(1));
+                    Queue queue = ParkManager.getQueueManager().getQueue(id);
+                    if (queue == null) {
+                        player.sendMessage(ChatColor.RED + "Couldn't find a queue with id " + id + "!");
+                        return;
+                    }
+                    queue.addSign(new QueueSign(b.getLocation(), queue.getName(), queue.getQueueSize()));
+                    event.setCancelled(true);
+                    queue.updateSigns();
                     break;
             }
         }

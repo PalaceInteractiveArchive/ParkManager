@@ -12,6 +12,7 @@ import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.handlers.magicband.BandType;
+import network.palace.parkmanager.queues.Queue;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
@@ -148,6 +149,11 @@ public class MagicBandManager {
                     lore.addAll(Arrays.asList("", ChatColor.GREEN + "Warp: " + ChatColor.YELLOW + "/warp " + attraction.getWarp(),
                             "", ChatColor.GREEN + "Status: " + (attraction.isOpen() ? "OPEN" : ChatColor.RED + "CLOSED"),
                             "", ChatColor.GREEN + "Categories:"));
+                    if (attraction.getLinkedQueue() != null) {
+                        Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
+                        if (queue != null)
+                            lore.addAll(5 + descriptionList.length, Arrays.asList("", ChatColor.GREEN + "Wait: " + ChatColor.YELLOW + queue.getWaitFor(null)));
+                    }
                     for (AttractionCategory category : attraction.getCategories()) {
                         lore.add(ChatColor.AQUA + "- " + ChatColor.YELLOW + category.getFormattedName());
                     }
@@ -175,6 +181,24 @@ public class MagicBandManager {
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
                 int size = 18;
+                for (Queue queue : ParkManager.getQueueManager().getQueues()) {
+                    ItemStack item = ItemUtil.create(Material.SIGN);
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setDisplayName(queue.getName());
+                    List<String> lore = new ArrayList<>(Arrays.asList("", ChatColor.GREEN + "Wait: " + ChatColor.YELLOW + queue.getWaitFor(null),
+                            "", ChatColor.GREEN + "Warp: " + ChatColor.YELLOW + "/warp " + queue.getWarp(),
+                            "", ChatColor.GREEN + "Status: " + (queue.isOpen() ? "OPEN" : ChatColor.RED + "CLOSED")));
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    if (i != 0 && i % 9 == 0) {
+                        size += 9;
+                    }
+                    if (size > 54) {
+                        size = 54;
+                        break;
+                    }
+                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + queue.getWarp()))));
+                }
                 if (buttons.isEmpty()) {
                     buttons.add(new MenuButton(4, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No Queues",
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no queues on this server!"))));

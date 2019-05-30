@@ -7,6 +7,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
+import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
 
 @CommandMeta(description = "Open an attraction")
@@ -34,6 +35,10 @@ public class OpenCommand extends CoreCommand {
             return;
         }
         attraction.setOpen(true);
+        if (attraction.getLinkedQueue() != null) {
+            Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
+            if (queue != null) queue.setOpen(true);
+        }
         ParkManager.getAttractionManager().saveToFile();
         player.sendMessage(attraction.getName() + ChatColor.GREEN + " has been opened!");
     }

@@ -13,6 +13,7 @@ import network.palace.parkmanager.utils.FileUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AttractionManager {
     private int nextId = 0;
@@ -41,10 +42,16 @@ public class AttractionManager {
                     JsonArray categories = object.getAsJsonArray("categories");
                     List<AttractionCategory> categoryList = new ArrayList<>();
                     categories.forEach(e -> categoryList.add(AttractionCategory.fromString(e.getAsString())));
+                    UUID linkedQueue;
+                    if (object.has("linked-queue")) {
+                        linkedQueue = UUID.fromString(object.get("linked-queue").getAsString());
+                    } else {
+                        linkedQueue = null;
+                    }
 
                     attractions.add(new Attraction(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
                             object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
-                            ItemUtil.getItemFromJson(object.get("item").getAsJsonObject().toString())));
+                            ItemUtil.getItemFromJson(object.get("item").getAsJsonObject().toString()), linkedQueue));
                 }
             } else {
                 saveToFile();
@@ -100,6 +107,10 @@ public class AttractionManager {
 
             object.addProperty("open", attraction.isOpen());
             object.add("item", ItemUtil.getJsonFromItem(attraction.getItem()));
+
+            if (attraction.getLinkedQueue() != null) {
+                object.addProperty("linked-queue", attraction.getLinkedQueue().toString());
+            }
             array.add(object);
         }
         try {

@@ -5,6 +5,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.ServerSign;
+import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -42,10 +43,21 @@ public class BlockEdit implements Listener {
             ServerSign signType = ServerSign.fromSign(s);
 
             if (signType != null) {
-                //noinspection SwitchStatementWithTooFewBranches
                 switch (signType) {
                     case RIDE_LEADERBOARD:
                         ParkManager.getLeaderboardManager().deleteSign(s.getLocation());
+                        break;
+                    case QUEUE:
+                        Queue queue = ParkManager.getQueueManager().getQueue(s);
+                        if (queue == null) return;
+                        if (!player.getMainHand().getType().equals(Material.GOLDEN_AXE)) {
+                            event.setCancelled(true);
+                            player.sendMessage(ChatColor.GREEN + "In order to break a " + signType.getSignHeader()
+                                    + ChatColor.GREEN + " sign, you must be holding a " + ChatColor.GOLD + "Golden Axe!");
+                            return;
+                        }
+                        queue.removeSign(s.getLocation());
+                        player.sendMessage(ChatColor.GREEN + "You removed a queue sign for " + queue.getName());
                         break;
                 }
             }

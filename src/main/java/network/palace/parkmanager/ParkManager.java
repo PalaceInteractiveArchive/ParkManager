@@ -15,6 +15,7 @@ import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.magicband.MagicBandManager;
 import network.palace.parkmanager.outline.OutlineManager;
+import network.palace.parkmanager.queues.QueueManager;
 import network.palace.parkmanager.showschedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
@@ -36,6 +37,7 @@ public class ParkManager extends Plugin {
     @Getter private static MagicBandManager magicBandManager;
     @Getter private static OutlineManager outlineManager;
     @Getter private static PlayerUtil playerUtil;
+    @Getter private static QueueManager queueManager;
     @Getter private static ScheduleManager scheduleManager;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
@@ -58,6 +60,7 @@ public class ParkManager extends Plugin {
         magicBandManager = new MagicBandManager();
         outlineManager = new OutlineManager();
         playerUtil = new PlayerUtil();
+        queueManager = new QueueManager();
         scheduleManager = new ScheduleManager();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
@@ -101,6 +104,7 @@ public class ParkManager extends Plugin {
         registerCommand(new OutlineCommand());
         registerCommand(new PlayerTimeCommand());
         registerCommand(new PlayerWeatherCommand());
+        registerCommand(new QueueCommand());
         registerCommand(new ShowScheduleCommand());
         registerCommand(new SignCommand());
         registerCommand(new SpeedCommand());

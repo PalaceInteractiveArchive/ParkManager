@@ -6,10 +6,7 @@ import org.bukkit.ChatColor;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 public class TimeUtil {
     private List<UUID> watchViewers = new ArrayList<>();
@@ -48,5 +45,66 @@ public class TimeUtil {
 
         return ChatColor.YELLOW + "" + ChatColor.BOLD + "Current time in EST: " + ChatColor.GREEN +
                 ((hour > 12 ? hour - 12 : (hour < 1 ? 12 : hour)) + ":" + (minute < 10 ? "0" + minute : minute) + ":" + (second < 10 ? "0" + second : second) + " " + (hour >= 12 ? "PM" : "AM"));
+    }
+
+    public static long getCurrentSecondInMillis(long time) {
+        return ((time / 1000) + 1) * 1000;
+    }
+
+    public static long getCurrentSecondInMillis() {
+        return getCurrentSecondInMillis(System.currentTimeMillis());
+    }
+
+    /**
+     * Calculate the time from #fromDate to #toDate and return a human-readable string
+     *
+     * @param fromDate the starting date
+     * @param toDate   the ending date
+     * @return A string, such as "5 minutes 42 seconds"
+     */
+    public static String formatDateDiff(Calendar fromDate, Calendar toDate) {
+        boolean future = false;
+        if (toDate.equals(fromDate)) {
+            return "Now";
+        }
+        if (toDate.after(fromDate)) {
+            future = true;
+        }
+        StringBuilder sb = new StringBuilder();
+        int[] types = {1, 2, 5, 11, 12, 13};
+
+        String[] names = {"Years", "Years", "Months", "Months", "Days",
+                "Days", "hr", "hr", "min", "min", "s",
+                "s"};
+
+        int accuracy = 0;
+        for (int i = 0; i < types.length; i++) {
+            if (accuracy > 2) {
+                break;
+            }
+            int diff = dateDiff(types[i], fromDate, toDate, future);
+            if (diff > 0) {
+                accuracy++;
+                sb.append(" ").append(diff).append(names[(i * 2)]);
+            }
+        }
+        if (sb.length() == 0) {
+            return "Now";
+        }
+        return sb.toString().trim();
+    }
+
+    private static int dateDiff(int type, Calendar fromDate, Calendar toDate, boolean future) {
+        int diff = 0;
+        long savedDate = fromDate.getTimeInMillis();
+        while ((future) && (!fromDate.after(toDate)) || (!future)
+                && (!fromDate.before(toDate))) {
+            savedDate = fromDate.getTimeInMillis();
+            fromDate.add(type, future ? 1 : -1);
+            diff++;
+        }
+        diff--;
+        fromDate.setTimeInMillis(savedDate);
+        return diff;
     }
 }

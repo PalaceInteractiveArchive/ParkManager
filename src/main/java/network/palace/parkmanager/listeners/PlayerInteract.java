@@ -8,6 +8,7 @@ import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.leaderboard.LeaderboardSign;
 import network.palace.parkmanager.magicband.BandInventory;
+import network.palace.parkmanager.queues.Queue;
 import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.Bukkit;
@@ -81,6 +82,15 @@ public class PlayerInteract implements Listener {
                             player.sendMessage(ChatColor.BLUE + "You have arrived at " + ChatColor.WHITE + "[" +
                                     ChatColor.GREEN + warp.getName() + ChatColor.WHITE + "]");
                             return;
+                        case QUEUE:
+                            Queue queue = ParkManager.getQueueManager().getQueue(s);
+                            if (queue == null) return;
+                            if (queue.isInQueue(player)) {
+                                queue.leaveQueue(player, false);
+                            } else {
+                                queue.joinQueue(player);
+                            }
+                            break;
                     }
                 }
                 return;

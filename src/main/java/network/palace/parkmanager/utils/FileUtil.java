@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.AllArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -121,5 +123,21 @@ public class FileUtil {
         public void writeFileContents(String name, JsonElement element) throws IOException {
             Files.write(Paths.get(getFile(name).toURI()), Collections.singletonList(element.toString()), Charset.forName("UTF-8"));
         }
+    }
+
+    public static Location getLocation(JsonObject object) {
+        return new Location(Bukkit.getWorld(object.get("world").getAsString()), object.get("x").getAsDouble(),
+                object.get("y").getAsDouble(), object.get("z").getAsDouble(), object.get("yaw").getAsFloat(), object.get("pitch").getAsFloat());
+    }
+
+    public static JsonObject getJson(Location location) {
+        JsonObject object = new JsonObject();
+        object.addProperty("x", location.getX());
+        object.addProperty("y", location.getY());
+        object.addProperty("z", location.getZ());
+        object.addProperty("yaw", location.getYaw());
+        object.addProperty("pitch", location.getPitch());
+        object.addProperty("world", location.getWorld().getName());
+        return object;
     }
 }

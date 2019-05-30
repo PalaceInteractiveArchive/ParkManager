@@ -233,7 +233,7 @@ public class StorageManager {
         });
 
         if (player.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
-            player.setAllowFlight(true);
+            Core.runTask(() -> player.setAllowFlight(true));
         }
     }
 

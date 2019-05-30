@@ -7,6 +7,7 @@ import network.palace.parkmanager.handlers.AttractionCategory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class Attraction {
     @Setter private List<AttractionCategory> categories;
     @Setter private boolean open;
     @Setter private ItemStack item;
+    @Setter private UUID linkedQueue;
 }

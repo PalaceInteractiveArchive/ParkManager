@@ -1,4 +1,4 @@
-package network.palace.parkmanager.commands.attractions;
+package network.palace.parkmanager.commands.queue;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
@@ -6,11 +6,10 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
 
-@CommandMeta(description = "Close an attraction")
+@CommandMeta(description = "Close a queue")
 public class CloseCommand extends CoreCommand {
 
     public CloseCommand() {
@@ -20,8 +19,8 @@ public class CloseCommand extends CoreCommand {
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 1) {
-            player.sendMessage(ChatColor.RED + "/attraction close [id]");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the attraction id from /attraction list!");
+            player.sendMessage(ChatColor.RED + "/queue close [id]");
+            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the queue id from /queue list!");
             return;
         }
         if (!MiscUtil.checkIfInt(args[0])) {
@@ -29,17 +28,13 @@ public class CloseCommand extends CoreCommand {
             return;
         }
         int id = Integer.parseInt(args[0]);
-        Attraction attraction = ParkManager.getAttractionManager().getAttraction(id);
-        if (attraction == null) {
-            player.sendMessage(ChatColor.RED + "Could not find an attraction by id " + id + "!");
+        Queue queue = ParkManager.getQueueManager().getQueue(id);
+        if (queue == null) {
+            player.sendMessage(ChatColor.RED + "Could not find a queue by id " + id + "!");
             return;
         }
-        attraction.setOpen(false);
-        if (attraction.getLinkedQueue() != null) {
-            Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
-            if (queue != null) queue.setOpen(false);
-        }
+        queue.setOpen(false);
         ParkManager.getAttractionManager().saveToFile();
-        player.sendMessage(attraction.getName() + ChatColor.RED + " has been closed!");
+        player.sendMessage(queue.getName() + ChatColor.RED + " has been closed!");
     }
 }

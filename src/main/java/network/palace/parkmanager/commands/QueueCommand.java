@@ -3,18 +3,16 @@ package network.palace.parkmanager.commands;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.commands.attractions.*;
+import network.palace.parkmanager.commands.queue.*;
 
-@CommandMeta(description = "Attraction command", rank = Rank.MOD)
-public class AttractionCommand extends CoreCommand {
+@CommandMeta(description = "Queue command", rank = Rank.MOD)
+public class QueueCommand extends CoreCommand {
 
-    public AttractionCommand() {
-        super("attraction");
-        registerSubCommand(new CategoriesCommand());
+    public QueueCommand() {
+        super("queue");
         registerSubCommand(new CloseCommand());
         registerSubCommand(new CreateCommand());
         registerSubCommand(new EditCommand());
-        registerSubCommand(new LinkQueueCommand());
         registerSubCommand(new ListCommand());
         registerSubCommand(new OpenCommand());
         registerSubCommand(new ReloadCommand());

@@ -55,7 +55,8 @@ public class CreateCommand extends CoreCommand {
             categories.add(category);
         }
 
-        ParkManager.getAttractionManager().addAttraction(new Attraction(ParkManager.getAttractionManager().getNextId(), displayName, args[0], "", categories, true, item));
+        ParkManager.getAttractionManager().addAttraction(new Attraction(ParkManager.getAttractionManager().getNextId(),
+                displayName, args[0], "", categories, true, item, null));
         player.sendMessage(ChatColor.GREEN + "Created new attraction " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
     }
 }
