@@ -45,12 +45,16 @@ public class MagicBandManager {
                         ChatColor.GRAY + "of the name for your MagicBand!"));
                 band.setItemMeta(meta);
 
-                List<MenuButton> buttons = Arrays.asList(
+                ItemStack profile = HeadUtil.getPlayerHead(player.getTextureValue(), ChatColor.AQUA + "My Profile");
+                meta = profile.getItemMeta();
+                meta.setLore(Arrays.asList("", ChatColor.GREEN + "Loading...", ""));
+                profile.setItemMeta(meta);
+
+                List<MenuButton> buttons = new ArrayList<>(Arrays.asList(
                         new MenuButton(2, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.AQUA + "Hotels and Resorts",
                                 Arrays.asList(ChatColor.GREEN + "Visit and rent a room", ChatColor.GREEN + "from a Resort Hotel!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.HOTELS))),
-                        new MenuButton(4, HeadUtil.getPlayerHead(player.getTextureValue(), ChatColor.AQUA + "My Profile"),
-                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
+                        new MenuButton(4, profile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
                         new MenuButton(10, ItemUtil.create(Material.POTATO, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.FOOD))),
@@ -80,9 +84,23 @@ public class MagicBandManager {
                                     }
                                 })),
                         new MenuButton(22, band, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND)))
-                );
+                ));
 
-                new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons).open();
+                Menu menu = new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons);
+                menu.open();
+                Core.runTaskAsynchronously(() -> {
+                    ItemStack updatedProfile = profile.clone();
+                    ItemMeta menuMeta = updatedProfile.getItemMeta();
+                    menuMeta.setLore(Arrays.asList(
+                            ChatColor.GREEN + "Name: " + ChatColor.YELLOW + player.getName(),
+                            ChatColor.GREEN + "Rank: " + player.getRank().getFormattedName(),
+                            ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + player.getBalance(),
+                            ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + player.getTokens()
+                    ));
+                    updatedProfile.setItemMeta(menuMeta);
+
+                    menu.setButton(new MenuButton(4, updatedProfile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))));
+                });
                 break;
             }
             case FOOD: {
@@ -287,7 +305,14 @@ public class MagicBandManager {
                 break;
             }
             case HOTELS: {
-                new Menu(27, ChatColor.BLUE + "Hotels and Resorts", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                new Menu(27, ChatColor.BLUE + "Hotels and Resorts", player, Arrays.asList(
+                        new MenuButton(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.AQUA + "Pardon Our Pixie Dust!",
+                                Arrays.asList(ChatColor.GRAY + "Resort room renting will be",
+                                        ChatColor.GRAY + "returning soon! In the meantime,",
+                                        ChatColor.GRAY + "you're welcome to visit our",
+                                        ChatColor.GRAY + "resorts at " + ChatColor.AQUA + "/join Resorts!"))),
+                        getBackButton(22, BandInventory.MAIN)
+                )).open();
                 break;
             }
             case PROFILE: {
