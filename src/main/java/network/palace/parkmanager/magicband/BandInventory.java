@@ -2,7 +2,7 @@ package network.palace.parkmanager.magicband;
 
 public enum BandInventory {
     // Main Menu
-    MAIN, FOOD, SHOWS, ATTRACTION_MENU, PARKS, SHOP, WARDROBE, HOTELS, PROFILE, VISIBILITY, CUSTOMIZE_BAND,
+    MAIN, FOOD, SHOWS, ATTRACTION_MENU, PARKS, SHOP, WARDROBE, HOTELS, PROFILE, VISIBILITY, CUSTOMIZE_BAND, PLAYER_TIME,
     // Attractions Menu
     ATTRACTION_LIST, WAIT_TIMES,
     // Parks Menu

@@ -55,6 +55,28 @@ public class TimeUtil {
         return getCurrentSecondInMillis(System.currentTimeMillis());
     }
 
+    public static long getTime(String s) {
+        switch (s) {
+            case "6AM":
+                return 0;
+            case "9AM":
+                return 3000;
+            case "12PM":
+                return 6000;
+            case "3PM":
+                return 9000;
+            case "6PM":
+                return 12000;
+            case "9PM":
+                return 15000;
+            case "12AM":
+                return 18000;
+            case "3AM":
+                return 21000;
+        }
+        return -1;
+    }
+
     /**
      * Calculate the time from #fromDate to #toDate and return a human-readable string
      *

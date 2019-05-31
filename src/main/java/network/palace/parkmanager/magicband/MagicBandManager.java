@@ -6,6 +6,7 @@ import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
 import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
+import network.palace.core.player.Rank;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
@@ -85,10 +86,15 @@ public class MagicBandManager {
                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                                     }
                                 })),
-                        new MenuButton(22, band, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND)))
+                        new MenuButton(player.getRank().getRankId() < Rank.NOBLE.getRankId() ? 6 : 22, band, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND)))
                 ));
 
                 Menu menu = new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons);
+                if (player.getRank().getRankId() >= Rank.NOBLE.getRankId()) {
+                    menu.setButton(new MenuButton(6, ItemUtil.create(Material.CLOCK, ChatColor.AQUA + "Player Time",
+                            Arrays.asList(ChatColor.GREEN + "Change the time of day you see", ChatColor.GREEN + "for the park you're currently in!")),
+                            ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PLAYER_TIME))));
+                }
                 menu.open();
                 Core.runTaskAsynchronously(() -> {
                     ItemStack updatedProfile = profile.clone();
@@ -587,6 +593,79 @@ public class MagicBandManager {
                 List<MenuButton> buttons = ParkManager.getScheduleManager().getButtons();
                 buttons.add(getBackButton(49, BandInventory.SHOWS));
                 new Menu(54, ChatColor.BLUE + "Show Timetable", player, buttons).open();
+                break;
+            }
+            case PLAYER_TIME: {
+                long time = player.getBukkitPlayer().getPlayerTime() % 24000;
+                List<String> current = Collections.singletonList(ChatColor.YELLOW + "Currently Selected!");
+                List<String> not = Collections.singletonList(ChatColor.GRAY + "Click to Select!");
+                new Menu(27, ChatColor.BLUE + "Player Time", player, Arrays.asList(
+                        new MenuButton(9, ItemUtil.create(Material.WHITE_STAINED_GLASS_PANE, ChatColor.GREEN + "Reset",
+                                Collections.singletonList(ChatColor.GREEN + "Match Park Time")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.sendMessage(ChatColor.GREEN + "You " + ChatColor.AQUA + "reset " + ChatColor.GREEN + "your Player Time!");
+                                    p.getBukkitPlayer().resetPlayerTime();
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(10, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "6AM", time == 0 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(0, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "6AM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(11, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "9AM", time == 3000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(3000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "9AM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(12, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "12PM", time == 6000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(6000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "12PM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(13, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "3PM", time == 9000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(9000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "3PM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(14, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "6PM", time == 12000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(12000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "6PM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(15, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "9PM", time == 15000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(15000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "9PM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(16, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "12AM", time == 18000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(18000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "12AM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        new MenuButton(17, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "3AM", time == 21000 ? current : not),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.getBukkitPlayer().setPlayerTime(21000, false);
+                                    p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "3AM");
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    openInventory(p, BandInventory.PLAYER_TIME);
+                                })),
+                        getBackButton(22, BandInventory.MAIN)
+                )).open();
                 break;
             }
         }
