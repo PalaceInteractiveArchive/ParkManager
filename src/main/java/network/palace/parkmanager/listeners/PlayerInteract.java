@@ -107,12 +107,12 @@ public class PlayerInteract implements Listener {
         boolean cancel = false;
         switch (slot) {
             case 5:
-                //open watch menu
-                ParkManager.getMagicBandManager().openInventory(player, BandInventory.TIMETABLE);
-                break;
-            case 6:
                 cancel = true;
                 ParkManager.getInventoryUtil().openMenu(player, MenuType.BACKPACK);
+                break;
+            case 6:
+                //open watch menu
+                ParkManager.getMagicBandManager().openInventory(player, BandInventory.TIMETABLE);
                 break;
             case 7:
                 //autograph book

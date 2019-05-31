@@ -39,7 +39,7 @@ public class LinkQueueCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + args[1] + " is not an integer!");
             return;
         }
-        int queueID = Integer.parseInt(args[0]);
+        int queueID = Integer.parseInt(args[1]);
         Queue queue = ParkManager.getQueueManager().getQueue(queueID);
         if (queue == null) {
             player.sendMessage(ChatColor.RED + "Could not find a queue by id " + queueID + "!");

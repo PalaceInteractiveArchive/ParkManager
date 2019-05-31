@@ -210,9 +210,9 @@ public class StorageManager {
         ItemStack compass = player.getRank().getRankId() >= Rank.MOD.getRankId() ? ItemUtil.create(Material.COMPASS) : null;
         ItemStack[] contents = new ItemStack[]{
                 compass, null, null, null, null,
+                ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"),
                 ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                         Arrays.asList(ChatColor.GRAY + "Right-Click to open", ChatColor.GRAY + "the Show Timetable")),
-                ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"),
                 null, ParkManager.getMagicBandManager().getMagicBandItem("red", "gold"),
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null

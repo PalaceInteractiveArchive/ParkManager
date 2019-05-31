@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -60,17 +61,26 @@ public class InventoryListener implements Listener {
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
         event.setCancelled(true);
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
-        if (player != null && player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId())
-            player.performCommand("build");
+        if (player == null || player.getRank().getRankId() < Rank.TRAINEEBUILD.getRankId()) return;
+        if (ParkManager.getBuildUtil().isInBuildMode(player)) {
+            ItemStack mainhand = event.getMainHandItem();
+            ItemStack offhand = event.getOffHandItem();
+            if ((mainhand != null && mainhand.getType().equals(Material.FILLED_MAP))
+                    || (offhand != null && offhand.getType().equals(Material.FILLED_MAP))) {
+                event.setCancelled(false);
+                return;
+            }
+        }
+        player.performCommand("build");
     }
 
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
         if (player == null || ParkManager.getBuildUtil().isInBuildMode(player)) return;
-        if (event.getNewSlot() == 5) {
+        if (event.getNewSlot() == 6) {
             ParkManager.getTimeUtil().selectWatch(player);
-        } else if (event.getPreviousSlot() == 5) {
+        } else if (event.getPreviousSlot() == 6) {
             ParkManager.getTimeUtil().unselectWatch(player);
         }
     }

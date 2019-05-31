@@ -6,6 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
 
@@ -34,6 +35,13 @@ public class OpenCommand extends CoreCommand {
             return;
         }
         queue.setOpen(true);
+        boolean attractionUpdate = false;
+        for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
+            if (!attraction.getLinkedQueue().equals(queue.getUuid())) continue;
+            attraction.setOpen(true);
+            attractionUpdate = true;
+        }
+        if (attractionUpdate) ParkManager.getAttractionManager().saveToFile();
         ParkManager.getQueueManager().saveToFile();
         player.sendMessage(queue.getName() + ChatColor.GREEN + " has been opened!");
     }

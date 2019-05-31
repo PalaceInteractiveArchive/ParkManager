@@ -7,6 +7,7 @@ import network.palace.core.Core;
 import network.palace.core.events.CurrentPackReceivedEvent;
 import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
+import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.resource.ResourceStatusEvent;
 import network.palace.core.utils.ItemUtil;
@@ -74,15 +75,20 @@ public class PackManager implements Listener {
                 player.sendMessage(ChatColor.GREEN + "Resource Pack loaded!");
                 break;
             case DECLINED:
-                for (int i = 0; i < 5; i++) {
-                    player.sendMessage(" ");
-                }
                 player.sendMessage(ChatColor.RED + "You have declined the Resource Pack!");
-                player.sendMessage(ChatColor.YELLOW + "For help with this, visit: " + ChatColor.AQUA +
-                        "https://palace.network/rphelp");
                 break;
-            default:
-                player.sendMessage(ChatColor.RED + "Download failed! Please report this to a Staff Member. (Error Code 101)");
+            default: {
+                if (player.getRegistry().hasEntry("packDownloadURL")) {
+                    String url = (String) player.getRegistry().getEntry("packDownloadURL");
+                    new FormattedMessage("Download failed! ").color(ChatColor.RED)
+                            .then("You can download the pack manually by clicking ").color(ChatColor.AQUA)
+                            .then("here").color(ChatColor.YELLOW).style(ChatColor.UNDERLINE).link(url).send(player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Download failed!");
+                    player.sendMessage(ChatColor.YELLOW + "For help with this, visit: " + ChatColor.AQUA +
+                            "https://palnet.us/rphelp");
+                }
+            }
         }
     }
 

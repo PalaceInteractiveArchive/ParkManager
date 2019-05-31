@@ -35,10 +35,15 @@ public class OpenCommand extends CoreCommand {
             return;
         }
         attraction.setOpen(true);
+        boolean queueUpdated = false;
         if (attraction.getLinkedQueue() != null) {
             Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
-            if (queue != null) queue.setOpen(true);
+            if (queue != null) {
+                queue.setOpen(true);
+                queueUpdated = true;
+            }
         }
+        if (queueUpdated) ParkManager.getQueueManager().saveToFile();
         ParkManager.getAttractionManager().saveToFile();
         player.sendMessage(attraction.getName() + ChatColor.GREEN + " has been opened!");
     }

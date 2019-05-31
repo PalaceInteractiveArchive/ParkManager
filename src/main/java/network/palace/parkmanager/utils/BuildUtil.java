@@ -91,7 +91,7 @@ public class BuildUtil {
             data.setBuild(build);
 
             ParkManager.getStorageManager().updateInventory(player, true);
-            if (player.getHeldItemSlot() == 5) ParkManager.getTimeUtil().selectWatch(player);
+            if (player.getHeldItemSlot() == 6) ParkManager.getTimeUtil().selectWatch(player);
         }
         Core.runTaskAsynchronously(() -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), newSetting));
         return newSetting;

@@ -35,10 +35,15 @@ public class CloseCommand extends CoreCommand {
             return;
         }
         attraction.setOpen(false);
+        boolean queueUpdated = false;
         if (attraction.getLinkedQueue() != null) {
             Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
-            if (queue != null) queue.setOpen(false);
+            if (queue != null) {
+                queue.setOpen(false);
+                queueUpdated = true;
+            }
         }
+        if (queueUpdated) ParkManager.getQueueManager().saveToFile();
         ParkManager.getAttractionManager().saveToFile();
         player.sendMessage(attraction.getName() + ChatColor.RED + " has been closed!");
     }
