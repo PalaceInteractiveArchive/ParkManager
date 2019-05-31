@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import network.palace.core.Core;
 import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
+import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.HeadUtil;
 import network.palace.core.utils.ItemUtil;
@@ -12,6 +13,7 @@ import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.handlers.magicband.BandType;
+import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.queues.Queue;
 import network.palace.parkmanager.shop.Shop;
 import network.palace.parkmanager.utils.VisibilityUtil;
@@ -376,7 +378,58 @@ public class MagicBandManager {
                 break;
             }
             case PROFILE: {
-                new Menu(27, ChatColor.BLUE + "My Profile", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                new Menu(27, ChatColor.BLUE + "My Profile", player, Arrays.asList(
+                        new MenuButton(10, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Website",
+                                Collections.singletonList(ChatColor.GREEN + "Visit our website!")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    new FormattedMessage("\n")
+                                            .then("Click here to visit our website")
+                                            .color(ChatColor.YELLOW).style(ChatColor.UNDERLINE)
+                                            .tooltip(ChatColor.GREEN + "Click to visit " + ChatColor.YELLOW + "https://palace.network")
+                                            .link("https://palace.network").then("\n").send(p);
+                                    p.closeInventory();
+                                })),
+                        new MenuButton(11, ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Store",
+                                Collections.singletonList(ChatColor.GREEN + "Visit our store!")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    new FormattedMessage("\n")
+                                            .then("Click here to visit our store")
+                                            .color(ChatColor.YELLOW).style(ChatColor.UNDERLINE)
+                                            .tooltip(ChatColor.GREEN + "Click to visit " + ChatColor.YELLOW + "https://store.palace.network")
+                                            .link("https://store.palace.network").then("\n").send(p);
+                                    p.closeInventory();
+                                })),
+                        new MenuButton(12, ItemUtil.create(Material.ENDER_CHEST, ChatColor.AQUA + "Locker",
+                                Collections.singletonList(ChatColor.GREEN + "Click to view your Locker")),
+                                ImmutableMap.of(ClickType.LEFT, p -> ParkManager.getInventoryUtil().openMenu(p, MenuType.LOCKER))),
+                        new MenuButton(13, ItemUtil.create(Material.GOLD_INGOT, ChatColor.AQUA + "Ride Counters",
+                                Arrays.asList(ChatColor.GREEN + "View the number of times you've",
+                                        ChatColor.GREEN + "been on different theme park rides")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.RIDE_COUNTERS))),
+                        new MenuButton(14, ItemUtil.create(Material.EMERALD, ChatColor.AQUA + "Achievements", Arrays.asList(ChatColor.GREEN +
+                                        "You've earned " + ChatColor.YELLOW + player.getAchievementManager().getAchievements().size() + ChatColor.GREEN + " achievements!",
+                                ChatColor.GREEN + "There are " + ChatColor.YELLOW + Core.getAchievementManager().getAchievements().size() + ChatColor.GREEN + " total to earn",
+                                ChatColor.GRAY + "Click to view all of your achievements")),
+                                ImmutableMap.of(ClickType.LEFT, p -> Core.getCraftingMenu().openAchievementPage(p, 1))),
+                        new MenuButton(15, ItemUtil.create(Material.NOTE_BLOCK, ChatColor.AQUA + "Resource Packs",
+                                Collections.singletonList(ChatColor.GREEN + "Manage your Resource Pack settings")),
+                                ImmutableMap.of(ClickType.LEFT, p -> ParkManager.getPackManager().openMenu(p))),
+                        new MenuButton(16, ItemUtil.create(Material.COMPASS, ChatColor.AQUA + "Discord",
+                                Collections.singletonList(ChatColor.GREEN + "Join the conversation on our Discord!")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    new FormattedMessage("\n")
+                                            .then("Click here to join our Discord")
+                                            .color(ChatColor.YELLOW).style(ChatColor.UNDERLINE)
+                                            .tooltip(ChatColor.GREEN + "Click to run " + ChatColor.YELLOW + "/discord")
+                                            .command("/discord").then("\n").send(p);
+                                    p.closeInventory();
+                                })),
+                        getBackButton(22, BandInventory.MAIN)
+                )).open();
+                break;
+            }
+            case RIDE_COUNTERS: {
+                new Menu(27, ChatColor.GREEN + "Ride Counters", player, Collections.singletonList(getBackButton(22, BandInventory.PROFILE))).open();
                 break;
             }
             case VISIBILITY: {

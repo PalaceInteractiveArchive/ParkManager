@@ -19,7 +19,7 @@ public abstract class Queue {
     @Setter protected String name, warp;
     @Setter protected int groupSize, delay;
     @Setter protected Location station;
-    @Setter protected boolean open;
+    protected boolean open;
     private LinkedList<UUID> queueMembers = new LinkedList<>();
     private List<QueueSign> signs;
 
@@ -49,6 +49,10 @@ public abstract class Queue {
      * @param player the player
      */
     public void joinQueue(CPlayer player) {
+        if (!open) {
+            player.sendMessage(ChatColor.RED + "This queue is currently closed, check back soon!");
+            return;
+        }
         queueMembers.add(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You've joined the queue for " + name + ChatColor.GREEN +
                 " at position #" + getPosition(player.getUniqueId()));
@@ -88,6 +92,22 @@ public abstract class Queue {
 
     public abstract QueueType getQueueType();
 
+    public void setOpen(boolean b) {
+        this.open = b;
+        String msg;
+        if (b) {
+            msg = ChatColor.GREEN + "The queue for " + name + ChatColor.GREEN + " has just reopened!";
+        } else {
+            msg = ChatColor.GREEN + "The queue for " + name + ChatColor.GREEN + " has just been " + ChatColor.RED + "closed. "
+                    + ChatColor.GREEN + "You can keep your place in line, but if you leave you can't rejoin until the queue reopens!";
+        }
+        queueMembers.forEach(id -> {
+            CPlayer player = Core.getPlayerManager().getPlayer(id);
+            if (player == null) return;
+            player.sendMessage(msg);
+        });
+    }
+
     /**
      * Called every second by a scheduled timer in QueueManager.
      * This method handles bringing in scheduled groups and scheduling new groups after previous groups are brought in.
@@ -95,7 +115,10 @@ public abstract class Queue {
      * @param currentTime the output from System.currentTimeMillis from a higher-level timer, so all times are the same value.
      */
     public void tick(long currentTime) {
-        if (nextGroup <= currentTime) {
+        if (!open) {
+            nextGroup += 1000;
+        }
+        if (nextGroup <= currentTime && open) {
             //Time to bring in the next group
             if (!queueMembers.isEmpty()) {
                 //Only bring in a group if there are players in the queue
@@ -152,6 +175,9 @@ public abstract class Queue {
      * @return a String with their estimated wait time, such as "5min 25s"
      */
     public String getWaitFor(UUID uuid, long currentTime) {
+        if (!open) {
+            return ChatColor.RED + "Closed";
+        }
         if (nextGroup == 0) {
             return "No Wait";
         }

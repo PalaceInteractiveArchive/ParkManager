@@ -33,7 +33,7 @@ public class QueueManager {
                 queue.tick(currentTime);
                 queue.updateSigns();
             });
-        }, delay, 10L);
+        }, delay, 20L);
     }
 
     public void initialize() {

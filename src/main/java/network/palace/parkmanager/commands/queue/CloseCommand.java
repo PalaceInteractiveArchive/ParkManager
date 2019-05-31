@@ -37,7 +37,7 @@ public class CloseCommand extends CoreCommand {
         queue.setOpen(false);
         boolean attractionUpdate = false;
         for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
-            if (!attraction.getLinkedQueue().equals(queue.getUuid())) continue;
+            if (attraction.getLinkedQueue() == null || !attraction.getLinkedQueue().equals(queue.getUuid())) continue;
             attraction.setOpen(false);
             attractionUpdate = true;
         }

@@ -13,6 +13,7 @@ public class QueueCommand extends CoreCommand {
         registerSubCommand(new CloseCommand());
         registerSubCommand(new CreateCommand());
         registerSubCommand(new EditCommand());
+        registerSubCommand(new EmptyCommand());
         registerSubCommand(new ListCommand());
         registerSubCommand(new OpenCommand());
         registerSubCommand(new ReloadCommand());

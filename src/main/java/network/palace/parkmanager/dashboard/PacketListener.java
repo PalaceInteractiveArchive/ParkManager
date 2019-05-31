@@ -25,16 +25,6 @@ public class PacketListener implements Listener {
         }
         int id = object.get("id").getAsInt();
         switch (id) {
-             /*case 58: {
-                PacketInventoryStatus packet = new PacketInventoryStatus().fromJSON(object);
-                UUID uuid = packet.getUniqueId();
-                int status = packet.getStatus();
-                if (status != 1) {
-                    return;
-                }
-                Bukkit.getScheduler().runTaskAsynchronously(parkManager, () -> parkManager.getStorageManager().downloadInventory(uuid, false));
-                break;
-            }*/
             /**
              * Cross-server Inventory
              */
@@ -47,11 +37,6 @@ public class PacketListener implements Listener {
              * Refresh Hotel Rooms
              */
             case 59: {
-//                PacketRefreshHotels packet = new PacketRefreshHotels().fromJSON(object);
-//                if (packet.getServer().equals(Core.getInstanceName())) {
-//                    return;
-//                }
-//                parkManager.getHotelManager().refreshRooms();
                 break;
             }
             /**

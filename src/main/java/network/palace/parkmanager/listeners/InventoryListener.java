@@ -12,9 +12,11 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.magicband.MenuType;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -44,6 +46,16 @@ public class InventoryListener implements Listener {
     }
 
     @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
+        if (player == null || ParkManager.getBuildUtil().isInBuildMode(player)) return;
+        if (!event.getClickedInventory().equals(player.getInventory())) return;
+        int slot = event.getSlot();
+        if (slot < 5 || slot > 8) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
         if (player == null) {
@@ -63,10 +75,17 @@ public class InventoryListener implements Listener {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
         if (player == null || player.getRank().getRankId() < Rank.TRAINEEBUILD.getRankId()) return;
         if (ParkManager.getBuildUtil().isInBuildMode(player)) {
-            ItemStack mainhand = event.getMainHandItem();
-            ItemStack offhand = event.getOffHandItem();
-            if ((mainhand != null && mainhand.getType().equals(Material.FILLED_MAP))
-                    || (offhand != null && offhand.getType().equals(Material.FILLED_MAP))) {
+            ItemStack toMainhand = event.getMainHandItem();
+            ItemStack toOffhand = event.getOffHandItem();
+            if (toMainhand != null && toMainhand.getType().equals(Material.FILLED_MAP)) {
+                if (toOffhand != null && !toOffhand.getType().equals(Material.AIR)) {
+                    player.sendMessage(ChatColor.RED + "You can only swap hands if your main hand is empty!");
+                } else {
+                    event.setCancelled(false);
+                }
+                return;
+            }
+            if (toOffhand != null && toOffhand.getType().equals(Material.FILLED_MAP)) {
                 event.setCancelled(false);
                 return;
             }

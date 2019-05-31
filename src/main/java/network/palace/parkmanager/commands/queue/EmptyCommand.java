@@ -6,21 +6,20 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
 
-@CommandMeta(description = "Open a queue")
-public class OpenCommand extends CoreCommand {
+@CommandMeta(description = "Empty a queue")
+public class EmptyCommand extends CoreCommand {
 
-    public OpenCommand() {
-        super("open");
+    public EmptyCommand() {
+        super("empty");
     }
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 1) {
-            player.sendMessage(ChatColor.RED + "/queue open [id]");
+            player.sendMessage(ChatColor.RED + "/queue empty [id]");
             player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the queue id from /queue list!");
             return;
         }
@@ -34,15 +33,7 @@ public class OpenCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "Could not find a queue by id " + id + "!");
             return;
         }
-        queue.setOpen(true);
-        boolean attractionUpdate = false;
-        for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
-            if (attraction.getLinkedQueue() == null || !attraction.getLinkedQueue().equals(queue.getUuid())) continue;
-            attraction.setOpen(true);
-            attractionUpdate = true;
-        }
-        if (attractionUpdate) ParkManager.getAttractionManager().saveToFile();
-        ParkManager.getQueueManager().saveToFile();
-        player.sendMessage(queue.getName() + ChatColor.GREEN + " has been opened!");
+        queue.emptyQueue();
+        player.sendMessage(ChatColor.GREEN + "The queue for " + queue.getName() + ChatColor.GREEN + " has been emptied!");
     }
 }
