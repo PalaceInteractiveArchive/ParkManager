@@ -21,7 +21,7 @@ public class PlayerJoinAndLeave implements Listener {
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         ParkManager.getPlayerUtil().addLoginData(uuid,
-                Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings"),
+                Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings", "magicband"),
                 Core.getMongoHandler().getFriendList(uuid));
     }
 
@@ -34,10 +34,16 @@ public class PlayerJoinAndLeave implements Listener {
             player.kick(ChatColor.RED + "An error occurred while you were joining, try again in a few minutes!");
             return;
         }
-        player.getRegistry().addEntry("friends", loginData.get("friends"));
+
         if (loginData.containsKey("buildmode")) buildMode = loginData.getBoolean("buildmode");
-        Document settings = (Document) loginData.get("settings");
+        player.getRegistry().addEntry("friends", loginData.get("friends"));
+
+        Document magicbandData = (Document) loginData.get("magicband");
+        ParkManager.getMagicBandManager().handleJoin(player, magicbandData);
+
         ParkManager.getStorageManager().handleJoin(player, buildMode);
+
+        Document settings = (Document) loginData.get("settings");
         String visibility;
         if (!settings.containsKey("visibility") || !(settings.get("visibility") instanceof String)) {
             visibility = "all";
@@ -45,6 +51,7 @@ public class PlayerJoinAndLeave implements Listener {
             visibility = settings.getString("visibility");
         }
         ParkManager.getVisibilityUtil().handleJoin(player, visibility);
+
         String pack;
         if (!settings.containsKey("pack") || !(settings.get("pack") instanceof String)) {
             pack = "ask";

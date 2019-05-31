@@ -213,7 +213,7 @@ public class StorageManager {
                 ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"),
                 ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                         Arrays.asList(ChatColor.GRAY + "Right-Click to open", ChatColor.GRAY + "the Show Timetable")),
-                null, ParkManager.getMagicBandManager().getMagicBandItem("red", "gold"),
+                null, ParkManager.getMagicBandManager().getMagicBandItem(player),
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null
         };

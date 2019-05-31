@@ -17,7 +17,7 @@ public class PackCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 0 || player.getRank().getRankId() < Rank.MOD.getRankId()) {
+        if (args.length < 1 || player.getRank().getRankId() < Rank.MOD.getRankId()) {
             ParkManager.getPackManager().openMenu(player);
             return;
         }

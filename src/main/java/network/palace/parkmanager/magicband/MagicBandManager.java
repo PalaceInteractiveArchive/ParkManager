@@ -1,6 +1,7 @@
 package network.palace.parkmanager.magicband;
 
 import com.google.common.collect.ImmutableMap;
+import network.palace.core.Core;
 import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
 import network.palace.core.player.CPlayer;
@@ -15,6 +16,7 @@ import network.palace.parkmanager.queues.Queue;
 import network.palace.parkmanager.shop.Shop;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.apache.commons.lang.WordUtils;
+import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
@@ -34,6 +36,15 @@ public class MagicBandManager {
             case MAIN: {
                 VisibilityUtil.Setting setting = ParkManager.getVisibilityUtil().getSetting(player);
                 ChatColor color = setting.getColor();
+
+                ItemStack band = getMagicBandItem(player);
+                ItemMeta meta = band.getItemMeta();
+                meta.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
+                meta.setLore(Arrays.asList("", ChatColor.GRAY + "Choose from a variety of MagicBand",
+                        ChatColor.GRAY + "designs and customize the color",
+                        ChatColor.GRAY + "of the name for your MagicBand!"));
+                band.setItemMeta(meta);
+
                 List<MenuButton> buttons = Arrays.asList(
                         new MenuButton(2, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.AQUA + "Hotels and Resorts",
                                 Arrays.asList(ChatColor.GREEN + "Visit and rent a room", ChatColor.GREEN + "from a Resort Hotel!")),
@@ -67,7 +78,8 @@ public class MagicBandManager {
                                         openInventory(p, BandInventory.MAIN);
                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                                     }
-                                }))
+                                })),
+                        new MenuButton(22, band, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND)))
                 );
 
                 new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons).open();
@@ -348,6 +360,91 @@ public class MagicBandManager {
                 new Menu(27, ChatColor.BLUE + "Visibility Settings", player, buttons).open();
                 break;
             }
+            case CUSTOMIZE_BAND: {
+                List<MenuButton> buttons = Arrays.asList(
+                        new MenuButton(11, ItemUtil.create(getMaterial(BandType.SORCERER_MICKEY), ChatColor.GREEN + "Customize MagicBand Type"),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND_TYPE))),
+                        new MenuButton(15, ItemUtil.create(Material.JUKEBOX, ChatColor.GREEN + "Customize MagicBand Name Color"),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND_NAME))),
+                        getBackButton(22, BandInventory.MAIN)
+                );
+                new Menu(27, ChatColor.BLUE + "Customize MagicBand", player, buttons).open();
+                break;
+            }
+            case CUSTOMIZE_BAND_TYPE: {
+                ItemStack red = getMagicBandItem("red", (String) player.getRegistry().getEntry("bandNameColor"));
+                ItemMeta meta = red.getItemMeta();
+                meta.setDisplayName(BandType.RED.getName());
+                red.setItemMeta(meta);
+                ItemStack orange = getMagicBandItem("orange", (String) player.getRegistry().getEntry("bandNameColor"));
+                meta = orange.getItemMeta();
+                meta.setDisplayName(BandType.ORANGE.getName());
+                orange.setItemMeta(meta);
+                ItemStack yellow = getMagicBandItem("yellow", (String) player.getRegistry().getEntry("bandNameColor"));
+                meta = yellow.getItemMeta();
+                meta.setDisplayName(BandType.YELLOW.getName());
+                yellow.setItemMeta(meta);
+                ItemStack green = getMagicBandItem("green", (String) player.getRegistry().getEntry("bandNameColor"));
+                meta = green.getItemMeta();
+                meta.setDisplayName(BandType.GREEN.getName());
+                green.setItemMeta(meta);
+                ItemStack blue = getMagicBandItem("blue", (String) player.getRegistry().getEntry("bandNameColor"));
+                meta = blue.getItemMeta();
+                meta.setDisplayName(BandType.BLUE.getName());
+                blue.setItemMeta(meta);
+                ItemStack purple = getMagicBandItem("purple", (String) player.getRegistry().getEntry("bandNameColor"));
+                meta = purple.getItemMeta();
+                meta.setDisplayName(BandType.PURPLE.getName());
+                purple.setItemMeta(meta);
+                ItemStack pink = getMagicBandItem("pink", (String) player.getRegistry().getEntry("bandNameColor"));
+                meta = pink.getItemMeta();
+                meta.setDisplayName(BandType.PINK.getName());
+                pink.setItemMeta(meta);
+                List<MenuButton> buttons = Arrays.asList(
+                        new MenuButton(10, red, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.RED.getDBName()))),
+                        new MenuButton(11, orange, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.ORANGE.getDBName()))),
+                        new MenuButton(12, yellow, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.YELLOW.getDBName()))),
+                        new MenuButton(13, green, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.GREEN.getDBName()))),
+                        new MenuButton(14, blue, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.BLUE.getDBName()))),
+                        new MenuButton(15, purple, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PURPLE.getDBName()))),
+                        new MenuButton(16, pink, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PINK.getDBName()))),
+
+                        new MenuButton(20, ItemUtil.create(getMaterial(BandType.SORCERER_MICKEY), BandType.SORCERER_MICKEY.getName()),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.SORCERER_MICKEY.getDBName()))),
+                        new MenuButton(21, ItemUtil.create(getMaterial(BandType.HAUNTED_MANSION), BandType.HAUNTED_MANSION.getName()),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.HAUNTED_MANSION.getDBName()))),
+                        new MenuButton(22, ItemUtil.create(getMaterial(BandType.PRINCESSES), BandType.PRINCESSES.getName()),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PRINCESSES.getDBName()))),
+                        new MenuButton(23, ItemUtil.create(getMaterial(BandType.BIG_HERO_SIX), BandType.BIG_HERO_SIX.getName()),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.BIG_HERO_SIX.getDBName()))),
+                        new MenuButton(24, ItemUtil.create(getMaterial(BandType.HOLIDAY), BandType.HOLIDAY.getName()),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.HOLIDAY.getDBName()))),
+                        getBackButton(31, BandInventory.CUSTOMIZE_BAND)
+                );
+                new Menu(36, ChatColor.BLUE + "Customize MagicBand Type", player, buttons).open();
+                break;
+            }
+            case CUSTOMIZE_BAND_NAME: {
+                List<MenuButton> buttons = Arrays.asList(
+                        new MenuButton(10, ItemUtil.create(Material.RED_CONCRETE, ChatColor.RED + "Red"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "red"))),
+                        new MenuButton(11, ItemUtil.create(Material.ORANGE_CONCRETE, ChatColor.GOLD + "Orange"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "orange"))),
+                        new MenuButton(12, ItemUtil.create(Material.YELLOW_CONCRETE, ChatColor.YELLOW + "Yellow"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "yellow"))),
+                        new MenuButton(13, ItemUtil.create(Material.GREEN_CONCRETE, ChatColor.DARK_GREEN + "Green"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "green"))),
+                        new MenuButton(14, ItemUtil.create(Material.BLUE_CONCRETE, ChatColor.BLUE + "Blue"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "blue"))),
+                        new MenuButton(15, ItemUtil.create(Material.PURPLE_CONCRETE, ChatColor.DARK_PURPLE + "Purple"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "purple"))),
+                        new MenuButton(16, ItemUtil.create(Material.PINK_CONCRETE, ChatColor.LIGHT_PURPLE + "Pink"),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "pink"))),
+                        getBackButton(22, BandInventory.CUSTOMIZE_BAND)
+                );
+                new Menu(27, ChatColor.BLUE + "Customize MagicBand Name Color", player, buttons).open();
+                break;
+            }
             case TIMETABLE: {
                 List<MenuButton> buttons = ParkManager.getScheduleManager().getButtons();
                 buttons.add(getBackButton(49, BandInventory.SHOWS));
@@ -357,18 +454,87 @@ public class MagicBandManager {
         }
     }
 
+    private void setBandType(CPlayer player, String type) {
+        player.getRegistry().addEntry("bandType", type.toLowerCase());
+        ParkManager.getStorageManager().updateInventory(player);
+        player.sendMessage(ChatColor.GREEN + "You've changed to a " + BandType.fromString(type).getName() + ChatColor.GREEN + " MagicBand!");
+        player.closeInventory();
+        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", type.toLowerCase()));
+    }
+
+    private void setBandNameColor(CPlayer player, String color) {
+        player.getRegistry().addEntry("bandNameColor", color.toLowerCase());
+        ParkManager.getStorageManager().updateInventory(player);
+        player.sendMessage(ChatColor.GREEN + "You've set your MagicBand's name color to " + getNameColor(color) + color + "!");
+        player.closeInventory();
+        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", color.toLowerCase()));
+    }
+
+    public void handleJoin(CPlayer player, Document doc) {
+        String bandtype, namecolor;
+        if (!doc.containsKey("bandtype") || !doc.containsKey("namecolor")) {
+            bandtype = "red";
+            namecolor = "gold";
+        } else {
+            bandtype = doc.getString("bandtype");
+            namecolor = doc.getString("namecolor");
+        }
+        player.getRegistry().addEntry("bandType", bandtype);
+        player.getRegistry().addEntry("bandNameColor", namecolor);
+    }
+
+    public ItemStack getMagicBandItem(CPlayer player) {
+        if (!player.getRegistry().hasEntry("bandType") || !player.getRegistry().hasEntry("bandNameColor")) {
+            return getMagicBandItem("red", "gold");
+        }
+        return getMagicBandItem((String) player.getRegistry().getEntry("bandType"), (String) player.getRegistry().getEntry("bandNameColor"));
+    }
+
     public ItemStack getMagicBandItem(String type, String color) {
         BandType bandType = BandType.fromString(type);
         ItemStack item;
-        if (bandType.isColor()) {
-            item = ItemUtil.create(Material.FIREWORK_STAR, getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
-            FireworkEffectMeta meta = (FireworkEffectMeta) item.getItemMeta();
-            meta.setEffect(FireworkEffect.builder().withColor(getBandColor(bandType)).build());
-            item.setItemMeta(meta);
-        } else {
-            item = null;
+        switch (bandType) {
+            case RED:
+            case ORANGE:
+            case YELLOW:
+            case GREEN:
+            case BLUE:
+            case PURPLE:
+            case PINK: {
+                item = ItemUtil.create(Material.FIREWORK_STAR, getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
+                FireworkEffectMeta meta = (FireworkEffectMeta) item.getItemMeta();
+                meta.setEffect(FireworkEffect.builder().withColor(getBandColor(bandType)).build());
+                item.setItemMeta(meta);
+                break;
+            }
+            case SORCERER_MICKEY:
+            case HAUNTED_MANSION:
+            case PRINCESSES:
+            case BIG_HERO_SIX:
+            case HOLIDAY:
+                item = ItemUtil.create(getMaterial(bandType), getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
+                break;
+            default:
+                return getMagicBandItem("red", "gold");
         }
         return item;
+    }
+
+    private Material getMaterial(BandType type) {
+        switch (type) {
+            case SORCERER_MICKEY:
+                return Material.DIAMOND_HORSE_ARMOR;
+            case HAUNTED_MANSION:
+                return Material.GOLDEN_HORSE_ARMOR;
+            case PRINCESSES:
+                return Material.GHAST_TEAR;
+            case BIG_HERO_SIX:
+                return Material.IRON_HORSE_ARMOR;
+            case HOLIDAY:
+                return Material.PAPER;
+            default:
+                return Material.FIREWORK_STAR;
+        }
     }
 
     private Color getBandColor(BandType type) {
@@ -386,6 +552,7 @@ public class MagicBandManager {
             case PINK:
                 return Color.fromRGB(246, 120, 255);
             default:
+                //Red
                 return Color.fromRGB(255, 40, 40);
         }
     }
@@ -397,14 +564,15 @@ public class MagicBandManager {
             case "yellow":
                 return ChatColor.YELLOW;
             case "green":
-                return ChatColor.GREEN;
-            case "darkgreen":
                 return ChatColor.DARK_GREEN;
             case "blue":
                 return ChatColor.BLUE;
             case "purple":
                 return ChatColor.DARK_PURPLE;
+            case "pink":
+                return ChatColor.LIGHT_PURPLE;
             default:
+                //Gold
                 return ChatColor.GOLD;
         }
     }
