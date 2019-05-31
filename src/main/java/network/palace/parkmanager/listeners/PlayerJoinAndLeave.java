@@ -21,7 +21,7 @@ public class PlayerJoinAndLeave implements Listener {
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         ParkManager.getPlayerUtil().addLoginData(uuid,
-                Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings.visibility"),
+                Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings"),
                 Core.getMongoHandler().getFriendList(uuid));
     }
 
@@ -36,8 +36,22 @@ public class PlayerJoinAndLeave implements Listener {
         }
         player.getRegistry().addEntry("friends", loginData.get("friends"));
         if (loginData.containsKey("buildmode")) buildMode = loginData.getBoolean("buildmode");
+        Document settings = (Document) loginData.get("settings");
         ParkManager.getStorageManager().handleJoin(player, buildMode);
-        ParkManager.getVisibilityUtil().handleJoin(player, loginData.getString("settings.visibility2"));
+        String visibility;
+        if (!settings.containsKey("visibility") || !(settings.get("visibility") instanceof String)) {
+            visibility = "all";
+        } else {
+            visibility = settings.getString("visibility");
+        }
+        ParkManager.getVisibilityUtil().handleJoin(player, visibility);
+        String pack;
+        if (!settings.containsKey("pack") || !(settings.get("pack") instanceof String)) {
+            pack = "ask";
+        } else {
+            pack = settings.getString("pack");
+        }
+        ParkManager.getPackManager().handleJoin(player, pack);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

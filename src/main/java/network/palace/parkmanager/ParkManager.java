@@ -15,6 +15,7 @@ import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.listeners.*;
 import network.palace.parkmanager.magicband.MagicBandManager;
 import network.palace.parkmanager.outline.OutlineManager;
+import network.palace.parkmanager.packs.PackManager;
 import network.palace.parkmanager.queues.QueueManager;
 import network.palace.parkmanager.showschedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
@@ -36,6 +37,7 @@ public class ParkManager extends Plugin {
     @Getter private static LeaderboardManager leaderboardManager;
     @Getter private static MagicBandManager magicBandManager;
     @Getter private static OutlineManager outlineManager;
+    @Getter private static PackManager packManager;
     @Getter private static PlayerUtil playerUtil;
     @Getter private static QueueManager queueManager;
     @Getter private static ScheduleManager scheduleManager;
@@ -59,6 +61,7 @@ public class ParkManager extends Plugin {
         leaderboardManager = new LeaderboardManager();
         magicBandManager = new MagicBandManager();
         outlineManager = new OutlineManager();
+        packManager = new PackManager();
         playerUtil = new PlayerUtil();
         queueManager = new QueueManager();
         scheduleManager = new ScheduleManager();
@@ -102,6 +105,7 @@ public class ParkManager extends Plugin {
         registerCommand(new NightVisionCommand());
         registerCommand(new NoonCommand());
         registerCommand(new OutlineCommand());
+        registerCommand(new PackCommand());
         registerCommand(new PlayerTimeCommand());
         registerCommand(new PlayerWeatherCommand());
         registerCommand(new QueueCommand());
@@ -114,6 +118,7 @@ public class ParkManager extends Plugin {
     public void registerListeners() {
         registerListener(new BlockEdit());
         registerListener(new InventoryListener());
+        registerListener(packManager);
         registerListener(new PlayerGameModeChange());
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
