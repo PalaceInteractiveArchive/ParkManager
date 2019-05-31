@@ -68,7 +68,7 @@ public class QueueBuilder extends Queue {
             this.groupSize = groupSize;
             player.sendMessage(ChatColor.GREEN + "We need to define the number of seconds after bringing in a group to wait before we bring the next group in. Run "
                     + ChatColor.YELLOW + "/queue create [delay in seconds]");
-            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Delays must be at least 1, but have no upper limit.");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Delays must be at least 5, but have no upper limit.");
             return;
         }
         if (delay == 0) {
@@ -78,9 +78,9 @@ public class QueueBuilder extends Queue {
                 return;
             }
             int delay = Integer.parseInt(args[0]);
-            if (delay < 1) {
+            if (delay < 5) {
                 player.sendMessage(ChatColor.RED + "/queue create [delay]");
-                player.sendMessage(ChatColor.RED + "delay must be at least 1! You entered: " + delay);
+                player.sendMessage(ChatColor.RED + "delay must be at least 5! You entered: " + delay);
                 return;
             }
             this.delay = delay;

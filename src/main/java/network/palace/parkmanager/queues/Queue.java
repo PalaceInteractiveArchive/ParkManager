@@ -116,7 +116,7 @@ public abstract class Queue {
             queueMembers.forEach(uuid -> {
                 CPlayer player = Core.getPlayerManager().getPlayer(uuid);
                 if (player != null)
-                    player.getActionBar().show(ChatColor.GREEN + "You're #" + getPosition(uuid) + " in queue for " + name + " | " + ChatColor.LIGHT_PURPLE + "Wait: " + getWaitFor(uuid, currentTime));
+                    player.getActionBar().show(ChatColor.GREEN + "You're #" + getPosition(uuid) + " in queue for " + name + ChatColor.YELLOW + " | " + "Wait: " + getWaitFor(uuid, currentTime));
             });
 //        } else {
             //No group scheduled, do nothing
