@@ -44,6 +44,7 @@ public class ParkManager extends Plugin {
     @Getter private static RideCounterUtil rideCounterUtil;
     @Getter private static ScheduleManager scheduleManager;
     @Getter private static ShopManager shopManager;
+    @Getter private static ConfigUtil configUtil;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
@@ -70,6 +71,7 @@ public class ParkManager extends Plugin {
         rideCounterUtil = new RideCounterUtil();
         scheduleManager = new ScheduleManager();
         shopManager = new ShopManager();
+        configUtil = new ConfigUtil();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();
@@ -115,9 +117,11 @@ public class ParkManager extends Plugin {
         registerCommand(new PlayerTimeCommand());
         registerCommand(new PlayerWeatherCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new SetSpawnCommand());
         registerCommand(new ShopCommand());
         registerCommand(new ShowScheduleCommand());
         registerCommand(new SignCommand());
+        registerCommand(new SpawnCommand());
         registerCommand(new SpeedCommand());
         registerCommand(new TeleportCommand());
     }
