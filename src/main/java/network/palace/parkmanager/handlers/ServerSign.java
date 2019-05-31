@@ -8,7 +8,8 @@ import org.bukkit.block.Sign;
 @AllArgsConstructor
 public enum ServerSign {
     DISPOSAL("[Disposal]"), RIDE_LEADERBOARD("[Leaderboard]"),
-    SERVER("[Server]"), WARP("[Warp]"), QUEUE("[Queue]");
+    SERVER("[Server]"), WARP("[Warp]"), QUEUE("[Queue]"),
+    SHOP("[Shop]");
 
     private String signHeader;
 

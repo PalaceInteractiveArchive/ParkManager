@@ -184,7 +184,7 @@ public class ScheduleManager {
             buttons.set(i, new MenuButton(b.getSlot(), getEditItem(b.getItemStack()), ImmutableMap.of(ClickType.LEFT, p -> editShow(player, b.getSlot()))));
         }
 
-        new Menu(Core.createInventory(54, ChatColor.BLUE + "Edit Timetable"), ChatColor.BLUE + "Edit Timetable", player, buttons).open();
+        new Menu(54, ChatColor.BLUE + "Edit Timetable", player, buttons).open();
     }
 
     private void editShow(CPlayer player, int slot) {
@@ -226,7 +226,7 @@ public class ScheduleManager {
             );
         }
 
-        new Menu(Core.createInventory(54, ChatColor.BLUE + "Edit Show"), ChatColor.BLUE + "Edit Show", player, buttons).open();
+        new Menu(54, ChatColor.BLUE + "Edit Show", player, buttons).open();
     }
 
     private void saveToDatabase() {

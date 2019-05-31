@@ -135,8 +135,7 @@ public class AutographManager {
             }
 
             int size = books.size() < 10 ? 9 : (books.size() < 19 ? 18 : (books.size() < 28 ? 27 : (books.size() < 37 ? 36 : (books.size() < 46 ? 45 : 54))));
-            new Menu(Core.createInventory(size, ChatColor.BLUE + "Choose an Autograph Book"),
-                    ChatColor.BLUE + "Choose an Autograph Book", player, buttons);
+            new Menu(size, ChatColor.BLUE + "Choose an Autograph Book", player, buttons);
         } else if (item.getItemMeta().hasLore()) {
             //Player wants to open the book in their hand
             openBook(player, item);

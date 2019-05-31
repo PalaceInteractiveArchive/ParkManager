@@ -17,6 +17,7 @@ import network.palace.parkmanager.magicband.MagicBandManager;
 import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.packs.PackManager;
 import network.palace.parkmanager.queues.QueueManager;
+import network.palace.parkmanager.shop.ShopManager;
 import network.palace.parkmanager.showschedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
@@ -40,7 +41,9 @@ public class ParkManager extends Plugin {
     @Getter private static PackManager packManager;
     @Getter private static PlayerUtil playerUtil;
     @Getter private static QueueManager queueManager;
+    @Getter private static RideCounterUtil rideCounterUtil;
     @Getter private static ScheduleManager scheduleManager;
+    @Getter private static ShopManager shopManager;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
@@ -64,7 +67,9 @@ public class ParkManager extends Plugin {
         packManager = new PackManager();
         playerUtil = new PlayerUtil();
         queueManager = new QueueManager();
+        rideCounterUtil = new RideCounterUtil();
         scheduleManager = new ScheduleManager();
+        shopManager = new ShopManager();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();
@@ -83,6 +88,7 @@ public class ParkManager extends Plugin {
     }
 
     public void registerCommands() {
+        registerCommand(new AddRideCounterCommand());
         registerCommand(new AttractionCommand());
         registerCommand(new AutographCommand());
         registerCommand(new BackCommand());
@@ -109,6 +115,7 @@ public class ParkManager extends Plugin {
         registerCommand(new PlayerTimeCommand());
         registerCommand(new PlayerWeatherCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new ShopCommand());
         registerCommand(new ShowScheduleCommand());
         registerCommand(new SignCommand());
         registerCommand(new SpeedCommand());

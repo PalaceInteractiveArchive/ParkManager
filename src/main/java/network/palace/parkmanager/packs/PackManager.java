@@ -140,8 +140,7 @@ public class PackManager implements Listener {
                         ImmutableMap.of(ClickType.LEFT, p -> changeSetting(p, "enabled")))
         );
 
-        new Menu(Core.createInventory(27, ChatColor.BLUE + "Pack Setting"), ChatColor.BLUE + "Pack Setting",
-                player, buttons).open();
+        new Menu(27, ChatColor.BLUE + "Pack Setting", player, buttons).open();
     }
 
     /**

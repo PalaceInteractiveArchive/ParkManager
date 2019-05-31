@@ -1,7 +1,6 @@
 package network.palace.parkmanager.magicband;
 
 import com.google.common.collect.ImmutableMap;
-import network.palace.core.Core;
 import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
 import network.palace.core.player.CPlayer;
@@ -13,6 +12,7 @@ import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.queues.Queue;
+import network.palace.parkmanager.shop.Shop;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
@@ -70,8 +70,7 @@ public class MagicBandManager {
                                 }))
                 );
 
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Your MagicBand"),
-                        ChatColor.BLUE + "Your MagicBand", player, buttons).open();
+                new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons).open();
                 break;
             }
             case FOOD: {
@@ -97,13 +96,11 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no food locations on this server!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.MAIN));
-                new Menu(Core.createInventory(size, ChatColor.BLUE + "Food Locations"),
-                        ChatColor.BLUE + "Food Locations", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Food Locations", player, buttons).open();
                 break;
             }
             case SHOWS: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Shows and Events"),
-                        ChatColor.BLUE + "Shows and Events", player, Arrays.asList(
+                new Menu(27, ChatColor.BLUE + "Shows and Events", player, Arrays.asList(
                         new MenuButton(8, ItemUtil.create(Material.BOOK, ChatColor.AQUA + "Show Timetable"),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.TIMETABLE))),
                         new MenuButton(10, ItemUtil.create(Material.DIAMOND_SWORD, ChatColor.RED + "Symphony in the Stars"),
@@ -124,8 +121,7 @@ public class MagicBandManager {
                 break;
             }
             case ATTRACTION_MENU:
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Attractions Menu"),
-                        ChatColor.BLUE + "Attractions Menu", player, Arrays.asList(
+                new Menu(27, ChatColor.BLUE + "Attractions Menu", player, Arrays.asList(
                         new MenuButton(11, ItemUtil.create(Material.MINECART, ChatColor.AQUA + "Attractions List",
                                 Arrays.asList(ChatColor.GREEN + "View all of our available", ChatColor.GREEN + "theme park attractions")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.ATTRACTION_LIST))),
@@ -173,8 +169,7 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no attractions on this server!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.ATTRACTION_MENU));
-                new Menu(Core.createInventory(size, ChatColor.BLUE + "Attractions List"),
-                        ChatColor.BLUE + "Attractions List", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Attractions List", player, buttons).open();
                 break;
             }
             case WAIT_TIMES: {
@@ -204,8 +199,7 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no queues on this server!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.ATTRACTION_MENU));
-                new Menu(Core.createInventory(size, ChatColor.BLUE + "Wait Times"),
-                        ChatColor.BLUE + "Wait Times", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Wait Times", player, buttons).open();
                 break;
             }
             case PARKS: {
@@ -218,8 +212,7 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp seasonal"))),
                         getBackButton(22, BandInventory.MAIN)
                 );
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Park Menu"),
-                        ChatColor.BLUE + "Park Menu", player, buttons).open();
+                new Menu(27, ChatColor.BLUE + "Park Menu", player, buttons).open();
                 break;
             }
             case PARKS_WDW: {
@@ -240,28 +233,53 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp dcl"))),
                         getBackButton(22, BandInventory.PARKS)
                 );
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Park Menu - WDW"),
-                        ChatColor.BLUE + "Park Menu - WDW", player, buttons).open();
+                new Menu(27, ChatColor.BLUE + "Park Menu - WDW", player, buttons).open();
                 break;
             }
             case SHOP: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Shop List"),
-                        ChatColor.BLUE + "Shop List", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                List<MenuButton> buttons = new ArrayList<>();
+                int i = 0;
+                int size = 18;
+                for (Shop shop : ParkManager.getShopManager().getShops()) {
+                    ItemStack item = shop.getItem();
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + shop.getWarp()));
+                    item.setItemMeta(meta);
+                    if (i != 0 && i % 9 == 0) {
+                        size += 9;
+                    }
+                    if (size > 54) {
+                        size = 54;
+                        break;
+                    }
+                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> p.performCommand("warp " + shop.getWarp()))));
+                }
+                if (buttons.isEmpty()) {
+                    buttons.add(new MenuButton(4, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.RED + "No Shops",
+                            Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no shops on this server!"))));
+                }
+                buttons.add(getBackButton(size - 5, BandInventory.MAIN));
+                new Menu(size, ChatColor.BLUE + "Shop List", player, buttons).open();
                 break;
             }
             case WARDROBE: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Wardrobe Manager"),
-                        ChatColor.BLUE + "Wardrobe Manager", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                new Menu(27, ChatColor.BLUE + "Wardrobe Manager", player, Arrays.asList(
+                        new MenuButton(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.AQUA + "Pardon Our Pixie Dust!",
+                                Arrays.asList(ChatColor.GRAY + "We've temporarily disabled outfits",
+                                        ChatColor.GRAY + "while we work to improve them",
+                                        ChatColor.GRAY + "behind the scenes.", "",
+                                        ChatColor.GRAY + "We apologize for the inconvenience,",
+                                        ChatColor.GRAY + "they will be returning shortly!"))),
+                        getBackButton(22, BandInventory.MAIN))
+                ).open();
                 break;
             }
             case HOTELS: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Hotels and Resorts"),
-                        ChatColor.BLUE + "Hotels and Resorts", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                new Menu(27, ChatColor.BLUE + "Hotels and Resorts", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
                 break;
             }
             case PROFILE: {
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "My Profile"),
-                        ChatColor.BLUE + "My Profile", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
+                new Menu(27, ChatColor.BLUE + "My Profile", player, Collections.singletonList(getBackButton(22, BandInventory.MAIN))).open();
                 break;
             }
             case VISIBILITY: {
@@ -327,15 +345,13 @@ public class MagicBandManager {
                                 })),
                         getBackButton(22, BandInventory.MAIN)
                 );
-                new Menu(Core.createInventory(27, ChatColor.BLUE + "Visibility Settings"),
-                        ChatColor.BLUE + "Visibility Settings", player, buttons).open();
+                new Menu(27, ChatColor.BLUE + "Visibility Settings", player, buttons).open();
                 break;
             }
             case TIMETABLE: {
                 List<MenuButton> buttons = ParkManager.getScheduleManager().getButtons();
                 buttons.add(getBackButton(49, BandInventory.SHOWS));
-                new Menu(Core.createInventory(54, ChatColor.BLUE + "Show Timetable"),
-                        ChatColor.BLUE + "Show Timetable", player, buttons).open();
+                new Menu(54, ChatColor.BLUE + "Show Timetable", player, buttons).open();
                 break;
             }
         }

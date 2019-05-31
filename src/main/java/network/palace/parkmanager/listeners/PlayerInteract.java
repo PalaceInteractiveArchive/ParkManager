@@ -9,6 +9,7 @@ import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.leaderboard.LeaderboardSign;
 import network.palace.parkmanager.magicband.BandInventory;
 import network.palace.parkmanager.queues.Queue;
+import network.palace.parkmanager.shop.Shop;
 import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.Bukkit;
@@ -91,6 +92,15 @@ public class PlayerInteract implements Listener {
                                 queue.joinQueue(player);
                             }
                             break;
+                        case SHOP: {
+                            Shop shop = ParkManager.getShopManager().getShop(ChatColor.stripColor(lines[1]));
+                            if (shop == null) {
+                                player.sendMessage(ChatColor.RED + "Could not find a shop named " + lines[1] + "!");
+                                return;
+                            }
+                            ParkManager.getShopManager().openShopInventory(player, shop);
+                            break;
+                        }
                     }
                 }
                 return;
