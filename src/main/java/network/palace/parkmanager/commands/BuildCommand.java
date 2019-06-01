@@ -22,7 +22,7 @@ public class BuildCommand extends CoreCommand {
             return;
         }
         if (!ParkManager.getBuildUtil().canToggleBuildMode(player)) return;
-        player.getRegistry().addEntry("buildModeTimeout", System.currentTimeMillis());
-        player.sendMessage(ChatColor.YELLOW + "You have " + (ParkManager.getBuildUtil().toggleBuildMode(player) ? "entered" : "exited") + " Build Mode");
+        if (ParkManager.getBuildUtil().toggleBuildMode(player))
+            player.getRegistry().addEntry("buildModeTimeout", System.currentTimeMillis());
     }
 }

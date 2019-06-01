@@ -12,6 +12,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.magicband.MenuType;
+import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -48,10 +49,10 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
-        if (player == null || ParkManager.getBuildUtil().isInBuildMode(player)) return;
-        if (!event.getClickedInventory().equals(player.getInventory())) return;
-        int slot = event.getSlot();
-        if (slot < 5 || slot > 8) return;
+        if (player == null
+                || ParkManager.getBuildUtil().isInBuildMode(player)
+                || !event.getClickedInventory().equals(player.getInventory())
+                || !InventoryUtil.isReservedSlot(event.getSlot())) return;
         event.setCancelled(true);
     }
 

@@ -3,13 +3,8 @@ package network.palace.parkmanager.utils;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.storage.StorageData;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.ChatColor;
 
 import java.util.UUID;
 
@@ -20,81 +15,29 @@ public class BuildUtil {
     }
 
     public boolean isInBuildMode(CPlayer player) {
-        if (player == null || !player.getRegistry().hasEntry("buildMode")) return false;
-        return (boolean) player.getRegistry().getEntry("buildMode");
+        return ParkManager.getInventoryUtil().getInventoryState(player).equals(InventoryUtil.InventoryState.BUILD);
     }
 
     /**
      * Toggle the player's build mode status
      *
      * @param player the player
-     * @return true if entering build mode, false if exiting it
+     * @return true if the toggle was successful
      */
     public boolean toggleBuildMode(CPlayer player) {
-        return toggleBuildMode(player, false);
-    }
-
-    /**
-     * Toggle the player's build mode status
-     *
-     * @param player the player
-     * @param join   true if this is setting the player to build mode as they're joining, false if setting after they've been online
-     * @return true if entering build mode, false if exiting it
-     * @implNote IMPORTANT: join should only be set to true when setting the player to build mode on join
-     */
-    public boolean toggleBuildMode(CPlayer player, boolean join) {
-        if (player == null || !player.getRegistry().hasEntry("storageData")) return false;
-
-        boolean newSetting = !isInBuildMode(player);
-        player.getRegistry().addEntry("buildMode", newSetting);
-
-        PlayerInventory inv = player.getInventory();
-        StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
-        if (newSetting) {
-            //Player is moving to build mode
-            player.setGamemode(GameMode.CREATIVE);
-            ParkManager.getTimeUtil().unselectWatch(player);
-
-            ItemStack[] invContents = inv.getStorageContents();
-
-            if (!join) {
-                ItemStack[] base = new ItemStack[36];
-                //Store current inventory items (except reserved slots) into 'base' array
-                for (int i = 0; i < invContents.length; i++) {
-                    if (InventoryUtil.isReservedSlot(i)) continue;
-                    base[i] = invContents[i];
-                }
-                data.setBase(base);
-            }
-
-            //Clear inventory and set basic build items
-            inv.setContents(new ItemStack[]{ItemUtil.create(Material.COMPASS), ItemUtil.create(Material.WOODEN_AXE)});
-
-            ItemStack[] buildContents = data.getBuild();
-            //Copy 'buildContents' items into main inventory offset by 2 for compass and WorldEdit wand
-            for (int i = 0; i < buildContents.length; i++) {
-                inv.setItem(i + 2, buildContents[i]);
-            }
-        } else {
-            //Player is leaving build mode
-            boolean flying = player.isFlying();
-            player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
-            if (flying) {
-                player.setAllowFlight(true);
-                player.setFlying(true);
-            }
-
-            ItemStack[] build = new ItemStack[34];
-            ItemStack[] invContents = inv.getStorageContents();
-            //Store current inventory items into 'build' array
-            if (invContents.length - 2 >= 0) System.arraycopy(invContents, 2, build, 0, invContents.length - 2);
-            data.setBuild(build);
-
-            ParkManager.getStorageManager().updateInventory(player, true);
-            if (player.getHeldItemSlot() == 6) ParkManager.getTimeUtil().selectWatch(player);
+        InventoryUtil.InventoryState state = ParkManager.getInventoryUtil().getInventoryState(player);
+        if (state.equals(InventoryUtil.InventoryState.RIDE)) {
+            player.sendMessage(ChatColor.RED + "You cannot toggle Build Mode while on a ride!");
+            return false;
         }
-        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), newSetting));
-        return newSetting;
+        if (state.equals(InventoryUtil.InventoryState.BUILD)) {
+            ParkManager.getInventoryUtil().switchToState(player, InventoryUtil.InventoryState.GUEST);
+            player.sendMessage(ChatColor.YELLOW + "You have exited Build Mode");
+        } else {
+            ParkManager.getInventoryUtil().switchToState(player, InventoryUtil.InventoryState.BUILD);
+            player.sendMessage(ChatColor.YELLOW + "You have entered Build Mode");
+        }
+        return true;
     }
 
     public boolean canToggleBuildMode(CPlayer player) {

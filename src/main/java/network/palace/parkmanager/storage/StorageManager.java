@@ -14,7 +14,6 @@ import network.palace.parkmanager.utils.HashUtil;
 import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -42,12 +41,7 @@ public class StorageManager {
             map.forEach((uuid, build) -> {
                 CPlayer player = Core.getPlayerManager().getPlayer(uuid);
                 if (player == null) return;
-                if (build) {
-                    ParkManager.getBuildUtil().toggleBuildMode(player, true);
-                } else {
-                    player.setGamemode(player.getRank().getRankId() >= Rank.MOD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
-                    updateInventory(player, true);
-                }
+                ParkManager.getInventoryUtil().handleJoin(player, build ? InventoryUtil.InventoryState.BUILD : InventoryUtil.InventoryState.GUEST);
             });
         }, 0L, 10L);
     }
@@ -89,19 +83,30 @@ public class StorageManager {
 
         PlayerInventory inv = player.getInventory();
         ItemStack[] invContents = inv.getStorageContents();
-        if (buildMode) {
-            build = new ItemStack[34];
-            //Store current inventory items into 'build' array
-            if (invContents.length - 2 >= 0) System.arraycopy(invContents, 2, build, 0, invContents.length - 2);
-            base = data.getBase();
-        } else {
-            base = new ItemStack[36];
-            //Store current inventory items (except reserved slots) into 'base' array
-            for (int i = 0; i < invContents.length; i++) {
-                if (InventoryUtil.isReservedSlot(i)) continue;
-                base[i] = invContents[i];
+
+        switch (ParkManager.getInventoryUtil().getInventoryState(player)) {
+            case GUEST: {
+                base = new ItemStack[36];
+                //Store current inventory items (except reserved slots) into 'base' array
+                for (int i = 0; i < invContents.length; i++) {
+                    if (InventoryUtil.isReservedSlot(i)) continue;
+                    base[i] = invContents[i];
+                }
+                build = data.getBuild();
+                break;
             }
-            build = data.getBuild();
+            case BUILD: {
+                build = new ItemStack[34];
+                //Store current inventory items into 'build' array
+                if (invContents.length - 2 >= 0) System.arraycopy(invContents, 2, build, 0, invContents.length - 2);
+                base = data.getBase();
+                break;
+            }
+            default: {
+                base = data.getBase();
+                build = data.getBuild();
+                break;
+            }
         }
 
         Core.runTaskAsynchronously(() -> {
