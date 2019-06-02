@@ -36,7 +36,14 @@ public class QueueBuilder extends Queue {
                 player.sendMessage(ChatColor.RED + "/queue create [name]");
                 return;
             }
-            this.name = args[0];
+            StringBuilder name = new StringBuilder();
+            for (int i = 0; i < args.length; i++) {
+                name.append(args[i]);
+                if (i < (args.length - 1)) {
+                    name.append(" ");
+                }
+            }
+            this.name = ChatColor.translateAlternateColorCodes('&', name.toString());
             player.sendMessage(ChatColor.GREEN + "Next, let's give your queue a warp. Run " + ChatColor.YELLOW + "/queue create [warp]");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The warp doesn't have to exist right now, but if it doesn't players won't be teleported anywhere!");
             return;
@@ -124,6 +131,7 @@ public class QueueBuilder extends Queue {
         if (type.equals(QueueType.BLOCK)) {
             if (!queueTypeFields.containsKey("blockLocation")) {
                 //Step 7
+                player.getRegistry().removeEntry("queueBuilder");
                 Location loc = player.getLocation();
                 queueTypeFields.put("blockLocation", new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
                 player.sendMessage(ChatColor.GREEN + "Great! Finalizing your Block Queue...");

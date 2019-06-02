@@ -120,6 +120,17 @@ public class QueueManager {
         return true;
     }
 
+    public Queue getQueue(Sign s) {
+        for (Queue queue : getQueues()) {
+            for (QueueSign sign : queue.getSigns()) {
+                if (sign.getLocation().equals(s.getLocation())) {
+                    return queue;
+                }
+            }
+        }
+        return null;
+    }
+
     public void saveToFile() {
         JsonArray array = new JsonArray();
         for (Queue queue : queues) {
@@ -151,16 +162,5 @@ public class QueueManager {
             Core.logMessage("QueueManager", "There was an error writing to the QueueManager config!");
             e.printStackTrace();
         }
-    }
-
-    public Queue getQueue(Sign s) {
-        for (Queue queue : getQueues()) {
-            for (QueueSign sign : queue.getSigns()) {
-                if (sign.getLocation().equals(s.getLocation())) {
-                    return queue;
-                }
-            }
-        }
-        return null;
     }
 }

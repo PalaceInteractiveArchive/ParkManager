@@ -3,10 +3,13 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,11 +33,10 @@ public class EntityDamage implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        EntityType type = event.getEntity().getType();
         Entity damager = event.getDamager();
-        switch (type) {
+        switch (event.getEntityType()) {
             case MINECART:
             case MINECART_CHEST:
             case MINECART_COMMAND:
@@ -66,6 +68,15 @@ public class EntityDamage implements Listener {
                         // Staff can only edit entities when in Build mode
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You must be in Build Mode to break entities!");
+                    } else {
+                        if (event.getEntityType().equals(EntityType.ITEM_FRAME)) {
+                            ItemFrame frame = (ItemFrame) event.getEntity();
+                            event.setCancelled(true);
+                            if (frame.getItem() != null) {
+                                // We need to do this for now because of https://bugs.mojang.com/browse/MC-130558
+                                frame.setItem(ItemUtil.create(Material.AIR));
+                            }
+                        }
                     }
                 } else {
                     // Non-staff can't edit entities

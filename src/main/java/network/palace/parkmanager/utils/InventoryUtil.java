@@ -7,7 +7,6 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.handlers.storage.StorageData;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -46,9 +45,7 @@ public class InventoryUtil {
     public void switchToState(CPlayer player, InventoryState nextState) {
         InventoryState currentState = getInventoryState(player);
         if (currentState.equals(nextState)) return;
-        player.sendMessage(ChatColor.GREEN + "Exiting " + currentState.name());
         exitState(player, currentState);
-        player.sendMessage(ChatColor.GREEN + "Entering " + nextState.name());
         enterState(player, nextState);
     }
 
