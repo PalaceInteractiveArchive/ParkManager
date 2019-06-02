@@ -3,17 +3,9 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.ServerSign;
 import network.palace.parkmanager.handlers.magicband.MenuType;
-import network.palace.parkmanager.leaderboard.LeaderboardManager;
-import network.palace.parkmanager.leaderboard.LeaderboardSign;
+import network.palace.parkmanager.handlers.sign.ServerSign;
 import network.palace.parkmanager.magicband.BandInventory;
-import network.palace.parkmanager.queues.Queue;
-import network.palace.parkmanager.shop.Shop;
-import network.palace.parkwarp.ParkWarp;
-import network.palace.parkwarp.handlers.Warp;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -22,11 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class PlayerInteract implements Listener {
 
@@ -44,8 +31,11 @@ public class PlayerInteract implements Listener {
             Block b = event.getClickedBlock();
             if (b.getType().equals(Material.SIGN) || b.getType().equals(Material.WALL_SIGN)) {
                 Sign s = (Sign) b.getState();
-                ServerSign signType = ServerSign.fromSign(s);
-                String[] lines = s.getLines();
+                ServerSign.SignEntry signEntry = ServerSign.getByHeader(s.getLine(0));
+                if (signEntry != null) {
+                    signEntry.getHandler().onInteract(player, s, event);
+                }
+                /*String[] lines = s.getLines();
                 if (signType != null) {
                     switch (signType) {
                         case DISPOSAL:
@@ -102,7 +92,7 @@ public class PlayerInteract implements Listener {
                             break;
                         }
                     }
-                }
+                }*/
                 return;
             }
         }

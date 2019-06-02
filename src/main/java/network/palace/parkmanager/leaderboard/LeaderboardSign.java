@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import network.palace.core.Core;
-import network.palace.parkmanager.handlers.ServerSign;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -39,7 +38,7 @@ public class LeaderboardSign {
         if (s == null) {
             return;
         }
-        s.setLine(0, ChatColor.BLUE + ServerSign.RIDE_LEADERBOARD.getSignHeader());
+        s.setLine(0, ChatColor.BLUE + "[Leaderboard]");
         s.setLine(1, "");
         s.setLine(2, ChatColor.AQUA + "Updating...");
         s.setLine(3, "");

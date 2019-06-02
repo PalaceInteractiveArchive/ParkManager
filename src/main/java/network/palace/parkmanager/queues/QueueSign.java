@@ -3,7 +3,6 @@ package network.palace.parkmanager.queues;
 import lombok.Getter;
 import lombok.Setter;
 import network.palace.core.utils.TextUtil;
-import network.palace.parkmanager.handlers.ServerSign;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,7 +27,7 @@ public class QueueSign {
         Block b = location.getBlock();
         if (!b.getType().equals(Material.SIGN) && !b.getType().equals(Material.WALL_SIGN)) return;
         Sign s = (Sign) b.getState();
-        String[] lines = new String[]{ChatColor.BLUE + ServerSign.QUEUE.getSignHeader(), queueName, amount
+        String[] lines = new String[]{ChatColor.BLUE + "[Queue]", queueName, amount
                 + " Player" + TextUtil.pluralize(amount), wait};
         boolean updated = false;
         for (int i = 0; i < lines.length; i++) {

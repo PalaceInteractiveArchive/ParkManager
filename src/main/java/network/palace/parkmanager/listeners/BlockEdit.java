@@ -4,8 +4,7 @@ import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.ServerSign;
-import network.palace.parkmanager.queues.Queue;
+import network.palace.parkmanager.handlers.sign.ServerSign;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -40,10 +39,13 @@ public class BlockEdit implements Listener {
         Material type = event.getBlock().getType();
         if (type.equals(Material.SIGN) || type.equals(Material.WALL_SIGN)) {
             Sign s = (Sign) event.getBlock().getState();
-            ServerSign signType = ServerSign.fromSign(s);
+//            ServerSign signType = ServerSign.fromSign(s);
 
-            if (signType != null) {
-                switch (signType) {
+            ServerSign.SignEntry signEntry = ServerSign.getByHeader(s.getLine(0));
+
+            if (signEntry != null) {
+                signEntry.getHandler().onBreak(player, s, event);
+                /*switch (signType) {
                     case RIDE_LEADERBOARD:
                         ParkManager.getLeaderboardManager().deleteSign(s.getLocation());
                         break;
@@ -59,7 +61,7 @@ public class BlockEdit implements Listener {
                         queue.removeSign(s.getLocation());
                         player.sendMessage(ChatColor.GREEN + "You removed a queue sign for " + queue.getName());
                         break;
-                }
+                }*/
             }
         }
 
