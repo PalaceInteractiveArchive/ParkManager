@@ -43,7 +43,9 @@ public enum ShowType {
     //Seasonal
     BITHM(ChatColor.AQUA + "Believe in the Holiday Magic", Material.BLAZE_ROD),
     //Anniversary
-    MCMD(ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST);
+    MCMD(ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST),
+    //DVC
+    MOONLIGHT(ChatColor.AQUA + "Moonlight Magic", Material.BLUE_GLAZED_TERRACOTTA);
 
     private String name;
     private Material type;
@@ -103,6 +105,8 @@ public enum ShowType {
                 return BITHM;
             case "mcmd":
                 return MCMD;
+            case "moonlight":
+                return MOONLIGHT;
         }
         return TBA;
     }
