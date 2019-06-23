@@ -27,7 +27,7 @@ public class QueueManager {
         long time = System.currentTimeMillis();
         long milliseconds = time - TimeUtil.getCurrentSecondInMillis(time);
         long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000));
-        Core.runTaskTimer(() -> {
+        Core.runTaskTimer(ParkManager.getInstance(), () -> {
             long currentTime = TimeUtil.getCurrentSecondInMillis();
             queues.forEach(queue -> {
                 queue.tick(currentTime);

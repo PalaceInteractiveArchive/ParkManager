@@ -180,7 +180,7 @@ public class ShopManager {
                         ImmutableMap.of(ClickType.LEFT, p -> {
                             p.closeInventory();
                             p.sendMessage(ChatColor.GREEN + "Processing your payment...");
-                            Core.runTaskAsynchronously(() -> {
+                            Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
                                 if (currencyType.equals(CurrencyType.BALANCE)) {
                                     p.removeBalance(cost, "Park Store");
                                 } else {

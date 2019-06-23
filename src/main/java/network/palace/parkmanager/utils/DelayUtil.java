@@ -3,6 +3,7 @@ package network.palace.parkmanager.utils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import network.palace.core.Core;
+import network.palace.parkmanager.ParkManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,7 +15,7 @@ public class DelayUtil {
     private List<DelayEntry> entries = new ArrayList<>();
 
     public DelayUtil() {
-        Core.runTaskTimer(() -> {
+        Core.runTaskTimer(ParkManager.getInstance(), () -> {
             List<DelayEntry> list = new ArrayList<>(entries);
             list.forEach(entry -> {
                 if (entry.tick()) entries.remove(entry);

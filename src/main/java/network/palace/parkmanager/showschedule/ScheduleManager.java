@@ -9,6 +9,7 @@ import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
+import network.palace.parkmanager.ParkManager;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -27,7 +28,7 @@ public class ScheduleManager {
     @Getter private List<MenuButton> buttons = new ArrayList<>();
 
     public ScheduleManager() {
-        Core.runTaskTimerAsynchronously(this::updateShows, 0L, 36000L);
+        Core.runTaskTimerAsynchronously(ParkManager.getInstance(), this::updateShows, 0L, 36000L);
     }
 
     public void updateShows() {
@@ -40,7 +41,7 @@ public class ScheduleManager {
             }
             return o1.getRawTime() - o2.getRawTime();
         });
-        Core.runTask(() -> {
+        Core.runTask(ParkManager.getInstance(), () -> {
             this.shows = shows;
             updateButtons();
         });
@@ -220,7 +221,7 @@ public class ScheduleManager {
                         p.sendMessage(ChatColor.GREEN + "Set the show at " + ChatColor.AQUA + finalShow.getDay().name() + " at " + finalShow.getTime() + ChatColor.GREEN + " (" + finalReplace + ") to " + type.getName());
                         shows.set(finalReplace, new ScheduledShow(type, finalShow.getDay(), finalShow.getRawTime(), finalShow.getTime()));
                         updateButtons();
-                        Core.runTaskAsynchronously(this::saveToDatabase);
+                        Core.runTaskAsynchronously(ParkManager.getInstance(), this::saveToDatabase);
                         editSchedule(p);
                     }))
             );

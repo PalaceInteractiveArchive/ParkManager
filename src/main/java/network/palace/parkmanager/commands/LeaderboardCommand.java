@@ -31,7 +31,7 @@ public class LeaderboardCommand extends CoreCommand {
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("update")) {
                 sender.sendMessage(ChatColor.GREEN + "Updating Ride Counter Leaderboards...");
-                Core.runTaskAsynchronously(() -> {
+                Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
                     ParkManager.getLeaderboardManager().update();
                     sender.sendMessage(ChatColor.GREEN + "Leaderboards updated!");
                 });
@@ -55,7 +55,7 @@ public class LeaderboardCommand extends CoreCommand {
             }
             String rideName = name.toString().trim();
             sender.sendMessage(ChatColor.AQUA + "Gathering leaderboard data for " + rideName + "...");
-            Core.runTaskAsynchronously(() -> {
+            Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
 
                 List<Document> list = Core.getMongoHandler().getRideCounterLeaderboard(rideName, top);
 

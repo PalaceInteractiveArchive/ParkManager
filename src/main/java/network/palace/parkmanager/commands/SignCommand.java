@@ -25,7 +25,7 @@ public class SignCommand extends CoreCommand {
                 msg.append(" ");
             }
         }
-        Core.runTaskAsynchronously(() -> {
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             player.sendMessage(ChatColor.GREEN + "Signing book...");
             ParkManager.getAutographManager().sign(player, msg.toString());
         });

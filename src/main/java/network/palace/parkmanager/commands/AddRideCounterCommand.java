@@ -43,7 +43,7 @@ public class AddRideCounterCommand extends CoreCommand {
                 rideName.append(" ");
             }
         }
-        Core.runTaskAsynchronously(() -> {
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             String finalRideName = rideName.toString().trim();
             Core.getMongoHandler().logRideCounter(tp.getUniqueId(), finalRideName);
 

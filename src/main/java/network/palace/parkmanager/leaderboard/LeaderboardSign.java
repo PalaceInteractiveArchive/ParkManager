@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import network.palace.core.Core;
+import network.palace.parkmanager.ParkManager;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -42,7 +43,7 @@ public class LeaderboardSign {
         s.setLine(1, "");
         s.setLine(2, ChatColor.AQUA + "Updating...");
         s.setLine(3, "");
-        Core.runTask(s::update);
+        Core.runTask(ParkManager.getInstance(), s::update);
         List<Document> list = Core.getMongoHandler().getRideCounterLeaderboard(rideName, 10);
         cachedMap.clear();
         for (Document doc : list) {
@@ -67,7 +68,7 @@ public class LeaderboardSign {
         if (list.size() >= 3) {
             s.setLine(3, getLine(list.get(2)));
         }
-        Core.runTask(s::update);
+        Core.runTask(ParkManager.getInstance(), s::update);
     }
 
     private String getLine(Document doc) {

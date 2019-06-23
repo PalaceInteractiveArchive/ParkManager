@@ -33,8 +33,8 @@ public class StorageManager {
     private HashMap<UUID, Boolean> joinList = new HashMap<>();
 
     public void initialize() {
-        Core.runTaskTimer(() -> Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory), 0L, 1200L);
-        Core.runTaskTimer(() -> {
+        Core.runTaskTimer(ParkManager.getInstance(), () -> Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory), 0L, 1200L);
+        Core.runTaskTimer(ParkManager.getInstance(), () -> {
             if (joinList.isEmpty()) return;
             HashMap<UUID, Boolean> map = new HashMap<>(joinList);
             joinList.clear();
@@ -49,7 +49,8 @@ public class StorageManager {
     /**
      * Handle inventory setting when a player joins
      *
-     * @param player the player
+     * @param player    the player
+     * @param buildMode whether the player should join in build mode
      */
     public void handleJoin(CPlayer player, boolean buildMode) {
         StorageData data = savedStorageData.getIfPresent(player.getUniqueId());
@@ -109,7 +110,7 @@ public class StorageManager {
             }
         }
 
-        Core.runTaskAsynchronously(() -> {
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             String backpackJson = ItemUtil.getJsonFromInventory(backpackInventory).toString();
             String backpackHash = HashUtil.generateHash(backpackJson);
             int backpackSize;
@@ -232,13 +233,13 @@ public class StorageManager {
             }
         }
         inv.setContents(contents);
-        Core.runTaskAsynchronously(() -> {
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             ParkManager.getAutographManager().updateAutographs(player);
             ParkManager.getAutographManager().giveBook(player);
         });
 
         if (player.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
-            Core.runTask(() -> player.setAllowFlight(true));
+            Core.runTask(ParkManager.getInstance(), () -> player.setAllowFlight(true));
         }
     }
 

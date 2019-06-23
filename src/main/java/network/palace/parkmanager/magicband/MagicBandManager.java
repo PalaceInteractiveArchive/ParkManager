@@ -96,7 +96,7 @@ public class MagicBandManager {
                             ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PLAYER_TIME))));
                 }
                 menu.open();
-                Core.runTaskAsynchronously(() -> {
+                Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
                     ItemStack updatedProfile = profile.clone();
                     ItemMeta menuMeta = updatedProfile.getItemMeta();
                     menuMeta.setLore(Arrays.asList(
@@ -676,7 +676,7 @@ public class MagicBandManager {
         ParkManager.getStorageManager().updateInventory(player);
         player.sendMessage(ChatColor.GREEN + "You've changed to a " + BandType.fromString(type).getName() + ChatColor.GREEN + " MagicBand!");
         player.closeInventory();
-        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", type.toLowerCase()));
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", type.toLowerCase()));
     }
 
     private void setBandNameColor(CPlayer player, String color) {
@@ -684,7 +684,7 @@ public class MagicBandManager {
         ParkManager.getStorageManager().updateInventory(player);
         player.sendMessage(ChatColor.GREEN + "You've set your MagicBand's name color to " + getNameColor(color) + color + "!");
         player.closeInventory();
-        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", color.toLowerCase()));
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", color.toLowerCase()));
     }
 
     public void handleJoin(CPlayer player, Document doc) {

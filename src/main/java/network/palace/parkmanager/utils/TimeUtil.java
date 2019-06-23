@@ -2,6 +2,7 @@ package network.palace.parkmanager.utils;
 
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
+import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public class TimeUtil {
     public TimeUtil() {
         long milliseconds = System.currentTimeMillis() - ((System.currentTimeMillis() / 1000) * 1000);
         long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000));
-        Core.runTaskTimer(() -> {
+        Core.runTaskTimer(ParkManager.getInstance(), () -> {
             String watchText = getWatchTimeText();
             watchViewers.forEach(uuid -> {
                 CPlayer player = Core.getPlayerManager().getPlayer(uuid);

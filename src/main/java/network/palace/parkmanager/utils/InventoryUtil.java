@@ -74,7 +74,7 @@ public class InventoryUtil {
                 ParkManager.getStorageManager().updateInventory(player, true);
                 if (player.getHeldItemSlot() == 6) ParkManager.getTimeUtil().selectWatch(player);
                 if (player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId())
-                    Core.runTaskAsynchronously(() -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), false));
+                    Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), false));
                 break;
             }
             case RIDE:
@@ -93,7 +93,7 @@ public class InventoryUtil {
                     inv.setItem(i + 2, buildContents[i]);
                 }
                 if (player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId())
-                    Core.runTaskAsynchronously(() -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), true));
+                    Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), true));
                 break;
             }
         }

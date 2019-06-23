@@ -194,7 +194,7 @@ public class AutographManager {
                 .then("Click here to Deny").color(ChatColor.RED).command("/autograph deny").tooltip(ChatColor.RED + "Click to Deny!")
                 .send(target);
 
-        signerMap.put(sender.getUniqueId(), Core.runTaskLater(() -> {
+        signerMap.put(sender.getUniqueId(), Core.runTaskLater(ParkManager.getInstance(), () -> {
             if (!target.getRegistry().hasEntry("autographRequestFrom") || !target.getRegistry().getEntry("autographRequestFrom").equals(sender.getUniqueId()))
                 //If target does not have a pending request or if the pending request is for someone else, do nothing
                 return;
@@ -207,7 +207,7 @@ public class AutographManager {
             target.sendMessage(sender.getRank().getTagColor() + sender.getName() + "'s " + ChatColor.RED + "Autograph Request sent to you has timed out!");
         }, 400L));
         UUID uuid = sender.getUniqueId();
-        receiverMap.put(sender.getUniqueId(), Core.runTaskTimer(new Runnable() {
+        receiverMap.put(sender.getUniqueId(), Core.runTaskTimer(ParkManager.getInstance(), new Runnable() {
             int i = 20;
 
             @Override
@@ -337,7 +337,7 @@ public class AutographManager {
         BookMeta meta = (BookMeta) book.getItemMeta();
         int bookNumber = Integer.parseInt(meta.getTitle().replaceAll(BOOK_TITLE + " #", ""));
 
-        Core.runTaskAsynchronously(() -> {
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             int pageNumber = (AUTOS_PER_BOOK * (bookNumber - 1)) + num;
             List<Signature> autographs = (List<Signature>) player.getRegistry().getEntry("autographs");
             if (pageNumber > (autographs.size() + 1)) {

@@ -62,7 +62,7 @@ public class SignChange implements Listener {
                 if (leaderboard == null) return;
                 String rideName = leaderboard.getRideName();
                 player.sendMessage(ChatColor.AQUA + "Gathering leaderboard data for " + rideName + "...");
-                Core.runTaskAsynchronously(() -> {
+                Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
                     List<String> messages = new ArrayList<>();
                     for (Map.Entry<UUID, Integer> entry : leaderboard.getCachedMap().entrySet()) {
                         messages.add(ChatColor.BLUE + LeaderboardManager.getFormattedName(entry.getKey(), entry.getValue()));

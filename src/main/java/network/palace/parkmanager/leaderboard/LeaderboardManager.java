@@ -47,7 +47,7 @@ public class LeaderboardManager {
             Core.logMessage("LeaderboardManager", "There was an error loading the LeaderboardManager config!");
             e.printStackTrace();
         }
-        Core.runTaskTimerAsynchronously(this::update, 400L, 10 * 60 * 20L);
+        Core.runTaskTimerAsynchronously(ParkManager.getInstance(), this::update, 400L, 10 * 60 * 20L);
     }
 
     private List<LeaderboardSign> getSigns() {
@@ -79,7 +79,7 @@ public class LeaderboardManager {
         Location loc = sign.getLocation();
         LeaderboardSign signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
         signs.add(signObject);
-        Core.runTaskAsynchronously(signObject::update);
+        Core.runTaskAsynchronously(ParkManager.getInstance(), signObject::update);
         saveToFile();
         return true;
     }

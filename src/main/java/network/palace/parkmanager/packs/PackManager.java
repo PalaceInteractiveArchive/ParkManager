@@ -103,7 +103,7 @@ public class PackManager implements Listener {
 
     public void handleJoin(CPlayer player, String s) {
         if (s.equals("ask")) {
-            Core.runTaskLater(() -> openMenu(player), 20L);
+            Core.runTaskLater(ParkManager.getInstance(), () -> openMenu(player), 20L);
             return;
         }
         player.getRegistry().addEntry("packSetting", s);
@@ -170,7 +170,7 @@ public class PackManager implements Listener {
         }
         player.closeInventory();
         sendPack(player);
-        Core.runTaskAsynchronously(() -> Core.getMongoHandler().setParkSetting(player.getUniqueId(), "pack", setting));
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setParkSetting(player.getUniqueId(), "pack", setting));
     }
 
     public void setServerPack(String pack) {
