@@ -17,7 +17,7 @@ public class PlayerGameModeChange implements Listener {
         if (player == null) return;
         GameMode gameMode = event.getNewGameMode();
         if (ParkManager.getBuildUtil().isInBuildMode(player)) {
-            if (!gameMode.equals(GameMode.CREATIVE)) {
+            if (!gameMode.equals(GameMode.CREATIVE) && !gameMode.equals(GameMode.SPECTATOR)) {
                 event.setCancelled(true);
             }
         } else {
