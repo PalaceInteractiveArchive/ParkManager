@@ -13,6 +13,7 @@ import org.bukkit.Material;
 public enum ShowType {
     //Normal Shows
     TBA(ChatColor.LIGHT_PURPLE + "To Be Announced", Material.BARRIER),
+    HEA(ChatColor.GOLD + "Happily Ever After", Material.GLOWSTONE_DUST),
     WISHES(ChatColor.AQUA + "Wishes", Material.BLAZE_ROD),
     IROE(ChatColor.GREEN + "Illuminations: Reflections of Earth", Material.NETHER_STAR),
     SITS(ChatColor.GOLD + "Symphony in the Stars", Material.DIAMOND_SWORD),
