@@ -58,6 +58,8 @@ public enum ShowType {
 
     public static ShowType fromString(String name) {
         switch (name.toLowerCase()) {
+            case "hea":
+                return HEA;
             case "wishes":
                 return WISHES;
             case "iroe":
