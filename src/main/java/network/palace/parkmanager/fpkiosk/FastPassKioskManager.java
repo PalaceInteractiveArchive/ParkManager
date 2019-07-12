@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import network.palace.core.Core;
 import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
+import network.palace.core.message.FormattedMessage;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
@@ -39,6 +40,14 @@ import java.util.*;
 public class FastPassKioskManager {
     private List<UUID> menu = new ArrayList<>();
     private final ZoneId timeZone = ZoneId.of("America/New_York");
+    private final FormattedMessage websiteMessage = new FormattedMessage("\n")
+            .then("Click here to visit our website!").color(ChatColor.YELLOW).style(ChatColor.BOLD)
+            .link("https://forums.palace.network").tooltip(ChatColor.GREEN + "Click to visit " +
+                    ChatColor.AQUA + "https://forums.palace.network")
+            .then("\n");
+    private final FormattedMessage voteMessage = new FormattedMessage("\n")
+            .then("Click here to vote for us on Minecraft Server Lists!").color(ChatColor.YELLOW).style(ChatColor.BOLD)
+            .link("https://vote.palace.network/?1").tooltip(ChatColor.GREEN + "Click to vote for us!").then("\n");
 
     public FastPassKioskManager() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ParkManager.getInstance(), PacketType.Play.Client.USE_ENTITY) {
@@ -72,7 +81,7 @@ public class FastPassKioskManager {
         Core.runTaskLater(ParkManager.getInstance(), () -> {
             menu.add(player.getUniqueId());
             player.getRegistry().addEntry("needsKioskInventory", true);
-        }, 13L);
+        }, 4L);
     }
 
     private void updateKioskMenu(CPlayer player) {
@@ -83,6 +92,11 @@ public class FastPassKioskManager {
             player.getRegistry().removeEntry("needsKioskInventory");
             menu = new Menu(27, ChatColor.GREEN + "FastPass+ Kiosk", player, new ArrayList<>());
             player.getRegistry().addEntry("kioskInventory", menu);
+            menu.setOnClose(() -> {
+                FastPassKioskManager.this.menu.remove(player.getUniqueId());
+                player.getRegistry().removeEntry("kioskInventory");
+                player.sendMessage(ChatColor.BLUE + "Logged out of FastPass+ Kiosk");
+            });
             menu.open();
         } else {
             return;
@@ -91,10 +105,14 @@ public class FastPassKioskManager {
     }
 
     public void handleJoin(CPlayer player, Document fastpassDocument) {
-        if (!fastpassDocument.containsKey("lastClaim")) {
-            fastpassDocument.put("lastClaim", 0L);
+        if (!fastpassDocument.containsKey("lastClaimed")) {
+            fastpassDocument.put("lastClaimed", 0L);
         }
-        player.getRegistry().addEntry("lastFastPassClaim", fastpassDocument.getLong("lastClaim"));
+        if (!fastpassDocument.containsKey("count")) {
+            fastpassDocument.put("count", 0);
+        }
+        player.getRegistry().addEntry("lastFastPassClaim", fastpassDocument.getLong("lastClaimed"));
+        player.getRegistry().addEntry("fastPassCount", fastpassDocument.getInteger("count"));
         Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             Document rewardDocument = Core.getMongoHandler().getMonthlyRewards(player.getUniqueId());
             player.getRegistry().addEntry("kioskRewardData", new RewardData(rewardDocument.getLong("settler"),
@@ -122,38 +140,105 @@ public class FastPassKioskManager {
         menu.setButton(new MenuButton(4, ItemUtil.create(fpClaimed ? Material.IRON_INGOT : Material.BRICK,
                 ChatColor.GREEN + "Monthly FastPass", getClaimLore(fpClaimed,
                         Arrays.asList(ChatColor.GRAY + "Use this to skip the line", ChatColor.GRAY + "for any attraction!"))),
-                ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("fp"))));
+                ImmutableMap.of(ClickType.LEFT, this::claimFastPass)));
         menu.setButton(new MenuButton(12, ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Join the discussion!",
-                Arrays.asList(ChatColor.GRAY + "Check out our Forums at " + ChatColor.AQUA + "forums.palace.network",
-                        ChatColor.GRAY + "for news, posts and more!")), ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("website"))));
+                Arrays.asList(ChatColor.GRAY + "Check out our Forums at ", ChatColor.AQUA + "forums.palace.network",
+                        ChatColor.GRAY + "for news, posts and more!")), ImmutableMap.of(ClickType.LEFT, websiteMessage::send)));
         menu.setButton(new MenuButton(14, ItemUtil.create(Material.NETHER_STAR, ChatColor.GREEN + "Vote for Palace!", Arrays.asList(ChatColor.GRAY +
-                "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists! Voting rewards will be" + ChatColor.GRAY +
-                "returning soon!")), ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("vote"))));
+                        "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists! Voting rewards will be",
+                ChatColor.GRAY + "returning soon!")), ImmutableMap.of(ClickType.LEFT, voteMessage::send)));
         menu.setButton(new MenuButton(18, ItemUtil.create(settler ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.DARK_AQUA + "Monthly Tokens - Settler", getClaimLore(settler,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "Everyone can claim this prize!"))),
-                ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("settler"))));
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.SETTLER, rewardData))));
         menu.setButton(new MenuButton(20, ItemUtil.create(dweller ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.AQUA + "Monthly Tokens - Dweller", getClaimLore(dweller,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.DWELLER.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("dweller"))));
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.DWELLER, rewardData))));
         menu.setButton(new MenuButton(22, ItemUtil.create(noble ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.BLUE + "Monthly Tokens - Noble", getClaimLore(noble,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.NOBLE.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("noble"))));
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.NOBLE, rewardData))));
         menu.setButton(new MenuButton(24, ItemUtil.create(majestic ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.DARK_PURPLE + "Monthly Tokens - Majestic", getClaimLore(majestic,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("majestic"))));
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.MAJESTIC, rewardData))));
         menu.setButton(new MenuButton(26, ItemUtil.create(honorable ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.LIGHT_PURPLE + "Monthly Tokens - Honorable", getClaimLore(honorable,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.HONORABLE.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> p.sendMessage("honorable"))));
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.HONORABLE, rewardData))));
+    }
+
+    private void claimTokens(CPlayer player, Rank rank, RewardData rewardData) {
+        long lastClaim;
+        switch (rank) {
+            case SETTLER:
+                lastClaim = rewardData.getSettler();
+                break;
+            case DWELLER:
+                lastClaim = rewardData.getDweller();
+                break;
+            case NOBLE:
+                lastClaim = rewardData.getNoble();
+                break;
+            case MAJESTIC:
+                lastClaim = rewardData.getMajestic();
+                break;
+            case HONORABLE:
+                lastClaim = rewardData.getHonorable();
+                break;
+            default:
+                player.sendMessage(ChatColor.RED + "There was an error claiming that reward!");
+                return;
+        }
+        if (monthlyClaim(lastClaim)) {
+            player.sendMessage(ChatColor.RED + "You've already claimed that reward for this month!");
+            return;
+        }
+        long nextClaim = System.currentTimeMillis();
+        switch (rank) {
+            case SETTLER:
+                rewardData.setSettler(nextClaim);
+                break;
+            case DWELLER:
+                rewardData.setDweller(nextClaim);
+                break;
+            case NOBLE:
+                rewardData.setNoble(nextClaim);
+                break;
+            case MAJESTIC:
+                rewardData.setMajestic(nextClaim);
+                break;
+            case HONORABLE:
+                rewardData.setHonorable(nextClaim);
+                break;
+        }
+        player.addTokens(20, "monthly " + rank.name().toLowerCase());
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().updateMonthlyRewardData(player.getUniqueId(),
+                rewardData.getSettler(), rewardData.getDweller(), rewardData.getNoble(), rewardData.getMajestic(), rewardData.getHonorable()));
+        player.sendMessage(ChatColor.YELLOW + "You've claimed your 20 monthly " + rank.getFormattedName() +
+                ChatColor.YELLOW + " tokens!");
+    }
+
+    private void claimFastPass(CPlayer player) {
+        long lastClaim = (long) player.getRegistry().getEntry("lastFastPassClaim");
+        if (monthlyClaim(lastClaim)) {
+            player.sendMessage(ChatColor.RED + "You've already claimed that reward for this month!");
+            return;
+        }
+        long nextClaim = System.currentTimeMillis();
+        player.getRegistry().addEntry("lastFastPassClaim", nextClaim);
+        player.getRegistry().addEntry("fastPassCount", (int) player.getRegistry().getEntry("fastPassCount") + 1);
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            Core.getMongoHandler().updateFastPassData(player.getUniqueId(), nextClaim);
+            Core.getMongoHandler().addFastPass(player.getUniqueId(), 1);
+        });
+        player.sendMessage(ChatColor.YELLOW + "You've claimed your monthly FastPass!");
     }
 
     private List<String> getClaimLore(boolean claimed, List<String> lore) {
@@ -205,9 +290,9 @@ public class FastPassKioskManager {
 
         Location realLoc = new Location(loc.getWorld(), x, y, z, adjustedYaw, 0);
 
-        ItemStack model = new ItemStack(Material.SHEARS, 1);
+        ItemStack model = new ItemStack(Material.DIAMOND_SWORD, 1);
         ItemMeta meta = model.getItemMeta();
-        ((Damageable) meta).setDamage(50);
+        ((Damageable) meta).setDamage(6);
         model.setItemMeta(meta);
 
         ArmorStand stand = lock(realLoc.getWorld().spawn(realLoc, ArmorStand.class));

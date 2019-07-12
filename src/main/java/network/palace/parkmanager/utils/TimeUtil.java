@@ -26,7 +26,8 @@ public class TimeUtil {
     }
 
     public void selectWatch(CPlayer player) {
-        if (watchViewers.add(player.getUniqueId())) player.getActionBar().show(getWatchTimeText());
+        if (!watchViewers.contains(player.getUniqueId()) && watchViewers.add(player.getUniqueId()))
+            player.getActionBar().show(getWatchTimeText());
     }
 
     public void unselectWatch(CPlayer player) {

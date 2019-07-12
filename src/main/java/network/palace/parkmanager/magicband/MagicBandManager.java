@@ -103,7 +103,8 @@ public class MagicBandManager {
                             ChatColor.GREEN + "Name: " + ChatColor.YELLOW + player.getName(),
                             ChatColor.GREEN + "Rank: " + player.getRank().getFormattedName(),
                             ChatColor.GREEN + "Balance: " + ChatColor.YELLOW + "$" + player.getBalance(),
-                            ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + player.getTokens()
+                            ChatColor.GREEN + "Tokens: " + ChatColor.YELLOW + "✪ " + player.getTokens(),
+                            ChatColor.GREEN + "FastPass: " + ChatColor.YELLOW + player.getRegistry().getEntry("fastPassCount")
                     ));
                     updatedProfile.setItemMeta(menuMeta);
 
