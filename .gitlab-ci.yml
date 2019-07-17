@@ -6,7 +6,7 @@ variables:
 
 cache:
   paths:
-    - .m2/repository/
+    - .m2/
     - target/
 
 build:
