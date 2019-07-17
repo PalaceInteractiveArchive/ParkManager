@@ -70,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
+            <artifactId>mongodb-driver-core</artifactId>
             <version>3.5.0</version>
         </dependency>
         <dependency>
