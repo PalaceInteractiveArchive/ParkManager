@@ -85,7 +85,7 @@ public class InventoryUtil {
                 player.setGamemode(GameMode.CREATIVE);
 
                 //Clear inventory and set basic build items
-                inv.setContents(new ItemStack[]{ItemUtil.create(Material.COMPASS), ItemUtil.create(Material.WOODEN_AXE)});
+                inv.setContents(new ItemStack[]{ItemUtil.create(Material.COMPASS), ItemUtil.create(Material.WOOD_AXE)});
 
                 ItemStack[] buildContents = data.getBuild();
                 //Copy 'buildContents' items into main inventory offset by 2 for compass and WorldEdit wand

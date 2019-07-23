@@ -25,9 +25,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -290,17 +287,12 @@ public class FastPassKioskManager {
 
         Location realLoc = new Location(loc.getWorld(), x, y, z, adjustedYaw, 0);
 
-        ItemStack model = new ItemStack(Material.DIAMOND_SWORD, 1);
-        ItemMeta meta = model.getItemMeta();
-        ((Damageable) meta).setDamage(6);
-        model.setItemMeta(meta);
-
         ArmorStand stand = lock(realLoc.getWorld().spawn(realLoc, ArmorStand.class));
         stand.setGravity(false);
         stand.setVisible(false);
         stand.setArms(false);
         stand.setBasePlate(false);
-        stand.setHelmet(model);
+        stand.setHelmet(ItemUtil.create(Material.DIAMOND_SWORD, 1, 6));
         stand.addScoreboardTag("kiosk");
 
         player.sendMessage(ChatColor.GREEN + "Spawned in a new FastPass+ Kiosk!");

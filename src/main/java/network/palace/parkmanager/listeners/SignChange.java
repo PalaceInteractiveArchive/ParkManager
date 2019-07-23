@@ -142,7 +142,7 @@ public class SignChange implements Listener {
             public void onBreak(CPlayer player, Sign s, BlockBreakEvent event) {
                 Queue queue = ParkManager.getQueueManager().getQueue(s);
                 if (queue == null) return;
-                if (!player.getMainHand().getType().equals(Material.GOLDEN_AXE)) {
+                if (!player.getMainHand().getType().equals(Material.GOLD_AXE)) {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.GREEN + "In order to break a [Queue] sign, you must be holding a "
                             + ChatColor.GOLD + "Golden Axe!");

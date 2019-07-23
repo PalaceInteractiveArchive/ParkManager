@@ -54,14 +54,14 @@ public class MagicBandManager {
                 profile.setItemMeta(meta);
 
                 List<MenuButton> buttons = new ArrayList<>(Arrays.asList(
-                        new MenuButton(2, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.AQUA + "Hotels and Resorts",
+                        new MenuButton(2, ItemUtil.create(Material.BED, ChatColor.AQUA + "Hotels and Resorts",
                                 Arrays.asList(ChatColor.GREEN + "Visit and rent a room", ChatColor.GREEN + "from a Resort Hotel!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.HOTELS))),
                         new MenuButton(4, profile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
                         new MenuButton(10, ItemUtil.create(Material.POTATO, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.FOOD))),
-                        new MenuButton(11, ItemUtil.create(Material.FIREWORK_ROCKET, ChatColor.AQUA + "Shows and Events",
+                        new MenuButton(11, ItemUtil.create(Material.FIREWORK, ChatColor.AQUA + "Shows and Events",
                                 Arrays.asList(ChatColor.GREEN + "Watch stage shows, nighttime", ChatColor.GREEN + "spectaculars, and much more!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SHOWS))),
                         new MenuButton(12, ItemUtil.create(Material.MINECART, ChatColor.AQUA + "Attractions",
@@ -70,7 +70,7 @@ public class MagicBandManager {
                         new MenuButton(13, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Park Menu",
                                 Arrays.asList(ChatColor.GREEN + "Travel to all of our", ChatColor.GREEN + "available theme parks!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PARKS))),
-                        new MenuButton(14, ItemUtil.create(Material.GOLDEN_BOOTS, ChatColor.AQUA + "Shop",
+                        new MenuButton(14, ItemUtil.create(Material.GOLD_BOOTS, ChatColor.AQUA + "Shop",
                                 Arrays.asList(ChatColor.GREEN + "Purchase souveniers and", ChatColor.GREEN + "all kinds of collectibles!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SHOP))),
                         new MenuButton(15, ItemUtil.create(Material.IRON_CHESTPLATE, ChatColor.AQUA + "Wardrobe Manager",
@@ -83,7 +83,7 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.VISIBILITY), ClickType.RIGHT, p -> {
                                     if (ParkManager.getVisibilityUtil().toggleVisibility(player)) {
                                         openInventory(p, BandInventory.MAIN);
-                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
                                 })),
                         new MenuButton(player.getRank().getRankId() < Rank.NOBLE.getRankId() ? 6 : 22, band, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND)))
@@ -91,7 +91,7 @@ public class MagicBandManager {
 
                 Menu menu = new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons);
                 if (player.getRank().getRankId() >= Rank.NOBLE.getRankId()) {
-                    menu.setButton(new MenuButton(6, ItemUtil.create(Material.CLOCK, ChatColor.AQUA + "Player Time",
+                    menu.setButton(new MenuButton(6, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
                             Arrays.asList(ChatColor.GREEN + "Change the time of day you see", ChatColor.GREEN + "for the park you're currently in!")),
                             ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PLAYER_TIME))));
                 }
@@ -160,12 +160,12 @@ public class MagicBandManager {
                                     p.performCommand("warp castle");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(13, ItemUtil.create(Material.SHEEP_SPAWN_EGG, ChatColor.GREEN + "Illuminations: Reflections of Earth"),
+                        new MenuButton(13, ItemUtil.create(Material.EGG, ChatColor.GREEN + "Illuminations: Reflections of Earth"),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp iroe");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(14, ItemUtil.create(Material.LIGHT_BLUE_DYE, ChatColor.DARK_AQUA + "Festival of Fantasy"),
+                        new MenuButton(14, ItemUtil.create(Material.INK_SACK, ChatColor.DARK_AQUA + "Festival of Fantasy", 12),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp fof");
                                     p.closeInventory();
@@ -175,7 +175,7 @@ public class MagicBandManager {
                                     p.performCommand("warp msep");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(16, ItemUtil.create(Material.TROPICAL_FISH, ChatColor.GOLD + "Finding Nemo: The Musical"),
+                        new MenuButton(16, ItemUtil.create(Material.RAW_FISH, ChatColor.GOLD + "Finding Nemo: The Musical", 2),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp fntm");
                                     p.closeInventory();
@@ -188,7 +188,7 @@ public class MagicBandManager {
                         new MenuButton(11, ItemUtil.create(Material.MINECART, ChatColor.AQUA + "Attractions List",
                                 Arrays.asList(ChatColor.GREEN + "View all of our available", ChatColor.GREEN + "theme park attractions")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.ATTRACTION_LIST))),
-                        new MenuButton(15, ItemUtil.create(Material.CLOCK, ChatColor.AQUA + "Wait Times",
+                        new MenuButton(15, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Wait Times",
                                 Arrays.asList(ChatColor.GREEN + "View the wait times for all", ChatColor.GREEN + "queues on this server")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.WAIT_TIMES))),
                         getBackButton(22, BandInventory.MAIN))).open();
@@ -273,14 +273,14 @@ public class MagicBandManager {
             }
             case PARKS: {
                 List<MenuButton> buttons = Arrays.asList(
-                        new MenuButton(10, ItemUtil.create(Material.FILLED_MAP, ChatColor.AQUA + "Universal Orlando Resort", Collections.singletonList(ChatColor.GREEN + "/warp USO")),
+                        new MenuButton(10, ItemUtil.create(Material.MAP, ChatColor.AQUA + "Universal Orlando Resort", Collections.singletonList(ChatColor.GREEN + "/warp USO")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp uso");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(13, ItemUtil.create(Material.FILLED_MAP, ChatColor.AQUA + "Walt Disney World Resort", Collections.singletonList(ChatColor.GREEN + "/warp WDW")),
+                        new MenuButton(13, ItemUtil.create(Material.MAP, ChatColor.AQUA + "Walt Disney World Resort", Collections.singletonList(ChatColor.GREEN + "/warp WDW")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.PARKS_WDW))),
-                        new MenuButton(16, ItemUtil.create(Material.SNOWBALL, ChatColor.AQUA + "Seasonal", Collections.singletonList(ChatColor.GREEN + "/warp Seasonal")),
+                        new MenuButton(16, ItemUtil.create(Material.SNOW_BALL, ChatColor.AQUA + "Seasonal", Collections.singletonList(ChatColor.GREEN + "/warp Seasonal")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp seasonal");
                                     p.closeInventory();
@@ -297,7 +297,7 @@ public class MagicBandManager {
                                     p.performCommand("warp mk");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(11, ItemUtil.create(Material.SNOWBALL, ChatColor.AQUA + "Epcot", Collections.singletonList(ChatColor.GREEN + "/warp Epcot")),
+                        new MenuButton(11, ItemUtil.create(Material.SNOW_BALL, ChatColor.AQUA + "Epcot", Collections.singletonList(ChatColor.GREEN + "/warp Epcot")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp epcot");
                                     p.closeInventory();
@@ -307,12 +307,12 @@ public class MagicBandManager {
                                     p.performCommand("warp dhs");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(13, ItemUtil.create(Material.OAK_SAPLING, ChatColor.AQUA + "Disney's Animal Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp AK")),
+                        new MenuButton(13, ItemUtil.create(Material.SAPLING, ChatColor.AQUA + "Disney's Animal Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp AK")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp ak");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(14, ItemUtil.create(Material.LIGHT_BLUE_BED, ChatColor.AQUA + "Resorts", Collections.singletonList(ChatColor.GREEN + "/warp Resorts")),
+                        new MenuButton(14, ItemUtil.create(Material.BED, ChatColor.AQUA + "Resorts", Collections.singletonList(ChatColor.GREEN + "/warp Resorts")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp resorts");
                                     p.closeInventory();
@@ -322,7 +322,7 @@ public class MagicBandManager {
                                     p.performCommand("warp typhoon");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(16, ItemUtil.create(Material.OAK_BOAT, ChatColor.AQUA + "Disney Cruise Line", Collections.singletonList(ChatColor.GREEN + "/warp DCL")),
+                        new MenuButton(16, ItemUtil.create(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line", Collections.singletonList(ChatColor.GREEN + "/warp DCL")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp dcl");
                                     p.closeInventory();
@@ -441,19 +441,23 @@ public class MagicBandManager {
             }
             case VISIBILITY: {
                 VisibilityUtil.Setting setting = ParkManager.getVisibilityUtil().getSetting(player);
-                ItemStack visible = ItemUtil.create(VisibilityUtil.Setting.ALL_VISIBLE.getBlock(),
+                ItemStack visible = ItemUtil.create(VisibilityUtil.Setting.ALL_VISIBLE.getBlock(), 1,
+                        VisibilityUtil.Setting.ALL_VISIBLE.getData(),
                         VisibilityUtil.Setting.ALL_VISIBLE.getColor() + VisibilityUtil.Setting.ALL_VISIBLE.getText()
                                 + (setting.equals(VisibilityUtil.Setting.ALL_VISIBLE) ? (ChatColor.YELLOW + " (SELECTED)") : ""),
                         Collections.singletonList(ChatColor.GREEN + "Show all players"));
-                ItemStack staffFriends = ItemUtil.create(VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS.getBlock(),
+                ItemStack staffFriends = ItemUtil.create(VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS.getBlock(), 1,
+                        VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS.getData(),
                         VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS.getColor() + VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS.getText()
                                 + (setting.equals(VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS) ? (ChatColor.YELLOW + " (SELECTED)") : ""),
                         Collections.singletonList(ChatColor.GREEN + "Show only staff and friends"));
-                ItemStack friends = ItemUtil.create(VisibilityUtil.Setting.ONLY_FRIENDS.getBlock(),
+                ItemStack friends = ItemUtil.create(VisibilityUtil.Setting.ONLY_FRIENDS.getBlock(), 1,
+                        VisibilityUtil.Setting.ONLY_FRIENDS.getData(),
                         VisibilityUtil.Setting.ONLY_FRIENDS.getColor() + VisibilityUtil.Setting.ONLY_FRIENDS.getText()
                                 + (setting.equals(VisibilityUtil.Setting.ONLY_FRIENDS) ? (ChatColor.YELLOW + " (SELECTED)") : ""),
                         Collections.singletonList(ChatColor.GREEN + "Show only friends"));
-                ItemStack none = ItemUtil.create(VisibilityUtil.Setting.ALL_HIDDEN.getBlock(),
+                ItemStack none = ItemUtil.create(VisibilityUtil.Setting.ALL_HIDDEN.getBlock(), 1,
+                        VisibilityUtil.Setting.ALL_HIDDEN.getData(),
                         VisibilityUtil.Setting.ALL_HIDDEN.getColor() + VisibilityUtil.Setting.ALL_HIDDEN.getText()
                                 + (setting.equals(VisibilityUtil.Setting.ALL_HIDDEN) ? (ChatColor.YELLOW + " (SELECTED)") : ""),
                         Collections.singletonList(ChatColor.GREEN + "Hide all players"));
@@ -476,28 +480,28 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ALL_VISIBLE, false)) {
                                         openInventory(p, BandInventory.VISIBILITY);
-                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
                                 })),
                         new MenuButton(12, staffFriends,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ONLY_STAFF_AND_FRIENDS, false)) {
                                         openInventory(p, BandInventory.VISIBILITY);
-                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
                                 })),
                         new MenuButton(14, friends,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ONLY_FRIENDS, false)) {
                                         openInventory(p, BandInventory.VISIBILITY);
-                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
                                 })),
                         new MenuButton(16, none,
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     if (ParkManager.getVisibilityUtil().setSetting(p, VisibilityUtil.Setting.ALL_HIDDEN, false)) {
                                         openInventory(p, BandInventory.VISIBILITY);
-                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
+                                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
                                 })),
                         getBackButton(22, BandInventory.MAIN)
@@ -571,19 +575,19 @@ public class MagicBandManager {
             }
             case CUSTOMIZE_BAND_NAME: {
                 List<MenuButton> buttons = Arrays.asList(
-                        new MenuButton(10, ItemUtil.create(Material.RED_CONCRETE, ChatColor.RED + "Red"),
+                        new MenuButton(10, ItemUtil.create(Material.CONCRETE, ChatColor.RED + "Red", 14),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "red"))),
-                        new MenuButton(11, ItemUtil.create(Material.ORANGE_CONCRETE, ChatColor.GOLD + "Orange"),
+                        new MenuButton(11, ItemUtil.create(Material.CONCRETE, ChatColor.GOLD + "Orange", 1),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "orange"))),
-                        new MenuButton(12, ItemUtil.create(Material.YELLOW_CONCRETE, ChatColor.YELLOW + "Yellow"),
+                        new MenuButton(12, ItemUtil.create(Material.CONCRETE, ChatColor.YELLOW + "Yellow", 4),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "yellow"))),
-                        new MenuButton(13, ItemUtil.create(Material.GREEN_CONCRETE, ChatColor.DARK_GREEN + "Green"),
+                        new MenuButton(13, ItemUtil.create(Material.CONCRETE, ChatColor.DARK_GREEN + "Green", 13),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "green"))),
-                        new MenuButton(14, ItemUtil.create(Material.BLUE_CONCRETE, ChatColor.BLUE + "Blue"),
+                        new MenuButton(14, ItemUtil.create(Material.CONCRETE, ChatColor.BLUE + "Blue", 11),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "blue"))),
-                        new MenuButton(15, ItemUtil.create(Material.PURPLE_CONCRETE, ChatColor.DARK_PURPLE + "Purple"),
+                        new MenuButton(15, ItemUtil.create(Material.CONCRETE, ChatColor.DARK_PURPLE + "Purple", 10),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "purple"))),
-                        new MenuButton(16, ItemUtil.create(Material.PINK_CONCRETE, ChatColor.LIGHT_PURPLE + "Pink"),
+                        new MenuButton(16, ItemUtil.create(Material.CONCRETE, ChatColor.LIGHT_PURPLE + "Pink", 6),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandNameColor(p, "pink"))),
                         getBackButton(22, BandInventory.CUSTOMIZE_BAND)
                 );
@@ -601,68 +605,68 @@ public class MagicBandManager {
                 List<String> current = Collections.singletonList(ChatColor.YELLOW + "Currently Selected!");
                 List<String> not = Collections.singletonList(ChatColor.GRAY + "Click to Select!");
                 new Menu(27, ChatColor.BLUE + "Player Time", player, Arrays.asList(
-                        new MenuButton(9, ItemUtil.create(Material.WHITE_STAINED_GLASS_PANE, ChatColor.GREEN + "Reset",
+                        new MenuButton(9, ItemUtil.create(Material.STAINED_GLASS_PANE, ChatColor.GREEN + "Reset",
                                 Collections.singletonList(ChatColor.GREEN + "Match Park Time")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.sendMessage(ChatColor.GREEN + "You " + ChatColor.AQUA + "reset " + ChatColor.GREEN + "your Player Time!");
                                     p.getBukkitPlayer().resetPlayerTime();
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(10, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "6AM", time == 0 ? current : not),
+                        new MenuButton(10, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "6AM", time == 0 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(0, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "6AM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(11, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "9AM", time == 3000 ? current : not),
+                        new MenuButton(11, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "9AM", time == 3000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(3000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "9AM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(12, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "12PM", time == 6000 ? current : not),
+                        new MenuButton(12, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "12PM", time == 6000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(6000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "12PM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(13, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "3PM", time == 9000 ? current : not),
+                        new MenuButton(13, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "3PM", time == 9000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(9000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "3PM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(14, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "6PM", time == 12000 ? current : not),
+                        new MenuButton(14, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "6PM", time == 12000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(12000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "6PM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(15, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "9PM", time == 15000 ? current : not),
+                        new MenuButton(15, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "9PM", time == 15000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(15000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "9PM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(16, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "12AM", time == 18000 ? current : not),
+                        new MenuButton(16, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "12AM", time == 18000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(18000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "12AM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
-                        new MenuButton(17, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + "3AM", time == 21000 ? current : not),
+                        new MenuButton(17, ItemUtil.create(Material.WATCH, ChatColor.GREEN + "3AM", time == 21000 ? current : not),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.getBukkitPlayer().setPlayerTime(21000, false);
                                     p.sendMessage(ChatColor.GREEN + "Your Player Time has been set to " + ChatColor.AQUA + "3AM");
-                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 100, 2);
+                                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 100, 2);
                                     openInventory(p, BandInventory.PLAYER_TIME);
                                 })),
                         getBackButton(22, BandInventory.MAIN)
@@ -719,7 +723,7 @@ public class MagicBandManager {
             case BLUE:
             case PURPLE:
             case PINK: {
-                item = ItemUtil.create(Material.FIREWORK_STAR, getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
+                item = ItemUtil.create(Material.FIREWORK_CHARGE, getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
                 FireworkEffectMeta meta = (FireworkEffectMeta) item.getItemMeta();
                 meta.setEffect(FireworkEffect.builder().withColor(getBandColor(bandType)).build());
                 item.setItemMeta(meta);
@@ -741,17 +745,17 @@ public class MagicBandManager {
     private Material getMaterial(BandType type) {
         switch (type) {
             case SORCERER_MICKEY:
-                return Material.DIAMOND_HORSE_ARMOR;
+                return Material.DIAMOND_BARDING;
             case HAUNTED_MANSION:
-                return Material.GOLDEN_HORSE_ARMOR;
+                return Material.GOLD_BARDING;
             case PRINCESSES:
                 return Material.GHAST_TEAR;
             case BIG_HERO_SIX:
-                return Material.IRON_HORSE_ARMOR;
+                return Material.IRON_BARDING;
             case HOLIDAY:
                 return Material.PAPER;
             default:
-                return Material.FIREWORK_STAR;
+                return Material.FIREWORK_CHARGE;
         }
     }
 

@@ -169,13 +169,13 @@ public class ShopManager {
 
         List<MenuButton> buttons = Arrays.asList(
                 new MenuButton(4, item),
-                new MenuButton(11, ItemUtil.create(Material.RED_CONCRETE, ChatColor.RED + "Decline Purchase"),
+                new MenuButton(11, ItemUtil.create(Material.CONCRETE, ChatColor.RED + "Decline Purchase", 14),
                         ImmutableMap.of(ClickType.LEFT, p -> {
                             p.closeInventory();
                             p.sendMessage(ChatColor.RED + "You cancelled the purchase");
                         })),
-                new MenuButton(15, ItemUtil.create(Material.GREEN_CONCRETE, ChatColor.GREEN + "Confirm Purchase",
-                        Arrays.asList(ChatColor.GRAY + "You agree you will buy",
+                new MenuButton(15, ItemUtil.create(Material.CONCRETE, 1, 13,
+                        ChatColor.GREEN + "Confirm Purchase", Arrays.asList(ChatColor.GRAY + "You agree you will buy",
                                 ChatColor.GRAY + "this shop item for " + ChatColor.AQUA + currencyType.getIcon() + cost)),
                         ImmutableMap.of(ClickType.LEFT, p -> {
                             p.closeInventory();

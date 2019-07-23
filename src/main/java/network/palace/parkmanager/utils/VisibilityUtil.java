@@ -103,14 +103,15 @@ public class VisibilityUtil {
     @Getter
     @AllArgsConstructor
     public enum Setting {
-        ALL_VISIBLE("Visible", ChatColor.GREEN, Material.GREEN_TERRACOTTA),
-        ONLY_STAFF_AND_FRIENDS("Staff & Friends", ChatColor.YELLOW, Material.YELLOW_TERRACOTTA),
-        ONLY_FRIENDS("Friends", ChatColor.GOLD, Material.ORANGE_TERRACOTTA),
-        ALL_HIDDEN("Hidden", ChatColor.RED, Material.RED_TERRACOTTA);
+        ALL_VISIBLE("Visible", ChatColor.GREEN, Material.STAINED_CLAY, 13),
+        ONLY_STAFF_AND_FRIENDS("Staff & Friends", ChatColor.YELLOW, Material.STAINED_CLAY, 4),
+        ONLY_FRIENDS("Friends", ChatColor.GOLD, Material.STAINED_CLAY, 1),
+        ALL_HIDDEN("Hidden", ChatColor.RED, Material.STAINED_CLAY, 14);
 
         String text;
         ChatColor color;
         Material block;
+        int data;
 
         public String toString() {
             switch (this) {

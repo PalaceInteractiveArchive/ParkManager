@@ -8,7 +8,6 @@ import network.palace.core.player.CPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 
 import java.util.UUID;
 
@@ -19,12 +18,14 @@ import java.util.UUID;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@SuppressWarnings("deprecation")
 public class OutlineSession {
     private final UUID uuid;
     private Point sessionPoint = null;
     private Material type = Material.GOLD_BLOCK;
     private Location undoLocation = null;
-    private BlockData undoBlockData = null;
+    private Material undoType = null;
+    private byte undoData = 0;
 
     public Location outline(double length, double heading) {
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
@@ -38,18 +39,22 @@ public class OutlineSession {
 
         Block b = loc.getBlock();
         undoLocation = loc.clone();
-        undoBlockData = b.getBlockData();
+        undoType = b.getType();
+        undoData = b.getData();
         b.setType(type);
 
         return loc;
     }
 
     public boolean undo() {
-        if (undoLocation == null || undoBlockData == null) return false;
+        if (undoLocation == null || undoType == null) return false;
         Block b = undoLocation.getBlock();
-        BlockData preBlockData = b.getBlockData();
-        b.setBlockData(undoBlockData);
-        undoBlockData = preBlockData;
+        final Material preType = b.getType();
+        final byte preData = b.getData();
+        b.setType(undoType);
+        b.setData(undoData);
+        undoType = preType;
+        undoData = preData;
         return true;
     }
 }

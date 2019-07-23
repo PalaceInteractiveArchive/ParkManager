@@ -26,7 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
-@PluginInfo(name = "ParkManager", version = "3.0-1.13", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager"}, apiversion = "1.13")
+@PluginInfo(name = "ParkManager", version = "3.0.0", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager"})
 public class ParkManager extends Plugin {
     @Getter private static ParkManager instance;
     @Getter private static AttractionManager attractionManager;

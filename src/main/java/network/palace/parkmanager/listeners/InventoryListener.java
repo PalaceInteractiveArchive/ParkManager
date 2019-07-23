@@ -78,7 +78,7 @@ public class InventoryListener implements Listener {
         if (ParkManager.getBuildUtil().isInBuildMode(player)) {
             ItemStack toMainhand = event.getMainHandItem();
             ItemStack toOffhand = event.getOffHandItem();
-            if (toMainhand != null && toMainhand.getType().equals(Material.FILLED_MAP)) {
+            if (toMainhand != null && toMainhand.getType().equals(Material.MAP)) {
                 if (toOffhand != null && !toOffhand.getType().equals(Material.AIR)) {
                     player.sendMessage(ChatColor.RED + "You can only swap hands if your main hand is empty!");
                 } else {
@@ -86,7 +86,7 @@ public class InventoryListener implements Listener {
                 }
                 return;
             }
-            if (toOffhand != null && toOffhand.getType().equals(Material.FILLED_MAP)) {
+            if (toOffhand != null && toOffhand.getType().equals(Material.MAP)) {
                 event.setCancelled(false);
                 return;
             }

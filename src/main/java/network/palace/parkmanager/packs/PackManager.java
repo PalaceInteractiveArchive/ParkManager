@@ -126,15 +126,18 @@ public class PackManager implements Listener {
         }
         String selected = ChatColor.YELLOW + " (SELECTED)";
         List<MenuButton> buttons = Arrays.asList(
-                new MenuButton(10, ItemUtil.create(Material.LIGHT_BLUE_TERRACOTTA, ChatColor.AQUA + "Blank" + (setting.equals("blank") ? selected : ""),
+                new MenuButton(10, ItemUtil.create(Material.STAINED_CLAY, 1, 3,
+                        ChatColor.AQUA + "Blank" + (setting.equals("blank") ? selected : ""),
                         Arrays.asList(ChatColor.GRAY + "You will be sent a blank",
                                 ChatColor.GRAY + "resource pack with this setting")),
                         ImmutableMap.of(ClickType.LEFT, p -> changeSetting(p, "blank"))),
-                new MenuButton(13, ItemUtil.create(Material.RED_CONCRETE, ChatColor.RED + "Disabled" + (setting.equals("disabled") ? selected : ""),
+                new MenuButton(13, ItemUtil.create(Material.CONCRETE, 1, 14,
+                        ChatColor.RED + "Disabled" + (setting.equals("disabled") ? selected : ""),
                         Arrays.asList(ChatColor.GRAY + "You won't receive any",
                                 ChatColor.GRAY + "resource packs with this setting")),
                         ImmutableMap.of(ClickType.LEFT, p -> changeSetting(p, "disabled"))),
-                new MenuButton(16, ItemUtil.create(Material.GREEN_CONCRETE, ChatColor.GREEN + "Enabled" + (setting.equals("enabled") ? selected : ""),
+                new MenuButton(16, ItemUtil.create(Material.CONCRETE, 1, 13,
+                        ChatColor.GREEN + "Enabled" + (setting.equals("enabled") ? selected : ""),
                         Arrays.asList(ChatColor.GRAY + "You will be sent all park",
                                 ChatColor.GRAY + "resource packs with this setting")),
                         ImmutableMap.of(ClickType.LEFT, p -> changeSetting(p, "enabled")))
@@ -150,7 +153,7 @@ public class PackManager implements Listener {
      * @param setting the pack setting
      */
     private void changeSetting(CPlayer player, String setting) {
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 2f);
         switch (setting.toLowerCase()) {
             case "enabled": {
                 player.sendMessage(ChatColor.GREEN + "You've enabled Park Resource Packs!");

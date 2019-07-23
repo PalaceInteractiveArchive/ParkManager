@@ -50,13 +50,13 @@ public class ScheduleManager {
     private void updateButtons() {
         buttons.clear();
 
-        ItemStack monday = new ItemStack(Material.BLACK_BANNER);
-        ItemStack tuesday = new ItemStack(Material.BLACK_BANNER);
-        ItemStack wednesday = new ItemStack(Material.BLACK_BANNER);
-        ItemStack thursday = new ItemStack(Material.BLACK_BANNER);
-        ItemStack friday = new ItemStack(Material.BLACK_BANNER);
-        ItemStack saturday = new ItemStack(Material.BLACK_BANNER);
-        ItemStack sunday = new ItemStack(Material.BLACK_BANNER);
+        ItemStack monday = new ItemStack(Material.BANNER);
+        ItemStack tuesday = new ItemStack(Material.BANNER);
+        ItemStack wednesday = new ItemStack(Material.BANNER);
+        ItemStack thursday = new ItemStack(Material.BANNER);
+        ItemStack friday = new ItemStack(Material.BANNER);
+        ItemStack saturday = new ItemStack(Material.BANNER);
+        ItemStack sunday = new ItemStack(Material.BANNER);
         BannerMeta bm = (BannerMeta) monday.getItemMeta();
         BannerMeta bt = (BannerMeta) tuesday.getItemMeta();
         BannerMeta bw = (BannerMeta) wednesday.getItemMeta();
@@ -125,7 +125,7 @@ public class ScheduleManager {
             if (i >= 54) {
                 break;
             }
-            buttons.add(new MenuButton(i, ItemUtil.create(Material.CLOCK, ChatColor.GREEN + st + " EST")));
+            buttons.add(new MenuButton(i, ItemUtil.create(Material.WATCH, ChatColor.GREEN + st + " EST")));
             timeMap.put(st, i / 9);
             i += 9;
         }
@@ -133,8 +133,8 @@ public class ScheduleManager {
         for (ScheduledShow show : shows) {
             ShowType type = show.getType();
             int place = getShowPos(show.getDay(), show.getTime(), timeMap);
-            if (type.getType().equals(Material.RED_BANNER)) {
-                ItemStack banner = new ItemStack(Material.RED_BANNER);
+            if (type.getType().equals(Material.BANNER)) {
+                ItemStack banner = new ItemStack(Material.BANNER);
                 BannerMeta bmeta = (BannerMeta) banner.getItemMeta();
                 bmeta.addPattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_SMALL));
                 bmeta.addPattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_SMALL));
@@ -180,7 +180,7 @@ public class ScheduleManager {
         for (int i = 0; i < buttons.size(); i++) {
             MenuButton b = buttons.get(i);
             ItemStack item = b.getItemStack();
-            if (item == null || item.getType() == null || item.getType().equals(Material.BLACK_BANNER) || item.getType().equals(Material.CLOCK) || item.getType().equals(Material.ARROW))
+            if (item == null || item.getType() == null || item.getType().equals(Material.BANNER) || item.getType().equals(Material.WATCH) || item.getType().equals(Material.ARROW))
                 continue;
             buttons.set(i, new MenuButton(b.getSlot(), getEditItem(b.getItemStack()), ImmutableMap.of(ClickType.LEFT, p -> editShow(player, b.getSlot()))));
         }

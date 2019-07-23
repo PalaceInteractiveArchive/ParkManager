@@ -19,10 +19,10 @@ public class ItemCommand extends CoreCommand {
     private static final HashMap<String, Material> alternatives = new HashMap<>();
 
     static {
-        alternatives.put("CMD", Material.COMMAND_BLOCK);
+        alternatives.put("CMD", Material.COMMAND);
         alternatives.put("ENDERCHEST", Material.ENDER_CHEST);
         alternatives.put("ARMORSTAND", Material.ARMOR_STAND);
-        alternatives.put("FIREWORK", Material.FIREWORK_ROCKET);
+        alternatives.put("FIREWORK", Material.FIREWORK);
     }
 
     public ItemCommand() {
