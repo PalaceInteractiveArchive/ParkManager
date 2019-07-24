@@ -63,15 +63,24 @@ public class StorageManager {
         joinList.put(player.getUniqueId(), buildMode);
     }
 
+    /**
+     * Send an update of the player's inventory to Dashboard
+     *
+     * @param player the player
+     * @see #updateCachedInventory(CPlayer, boolean)
+     */
     public void updateCachedInventory(CPlayer player) {
-        updateCachedInventory(player, ParkManager.getBuildUtil().isInBuildMode(player));
+        updateCachedInventory(player, false);
     }
 
-    public void updateCachedInventory(CPlayer player, boolean build) {
-        updateCachedInventory(player, build, false);
-    }
-
-    public void updateCachedInventory(CPlayer player, boolean buildMode, boolean disconnect) {
+    /**
+     * Send an update of the player's inventory to Dashboard
+     *
+     * @param player     the player
+     * @param disconnect if this update is being sent because the player just disconnected
+     * @implNote if disconnect is true, typical the 5-minute delay between updates is ignored and the update is sent anyway
+     */
+    public void updateCachedInventory(CPlayer player, boolean disconnect) {
         if (!player.getRegistry().hasEntry("storageData")) return;
         StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
 
@@ -189,8 +198,10 @@ public class StorageManager {
 
     /**
      * Update the player's inventory depending on their build state
+     * This method makes sure the player's inventory matches what's stored in storageData
      *
      * @param player the player
+     * @see #updateInventory(CPlayer, boolean)
      */
     public void updateInventory(CPlayer player) {
         updateInventory(player, false);
@@ -198,6 +209,7 @@ public class StorageManager {
 
     /**
      * Update the player's inventory depending on their build state
+     * This method makes sure the player's inventory matches what's stored in storageData
      *
      * @param player       the player
      * @param storageCheck true if it's been verified the player's registry contains an entry for storageData
@@ -269,8 +281,8 @@ public class StorageManager {
         fillInventory(backpack, backpackSize, backpackArray);
         fillInventory(locker, lockerSize, lockerArray);
 
-        StorageData data = new StorageData(backpack, backpackSize, packet.getBackpackHash(), packet.getBackpackSize(),
-                locker, lockerSize, packet.getLockerHash(), packet.getLockerSize(),
+        StorageData data = new StorageData(backpack, backpackSize, packet.getBackpackHash(),
+                packet.getBackpackSize(), locker, lockerSize, packet.getLockerHash(), packet.getLockerSize(),
                 baseArray, packet.getBaseHash(), buildArray, packet.getBuildHash());
 
         CPlayer player = Core.getPlayerManager().getPlayer(packet.getUuid());
@@ -283,11 +295,22 @@ public class StorageManager {
         }
     }
 
+    /**
+     * Process a player logging out
+     * Delete the locally saved storage information and send an update of the player's inventory to Dashboard
+     *
+     * @param player the player
+     */
     public void logout(CPlayer player) {
         savedStorageData.invalidate(player.getUniqueId());
-        updateCachedInventory(player, ParkManager.getBuildUtil().isInBuildMode(player), true);
+        updateCachedInventory(player, true);
     }
 
+    /**
+     * Remove banned items from an array
+     *
+     * @param items an array of items
+     */
     private void filterItems(ItemStack[] items) {
         for (int i = 0; i < items.length; i++) {
             if (bannedItems.contains(items[i].getType())) {
@@ -296,6 +319,13 @@ public class StorageManager {
         }
     }
 
+    /**
+     * Fill an inventory with the provided items, up to the StorageSize limit
+     *
+     * @param inventory the inventory
+     * @param size      the inventory's StorageSize
+     * @param items     the items
+     */
     private void fillInventory(Inventory inventory, StorageSize size, ItemStack[] items) {
         if (items.length == size.getSlots()) {
             inventory.setContents(items);
