@@ -120,18 +120,18 @@ public class StorageManager {
         }
 
         Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            String backpackJson = ItemUtil.getJsonFromInventory(backpackInventory).toString();
+            String backpackJson = ItemUtil.getJsonFromInventoryNew(backpackInventory).toString();
             String backpackHash = HashUtil.generateHash(backpackJson);
             int backpackSize;
 
-            String lockerJson = ItemUtil.getJsonFromInventory(data.getLocker()).toString();
+            String lockerJson = ItemUtil.getJsonFromInventoryNew(data.getLocker()).toString();
             String lockerHash = HashUtil.generateHash(lockerJson);
             int lockerSize;
 
-            String baseJson = ItemUtil.getJsonFromArray(base).toString();
+            String baseJson = ItemUtil.getJsonFromArrayNew(base).toString();
             String baseHash = HashUtil.generateHash(baseJson);
 
-            String buildJson = ItemUtil.getJsonFromArray(build).toString();
+            String buildJson = ItemUtil.getJsonFromArrayNew(build).toString();
             String buildHash = HashUtil.generateHash(buildJson);
 
             if (backpackHash.equals(data.getBackpackHash())) {
@@ -263,10 +263,10 @@ public class StorageManager {
      * @implNote If the target player is online, save the StorageData to the player's registry and update the player's inventory
      */
     public void processIncomingPacket(PacketInventoryContent packet) {
-        ItemStack[] backpackArray = ItemUtil.getInventoryFromJson(packet.getBackpackJson());
-        ItemStack[] lockerArray = ItemUtil.getInventoryFromJson(packet.getLockerJson());
-        ItemStack[] baseArray = ItemUtil.getInventoryFromJson(packet.getBaseJson());
-        ItemStack[] buildArray = ItemUtil.getInventoryFromJson(packet.getBuildJson());
+        ItemStack[] backpackArray = ItemUtil.getInventoryFromJsonNew(packet.getBackpackJson());
+        ItemStack[] lockerArray = ItemUtil.getInventoryFromJsonNew(packet.getLockerJson());
+        ItemStack[] baseArray = ItemUtil.getInventoryFromJsonNew(packet.getBaseJson());
+        ItemStack[] buildArray = ItemUtil.getInventoryFromJsonNew(packet.getBuildJson());
 
         StorageSize backpackSize = StorageSize.fromInt(packet.getBackpackSize());
         StorageSize lockerSize = StorageSize.fromInt(packet.getLockerSize());

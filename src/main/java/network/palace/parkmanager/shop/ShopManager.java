@@ -54,13 +54,13 @@ public class ShopManager {
                     List<ShopItem> items = new ArrayList<>();
                     for (JsonElement shopElement : shopItems) {
                         JsonObject shopObject = (JsonObject) shopElement;
-                        items.add(new ShopItem(ItemUtil.getItemFromJson(shopObject.getAsJsonObject("item").toString()),
+                        items.add(new ShopItem(ItemUtil.getItemFromJsonNew(shopObject.getAsJsonObject("item").toString()),
                                 shopObject.get("cost").getAsInt(),
                                 CurrencyType.fromString(shopObject.get("currency").getAsString())));
                     }
 
                     shops.add(new Shop(nextId++, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
-                            object.get("warp").getAsString(), ItemUtil.getItemFromJson(object.getAsJsonObject("item").toString()), items));
+                            object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items));
                 }
             } else {
                 saveToFile();
@@ -201,12 +201,12 @@ public class ShopManager {
             JsonObject object = new JsonObject();
             object.addProperty("name", shop.getName());
             object.addProperty("warp", shop.getWarp());
-            object.add("item", ItemUtil.getJsonFromItem(shop.getItem()));
+            object.add("item", ItemUtil.getJsonFromItemNew(shop.getItem()));
 
             JsonArray items = new JsonArray();
             for (ShopItem item : shop.getItems()) {
                 JsonObject shopItem = new JsonObject();
-                shopItem.add("item", ItemUtil.getJsonFromItem(item.getItem()));
+                shopItem.add("item", ItemUtil.getJsonFromItemNew(item.getItem()));
                 shopItem.addProperty("cost", item.getCost());
                 shopItem.addProperty("currency", item.getCurrencyType().name().toLowerCase());
                 items.add(shopItem);

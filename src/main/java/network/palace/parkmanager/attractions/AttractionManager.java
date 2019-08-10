@@ -51,7 +51,7 @@ public class AttractionManager {
 
                     attractions.add(new Attraction(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
                             object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
-                            ItemUtil.getItemFromJson(object.get("item").getAsJsonObject().toString()), linkedQueue));
+                            ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));
                 }
             } else {
                 saveToFile();
@@ -106,7 +106,7 @@ public class AttractionManager {
             object.add("categories", categories);
 
             object.addProperty("open", attraction.isOpen());
-            object.add("item", ItemUtil.getJsonFromItem(attraction.getItem()));
+            object.add("item", ItemUtil.getJsonFromItemNew(attraction.getItem()));
 
             if (attraction.getLinkedQueue() != null) {
                 object.addProperty("linked-queue", attraction.getLinkedQueue().toString());

@@ -37,7 +37,7 @@ public class FoodManager {
                 for (JsonElement entry : array) {
                     JsonObject object = entry.getAsJsonObject();
                     foodLocations.add(new FoodLocation(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
-                            ItemUtil.getItemFromJson(object.get("item").getAsJsonObject().toString())));
+                            ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                 }
             } else {
                 saveToFile();
@@ -85,7 +85,7 @@ public class FoodManager {
             JsonObject object = new JsonObject();
             object.addProperty("name", food.getName());
             object.addProperty("warp", food.getWarp());
-            object.add("item", ItemUtil.getJsonFromItem(food.getItem()));
+            object.add("item", ItemUtil.getJsonFromItemNew(food.getItem()));
             array.add(object);
         }
         try {
