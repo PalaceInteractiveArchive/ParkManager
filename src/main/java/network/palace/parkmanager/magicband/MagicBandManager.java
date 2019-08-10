@@ -58,7 +58,7 @@ public class MagicBandManager {
                                 Arrays.asList(ChatColor.GREEN + "Visit and rent a room", ChatColor.GREEN + "from a Resort Hotel!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.HOTELS))),
                         new MenuButton(4, profile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
-                        new MenuButton(10, ItemUtil.create(Material.POTATO, ChatColor.AQUA + "Find Food",
+                        new MenuButton(10, ItemUtil.create(Material.POTATO_ITEM, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.FOOD))),
                         new MenuButton(11, ItemUtil.create(Material.FIREWORK, ChatColor.AQUA + "Shows and Events",
