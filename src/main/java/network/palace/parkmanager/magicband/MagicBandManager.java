@@ -13,6 +13,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.AttractionCategory;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.queues.Queue;
@@ -69,7 +70,13 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.ATTRACTION_MENU))),
                         new MenuButton(13, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Park Menu",
                                 Arrays.asList(ChatColor.GREEN + "Travel to all of our", ChatColor.GREEN + "available theme parks!")),
-                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PARKS))),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    if (ParkManager.getResort().equals(Resort.WDW)) {
+                                        openInventory(p, BandInventory.PARKS_WDW);
+                                    } else {
+                                        openInventory(p, BandInventory.PARKS);
+                                    }
+                                })),
                         new MenuButton(14, ItemUtil.create(Material.GOLD_BOOTS, ChatColor.AQUA + "Shop",
                                 Arrays.asList(ChatColor.GREEN + "Purchase souveniers and", ChatColor.GREEN + "all kinds of collectibles!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SHOP))),
