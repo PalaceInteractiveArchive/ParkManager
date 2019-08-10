@@ -21,7 +21,7 @@ public class SignCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (player.getRank().getRankId() <= Rank.DVCMEMBER.getRankId()) {
+        if (player.getRank().getRankId() <= Rank.DWELLER.getRankId()) {
             player.sendMessage(ChatColor.RED + "You must be the " + Rank.SPECIALGUEST.getFormattedName() +
                     ChatColor.RED + " Rank or higher to do this!");
             return;

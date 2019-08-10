@@ -209,7 +209,7 @@ public class PlayerInteract implements Listener {
                 if (ParkManager.getInstance().isHotelServer()) {
                     if (s.getLine(0).equals(hotel) || s.getLine(0).equals(suite)) {
                         boolean suite = s.getLine(0).equals(PlayerInteract.suite);
-                        if (suite && rank.getRankId() < Rank.DVCMEMBER.getRankId()) {
+                        if (suite && rank.getRankId() < Rank.DWELLER.getRankId()) {
                             cp.sendMessage(ChatColor.RED + "You must be a " + Rank.DWELLER.getFormattedName()
                                     + ChatColor.RED + " or above to stay in a Suite!");
                             return;
