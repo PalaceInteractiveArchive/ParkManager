@@ -102,7 +102,7 @@ public class PackManager implements Listener {
     }
 
     public void handleJoin(CPlayer player, String s) {
-        if (s.equals("ask")) {
+        if (s.equals("ask") || s.equals("yes") || s.equals("no")) {
             Core.runTaskLater(ParkManager.getInstance(), () -> openMenu(player), 20L);
             return;
         }

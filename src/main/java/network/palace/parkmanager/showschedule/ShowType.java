@@ -31,7 +31,7 @@ public enum ShowType {
     CA(ChatColor.RED + "Celebrate " + ChatColor.BLUE + "America", Material.BANNER),
     //Halloween
     HALLOWISHES(ChatColor.GOLD + "Happy HalloWishes", Material.JACK_O_LANTERN),
-    HOCUSPOCUS(ChatColor.GOLD + "Hocus Pocus Villain Spelltacular", Material.CAULDRON),
+    HOCUSPOCUS(ChatColor.GOLD + "Hocus Pocus Villain Spelltacular", Material.CAULDRON_ITEM),
     BOOTOYOU(ChatColor.GOLD + "Mickey's Boo To You Halloween Parade", Material.ROTTEN_FLESH),
     //Christmas
     FITS(ChatColor.BLUE + "Fantasy in the Sky", Material.DIAMOND),

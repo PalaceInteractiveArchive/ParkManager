@@ -19,13 +19,15 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
 public class ScheduleManager {
     private List<ScheduledShow> shows = new ArrayList<>();
     private List<String> times = new ArrayList<>();
-    @Getter private List<MenuButton> buttons = new ArrayList<>();
+    @Getter
+    private List<MenuButton> buttons = new ArrayList<>();
 
     public ScheduleManager() {
         Core.runTaskTimerAsynchronously(ParkManager.getInstance(), this::updateShows, 0L, 36000L);
@@ -146,7 +148,7 @@ public class ScheduleManager {
                 buttons.add(new MenuButton(place, banner));
                 continue;
             }
-            buttons.add(new MenuButton(place, ItemUtil.create(type.getType(), type.getName(),
+            buttons.add(new MenuButton(place, ItemUtil.create(type.getType(), 1, type.getData(), type.getName(),
                     new ArrayList<>())));
         }
     }
@@ -180,9 +182,11 @@ public class ScheduleManager {
         for (int i = 0; i < buttons.size(); i++) {
             MenuButton b = buttons.get(i);
             ItemStack item = b.getItemStack();
-            if (item == null || item.getType() == null || item.getType().equals(Material.BANNER) || item.getType().equals(Material.WATCH) || item.getType().equals(Material.ARROW))
+            if (item == null || item.getType() == null || item.getType().equals(Material.WATCH) ||
+                    item.getType().equals(Material.ARROW) ||
+                    (item.getType().equals(Material.BANNER) && item.getItemMeta().getDisplayName().startsWith(ChatColor.GREEN.toString())))
                 continue;
-            buttons.set(i, new MenuButton(b.getSlot(), getEditItem(b.getItemStack()), ImmutableMap.of(ClickType.LEFT, p -> editShow(player, b.getSlot()))));
+            buttons.set(i, new MenuButton(b.getSlot(), getEditItem(b.getItemStack().clone()), ImmutableMap.of(ClickType.LEFT, p -> editShow(player, b.getSlot()))));
         }
 
         new Menu(54, ChatColor.BLUE + "Edit Timetable", player, buttons).open();
@@ -215,7 +219,7 @@ public class ScheduleManager {
         int finalReplace = replace;
         ScheduledShow finalShow = show;
         for (ShowType type : ShowType.values()) {
-            buttons.add(new MenuButton(i++, ItemUtil.create(type.getType(), type.getName(),
+            buttons.add(new MenuButton(i++, ItemUtil.create(type.getType(), 1, type.getData(), type.getName(),
                     Arrays.asList(ChatColor.GREEN + "Update the timetable entry", ChatColor.GREEN + "for " + ChatColor.AQUA + finalShow.getDay().name() + " at " + finalShow.getTime())),
                     ImmutableMap.of(ClickType.LEFT, p -> {
                         p.sendMessage(ChatColor.GREEN + "Set the show at " + ChatColor.AQUA + finalShow.getDay().name() + " at " + finalShow.getTime() + ChatColor.GREEN + " (" + finalReplace + ") to " + type.getName());
@@ -241,7 +245,10 @@ public class ScheduleManager {
     }
 
     private ItemStack getEditItem(ItemStack i) {
-        return ItemUtil.create(i.getType(), i.getItemMeta().getDisplayName(), Collections.singletonList(ChatColor.GREEN + "Left-Click to change this show"));
+        ItemMeta meta = i.getItemMeta();
+        meta.setLore(Collections.singletonList(ChatColor.GREEN + "Left-Click to change this show"));
+        i.setItemMeta(meta);
+        return i;
     }
 
     @Getter
