@@ -276,14 +276,16 @@ public class StorageManager {
         filterItems(baseArray);
 
         Inventory backpack = Bukkit.createInventory(null, backpackSize.getSlots(), ChatColor.BLUE + "Your Backpack");
-        Inventory locker = Bukkit.createInventory(null, backpackSize.getSlots(), ChatColor.BLUE + "Your Locker");
+        Inventory locker = Bukkit.createInventory(null, lockerSize.getSlots(), ChatColor.BLUE + "Your Locker");
 
         fillInventory(backpack, backpackSize, backpackArray);
         fillInventory(locker, lockerSize, lockerArray);
 
-        StorageData data = new StorageData(backpack, backpackSize, packet.getBackpackHash(),
-                packet.getBackpackSize(), locker, lockerSize, packet.getLockerHash(), packet.getLockerSize(),
-                baseArray, packet.getBaseHash(), buildArray, packet.getBuildHash());
+        StorageData data = new StorageData(
+                backpack, backpackSize, packet.getBackpackHash(), packet.getBackpackSize(),
+                locker, lockerSize, packet.getLockerHash(), packet.getLockerSize(),
+                baseArray, packet.getBaseHash(), buildArray, packet.getBuildHash()
+        );
 
         CPlayer player = Core.getPlayerManager().getPlayer(packet.getUuid());
         if (player != null && player.getRegistry().hasEntry("waitingForInventory")) {
