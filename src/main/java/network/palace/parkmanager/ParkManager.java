@@ -22,6 +22,7 @@ import network.palace.parkmanager.shop.ShopManager;
 import network.palace.parkmanager.showschedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
+import network.palace.parkmanager.wardrobe.WardrobeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -32,9 +33,10 @@ public class ParkManager extends Plugin {
     @Getter private static AttractionManager attractionManager;
     @Getter private static AutographManager autographManager;
     @Getter private static BuildUtil buildUtil;
+    @Getter private static ConfigUtil configUtil;
     @Getter private static DelayUtil delayUtil;
-    @Getter private static FileUtil fileUtil;
     @Getter private static FastPassKioskManager fastPassKioskManager;
+    @Getter private static FileUtil fileUtil;
     @Getter private static FoodManager foodManager;
     @Getter private static InventoryUtil inventoryUtil;
     @Getter private static LeaderboardManager leaderboardManager;
@@ -46,11 +48,11 @@ public class ParkManager extends Plugin {
     @Getter private static RideCounterUtil rideCounterUtil;
     @Getter private static ScheduleManager scheduleManager;
     @Getter private static ShopManager shopManager;
-    @Getter private static ConfigUtil configUtil;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
     @Getter private static VisibilityUtil visibilityUtil;
+    @Getter private static WardrobeManager wardrobeManager;
 
     @Override
     protected void onPluginEnable() throws Exception {
@@ -61,6 +63,7 @@ public class ParkManager extends Plugin {
         attractionManager = new AttractionManager();
         autographManager = new AutographManager();
         buildUtil = new BuildUtil();
+        configUtil = new ConfigUtil();
         delayUtil = new DelayUtil();
         fastPassKioskManager = new FastPassKioskManager();
         foodManager = new FoodManager();
@@ -74,11 +77,11 @@ public class ParkManager extends Plugin {
         rideCounterUtil = new RideCounterUtil();
         scheduleManager = new ScheduleManager();
         shopManager = new ShopManager();
-        configUtil = new ConfigUtil();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();
         visibilityUtil = new VisibilityUtil();
+        wardrobeManager = new WardrobeManager();
 
         storageManager.initialize();
 

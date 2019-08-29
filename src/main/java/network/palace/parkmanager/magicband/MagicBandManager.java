@@ -369,15 +369,7 @@ public class MagicBandManager {
                 break;
             }
             case WARDROBE: {
-                new Menu(27, ChatColor.BLUE + "Wardrobe Manager", player, Arrays.asList(
-                        new MenuButton(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.AQUA + "Pardon Our Pixie Dust!",
-                                Arrays.asList(ChatColor.GRAY + "We've temporarily disabled outfits",
-                                        ChatColor.GRAY + "while we work to improve them",
-                                        ChatColor.GRAY + "behind the scenes.", "",
-                                        ChatColor.GRAY + "We apologize for the inconvenience,",
-                                        ChatColor.GRAY + "they will be returning shortly!"))),
-                        getBackButton(22, BandInventory.MAIN))
-                ).open();
+                ParkManager.getWardrobeManager().openWardrobePage(player, 1);
                 break;
             }
             case HOTELS: {
