@@ -6,7 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.shop.Shop;
+import network.palace.parkmanager.handlers.shop.Shop;
 import org.bukkit.ChatColor;
 
 @CommandMeta(description = "Remove an existing shops")

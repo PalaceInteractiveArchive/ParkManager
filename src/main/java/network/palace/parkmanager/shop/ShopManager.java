@@ -12,6 +12,10 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.outfits.Outfit;
+import network.palace.parkmanager.handlers.shop.Shop;
+import network.palace.parkmanager.handlers.shop.ShopItem;
+import network.palace.parkmanager.handlers.shop.ShopOutfit;
 import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -52,15 +56,22 @@ public class ShopManager {
 
                     JsonArray shopItems = object.getAsJsonArray("items");
                     List<ShopItem> items = new ArrayList<>();
-                    for (JsonElement shopElement : shopItems) {
-                        JsonObject shopObject = (JsonObject) shopElement;
-                        items.add(new ShopItem(ItemUtil.getItemFromJsonNew(shopObject.getAsJsonObject("item").toString()),
-                                shopObject.get("cost").getAsInt(),
-                                CurrencyType.fromString(shopObject.get("currency").getAsString())));
+                    for (JsonElement itemElement : shopItems) {
+                        JsonObject itemObject = (JsonObject) itemElement;
+                        items.add(new ShopItem(ItemUtil.getItemFromJsonNew(itemObject.getAsJsonObject("item").toString()),
+                                itemObject.get("cost").getAsInt(),
+                                CurrencyType.fromString(itemObject.get("currency").getAsString())));
+                    }
+
+                    JsonArray shopOutfits = object.getAsJsonArray("outfits");
+                    List<ShopOutfit> outfits = new ArrayList<>();
+                    for (JsonElement outfitElement : shopOutfits) {
+                        JsonObject outfitObject = (JsonObject) outfitElement;
+                        outfits.add(new ShopOutfit(outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
                     }
 
                     shops.add(new Shop(nextId++, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
-                            object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items));
+                            object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items, outfits));
                 }
             } else {
                 saveToFile();
@@ -113,26 +124,102 @@ public class ShopManager {
 
     public void openShopInventory(CPlayer player, Shop shop) {
         List<MenuButton> buttons = new ArrayList<>();
-        int i = 0;
-        int size = 18;
-        for (ShopItem shopItem : shop.getItems()) {
+        List<ShopItem> shopItems = shop.getItems();
+        List<ShopOutfit> shopOutfits = shop.getOutfits();
+
+        boolean divider = !shopItems.isEmpty() && !shopOutfits.isEmpty();
+        int pos = 0;
+
+        int itemSize = 9;
+        for (ShopItem shopItem : shopItems) {
             ItemStack item = shopItem.getItem();
             ItemMeta meta = item.getItemMeta();
             meta.setLore(Arrays.asList("", ChatColor.YELLOW + "Cost: " + shopItem.getCurrencyType().getIcon() + shopItem.getCost()));
             item.setItemMeta(meta);
-            if (i != 0 && i % 9 == 0) {
-                size += 9;
-            }
-            if (size > 54) {
-                size = 54;
+
+            if (pos != 0 && pos % 9 == 0) itemSize += 9;
+
+            buttons.add(new MenuButton(pos++, item, ImmutableMap.of(ClickType.LEFT, p -> openConfirmItemPurchase(p, item, shopItem.getCost(), shopItem.getCurrencyType()))));
+            if (itemSize > 27) {
+                itemSize = 27;
                 break;
             }
-            buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> openConfirmPurchase(p, item, shopItem.getCost(), shopItem.getCurrencyType()))));
         }
+
+        if (divider) {
+            ItemStack dividerItem = ItemUtil.create(Material.STAINED_GLASS_PANE, ChatColor.RESET + "");
+            pos = (pos + 9) - (pos % 9);
+            for (int i = 0; i < 9; i++) {
+                buttons.add(new MenuButton(pos++, dividerItem));
+            }
+        }
+
+        int outfitSize = 9;
+        int initialPos = pos;
+        for (ShopOutfit shopOutfit : shopOutfits) {
+            int outfitId = shopOutfit.getOutfitId();
+            Outfit outfit = ParkManager.getWardrobeManager().getOutfit(outfitId);
+            if (outfit == null) continue;
+
+            ItemStack item = outfit.getHead().clone();
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(outfit.getName());
+            meta.setLore(Arrays.asList("", ChatColor.YELLOW + "Cost: " + CurrencyType.TOKENS.getIcon() + shopOutfit.getCost()));
+            item.setItemMeta(meta);
+
+            if (pos != initialPos && pos % 9 == 0) outfitSize += 9;
+
+            buttons.add(new MenuButton(pos++, item, ImmutableMap.of(ClickType.LEFT, p -> openConfirmOutfitPurchase(p, item, outfitId, shopOutfit.getCost()))));
+            if (outfitSize > 18) {
+                outfitSize = 18;
+                break;
+            }
+        }
+
+        int size = itemSize + outfitSize + (divider ? 9 : 0);
         new Menu(size, shop.getName(), player, buttons).open();
     }
 
-    private void openConfirmPurchase(CPlayer player, ItemStack item, int cost, CurrencyType currencyType) {
+    private void openConfirmOutfitPurchase(CPlayer player, ItemStack item, int outfitId, int cost) {
+        List<Integer> currentPurchases = (List<Integer>) player.getRegistry().getEntry("outfitPurchases");
+        if (currentPurchases.contains(outfitId)) {
+            player.sendMessage(ChatColor.RED + "You already own this outfit!");
+            return;
+        }
+
+        int tokens = player.getTokens();
+        if (tokens < cost) {
+            player.sendMessage(ChatColor.RED + "You cannot afford that outfit!");
+            return;
+        }
+
+        List<MenuButton> buttons = Arrays.asList(
+                new MenuButton(4, item),
+                new MenuButton(11, ItemUtil.create(Material.CONCRETE, ChatColor.RED + "Decline Purchase", 14),
+                        ImmutableMap.of(ClickType.LEFT, p -> {
+                            p.closeInventory();
+                            p.sendMessage(ChatColor.RED + "You cancelled the purchase");
+                        })),
+                new MenuButton(15, ItemUtil.create(Material.CONCRETE, 1, 13,
+                        ChatColor.GREEN + "Confirm Purchase", Arrays.asList(ChatColor.GRAY + "You agree you will buy",
+                                ChatColor.GRAY + "this shop outfit for " + ChatColor.AQUA + CurrencyType.TOKENS.getIcon() + cost)),
+                        ImmutableMap.of(ClickType.LEFT, p -> {
+                            p.closeInventory();
+                            p.sendMessage(ChatColor.GREEN + "Processing your payment...");
+                            Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                                p.removeTokens(cost, "Park Store " + Core.getInstanceName());
+                                p.sendMessage(ChatColor.GREEN + "Payment has been processed!");
+                                List<Integer> purchases = (List<Integer>) player.getRegistry().getEntry("outfitPurchases");
+                                purchases.add(outfitId);
+                                Core.getMongoHandler().purchaseOutfit(p.getUniqueId(), outfitId);
+                            });
+                        }))
+        );
+
+        new Menu(27, ChatColor.BLUE + "Confirm Purchase", player, buttons).open();
+    }
+
+    private void openConfirmItemPurchase(CPlayer player, ItemStack item, int cost, CurrencyType currencyType) {
         boolean openSlot = false;
         PlayerInventory inv = player.getInventory();
         for (int i = 0; i < 5; i++) {
@@ -182,17 +269,17 @@ public class ShopManager {
                             p.sendMessage(ChatColor.GREEN + "Processing your payment...");
                             Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
                                 if (currencyType.equals(CurrencyType.BALANCE)) {
-                                    p.removeBalance(cost, "Park Store");
+                                    p.removeBalance(cost, "Park Store " + Core.getInstanceName());
                                 } else {
-                                    p.removeTokens(cost, "Park Store");
+                                    p.removeTokens(cost, "Park Store " + Core.getInstanceName());
                                 }
                                 p.sendMessage(ChatColor.GREEN + "Payment has been processed!");
-                                p.getInventory().addItem(item);
+                                Core.runTask(ParkManager.getInstance(), () -> p.getInventory().addItem(item));
                             });
                         }))
         );
 
-        new Menu(27, ChatColor.BLUE + "Purchase Confirm", player, buttons).open();
+        new Menu(27, ChatColor.BLUE + "Confirm Purchase", player, buttons).open();
     }
 
     public void saveToFile() {
@@ -212,6 +299,15 @@ public class ShopManager {
                 items.add(shopItem);
             }
             object.add("items", items);
+
+            JsonArray outfits = new JsonArray();
+            for (ShopOutfit outfit : shop.getOutfits()) {
+                JsonObject shopOutfit = new JsonObject();
+                shopOutfit.addProperty("outfit-id", outfit.getOutfitId());
+                shopOutfit.addProperty("cost", outfit.getCost());
+                outfits.add(shopOutfit);
+            }
+            object.add("outfits", outfits);
 
             array.add(object);
         }

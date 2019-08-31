@@ -1,4 +1,4 @@
-package network.palace.parkmanager.commands.shop;
+package network.palace.parkmanager.commands.shop.item;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
@@ -6,22 +6,22 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.shop.Shop;
-import network.palace.parkmanager.shop.ShopItem;
+import network.palace.parkmanager.handlers.shop.Shop;
+import network.palace.parkmanager.handlers.shop.ShopItem;
 import org.bukkit.ChatColor;
 
 @CommandMeta(description = "Remove a shop item")
-public class RemoveItemCommand extends CoreCommand {
+public class RemoveCommand extends CoreCommand {
 
-    public RemoveItemCommand() {
-        super("removeitem");
+    public RemoveCommand() {
+        super("remove");
     }
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "/shop removeitem [shop id] [shop item id]");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the shop item id from /shop listitems [shop id]!");
+            player.sendMessage(ChatColor.RED + "/shop item remove [shop id] [shop item id]");
+            player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the shop item id from /shop item list [shop id]!");
             return;
         }
         if (!MiscUtil.checkIfInt(args[0])) {

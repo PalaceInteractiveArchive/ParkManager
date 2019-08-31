@@ -14,10 +14,11 @@ import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.handlers.Resort;
+import network.palace.parkmanager.handlers.RideCount;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.handlers.magicband.MenuType;
+import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.queues.Queue;
-import network.palace.parkmanager.shop.Shop;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bson.Document;
@@ -28,10 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MagicBandManager {
 
@@ -41,16 +39,8 @@ public class MagicBandManager {
                 VisibilityUtil.Setting setting = ParkManager.getVisibilityUtil().getSetting(player);
                 ChatColor color = setting.getColor();
 
-                ItemStack band = getMagicBandItem(player);
-                ItemMeta meta = band.getItemMeta();
-                meta.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
-                meta.setLore(Arrays.asList("", ChatColor.GRAY + "Choose from a variety of MagicBand",
-                        ChatColor.GRAY + "designs and customize the color",
-                        ChatColor.GRAY + "of the name for your MagicBand!"));
-                band.setItemMeta(meta);
-
                 ItemStack profile = HeadUtil.getPlayerHead(player.getTextureValue(), ChatColor.AQUA + "My Profile");
-                meta = profile.getItemMeta();
+                ItemMeta meta = profile.getItemMeta();
                 meta.setLore(Arrays.asList("", ChatColor.GREEN + "Loading...", ""));
                 profile.setItemMeta(meta);
 
@@ -83,7 +73,7 @@ public class MagicBandManager {
                         new MenuButton(15, ItemUtil.create(Material.IRON_CHESTPLATE, ChatColor.AQUA + "Wardrobe Manager",
                                 Arrays.asList(ChatColor.GREEN + "Change your outfit to make you", ChatColor.GREEN + "look like your favorite characters!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.WARDROBE))),
-                        new MenuButton(16, ItemUtil.create(setting.getBlock(), ChatColor.AQUA + "Guest Visibility " +
+                        new MenuButton(16, ItemUtil.create(setting.getBlock(), 1, setting.getData(), ChatColor.AQUA + "Guest Visibility " +
                                         ChatColor.GOLD + "➠ " + setting.getColor() + setting.getText(),
                                 Arrays.asList(ChatColor.YELLOW + "Right-Click to " + (setting.equals(VisibilityUtil.Setting.ALL_HIDDEN) ? "show" : "hide") + " all players",
                                         ChatColor.YELLOW + "Left-Click for more options")),
@@ -92,11 +82,22 @@ public class MagicBandManager {
                                         openInventory(p, BandInventory.MAIN);
                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
-                                })),
-                        new MenuButton(player.getRank().getRankId() < Rank.NOBLE.getRankId() ? 6 : 22, band, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND)))
+                                }))
                 ));
 
-                Menu menu = new Menu(27, ChatColor.BLUE + "Your MagicBand", player, buttons);
+                if (!ParkManager.getResort().equals(Resort.USO)) {
+                    ItemStack band = getMagicBandItem(player);
+                    meta = band.getItemMeta();
+                    meta.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
+                    meta.setLore(Arrays.asList("", ChatColor.GRAY + "Choose from a variety of MagicBand",
+                            ChatColor.GRAY + "designs and customize the color",
+                            ChatColor.GRAY + "of the name for your MagicBand!"));
+                    band.setItemMeta(meta);
+                    buttons.add(new MenuButton(player.getRank().getRankId() < Rank.NOBLE.getRankId() ? 6 : 22, band,
+                            ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND))));
+                }
+
+                Menu menu = new Menu(27, ChatColor.BLUE + "Your " + (ParkManager.getResort().equals(Resort.USO) ? "Power Pass" : "MagicBand"), player, buttons);
                 if (player.getRank().getRankId() >= Rank.NOBLE.getRankId()) {
                     menu.setButton(new MenuButton(6, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
                             Arrays.asList(ChatColor.GREEN + "Change the time of day you see", ChatColor.GREEN + "for the park you're currently in!")),
@@ -435,7 +436,7 @@ public class MagicBandManager {
                 break;
             }
             case RIDE_COUNTERS: {
-                new Menu(27, ChatColor.GREEN + "Ride Counters", player, Collections.singletonList(getBackButton(22, BandInventory.PROFILE))).open();
+                openRideCounterPage(player, 1);
                 break;
             }
             case VISIBILITY: {
@@ -675,6 +676,54 @@ public class MagicBandManager {
         }
     }
 
+    public void openRideCounterPage(CPlayer player, int page) {
+        List<MenuButton> buttons = new ArrayList<>();
+        HashMap<String, RideCount> data = (HashMap<String, RideCount>) player.getRegistry().getEntry("rideCounterCache");
+
+        List<RideCount> rides = new ArrayList<>(data.values());
+        rides.sort((o1, o2) -> {
+            if (o1.getServer().equals(o2.getServer())) {
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+            } else {
+                return o1.getServer().toLowerCase().compareTo(o2.getServer().toLowerCase());
+            }
+        });
+        int size = rides.size();
+        if (size < 46) {
+            page = 1;
+        } else if (size < (45 * (page - 1) + 1)) {
+            page -= 1;
+        }
+        List<RideCount> list = rides.subList(page > 1 ? (45 * (page - 1)) : 0, (size - (45 * (page - 1))) > 45 ? (45 * page) : size);
+        int pos = 0;
+        for (RideCount ride : list) {
+            if (pos >= 45) break;
+            buttons.add(new MenuButton(pos++, ItemUtil.create(Material.MINECART, ChatColor.GREEN + ride.getName(),
+                    Arrays.asList(ChatColor.YELLOW + "Rides: " + ride.getCount(), ChatColor.YELLOW + "Park: " + ride.getServer()))));
+        }
+        int finalPage = page;
+        if (page > 1) {
+            buttons.add(new MenuButton(48, ItemUtil.create(Material.ARROW, ChatColor.GREEN + "Last Page"),
+                    ImmutableMap.of(ClickType.LEFT, p -> openRideCounterPage(p, finalPage - 1))));
+        }
+        int maxPage = 1;
+        int n = size;
+        while (true) {
+            if (n - 45 > 0) {
+                n -= 45;
+                maxPage += 1;
+            } else {
+                break;
+            }
+        }
+        if (size > 45 && page < maxPage) {
+            buttons.add(new MenuButton(50, ItemUtil.create(Material.ARROW, ChatColor.GREEN + "Next Page"),
+                    ImmutableMap.of(ClickType.LEFT, p -> openRideCounterPage(p, finalPage + 1))));
+        }
+        buttons.add(getBackButton(49, BandInventory.PROFILE));
+        new Menu(54, ChatColor.GREEN + "Ride Counter Page " + page, player, buttons).open();
+    }
+
     private void setBandType(CPlayer player, String type) {
         player.getRegistry().addEntry("bandType", type.toLowerCase());
         ParkManager.getStorageManager().updateInventory(player);
@@ -702,6 +751,20 @@ public class MagicBandManager {
         }
         player.getRegistry().addEntry("bandType", bandtype);
         player.getRegistry().addEntry("bandNameColor", namecolor);
+        Core.runTaskAsynchronously(() -> {
+            HashMap<String, RideCount> data = new HashMap<>();
+            for (Object o : Core.getMongoHandler().getRideCounterData(player.getUniqueId())) {
+                Document d = (Document) o;
+                String name = d.getString("name").trim();
+                String server = d.getString("server").replaceAll("[^A-Za-z ]", "");
+                if (data.containsKey(name) && data.get(name).serverEquals(server)) {
+                    data.get(name).addCount(1);
+                } else {
+                    data.put(name, new RideCount(name, server));
+                }
+            }
+            player.getRegistry().addEntry("rideCounterCache", data);
+        });
     }
 
     public ItemStack getMagicBandItem(CPlayer player) {
@@ -722,7 +785,9 @@ public class MagicBandManager {
             case BLUE:
             case PURPLE:
             case PINK: {
-                item = ItemUtil.create(Material.FIREWORK_CHARGE, getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
+                item = ItemUtil.create(Material.FIREWORK_CHARGE, getNameColor(color) +
+                        (ParkManager.getResort().equals(Resort.USO) ? "Power Pass " : "MagicBand ") +
+                        ChatColor.GRAY + "(Right-Click)");
                 FireworkEffectMeta meta = (FireworkEffectMeta) item.getItemMeta();
                 meta.setEffect(FireworkEffect.builder().withColor(getBandColor(bandType)).build());
                 item.setItemMeta(meta);
@@ -733,7 +798,9 @@ public class MagicBandManager {
             case PRINCESSES:
             case BIG_HERO_SIX:
             case HOLIDAY:
-                item = ItemUtil.create(getMaterial(bandType), getNameColor(color) + "MagicBand " + ChatColor.GRAY + "(Right-Click)");
+                item = ItemUtil.create(getMaterial(bandType), getNameColor(color) +
+                        (ParkManager.getResort().equals(Resort.USO) ? "Power Pass " : "MagicBand ") +
+                        ChatColor.GRAY + "(Right-Click)");
                 break;
             default:
                 return getMagicBandItem("red", "gold");

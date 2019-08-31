@@ -241,10 +241,10 @@ public class StorageManager {
             for (int i = player.getRank().getRankId() >= Rank.MOD.getRankId() ? 1 : 0; i < base.length; i++) {
                 if (InventoryUtil.isReservedSlot(i)) continue;
                 contents[i] = base[i];
-//                inv.setItem(i, base[i]);
             }
         }
         inv.setContents(contents);
+        ParkManager.getWardrobeManager().setOutfitItems(player);
         Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             ParkManager.getAutographManager().updateAutographs(player);
             ParkManager.getAutographManager().giveBook(player);

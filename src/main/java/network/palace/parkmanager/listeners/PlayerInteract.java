@@ -35,64 +35,6 @@ public class PlayerInteract implements Listener {
                 if (signEntry != null) {
                     signEntry.getHandler().onInteract(player, s, event);
                 }
-                /*String[] lines = s.getLines();
-                if (signType != null) {
-                    switch (signType) {
-                        case DISPOSAL:
-                            player.openInventory(Bukkit.createInventory(player.getBukkitPlayer(), 36, ChatColor.BLUE + "Disposal"));
-                            break;
-                        case RIDE_LEADERBOARD:
-                            LeaderboardSign leaderboard = ParkManager.getLeaderboardManager().getSign(s.getLocation());
-                            if (leaderboard == null) return;
-                            String rideName = leaderboard.getRideName();
-                            player.sendMessage(ChatColor.AQUA + "Gathering leaderboard data for " + rideName + "...");
-                            Core.runTaskAsynchronously(() -> {
-                                List<String> messages = new ArrayList<>();
-                                for (Map.Entry<UUID, Integer> entry : leaderboard.getCachedMap().entrySet()) {
-                                    messages.add(ChatColor.BLUE + LeaderboardManager.getFormattedName(entry.getKey(), entry.getValue()));
-                                }
-                                LeaderboardManager.sortLeaderboardMessages(messages);
-                                player.sendMessage(ChatColor.BLUE + "Ride Counter Leaderboard for " + ChatColor.GOLD + rideName + ":");
-                                messages.forEach(player::sendMessage);
-                            });
-                            return;
-                        case SERVER:
-                            player.sendToServer(s.getLine(2));
-                            return;
-                        case WARP:
-                            Warp warp = ParkWarp.getWarpUtil().findWarp(ChatColor.stripColor(lines[1]));
-                            if (warp == null) {
-                                player.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
-                                return;
-                            }
-                            if (!warp.getServer().equalsIgnoreCase(Core.getInstanceName())) {
-                                ParkWarp.getWarpUtil().crossServerWarp(player.getUniqueId(), warp.getName(), warp.getServer());
-                                return;
-                            }
-                            player.teleport(warp.getLocation());
-                            player.sendMessage(ChatColor.BLUE + "You have arrived at " + ChatColor.WHITE + "[" +
-                                    ChatColor.GREEN + warp.getName() + ChatColor.WHITE + "]");
-                            return;
-                        case QUEUE:
-                            Queue queue = ParkManager.getQueueManager().getQueue(s);
-                            if (queue == null) return;
-                            if (queue.isInQueue(player)) {
-                                queue.leaveQueue(player, false);
-                            } else {
-                                queue.joinQueue(player);
-                            }
-                            break;
-                        case SHOP: {
-                            Shop shop = ParkManager.getShopManager().getShop(ChatColor.stripColor(lines[1]));
-                            if (shop == null) {
-                                player.sendMessage(ChatColor.RED + "Could not find a shop named " + lines[1] + "!");
-                                return;
-                            }
-                            ParkManager.getShopManager().openShopInventory(player, shop);
-                            break;
-                        }
-                    }
-                }*/
                 return;
             }
         }

@@ -39,30 +39,8 @@ public class BlockEdit implements Listener {
         Material type = event.getBlock().getType();
         if (type.equals(Material.SIGN) || type.equals(Material.WALL_SIGN)) {
             Sign s = (Sign) event.getBlock().getState();
-//            ServerSign signType = ServerSign.fromSign(s);
-
             ServerSign.SignEntry signEntry = ServerSign.getByHeader(s.getLine(0));
-
-            if (signEntry != null) {
-                signEntry.getHandler().onBreak(player, s, event);
-                /*switch (signType) {
-                    case RIDE_LEADERBOARD:
-                        ParkManager.getLeaderboardManager().deleteSign(s.getLocation());
-                        break;
-                    case QUEUE:
-                        Queue queue = ParkManager.getQueueManager().getQueue(s);
-                        if (queue == null) return;
-                        if (!player.getMainHand().getType().equals(Material.GOLDEN_AXE)) {
-                            event.setCancelled(true);
-                            player.sendMessage(ChatColor.GREEN + "In order to break a " + signType.getSignHeader()
-                                    + ChatColor.GREEN + " sign, you must be holding a " + ChatColor.GOLD + "Golden Axe!");
-                            return;
-                        }
-                        queue.removeSign(s.getLocation());
-                        player.sendMessage(ChatColor.GREEN + "You removed a queue sign for " + queue.getName());
-                        break;
-                }*/
-            }
+            if (signEntry != null) signEntry.getHandler().onBreak(player, s, event);
         }
 
     }

@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 
+import java.util.HashMap;
 import java.util.TreeMap;
 
 @CommandMeta(description = "Add a ride counter for a player", rank = Rank.MOD)
@@ -37,14 +38,18 @@ public class AddRideCounterCommand extends CoreCommand {
             return;
         }
         StringBuilder rideName = new StringBuilder();
-        for (int i = 3; i < args.length; i++) {
+        for (int i = 1; i < args.length; i++) {
             rideName.append(args[i]);
-            if ((i - 2) < (args.length)) {
-                rideName.append(" ");
-            }
+            rideName.append(" ");
+        }
+        String finalRideName = rideName.toString().trim();
+        HashMap<String, RideCount> cache = ((HashMap<String, RideCount>) tp.getRegistry().getEntry("rideCounterCache"));
+        if (!cache.containsKey(finalRideName)) {
+            cache.put(finalRideName, new RideCount(finalRideName, Core.getInstanceName()));
+        } else {
+            cache.get(finalRideName).addCount(1);
         }
         Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
-            String finalRideName = rideName.toString().trim();
             Core.getMongoHandler().logRideCounter(tp.getUniqueId(), finalRideName);
 
             TreeMap<String, RideCount> rides = ParkManager.getRideCounterUtil().getRideCounters(tp);
@@ -63,12 +68,11 @@ public class AddRideCounterCommand extends CoreCommand {
                 tp.giveAchievement(12);
             }
 
-            sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " +
-                    rideName.toString().trim());
+            sender.sendMessage(ChatColor.GREEN + "Added 1 to " + tp.getName() + "'s counter for " + finalRideName);
             tp.sendMessage(ChatColor.GREEN + "--------------" + ChatColor.GOLD + "" + ChatColor.BOLD +
                     "Ride Counter" + ChatColor.GREEN + "-------------\n" + ChatColor.YELLOW +
-                    "Ride Counter for " + ChatColor.AQUA + rideName.toString().trim() + ChatColor.YELLOW +
-                    " is now at " + ChatColor.AQUA + rides.get(rideName.toString().trim()).getCount() +
+                    "Ride Counter for " + ChatColor.AQUA + finalRideName + ChatColor.YELLOW +
+                    " is now at " + ChatColor.AQUA + rides.get(finalRideName).getCount() +
                     ChatColor.GREEN + "\n----------------------------------------");
             tp.playSound(tp.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 100f, 0.75f);
         });

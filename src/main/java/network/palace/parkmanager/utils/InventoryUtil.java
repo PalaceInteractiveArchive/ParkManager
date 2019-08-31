@@ -75,6 +75,7 @@ public class InventoryUtil {
                 if (player.getHeldItemSlot() == 6) ParkManager.getTimeUtil().selectWatch(player);
                 if (player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId())
                     Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setBuildMode(player.getUniqueId(), false));
+                ParkManager.getWardrobeManager().setOutfitItems(player);
                 break;
             }
             case RIDE:

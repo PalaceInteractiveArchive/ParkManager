@@ -23,7 +23,6 @@ public class AutographManager {
     public static final String BOOK_TITLE = ChatColor.DARK_AQUA + "Autograph Book";
     public static final int AUTOS_PER_BOOK = 49;
     public static final String FIRST_PAGE = ChatColor.translateAlternateColorCodes('&', "&d&lPalace Network\n&9&lAutograph Book\n\n&aMeet &9Characters &aand Staff Members to get your book signed!\n&eEach book holds up to " + AUTOS_PER_BOOK + " autographs. &9Hold shift and click to switch books.\n&a&nThis book contains:\n");
-    //    private HashMap<UUID, UUID> signerToPlayer = new HashMap<>();
 
     //This contains the sender->target pair when sender is actively signing target's book
     private HashMap<UUID, UUID> activeSessions = new HashMap<>();
@@ -175,11 +174,9 @@ public class AutographManager {
      */
     public void requestToSign(CPlayer sender, CPlayer target) {
         if (target.getRegistry().hasEntry("autographRequestFrom") && target.getRegistry().getEntry("autographRequestFrom") != null) {
-//        if (signerToPlayer.containsValue(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "That player already has an autograph request!");
             return;
         }
-//        signerToPlayer.put(sender.getUniqueId(), target.getUniqueId());
         target.getRegistry().addEntry("autographRequestFrom", sender.getUniqueId());
         sender.getRegistry().addEntry("autographRequestTo", target.getUniqueId());
 

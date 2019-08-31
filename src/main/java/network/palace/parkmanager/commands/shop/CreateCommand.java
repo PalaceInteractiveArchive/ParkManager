@@ -5,7 +5,7 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.shop.Shop;
+import network.palace.parkmanager.handlers.shop.Shop;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -44,7 +44,7 @@ public class CreateCommand extends CoreCommand {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getShopManager().addShop(new Shop(ParkManager.getShopManager().getNextId(), displayName, args[0], item, new ArrayList<>()));
+        ParkManager.getShopManager().addShop(new Shop(ParkManager.getShopManager().getNextId(), displayName, args[0], item, new ArrayList<>(), new ArrayList<>()));
         player.sendMessage(ChatColor.GREEN + "Created new shop " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
     }
 }

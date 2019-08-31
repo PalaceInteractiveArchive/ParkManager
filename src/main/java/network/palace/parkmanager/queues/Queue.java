@@ -76,10 +76,7 @@ public abstract class Queue {
             } else {
                 player.sendMessage(ChatColor.GREEN + "You've left the queue for " + name);
             }
-//            if (queueMembers.isEmpty()) {
             //Since the queue is empty, cancel the next scheduled group
-//                nextGroup = 0;
-//            }
         }
     }
 
@@ -190,7 +187,7 @@ public abstract class Queue {
         int group = (int) Math.floor(((float) position) / groupSize);
 
         //Get time until player's group is up, plus time until current group is up
-        int seconds = (int) Math.floor((delay * group) + ((nextGroup - currentTime) / 1000));
+        int seconds = (int) Math.floor((delay * group) + ((nextGroup - currentTime) / 1000f));
 
         Calendar from = new GregorianCalendar();
         from.setTimeInMillis(currentTime);

@@ -1,4 +1,4 @@
-package network.palace.parkmanager.commands.shop;
+package network.palace.parkmanager.commands.shop.item;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
@@ -7,24 +7,24 @@ import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.shop.Shop;
-import network.palace.parkmanager.shop.ShopItem;
+import network.palace.parkmanager.handlers.shop.Shop;
+import network.palace.parkmanager.handlers.shop.ShopItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 @CommandMeta(description = "Add a new shop item")
-public class AddItemCommand extends CoreCommand {
+public class AddCommand extends CoreCommand {
 
-    public AddItemCommand() {
-        super("additem");
+    public AddCommand() {
+        super("add");
     }
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 4) {
-            player.sendMessage(ChatColor.RED + "/shop additem [shop id] [cost] [balance/tokens] [display name]");
+            player.sendMessage(ChatColor.RED + "/shop item add [shop id] [cost] [balance/tokens] [display name]");
             return;
         }
         if (!MiscUtil.checkIfInt(args[0])) {

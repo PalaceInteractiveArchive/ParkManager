@@ -41,11 +41,6 @@ public class DelayCommand extends CoreCommand {
             }
             long delay = (long) (20 * (Double.parseDouble(args[0])));
             ParkManager.getDelayUtil().logDelay(loc, delay, Material.REDSTONE_BLOCK);
-//            Block b = loc.getBlock();
-//            Core.runTaskLater(() -> {
-//                b.setType(Material.REDSTONE_BLOCK);
-//                Core.runTaskLater(() -> b.setType(Material.AIR), 20L);
-//            }, delay);
             return;
         }
         sender.sendMessage(ChatColor.RED + "/delay [delay in seconds] x y z");

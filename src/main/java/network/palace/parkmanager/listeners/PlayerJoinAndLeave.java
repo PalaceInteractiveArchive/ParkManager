@@ -24,7 +24,8 @@ public class PlayerJoinAndLeave implements Listener {
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         ParkManager.getPlayerUtil().addLoginData(uuid,
-                Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings", "magicband", "fastpass"),
+                Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings", "magicband",
+                        "fastpass", "outfit", "outfitPurchases"),
                 Core.getMongoHandler().getFriendList(uuid));
     }
 
@@ -63,6 +64,7 @@ public class PlayerJoinAndLeave implements Listener {
         }
         ParkManager.getPackManager().handleJoin(player, pack);
         ParkManager.getFastPassKioskManager().handleJoin(player, (Document) loginData.get("fastpass"));
+        ParkManager.getWardrobeManager().handleJoin(player, loginData.getString("outfit"), loginData.get("outfitPurchases", ArrayList.class));
 
         if (ParkManager.getConfigUtil().isSpawnOnJoin()) {
             player.teleport(ParkManager.getConfigUtil().getSpawn());
