@@ -119,6 +119,7 @@ public class ParkManager extends Plugin {
         registerCommand(new NightCommand());
         registerCommand(new NightVisionCommand());
         registerCommand(new NoonCommand());
+        registerCommand(new OutfitCommand());
         registerCommand(new OutlineCommand());
         registerCommand(new PackCommand());
         registerCommand(new PlayerTimeCommand());

@@ -33,6 +33,7 @@ import java.util.List;
 
 public class WardrobeManager {
     private HashMap<Integer, Outfit> outfits = new HashMap<>();
+    private boolean initialStarted = false;
 
     public WardrobeManager() {
         initialize();
@@ -42,7 +43,8 @@ public class WardrobeManager {
         outfits.clear();
         boolean convert = false;
         for (Document doc : Core.getMongoHandler().getOutfits(ParkManager.getResort().getId())) {
-            if (!doc.containsKey("shirt")) {
+            if (!doc.containsKey("shirtJSON")) {
+                Core.logMessage("WardrobeManager", "Converting outfits!");
                 convert = true;
                 break;
             }
@@ -70,16 +72,29 @@ public class WardrobeManager {
                         )
                 );
             }
+        } else {
+            Core.logMessage("WardrobeManager", "Loaded " + outfits.size() + " outfits!");
         }
-        Core.runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
-            for (CPlayer player : Core.getPlayerManager().getOnlinePlayers()) {
-                if (!player.getRegistry().hasEntry("updateOutfitSelection")) continue;
-                player.getRegistry().removeEntry("updateOutfitSelection");
-                Clothing c = (Clothing) player.getRegistry().getEntry("clothing");
-                Core.getMongoHandler().setOutfitCode(player.getUniqueId(), c.getHeadID() +
-                        "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID());
-            }
-        }, 0L, 100L);
+        if (!initialStarted) {
+            initialStarted = true;
+            Core.runTaskTimerAsynchronously(ParkManager.getInstance(), () -> {
+                for (CPlayer player : Core.getPlayerManager().getOnlinePlayers()) {
+                    if (!player.getRegistry().hasEntry("updateOutfitSelection")) continue;
+                    player.getRegistry().removeEntry("updateOutfitSelection");
+                    Clothing c = (Clothing) player.getRegistry().getEntry("clothing");
+                    Core.getMongoHandler().setOutfitCode(player.getUniqueId(), c.getHeadID() +
+                            "," + c.getShirtID() + "," + c.getPantsID() + "," + c.getBootsID());
+                }
+            }, 0L, 100L);
+        }
+    }
+
+    public Outfit getOutfit(int id) {
+        return outfits.get(id);
+    }
+
+    public List<Outfit> getOutfits() {
+        return new ArrayList<>(outfits.values());
     }
 
     public void handleJoin(CPlayer player, String outfitCode, ArrayList arrayList) {
@@ -193,10 +208,6 @@ public class WardrobeManager {
         }
     }
 
-    public Outfit getOutfit(int id) {
-        return outfits.get(id);
-    }
-
     private void setOutfit(CPlayer player, int outfitId, int page, boolean owns) {
         if (!owns) {
             player.sendMessage(ChatColor.RED + "You don't own that!");
@@ -234,6 +245,7 @@ public class WardrobeManager {
         openWardrobePage(player, page);
     }
 
+    @SuppressWarnings("unchecked")
     public void openWardrobePage(CPlayer player, int page) {
         List<MenuButton> buttons = new ArrayList<>(Arrays.asList(
                 new MenuButton(16, ItemUtil.create(Material.GLASS, ChatColor.GREEN + "Reset Head"),
