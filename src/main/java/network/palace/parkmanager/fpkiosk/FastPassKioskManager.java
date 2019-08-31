@@ -16,7 +16,6 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.MonthOfYear;
 import network.palace.parkmanager.handlers.RewardData;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,7 +55,7 @@ public class FastPassKioskManager {
                 for (ArmorStand stand : player.getWorld().getEntitiesByClass(ArmorStand.class)) {
                     if (isKiosk(stand) && stand.getEntityId() == id) {
                         event.setCancelled(true);
-                        Bukkit.getScheduler().runTask(ParkManager.getInstance(), () -> openMenu(player));
+                        Core.runTask(ParkManager.getInstance(), () -> openMenu(player));
                     }
                 }
             }
@@ -259,14 +258,12 @@ public class FastPassKioskManager {
         cur.setTimeInMillis(new Date().getTime());
         MonthOfYear month = MonthOfYear.getFromNumber(cur.get(Calendar.MONTH));
         int days = month.getDays();
-        boolean leap = cur.get(Calendar.YEAR) % 4 == 0;
-        if (month.equals(MonthOfYear.FEBRUARY) && leap) {
-            days += 1;
-        }
-        int d = days - (cur.get(Calendar.DAY_OF_MONTH) + 1);
+        if (month.equals(MonthOfYear.FEBRUARY) && cur.get(Calendar.YEAR) % 4 == 0) days += 1;
+
+        int d = days - cur.get(Calendar.DAY_OF_MONTH);
         int h = 24 - (cur.get(Calendar.HOUR_OF_DAY) + 1);
         int m = 60 - (cur.get(Calendar.MINUTE) + 1);
-        int s = 60 - cur.get(Calendar.SECOND);
+        int s = 60 - (cur.get(Calendar.SECOND) + 1);
         return ChatColor.GRAY + "" + d + "d" + h + "h" + m + "m" + s + "s";
     }
 
