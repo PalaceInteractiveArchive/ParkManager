@@ -111,11 +111,13 @@ public class FastPassKioskManager {
         player.getRegistry().addEntry("fastPassCount", fastpassDocument.getInteger("count"));
         Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             Document rewardDocument = Core.getMongoHandler().getMonthlyRewards(player.getUniqueId());
-            player.getRegistry().addEntry("kioskRewardData", new RewardData(rewardDocument.getLong("settler"),
-                    rewardDocument.getLong("dweller"),
-                    rewardDocument.getLong("noble"),
-                    rewardDocument.getLong("majestic"),
-                    rewardDocument.getLong("honorable")));
+            if (rewardDocument == null || !rewardDocument.containsKey("settler")) return;
+            long settler = rewardDocument.getLong("settler");
+            long dweller = (Long) rewardDocument.getOrDefault("dweller", 0);
+            long noble = (Long) rewardDocument.getOrDefault("noble", 0);
+            long majestic = (Long) rewardDocument.getOrDefault("majestic", 0);
+            long honorable = (Long) rewardDocument.getOrDefault("honorable", 0);
+            player.getRegistry().addEntry("kioskRewardData", new RewardData(settler, dweller, noble, majestic, honorable));
         });
     }
 
