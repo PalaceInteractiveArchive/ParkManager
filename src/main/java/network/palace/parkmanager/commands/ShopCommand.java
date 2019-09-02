@@ -4,6 +4,7 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.commands.shop.ItemCommand;
+import network.palace.parkmanager.commands.shop.OutfitCommand;
 import network.palace.parkmanager.commands.shop.*;
 
 @CommandMeta(description = "Shop command", rank = Rank.MOD)
