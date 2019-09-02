@@ -113,10 +113,10 @@ public class FastPassKioskManager {
             Document rewardDocument = Core.getMongoHandler().getMonthlyRewards(player.getUniqueId());
             if (rewardDocument == null || !rewardDocument.containsKey("settler")) return;
             long settler = rewardDocument.getLong("settler");
-            long dweller = (Long) rewardDocument.getOrDefault("dweller", 0);
-            long noble = (Long) rewardDocument.getOrDefault("noble", 0);
-            long majestic = (Long) rewardDocument.getOrDefault("majestic", 0);
-            long honorable = (Long) rewardDocument.getOrDefault("honorable", 0);
+            long dweller = (Long) rewardDocument.getOrDefault("dweller", 0L);
+            long noble = (Long) rewardDocument.getOrDefault("noble", 0L);
+            long majestic = (Long) rewardDocument.getOrDefault("majestic", 0L);
+            long honorable = (Long) rewardDocument.getOrDefault("honorable", 0L);
             player.getRegistry().addEntry("kioskRewardData", new RewardData(settler, dweller, noble, majestic, honorable));
         });
     }
