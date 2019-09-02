@@ -9,6 +9,7 @@ import network.palace.core.player.Rank;
 import network.palace.core.utils.MathUtil;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -156,7 +157,7 @@ public class TeleportCommand extends CoreCommand {
                     (consoleSender ? "[target]" : "<target>"));
             return;
         }
-        if (target.isInVehicle()) {
+        if (!player.getGamemode().equals(GameMode.SPECTATOR) && target.isInVehicle()) {
             messenger.sendMessage(ChatColor.RED + "Can't teleport to " + target.getName() + ", they're on a ride!");
             return;
         }
