@@ -36,10 +36,9 @@ public class DelayCommand extends CoreCommand {
             int y = (int) Double.parseDouble(args[2]);
             int z = (int) Double.parseDouble(args[3]);
             Location loc = new Location(sender.getBlock().getWorld(), x, y, z);
-            if (!loc.getChunk().isLoaded()) {
-                loc.getChunk().load();
-            }
             long delay = (long) (20 * (Double.parseDouble(args[0])));
+            if (!loc.getChunk().isLoaded()) loc.getChunk().load();
+
             ParkManager.getDelayUtil().logDelay(loc, delay, Material.REDSTONE_BLOCK);
             return;
         }

@@ -6,7 +6,6 @@ import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class DelayUtil {
     /**
      * Log a delay entry
      * The block at 'loc' will be changed to 'type' after 'delay' ticks
-     * After 20 ticks (or 1 second), the block will be changed back to its previous type
+     * After 20 ticks (or 1 second), the block will be set to air
      *
      * @param loc   the location of the delay entry
      * @param delay delay in ticks
@@ -54,9 +53,8 @@ public class DelayUtil {
          */
         public boolean tick() {
             if (ticks <= 0) {
-                Block b = loc.getBlock();
-                if (fromCommand) entries.add(new DelayEntry(loc, 20, b.getType(), false));
-                b.setType(type);
+                if (fromCommand) entries.add(new DelayEntry(loc, 20, Material.AIR, false));
+                loc.getBlock().setType(type);
                 return true;
             }
             ticks--;
