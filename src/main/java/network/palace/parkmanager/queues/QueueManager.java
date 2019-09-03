@@ -26,7 +26,7 @@ public class QueueManager {
         initialize();
         long time = System.currentTimeMillis();
         long milliseconds = time - TimeUtil.getCurrentSecondInMillis(time);
-        long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000));
+        long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000f));
         Core.runTaskTimer(ParkManager.getInstance(), () -> {
             long currentTime = TimeUtil.getCurrentSecondInMillis();
             queues.forEach(queue -> {
@@ -127,6 +127,14 @@ public class QueueManager {
                     return queue;
                 }
             }
+        }
+        return null;
+    }
+
+    public Queue getQueue(String name) {
+        name = ChatColor.stripColor(name);
+        for (Queue queue : getQueues()) {
+            if (ChatColor.stripColor(queue.getName()).startsWith(name)) return queue;
         }
         return null;
     }

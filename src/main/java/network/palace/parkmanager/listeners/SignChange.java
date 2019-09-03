@@ -122,9 +122,18 @@ public class SignChange implements Listener {
                     player.sendMessage(ChatColor.RED + "Couldn't find a queue with id " + id + "!");
                     return;
                 }
-                queue.addSign(new QueueSign(event.getBlock().getLocation(), queue.getName(), queue.getQueueSize()));
-                event.setCancelled(true);
-                queue.updateSigns();
+                if (!event.getLine(2).isEmpty()) {
+                    if (event.getLine(2).equalsIgnoreCase("wait")) {
+                        event.setLine(0, ChatColor.BLUE + "[Wait Times]");
+                        event.setLine(1, ChatColor.DARK_AQUA + "Click for the");
+                        event.setLine(2, ChatColor.DARK_AQUA + "wait time for");
+                        event.setLine(3, ChatColor.DARK_AQUA + queue.getName());
+                    }
+                } else {
+                    queue.addSign(new QueueSign(event.getBlock().getLocation(), queue.getName(), queue.getQueueSize()));
+                    event.setCancelled(true);
+                    queue.updateSigns();
+                }
             }
 
             @Override
@@ -150,6 +159,33 @@ public class SignChange implements Listener {
                 }
                 queue.removeSign(s.getLocation());
                 player.sendMessage(ChatColor.GREEN + "You removed a queue sign for " + queue.getName());
+            }
+        });
+        ServerSign.registerSign("[Wait Times]", new ServerSign.SignHandler() {
+            @Override
+            public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
+                Queue queue = ParkManager.getQueueManager().getQueue(s.getLine(3));
+                if (queue == null) return;
+                if (!queue.isOpen()) {
+                    player.sendMessage(ChatColor.GREEN + "This queue is currently " + ChatColor.RED + "closed!");
+                } else {
+                    String wait = queue.getWaitFor(player.getUniqueId());
+                    player.sendMessage(ChatColor.GREEN + "The estimated wait time for " + queue.getName() +
+                            ChatColor.GREEN + " is " + ChatColor.AQUA + wait);
+                }
+            }
+
+            @Override
+            public void onBreak(CPlayer player, Sign s, BlockBreakEvent event) {
+                Queue queue = ParkManager.getQueueManager().getQueue(s.getLine(3));
+                if (queue == null) return;
+                if (!player.getMainHand().getType().equals(Material.GOLD_AXE)) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.GREEN + "In order to break a [Wait Times] sign, you must be holding a "
+                            + ChatColor.GOLD + "Golden Axe!");
+                    return;
+                }
+                player.sendMessage(ChatColor.GREEN + "You removed a wait time sign for " + queue.getName());
             }
         });
         ServerSign.registerSign("[Shop]", new ServerSign.SignHandler() {

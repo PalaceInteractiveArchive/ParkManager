@@ -29,7 +29,7 @@ public class PlayerInteract implements Listener {
         //Check sign clicks
         if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
             Block b = event.getClickedBlock();
-            if (b.getType().equals(Material.SIGN) || b.getType().equals(Material.WALL_SIGN)) {
+            if (b.getType().equals(Material.SIGN) || b.getType().equals(Material.WALL_SIGN) || b.getType().equals(Material.SIGN_POST)) {
                 Sign s = (Sign) b.getState();
                 ServerSign.SignEntry signEntry = ServerSign.getByHeader(s.getLine(0));
                 if (signEntry != null) {

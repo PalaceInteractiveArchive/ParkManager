@@ -25,7 +25,8 @@ public class QueueSign {
 
     public void updateSign() {
         Block b = location.getBlock();
-        if (!b.getType().equals(Material.SIGN) && !b.getType().equals(Material.WALL_SIGN)) return;
+        if (!b.getType().equals(Material.SIGN) && !b.getType().equals(Material.WALL_SIGN) && !b.getType().equals(Material.SIGN_POST))
+            return;
         Sign s = (Sign) b.getState();
         String[] lines = new String[]{ChatColor.BLUE + "[Queue]", queueName, amount
                 + " Player" + TextUtil.pluralize(amount), wait};

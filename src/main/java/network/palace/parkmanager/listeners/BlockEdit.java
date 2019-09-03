@@ -37,7 +37,7 @@ public class BlockEdit implements Listener {
         }
 
         Material type = event.getBlock().getType();
-        if (type.equals(Material.SIGN) || type.equals(Material.WALL_SIGN)) {
+        if (type.equals(Material.SIGN) || type.equals(Material.WALL_SIGN) || type.equals(Material.SIGN_POST)) {
             Sign s = (Sign) event.getBlock().getState();
             ServerSign.SignEntry signEntry = ServerSign.getByHeader(s.getLine(0));
             if (signEntry != null) signEntry.getHandler().onBreak(player, s, event);
