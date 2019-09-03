@@ -47,7 +47,7 @@ public class LeaderboardManager {
             Core.logMessage("LeaderboardManager", "There was an error loading the LeaderboardManager config!");
             e.printStackTrace();
         }
-        Core.runTaskTimerAsynchronously(ParkManager.getInstance(), this::update, 400L, 10 * 60 * 20L);
+        Core.runTaskTimer(ParkManager.getInstance(), this::update, 400L, 10 * 60 * 20L);
     }
 
     private List<LeaderboardSign> getSigns() {
@@ -121,7 +121,6 @@ public class LeaderboardManager {
     public void update() {
         Core.logMessage("LeaderboardManager", "Updating ride counter leaderboards...");
         getSigns().forEach(LeaderboardSign::update);
-        Core.logMessage("LeaderboardManager", "Finished updating ride counter leaderboards!");
     }
 
     public void saveToFile() {

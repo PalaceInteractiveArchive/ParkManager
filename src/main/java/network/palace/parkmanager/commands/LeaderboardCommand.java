@@ -31,10 +31,8 @@ public class LeaderboardCommand extends CoreCommand {
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("update")) {
                 sender.sendMessage(ChatColor.GREEN + "Updating Ride Counter Leaderboards...");
-                Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
-                    ParkManager.getLeaderboardManager().update();
-                    sender.sendMessage(ChatColor.GREEN + "Leaderboards updated!");
-                });
+                ParkManager.getLeaderboardManager().update();
+                sender.sendMessage(ChatColor.GREEN + "Leaderboards updated!");
                 return;
             }
             sender.sendMessage(ChatColor.RED + "/leaderboard [update]");
