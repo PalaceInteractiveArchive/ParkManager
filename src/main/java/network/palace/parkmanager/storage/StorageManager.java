@@ -56,6 +56,7 @@ public class StorageManager {
         StorageData data = savedStorageData.getIfPresent(player.getUniqueId());
         if (data == null) {
             player.getRegistry().addEntry("waitingForInventory", true);
+            player.getRegistry().addEntry("waitingForInventory_BuildSetting", buildMode);
             return;
         }
         savedStorageData.invalidate(player.getUniqueId());
@@ -291,7 +292,9 @@ public class StorageManager {
         if (player != null && player.getRegistry().hasEntry("waitingForInventory")) {
             player.getRegistry().removeEntry("waitingForInventory");
             player.getRegistry().addEntry("storageData", data);
+            boolean build = (boolean) player.getRegistry().removeEntry("waitingForInventory_BuildSetting");
             updateInventory(player, true);
+            ParkManager.getInventoryUtil().handleJoin(player, build ? InventoryUtil.InventoryState.BUILD : InventoryUtil.InventoryState.GUEST);
         } else {
             savedStorageData.put(packet.getUuid(), data);
         }
