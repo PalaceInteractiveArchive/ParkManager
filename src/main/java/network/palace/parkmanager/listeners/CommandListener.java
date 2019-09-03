@@ -23,6 +23,5 @@ public class CommandListener implements Listener {
             block.update();
             Bukkit.dispatchCommand(sender, cmd);
         }
-        Bukkit.broadcastMessage(cmd);
     }
 }
