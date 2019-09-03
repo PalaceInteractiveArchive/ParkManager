@@ -49,7 +49,7 @@ public class TeleportUtil {
         Location back = locations.remove(player.getUniqueId());
         if (back == null) return false;
         Location current = player.getLocation();
-        player.teleport(locations.get(player.getUniqueId()));
+        player.teleport(back);
         log(player, current);
         return true;
     }
