@@ -137,6 +137,7 @@ public class ParkManager extends Plugin {
     public void registerListeners() {
         registerListener(new BlockEdit());
         registerListener(new ChatListener());
+        registerListener(new CommandListener());
         registerListener(new EntityDamage());
         registerListener(new FoodLevel());
         registerListener(new InventoryListener());
