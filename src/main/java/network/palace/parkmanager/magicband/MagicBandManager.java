@@ -729,7 +729,7 @@ public class MagicBandManager {
         ParkManager.getStorageManager().updateInventory(player);
         player.sendMessage(ChatColor.GREEN + "You've changed to a " + BandType.fromString(type).getName() + ChatColor.GREEN + " MagicBand!");
         player.closeInventory();
-        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "namecolor", type.toLowerCase()));
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().setMagicBandData(player.getUniqueId(), "bandtype", type.toLowerCase()));
     }
 
     private void setBandNameColor(CPlayer player, String color) {
