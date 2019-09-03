@@ -26,7 +26,11 @@ public class ConfigUtil {
             JsonElement element = subsystem.getFileContents("config");
             if (element.isJsonObject()) {
                 JsonObject configObject = element.getAsJsonObject();
-                spawn = FileUtil.getLocation(configObject.getAsJsonObject("spawn"));
+                try {
+                    spawn = FileUtil.getLocation(configObject.getAsJsonObject("spawn"));
+                } catch (Exception e) {
+                    spawn = null;
+                }
                 if (configObject.has("spawn-on-join")) spawnOnJoin = configObject.get("spawn-on-join").getAsBoolean();
                 if (configObject.has("warp-on-join")) warpOnJoin = configObject.get("warp-on-join").getAsBoolean();
             } else {
