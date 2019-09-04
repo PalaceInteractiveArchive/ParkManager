@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Resort;
 import org.bukkit.Location;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class ConfigUtil {
     private Location spawn = null;
     private boolean spawnOnJoin = false;
     private boolean warpOnJoin = false;
+    private Resort resort = Resort.WDW;
 
     public ConfigUtil() {
         FileUtil.FileSubsystem subsystem;
@@ -33,10 +35,12 @@ public class ConfigUtil {
                 }
                 if (configObject.has("spawn-on-join")) spawnOnJoin = configObject.get("spawn-on-join").getAsBoolean();
                 if (configObject.has("warp-on-join")) warpOnJoin = configObject.get("warp-on-join").getAsBoolean();
-            } else {
-                saveToFile();
+                if (configObject.has("resort")) {
+                    resort = Resort.fromString(configObject.get("resort").getAsString());
+                }
             }
-            Core.logMessage("ConfigUtil", "Loaded the spawn location!");
+            saveToFile();
+            Core.logMessage("ConfigUtil", "Loaded config settings! This is a " + resort.name() + " server!");
         } catch (IOException e) {
             Core.logMessage("ConfigUtil", "There was an error loading the ConfigUtil config!");
             e.printStackTrace();
@@ -63,6 +67,7 @@ public class ConfigUtil {
         object.add("spawn", FileUtil.getJson(spawn));
         object.addProperty("spawn-on-join", spawnOnJoin);
         object.addProperty("warp-on-join", warpOnJoin);
+        object.addProperty("resort", resort.name());
         try {
             ParkManager.getFileUtil().getSubsystem("config").writeFileContents("config", object);
         } catch (IOException e) {
