@@ -21,7 +21,7 @@ import java.util.*;
 
 public class AutographManager {
     public static final String BOOK_TITLE = ChatColor.DARK_AQUA + "Autograph Book";
-    public static final int AUTOS_PER_BOOK = 49;
+    public static final int AUTOS_PER_BOOK = 4;
     public static final String FIRST_PAGE = ChatColor.translateAlternateColorCodes('&', "&d&lPalace Network\n&9&lAutograph Book\n\n&aMeet &9Characters &aand Staff Members to get your book signed!\n&eEach book holds up to " + AUTOS_PER_BOOK + " autographs. &9Hold shift and click to switch books.\n&a&nThis book contains:\n");
 
     //This contains the sender->target pair when sender is actively signing target's book
@@ -134,7 +134,7 @@ public class AutographManager {
             }
 
             int size = books.size() < 10 ? 9 : (books.size() < 19 ? 18 : (books.size() < 28 ? 27 : (books.size() < 37 ? 36 : (books.size() < 46 ? 45 : 54))));
-            new Menu(size, ChatColor.BLUE + "Choose an Autograph Book", player, buttons);
+            new Menu(size, ChatColor.BLUE + "Choose an Autograph Book", player, buttons).open();
         } else if (item.getItemMeta().hasLore()) {
             //Player wants to open the book in their hand
             openBook(player, item);

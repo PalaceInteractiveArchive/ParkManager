@@ -43,7 +43,7 @@ public class Book {
         }
         meta.addPage(AutographManager.FIRST_PAGE + extra);
         meta.setAuthor(name);
-        meta.setLore(Arrays.asList(ChatColor.GREEN + "Contains:", "", extra.replaceAll("\n", "")));
+        meta.setLore(Arrays.asList("", ChatColor.GREEN + "Contains:", "", extra.replaceAll("\n", "")));
         for (Signature signature : signatures) {
             meta.addPage(ChatColor.translateAlternateColorCodes('&', signature.getMessage()) +
                     ChatColor.YELLOW + "\n- " + ChatColor.BLUE + "" + ChatColor.ITALIC + "" + signature.getSigner());
