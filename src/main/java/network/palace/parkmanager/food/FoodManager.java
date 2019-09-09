@@ -8,9 +8,11 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.utils.FileUtil;
+import org.bukkit.ChatColor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class FoodManager {
@@ -81,6 +83,7 @@ public class FoodManager {
 
     public void saveToFile() {
         JsonArray array = new JsonArray();
+        foodLocations.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (FoodLocation food : foodLocations) {
             JsonObject object = new JsonObject();
             object.addProperty("name", food.getName());

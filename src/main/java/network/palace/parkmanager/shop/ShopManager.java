@@ -25,10 +25,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ShopManager {
     private int nextId = 0;
@@ -284,6 +281,7 @@ public class ShopManager {
 
     public void saveToFile() {
         JsonArray array = new JsonArray();
+        shops.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (Shop shop : shops) {
             JsonObject object = new JsonObject();
             object.addProperty("name", shop.getName());
