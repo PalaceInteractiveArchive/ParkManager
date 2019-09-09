@@ -15,6 +15,7 @@ import org.bukkit.block.Sign;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -141,6 +142,7 @@ public class QueueManager {
 
     public void saveToFile() {
         JsonArray array = new JsonArray();
+        queues.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (Queue queue : queues) {
             JsonObject object = new JsonObject();
             object.addProperty("uuid", queue.getUuid().toString());

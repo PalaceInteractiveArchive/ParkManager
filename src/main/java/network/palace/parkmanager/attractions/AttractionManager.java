@@ -9,9 +9,11 @@ import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.utils.FileUtil;
+import org.bukkit.ChatColor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +97,7 @@ public class AttractionManager {
 
     public void saveToFile() {
         JsonArray array = new JsonArray();
+        attractions.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (Attraction attraction : attractions) {
             JsonObject object = new JsonObject();
             object.addProperty("name", attraction.getName());
