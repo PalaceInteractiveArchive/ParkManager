@@ -47,18 +47,23 @@ public class SpeedCommand extends CoreCommand {
             return;
         }
         boolean isFlying = target.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && target.isFlying();
-        float speed;
+        float speed = getMoveSpeed(s);
         if (isFlying) {
-            speed = getMoveSpeed(s);
+            target.setFlySpeed(getRealMoveSpeed(speed, true, target.getRank().getRankId() >= Rank.MOD.getRankId()));
         } else {
-            speed = getMoveSpeed(s);
+            target.setWalkSpeed(getRealMoveSpeed(speed, false, target.getRank().getRankId() >= Rank.MOD.getRankId()));
         }
-        target.setFlySpeed(getRealMoveSpeed(speed, isFlying, target.getRank().getRankId() >= Rank.MOD.getRankId()));
         sender.sendMessage(ChatColor.GREEN + "Set " +
                 (((sender instanceof Player) && ((Player) sender).getUniqueId().equals(target.getUniqueId())) ? "your" : (target.getName() + "'s"))
                 + " " + (isFlying ? "flying" : "walking") + " speed to " + speed);
     }
 
+    /**
+     * Convert string speed to floating point value
+     *
+     * @param moveSpeed the speed in string format
+     * @return a float representing the movement speed
+     */
     private float getMoveSpeed(final String moveSpeed) {
         float userSpeed;
         try {
@@ -74,6 +79,14 @@ public class SpeedCommand extends CoreCommand {
         return userSpeed;
     }
 
+    /**
+     * Convert a 0.0-10.0 float to the Minecraft-scale for walk/fly speed
+     *
+     * @param userSpeed the 0.0-10.0 float
+     * @param isFly     whether this is flight speed
+     * @param isBypass  whether the player can bypass the max of 10.0
+     * @return movement speed scaled for Minecraft
+     */
     private float getRealMoveSpeed(final float userSpeed, final boolean isFly, final boolean isBypass) {
         final float defaultSpeed = isFly ? 0.1f : 0.2f;
         float maxSpeed = 1f;
