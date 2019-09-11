@@ -18,8 +18,7 @@ public enum BandType {
     HAUNTED_MANSION(false, ChatColor.GRAY + "Haunted Mansion"),
     PRINCESSES(false, ChatColor.LIGHT_PURPLE + "Princesses"),
     BIG_HERO_SIX(false, ChatColor.RED + "Big Hero 6"),
-    HOLIDAY(false, ChatColor.AQUA + "Holiday"),
-    USO(false, ChatColor.BLUE + "Power Pass");
+    HOLIDAY(false, ChatColor.AQUA + "Holiday");
 
     boolean color;
     String name;

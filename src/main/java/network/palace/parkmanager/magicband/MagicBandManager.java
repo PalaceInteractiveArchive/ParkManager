@@ -775,6 +775,8 @@ public class MagicBandManager {
     }
 
     public ItemStack getMagicBandItem(String type, String color) {
+        if (ParkManager.getResort().equals(Resort.USO))
+            return ItemUtil.create(Material.PAPER, getNameColor(color) + "Power Pass " + ChatColor.GRAY + "(Right-Click)");
         BandType bandType = BandType.fromString(type);
         ItemStack item;
         switch (bandType) {
@@ -785,8 +787,7 @@ public class MagicBandManager {
             case BLUE:
             case PURPLE:
             case PINK: {
-                item = ItemUtil.create(Material.FIREWORK_CHARGE, getNameColor(color) +
-                        (ParkManager.getResort().equals(Resort.USO) ? "Power Pass " : "MagicBand ") +
+                item = ItemUtil.create(Material.FIREWORK_CHARGE, getNameColor(color) + "MagicBand " +
                         ChatColor.GRAY + "(Right-Click)");
                 FireworkEffectMeta meta = (FireworkEffectMeta) item.getItemMeta();
                 meta.setEffect(FireworkEffect.builder().withColor(getBandColor(bandType)).build());
@@ -798,8 +799,7 @@ public class MagicBandManager {
             case PRINCESSES:
             case BIG_HERO_SIX:
             case HOLIDAY:
-                item = ItemUtil.create(getMaterial(bandType), getNameColor(color) +
-                        (ParkManager.getResort().equals(Resort.USO) ? "Power Pass " : "MagicBand ") +
+                item = ItemUtil.create(getMaterial(bandType), getNameColor(color) + "MagicBand " +
                         ChatColor.GRAY + "(Right-Click)");
                 break;
             default:
@@ -809,6 +809,7 @@ public class MagicBandManager {
     }
 
     private Material getMaterial(BandType type) {
+        if (ParkManager.getResort().equals(Resort.USO)) return Material.PAPER;
         switch (type) {
             case SORCERER_MICKEY:
                 return Material.DIAMOND_BARDING;
