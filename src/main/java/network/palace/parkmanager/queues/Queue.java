@@ -227,7 +227,6 @@ public abstract class Queue {
             ListIterator<UUID> iterator = queueMembers.listIterator(0);
             int pos = 1;
             while (iterator.hasNext()) {
-                UUID uuid = iterator.next();
                 CPlayer player = Core.getPlayerManager().getPlayer(iterator.next());
                 player.sendMessage(ChatColor.GREEN + "You've moved up " + players.size() + " places in queue for " + name
                         + ChatColor.GREEN + " to position #" + pos++);
