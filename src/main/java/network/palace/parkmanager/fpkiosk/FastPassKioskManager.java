@@ -52,11 +52,14 @@ public class FastPassKioskManager {
                 CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
                 if (player == null || player.isInVehicle()) return;
                 int id = event.getPacket().getIntegers().read(0);
-                for (ArmorStand stand : player.getWorld().getEntitiesByClass(ArmorStand.class)) {
-                    if (isKiosk(stand) && stand.getEntityId() == id) {
-                        event.setCancelled(true);
-                        Core.runTask(ParkManager.getInstance(), () -> openMenu(player));
+                try {
+                    for (ArmorStand stand : player.getWorld().getEntitiesByClass(ArmorStand.class)) {
+                        if (isKiosk(stand) && stand.getEntityId() == id) {
+                            event.setCancelled(true);
+                            Core.runTask(ParkManager.getInstance(), () -> openMenu(player));
+                        }
                     }
+                } catch (Exception ignored) {
                 }
             }
         });

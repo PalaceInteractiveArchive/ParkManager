@@ -128,9 +128,13 @@ public class SignChange implements Listener {
                         event.setLine(1, ChatColor.DARK_AQUA + "Click for the");
                         event.setLine(2, ChatColor.DARK_AQUA + "wait time for");
                         event.setLine(3, ChatColor.DARK_AQUA + queue.getName());
+                    } else if (event.getLine(2).equalsIgnoreCase("fp")) {
+                        queue.addSign(new QueueSign(event.getBlock().getLocation(), queue.getName(), true, queue.getQueueSize()));
+                        event.setCancelled(true);
+                        queue.updateSigns();
                     }
                 } else {
-                    queue.addSign(new QueueSign(event.getBlock().getLocation(), queue.getName(), queue.getQueueSize()));
+                    queue.addSign(new QueueSign(event.getBlock().getLocation(), queue.getName(), false, queue.getQueueSize()));
                     event.setCancelled(true);
                     queue.updateSigns();
                 }
@@ -154,6 +158,32 @@ public class SignChange implements Listener {
                 if (!player.getMainHand().getType().equals(Material.GOLD_AXE)) {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.GREEN + "In order to break a [Queue] sign, you must be holding a "
+                            + ChatColor.GOLD + "Golden Axe!");
+                    return;
+                }
+                queue.removeSign(s.getLocation());
+                player.sendMessage(ChatColor.GREEN + "You removed a queue sign for " + queue.getName());
+            }
+        });
+        ServerSign.registerSign("[FastPass]", new ServerSign.SignHandler() {
+            @Override
+            public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
+                Queue queue = ParkManager.getQueueManager().getQueue(s);
+                if (queue == null) return;
+                if (queue.isInQueue(player)) {
+                    queue.leaveQueue(player, false);
+                } else {
+                    queue.joinFastPassQueue(player);
+                }
+            }
+
+            @Override
+            public void onBreak(CPlayer player, Sign s, BlockBreakEvent event) {
+                Queue queue = ParkManager.getQueueManager().getQueue(s);
+                if (queue == null) return;
+                if (!player.getMainHand().getType().equals(Material.GOLD_AXE)) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.GREEN + "In order to break a [FastPass] sign, you must be holding a "
                             + ChatColor.GOLD + "Golden Axe!");
                     return;
                 }

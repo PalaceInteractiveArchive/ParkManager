@@ -7,6 +7,8 @@ import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.QueueType;
 import network.palace.parkmanager.utils.TimeUtil;
+import network.palace.parkwarp.ParkWarp;
+import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
@@ -21,6 +23,7 @@ public abstract class Queue {
     @Setter protected Location station;
     protected boolean open;
     private LinkedList<UUID> queueMembers = new LinkedList<>();
+    private LinkedList<UUID> fastPassMembers = new LinkedList<>();
     private List<QueueSign> signs;
 
     /**
@@ -28,6 +31,11 @@ public abstract class Queue {
      * If equal to 0, no group is scheduled.
      */
     private long nextGroup = 0;
+
+    /**
+     * Used to keep track of switching between FastPass and standby groups
+     */
+    private boolean bringInFastPass = false;
 
     public Queue(int id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs) {
         this.id = id;
@@ -63,25 +71,59 @@ public abstract class Queue {
     }
 
     /**
+     * Add a player to the FastPass queue.
+     * If, when they join, the standby queue is empty, they will not be allowed to join the FastPass queue.
+     * Players can only join the FastPass queue when the main queue isn't empty, otherwise they'd waste the FastPass.
+     *
+     * @param player the player
+     */
+    public void joinFastPassQueue(CPlayer player) {
+        if (!open) {
+            player.sendMessage(ChatColor.RED + "This queue is currently closed, check back soon!");
+            return;
+        }
+//        if (queueMembers.isEmpty()) {
+//            player.sendMessage(ChatColor.RED + "You can't join the FastPass queue when the standby queue is empty!");
+//            return;
+//        }
+        if (!player.getRegistry().hasEntry("fastPassCount")) {
+            player.sendMessage(ChatColor.RED + "There was a problem redeeming your FastPass!");
+            return;
+        }
+        if (((int) player.getRegistry().getEntry("fastPassCount")) <= 0) {
+            player.sendMessage(ChatColor.RED + "You do not have a FastPass to redeem, sorry!");
+            return;
+        }
+        nextGroup = TimeUtil.getCurrentSecondInMillis() + 10000;
+        fastPassMembers.add(player.getUniqueId());
+        player.sendMessage(ChatColor.GREEN + "You've joined the queue for " + name + ChatColor.GREEN +
+                " at position #" + getPosition(player.getUniqueId()));
+    }
+
+    /**
      * Remove a player from the queue.
-     * If, when they're removed from the queue, the queue is empty, cancel any scheduled group.
      *
      * @param player the player
      * @param force  true if player is being removed from the queue, false if the player is choosing to leave
      */
     public void leaveQueue(CPlayer player, boolean force) {
-        if (queueMembers.remove(player.getUniqueId())) {
+        boolean mainQueue = queueMembers.remove(player.getUniqueId());
+        boolean fpQueue = fastPassMembers.remove(player.getUniqueId());
+        if (mainQueue || fpQueue) {
             if (force) {
-                player.sendMessage(ChatColor.GREEN + "You've been removed from the queue for " + name);
+                player.sendMessage(ChatColor.GREEN + "You've been removed from the " + (fpQueue ? "FastPass" : "") + " queue for " + name);
             } else {
-                player.sendMessage(ChatColor.GREEN + "You've left the queue for " + name);
+                player.sendMessage(ChatColor.GREEN + "You've left the" + (fpQueue ? "FastPass" : "") + " queue for " + name);
             }
-            //Since the queue is empty, cancel the next scheduled group
         }
     }
 
     public void emptyQueue() {
         for (UUID uuid : new LinkedList<>(queueMembers)) {
+            CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+            if (player != null) leaveQueue(player, true);
+        }
+        for (UUID uuid : new LinkedList<>(fastPassMembers)) {
             CPlayer player = Core.getPlayerManager().getPlayer(uuid);
             if (player != null) leaveQueue(player, true);
         }
@@ -103,6 +145,11 @@ public abstract class Queue {
             if (player == null) return;
             player.sendMessage(msg);
         });
+        fastPassMembers.forEach(id -> {
+            CPlayer player = Core.getPlayerManager().getPlayer(id);
+            if (player == null) return;
+            player.sendMessage(msg);
+        });
     }
 
     /**
@@ -115,34 +162,34 @@ public abstract class Queue {
         if (!open) {
             nextGroup += 1000;
         }
-        if (nextGroup <= currentTime && open) {
-            //Time to bring in the next group
-            if (!queueMembers.isEmpty()) {
-                //Only bring in a group if there are players in the queue
-                if (!queueMembers.isEmpty()) {
+        if (nextGroup != 0) {
+            //A group is scheduled
+            if (nextGroup <= currentTime && open) {
+                //Time to bring in the next group
+                if (!queueMembers.isEmpty() || !fastPassMembers.isEmpty()) {
                     //There's more players after the previous group, so schedule another group
                     nextGroup = currentTime + (delay * 1000);
                     bringInNextGroup();
                 } else {
-                    //The previous group was the last one in the queue, so don't schedule anything
+                    //No players are in the queue, so don't schedule anything
                     nextGroup = 0;
                 }
             } else {
-                //No players were in the queue, so don't schedule anything
-                nextGroup = 0;
+                //Next group is scheduled but hasn't happened yet, so we're counting down
+                queueMembers.forEach(uuid -> {
+                    CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+                    if (player != null)
+                        player.getActionBar().show(ChatColor.GREEN + "You're #" + getPosition(uuid) + " in queue for " + name + ChatColor.YELLOW + " | " + "Wait: " + getWaitFor(uuid, currentTime));
+                });
+                fastPassMembers.forEach(uuid -> {
+                    CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+                    if (player != null)
+                        player.getActionBar().show(ChatColor.GREEN + "You're #" + getPosition(uuid) + " in queue for " + name + ChatColor.YELLOW + " | " + "Wait: " + getWaitFor(uuid, currentTime));
+                });
             }
-        } else if (nextGroup != 0) {
-            //Next group is scheduled but hasn't happened yet, so we're counting down
-            queueMembers.forEach(uuid -> {
-                CPlayer player = Core.getPlayerManager().getPlayer(uuid);
-                if (player != null)
-                    player.getActionBar().show(ChatColor.GREEN + "You're #" + getPosition(uuid) + " in queue for " + name + ChatColor.YELLOW + " | " + "Wait: " + getWaitFor(uuid, currentTime));
-            });
-//        } else {
-            //No group scheduled, do nothing
         }
         signs.forEach(queueSign -> {
-            queueSign.setAmount(queueMembers.size());
+            queueSign.setAmount(queueSign.isFastPassSign() ? fastPassMembers.size() : queueMembers.size());
             queueSign.setWait(getWaitFor(null, currentTime));
             queueSign.updateSign();
         });
@@ -178,10 +225,11 @@ public abstract class Queue {
         if (nextGroup == 0) {
             return "No Wait";
         }
-        int position = queueMembers.indexOf(uuid);
+        LinkedList<UUID> fullQueue = getFullQueue();
+        int position = fullQueue.indexOf(uuid);
         if (position == -1) {
             //Not in queue, so get wait time as if they were after the last player in queue.
-            position = queueMembers.size();
+            position = fullQueue.size();
         }
         //The group the player is in, starting at 0
         int group = (int) Math.floor(((float) position) / groupSize);
@@ -210,10 +258,12 @@ public abstract class Queue {
      */
     protected void bringInNextGroup() {
         List<CPlayer> players = new ArrayList<>();
+        LinkedList<UUID> fullQueue = getFullQueue();
+        bringInFastPass = !bringInFastPass;
         for (int i = 0; i < groupSize; i++) {
             UUID uuid;
             try {
-                uuid = queueMembers.pop();
+                uuid = fullQueue.pop();
             } catch (NoSuchElementException e) {
                 break;
             }
@@ -221,10 +271,23 @@ public abstract class Queue {
             if (player != null) players.add(player);
         }
         if (players.isEmpty()) return;
-        players.forEach(p -> p.teleport(station));
+        players.forEach(p -> {
+            queueMembers.remove(p.getUniqueId());
+            if (fastPassMembers.remove(p.getUniqueId())) {
+                if (!ParkManager.getQueueManager().chargeFastPass(p)) {
+                    // Player doesn't have a FastPass
+                    p.sendMessage(ChatColor.RED + "You don't have a FastPass for this ride!");
+                    Warp w = ParkWarp.getWarpUtil().findWarp(getWarp());
+                    if (w != null) p.teleport(w.getLocation());
+                    return;
+                }
+                p.sendMessage(ChatColor.GREEN + "You have been charged " + ChatColor.AQUA + "1 " + ChatColor.GREEN + "FastPass!");
+            }
+            p.teleport(station);
+        });
         handleSpawn(players);
-        if (!queueMembers.isEmpty()) {
-            ListIterator<UUID> iterator = queueMembers.listIterator(0);
+        if (!fullQueue.isEmpty()) {
+            ListIterator<UUID> iterator = fullQueue.listIterator(0);
             int pos = 1;
             while (iterator.hasNext()) {
                 CPlayer player = Core.getPlayerManager().getPlayer(iterator.next());
@@ -249,10 +312,8 @@ public abstract class Queue {
      * @return the player's position, or -1 if they're not in the queue
      */
     public int getPosition(UUID uuid) {
-        int index = queueMembers.indexOf(uuid);
-        if (index == -1) {
-            return -1;
-        }
+        int index = getFullQueue().indexOf(uuid);
+        if (index == -1) return -1;
         return index + 1;
     }
 
@@ -281,11 +342,52 @@ public abstract class Queue {
         return queueMembers.size();
     }
 
+    public int getFastPassQueueSize() {
+        return fastPassMembers.size();
+    }
+
+    /**
+     * Get the full queue with both standby and FastPass queues
+     *
+     * @return a LinkedList with the FastPass and main queue merged together
+     */
+    public LinkedList<UUID> getFullQueue() {
+        if (fastPassMembers.isEmpty()) return new LinkedList<>(queueMembers);
+
+        LinkedList<UUID> list = new LinkedList<>();
+        int standby = queueMembers.size(), fp = fastPassMembers.size();
+        boolean bringInFP = bringInFastPass;
+
+        while (standby > 0 || fp > 0) {
+            if (bringInFP && fp > 0) {
+                fp = processList(fp, fastPassMembers, list);
+            } else if (standby > 0) {
+                standby = processList(standby, queueMembers, list);
+            }
+            bringInFP = !bringInFP;
+        }
+
+        return list;
+    }
+
+    private int processList(int size, LinkedList<UUID> fromList, LinkedList<UUID> toList) {
+        if (size <= groupSize) {
+            toList.addAll(fromList);
+            size = 0;
+        } else {
+            for (int i = 0; i < groupSize; i++) {
+                toList.add(fromList.get(i));
+            }
+            size -= groupSize;
+        }
+        return size;
+    }
+
     public void updateSigns() {
         signs.forEach(QueueSign::updateSign);
     }
 
     public boolean isInQueue(CPlayer player) {
-        return queueMembers.contains(player.getUniqueId());
+        return queueMembers.contains(player.getUniqueId()) || fastPassMembers.contains(player.getUniqueId());
     }
 }

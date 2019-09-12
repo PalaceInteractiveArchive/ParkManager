@@ -27,6 +27,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.IOException;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class ShopManager {
     private int nextId = 0;
     private List<Shop> shops = new ArrayList<>();
@@ -70,9 +71,8 @@ public class ShopManager {
                     shops.add(new Shop(nextId++, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
                             object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items, outfits));
                 }
-            } else {
-                saveToFile();
             }
+            saveToFile();
             Core.logMessage("ShopManager", "Loaded " + shops.size() + " shop" + TextUtil.pluralize(shops.size()) + "!");
         } catch (IOException e) {
             Core.logMessage("ShopManager", "There was an error loading the ShopManager config!");

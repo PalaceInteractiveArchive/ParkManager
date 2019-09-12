@@ -9,6 +9,7 @@ import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.utils.FileUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.io.IOException;
@@ -55,9 +56,8 @@ public class AttractionManager {
                             object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
                             ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));
                 }
-            } else {
-                saveToFile();
             }
+            saveToFile();
             Core.logMessage("AttractionManager", "Loaded " + attractions.size() + " attraction" + TextUtil.pluralize(attractions.size()) + "!");
         } catch (IOException e) {
             Core.logMessage("AttractionManager", "There was an error loading the AttractionManager config!");

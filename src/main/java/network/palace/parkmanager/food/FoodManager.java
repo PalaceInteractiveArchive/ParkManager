@@ -41,9 +41,8 @@ public class FoodManager {
                     foodLocations.add(new FoodLocation(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
                             ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                 }
-            } else {
-                saveToFile();
             }
+            saveToFile();
             Core.logMessage("FoodManager", "Loaded " + foodLocations.size() + " food location" + TextUtil.pluralize(foodLocations.size()) + "!");
         } catch (IOException e) {
             Core.logMessage("FoodManager", "There was an error loading the FoodManager config!");

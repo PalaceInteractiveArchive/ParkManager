@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import network.palace.core.Core;
+import network.palace.core.player.CPlayer;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.QueueType;
@@ -62,7 +63,8 @@ public class QueueManager {
 
                     JsonArray signArray = object.getAsJsonArray("signs");
                     for (JsonElement signElement : signArray) {
-                        signs.add(new QueueSign(FileUtil.getLocation((JsonObject) signElement), name, 0));
+                        JsonObject signObject = (JsonObject) signElement;
+                        signs.add(new QueueSign(FileUtil.getLocation(signObject), name, signObject.has("fastpass") && signObject.get("fastpass").getAsBoolean(), 0));
                     }
 
                     if (type.equals(QueueType.BLOCK)) {
@@ -72,9 +74,8 @@ public class QueueManager {
                                 object.get("open").getAsBoolean(), station, signs, blockLocation));
                     }
                 }
-            } else {
-                saveToFile();
             }
+            saveToFile();
             Core.logMessage("QueueManager", "Loaded " + queues.size() + " queue" + TextUtil.pluralize(queues.size()) + "!");
         } catch (Exception e) {
             Core.logMessage("QueueManager", "There was an error loading the QueueManager config!");
@@ -155,8 +156,9 @@ public class QueueManager {
 
             JsonArray signArray = new JsonArray();
             for (QueueSign sign : queue.getSigns()) {
-                Location loc = sign.getLocation();
-                signArray.add(FileUtil.getJson(loc));
+                JsonObject signObject = FileUtil.getJson(sign.getLocation());
+                if (sign.isFastPassSign()) signObject.addProperty("fastpass", true);
+                signArray.add(signObject);
             }
             object.add("signs", signArray);
             object.addProperty("type", queue.getQueueType().name().toLowerCase());
@@ -172,5 +174,13 @@ public class QueueManager {
             Core.logMessage("QueueManager", "There was an error writing to the QueueManager config!");
             e.printStackTrace();
         }
+    }
+
+    public boolean chargeFastPass(CPlayer player) {
+        int newCount = ((int) player.getRegistry().getEntry("fastPassCount")) - 1;
+        if (newCount < 0) return false;
+        player.getRegistry().addEntry("fastPassCount", newCount);
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().chargeFastPass(player.getUniqueId(), 1));
+        return true;
     }
 }
