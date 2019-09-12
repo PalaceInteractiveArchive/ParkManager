@@ -12,6 +12,8 @@ import network.palace.parkmanager.utils.FileUtil;
 import network.palace.parkmanager.utils.TimeUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
 import java.io.IOException;
@@ -182,5 +184,102 @@ public class QueueManager {
         player.getRegistry().addEntry("fastPassCount", newCount);
         Core.runTaskAsynchronously(ParkManager.getInstance(), () -> Core.getMongoHandler().chargeFastPass(player.getUniqueId(), 1));
         return true;
+    }
+
+    public void displaySignParticles(CPlayer player, Sign s) {
+        org.bukkit.material.Sign sign = (org.bukkit.material.Sign) s.getData();
+        BlockFace attached = sign.getAttachedFace();
+        if (attached.equals(BlockFace.DOWN)) return;
+        Location loc = s.getLocation(), c1, c2, c3, c4;
+        switch (attached.getOppositeFace()) {
+            case NORTH:
+                c1 = loc.clone().add(0.95, 0.75, 0.9);
+                c2 = loc.clone().add(0.05, 0.75, 0.9);
+                c3 = loc.clone().add(0.95, 0.25, 0.9);
+                c4 = loc.clone().add(0.05, 0.25, 0.9);
+                for (int i = 0; i < 9; i++) {
+                    // Top row
+                    player.getParticles().send(c1.add(-0.1, 0, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Right side
+                    player.getParticles().send(c2.add(0, -0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Left side
+                    player.getParticles().send(c3.add(0, 0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 9; i++) {
+                    // Bottom row
+                    player.getParticles().send(c4.add(0.1, 0, 0), Particle.SPELL_WITCH, 1);
+                }
+                break;
+            case EAST:
+                c1 = loc.clone().add(0.1, 0.75, 0.95);
+                c2 = loc.clone().add(0.1, 0.75, 0.05);
+                c3 = loc.clone().add(0.1, 0.25, 0.95);
+                c4 = loc.clone().add(0.1, 0.25, 0.05);
+                for (int i = 0; i < 9; i++) {
+                    // Top row
+                    player.getParticles().send(c1.add(0, 0, -0.1), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Right side
+                    player.getParticles().send(c2.add(0, -0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Left side
+                    player.getParticles().send(c3.add(0, 0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 9; i++) {
+                    // Bottom row
+                    player.getParticles().send(c4.add(0, 0, 0.1), Particle.SPELL_WITCH, 1);
+                }
+                break;
+            case SOUTH:
+                c1 = loc.clone().add(0.05, 0.75, 0.1);
+                c2 = loc.clone().add(0.95, 0.75, 0.1);
+                c3 = loc.clone().add(0.05, 0.25, 0.1);
+                c4 = loc.clone().add(0.95, 0.25, 0.1);
+                for (int i = 0; i < 9; i++) {
+                    // Top row
+                    player.getParticles().send(c1.add(0.1, 0, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Right side
+                    player.getParticles().send(c2.add(0, -0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Left side
+                    player.getParticles().send(c3.add(0, 0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 9; i++) {
+                    // Bottom row
+                    player.getParticles().send(c4.add(-0.1, 0, 0), Particle.SPELL_WITCH, 1);
+                }
+                break;
+            case WEST:
+                c1 = loc.clone().add(0.9, 0.75, 0.05);
+                c2 = loc.clone().add(0.9, 0.75, 0.95);
+                c3 = loc.clone().add(0.9, 0.25, 0.05);
+                c4 = loc.clone().add(0.9, 0.25, 0.95);
+                for (int i = 0; i < 9; i++) {
+                    // Top row
+                    player.getParticles().send(c1.add(0, 0, 0.1), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Right side
+                    player.getParticles().send(c2.add(0, -0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 5; i++) {
+                    // Left side
+                    player.getParticles().send(c3.add(0, 0.1, 0), Particle.SPELL_WITCH, 1);
+                }
+                for (int i = 0; i < 9; i++) {
+                    // Bottom row
+                    player.getParticles().send(c4.add(0, 0, -0.1), Particle.SPELL_WITCH, 1);
+                }
+                break;
+        }
     }
 }

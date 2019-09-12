@@ -146,8 +146,8 @@ public class SignChange implements Listener {
                 if (queue == null) return;
                 if (queue.isInQueue(player)) {
                     queue.leaveQueue(player, false);
-                } else {
-                    queue.joinQueue(player);
+                } else if (queue.joinQueue(player)) {
+                    ParkManager.getQueueManager().displaySignParticles(player, s);
                 }
             }
 
@@ -172,8 +172,8 @@ public class SignChange implements Listener {
                 if (queue == null) return;
                 if (queue.isInQueue(player)) {
                     queue.leaveQueue(player, false);
-                } else {
-                    queue.joinFastPassQueue(player);
+                } else if (queue.joinFastPassQueue(player)) {
+                    ParkManager.getQueueManager().displaySignParticles(player, s);
                 }
             }
 

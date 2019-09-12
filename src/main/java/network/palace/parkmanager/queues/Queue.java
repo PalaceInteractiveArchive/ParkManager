@@ -55,11 +55,12 @@ public abstract class Queue {
      * This 10-second period allows other players to join if they want to, in case the player is with a group
      *
      * @param player the player
+     * @return true if the player successfully joins the queue, false if not
      */
-    public void joinQueue(CPlayer player) {
+    public boolean joinQueue(CPlayer player) {
         if (!open) {
             player.sendMessage(ChatColor.RED + "This queue is currently closed, check back soon!");
-            return;
+            return false;
         }
         queueMembers.add(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You've joined the queue for " + name + ChatColor.GREEN +
@@ -68,6 +69,7 @@ public abstract class Queue {
             player.sendMessage(ChatColor.GREEN + "Since you joined an empty queue, you'll have a 10 second wait in case other players join.");
             nextGroup = TimeUtil.getCurrentSecondInMillis() + 10000;
         }
+        return true;
     }
 
     /**
@@ -76,28 +78,29 @@ public abstract class Queue {
      * Players can only join the FastPass queue when the main queue isn't empty, otherwise they'd waste the FastPass.
      *
      * @param player the player
+     * @return true if the player successfully joins the queue, false if not
      */
-    public void joinFastPassQueue(CPlayer player) {
+    public boolean joinFastPassQueue(CPlayer player) {
         if (!open) {
             player.sendMessage(ChatColor.RED + "This queue is currently closed, check back soon!");
-            return;
+            return false;
         }
-//        if (queueMembers.isEmpty()) {
-//            player.sendMessage(ChatColor.RED + "You can't join the FastPass queue when the standby queue is empty!");
-//            return;
-//        }
+        if (queueMembers.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "You can't join the FastPass queue when the standby queue is empty!");
+            return false;
+        }
         if (!player.getRegistry().hasEntry("fastPassCount")) {
             player.sendMessage(ChatColor.RED + "There was a problem redeeming your FastPass!");
-            return;
+            return false;
         }
         if (((int) player.getRegistry().getEntry("fastPassCount")) <= 0) {
             player.sendMessage(ChatColor.RED + "You do not have a FastPass to redeem, sorry!");
-            return;
+            return false;
         }
-        nextGroup = TimeUtil.getCurrentSecondInMillis() + 10000;
         fastPassMembers.add(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You've joined the queue for " + name + ChatColor.GREEN +
                 " at position #" + getPosition(player.getUniqueId()));
+        return true;
     }
 
     /**
