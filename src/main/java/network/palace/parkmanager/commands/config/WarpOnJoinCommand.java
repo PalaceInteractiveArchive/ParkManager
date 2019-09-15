@@ -1,4 +1,4 @@
-package network.palace.parkmanager.commands.spawn;
+package network.palace.parkmanager.commands.config;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;

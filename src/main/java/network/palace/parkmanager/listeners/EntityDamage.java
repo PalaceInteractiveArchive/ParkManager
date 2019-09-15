@@ -33,7 +33,7 @@ public class EntityDamage implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
         switch (event.getEntityType()) {
@@ -64,7 +64,7 @@ public class EntityDamage implements Listener {
                 if (!damager.getType().equals(EntityType.PLAYER)) return;
                 CPlayer player = Core.getPlayerManager().getPlayer(damager.getUniqueId());
                 if (player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId()) {
-                    if (!ParkManager.getBuildUtil().isInBuildMode(player.getUniqueId())) {
+                    if (!ParkManager.getBuildUtil().isInBuildMode(player)) {
                         // Staff can only edit entities when in Build mode
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You must be in Build Mode to break entities!");

@@ -1,4 +1,4 @@
-package network.palace.parkmanager.commands.spawn;
+package network.palace.parkmanager.commands.config;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
@@ -11,7 +11,7 @@ import org.bukkit.ChatColor;
 public class SpawnCommand extends CoreCommand {
 
     public SpawnCommand() {
-        super("spawn");
+        super("setspawn");
     }
 
     @Override

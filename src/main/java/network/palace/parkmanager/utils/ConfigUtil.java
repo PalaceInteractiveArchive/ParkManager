@@ -6,16 +6,18 @@ import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.Resort;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import java.io.IOException;
 
 @Getter
 public class ConfigUtil {
-    private Location spawn = null;
-    private boolean spawnOnJoin = false;
-    private boolean warpOnJoin = false;
-    private Resort resort = Resort.WDW;
+    private Location spawn;
+    private String joinMessage;
+    private boolean spawnOnJoin;
+    private boolean warpOnJoin;
+    private Resort resort;
 
     public ConfigUtil() {
         FileUtil.FileSubsystem subsystem;
@@ -33,10 +35,25 @@ public class ConfigUtil {
                 } catch (Exception e) {
                     spawn = null;
                 }
-                if (configObject.has("spawn-on-join")) spawnOnJoin = configObject.get("spawn-on-join").getAsBoolean();
-                if (configObject.has("warp-on-join")) warpOnJoin = configObject.get("warp-on-join").getAsBoolean();
+                if (configObject.has("join-message")) {
+                    joinMessage = configObject.get("join-message").getAsString();
+                } else {
+                    joinMessage = ChatColor.GREEN + "Welcome to " + ChatColor.AQUA + "" + ChatColor.BOLD + Core.getServerType() + "!";
+                }
+                if (configObject.has("spawn-on-join")) {
+                    spawnOnJoin = configObject.get("spawn-on-join").getAsBoolean();
+                } else {
+                    spawnOnJoin = false;
+                }
+                if (configObject.has("warp-on-join")) {
+                    warpOnJoin = configObject.get("warp-on-join").getAsBoolean();
+                } else {
+                    warpOnJoin = true;
+                }
                 if (configObject.has("resort")) {
                     resort = Resort.fromString(configObject.get("resort").getAsString());
+                } else {
+                    resort = Resort.WDW;
                 }
             }
             saveToFile();
@@ -49,6 +66,11 @@ public class ConfigUtil {
 
     public void setSpawn(Location loc) {
         this.spawn = loc;
+        saveToFile();
+    }
+
+    public void setJoinMessage(String msg) {
+        this.joinMessage = msg;
         saveToFile();
     }
 
@@ -65,6 +87,7 @@ public class ConfigUtil {
     private void saveToFile() {
         JsonObject object = new JsonObject();
         object.add("spawn", FileUtil.getJson(spawn));
+        object.addProperty("join-message", joinMessage);
         object.addProperty("spawn-on-join", spawnOnJoin);
         object.addProperty("warp-on-join", warpOnJoin);
         object.addProperty("resort", resort.name());

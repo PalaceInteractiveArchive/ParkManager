@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -28,6 +29,12 @@ public class PlayerJoinAndLeave implements Listener {
                 Core.getMongoHandler().getParkJoinData(uuid, "buildmode", "settings", "magicband",
                         "fastpass", "outfit", "outfitPurchases"),
                 Core.getMongoHandler().getFriendList(uuid));
+    }
+
+    @EventHandler
+    public void onRealPlayerJoin(PlayerJoinEvent event) {
+        String join = ParkManager.getConfigUtil().getJoinMessage();
+        if (!join.equalsIgnoreCase("none")) event.getPlayer().sendMessage(join);
     }
 
     @EventHandler
@@ -111,7 +118,6 @@ public class PlayerJoinAndLeave implements Listener {
     private void handleDisconnect(UUID uuid) {
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
         if (player == null) return;
-
         ParkManager.getStorageManager().logout(player);
     }
 }
