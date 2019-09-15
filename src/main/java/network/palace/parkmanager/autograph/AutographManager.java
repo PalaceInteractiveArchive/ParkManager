@@ -426,8 +426,14 @@ public class AutographManager {
      * @param uuid the uuid
      */
     private void cancelTimer(UUID uuid) {
-        Core.cancelTask(signerMap.remove(uuid));
-        Core.cancelTask(receiverMap.remove(uuid));
+        try {
+            Core.cancelTask(signerMap.remove(uuid));
+        } catch (Exception ignored) {
+        }
+        try {
+            Core.cancelTask(receiverMap.remove(uuid));
+        } catch (Exception ignored) {
+        }
     }
 
     /**

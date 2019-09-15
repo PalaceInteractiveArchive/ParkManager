@@ -51,7 +51,7 @@ public class InventoryListener implements Listener {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
         if (player == null
                 || ParkManager.getBuildUtil().isInBuildMode(player)
-                || !event.getClickedInventory().equals(player.getInventory())
+                || (event.getClickedInventory() != null && !event.getClickedInventory().equals(player.getInventory()))
                 || !InventoryUtil.isReservedSlot(event.getSlot())) return;
         event.setCancelled(true);
     }
