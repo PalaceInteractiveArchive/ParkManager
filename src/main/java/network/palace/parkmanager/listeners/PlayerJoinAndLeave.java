@@ -3,6 +3,7 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.events.CorePlayerJoinedEvent;
 import network.palace.core.player.CPlayer;
+import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
@@ -39,7 +40,9 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
 
-        if (loginData.containsKey("buildmode")) buildMode = loginData.getBoolean("buildmode");
+        if (loginData.containsKey("buildmode") && player.getRank().getRankId() >= Rank.MOD.getRankId())
+            //Only set to build if player is Mod+
+            buildMode = loginData.getBoolean("buildmode");
         player.getRegistry().addEntry("friends", loginData.get("friends"));
 
         Document magicbandData = (Document) loginData.get("magicband");
