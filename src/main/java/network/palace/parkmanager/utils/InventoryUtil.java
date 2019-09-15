@@ -66,7 +66,7 @@ public class InventoryUtil {
                 boolean flying = player.isFlying();
                 player.setGamemode(player.getRank().getRankId() >= Rank.TRAINEEBUILD.getRankId() ? GameMode.SURVIVAL : GameMode.ADVENTURE);
 
-                if (player.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
+                if (player.getRank().getRankId() >= Rank.TRAINEE.getRankId()) {
                     player.setAllowFlight(true);
                     player.setFlying(flying);
                 }

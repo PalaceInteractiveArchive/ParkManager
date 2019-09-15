@@ -8,7 +8,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import org.bukkit.ChatColor;
 
-@CommandMeta(description = "Toggle player flight", rank = Rank.TRAINEE)
+@CommandMeta(description = "Toggle player flight", rank = Rank.SPECIALGUEST)
 public class FlyCommand extends CoreCommand {
 
     public FlyCommand() {
@@ -17,7 +17,7 @@ public class FlyCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 1) {
+        if (args.length < 1 || player.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
             toggleFlight(player, player);
             return;
         }

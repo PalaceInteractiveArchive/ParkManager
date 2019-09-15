@@ -251,9 +251,8 @@ public class StorageManager {
             ParkManager.getAutographManager().giveBook(player);
         });
 
-        if (player.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
+        if (player.getRank().getRankId() >= Rank.TRAINEE.getRankId())
             Core.runTask(ParkManager.getInstance(), () -> player.setAllowFlight(true));
-        }
     }
 
     /**
