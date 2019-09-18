@@ -16,8 +16,10 @@ public class QueueCommand extends CoreCommand {
         registerSubCommand(new EmptyCommand());
         registerSubCommand(new ListCommand());
         registerSubCommand(new OpenCommand());
+        registerSubCommand(new PauseCommand());
         registerSubCommand(new ReloadCommand());
         registerSubCommand(new RemoveCommand());
+        registerSubCommand(new UnpauseCommand());
     }
 
     @Override

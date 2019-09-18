@@ -21,7 +21,7 @@ public abstract class Queue {
     @Setter protected String name, warp;
     @Setter protected int groupSize, delay;
     @Setter protected Location station;
-    protected boolean open;
+    protected boolean open, paused = false;
     private LinkedList<UUID> queueMembers = new LinkedList<>();
     private LinkedList<UUID> fastPassMembers = new LinkedList<>();
     private List<QueueSign> signs;
@@ -162,12 +162,12 @@ public abstract class Queue {
      * @param currentTime the output from System.currentTimeMillis from a higher-level timer, so all times are the same value.
      */
     public void tick(long currentTime) {
-        if (!open) {
+        if (!open || (paused && nextGroup != 0)) {
             nextGroup += 1000;
         }
         if (nextGroup != 0) {
             //A group is scheduled
-            if (nextGroup <= currentTime && open) {
+            if (nextGroup <= currentTime && open && !paused) {
                 //Time to bring in the next group
                 if (!queueMembers.isEmpty() || !fastPassMembers.isEmpty()) {
                     //There's more players after the previous group, so schedule another group
@@ -226,7 +226,7 @@ public abstract class Queue {
             return ChatColor.RED + "Closed";
         }
         if (nextGroup == 0) {
-            return "No Wait";
+            return "No Wait" + (paused ? (ChatColor.YELLOW + " Paused") : "");
         }
         LinkedList<UUID> fullQueue = getFullQueue();
         int position = fullQueue.indexOf(uuid);
@@ -247,7 +247,7 @@ public abstract class Queue {
         to.setTimeInMillis(currentTime + (seconds * 1000));
 
         String msg = TimeUtil.formatDateDiff(from, to);
-        return msg.equalsIgnoreCase("now") ? "No Wait" : msg;
+        return (msg.equalsIgnoreCase("now") ? "No Wait" : msg) + (paused ? (ChatColor.YELLOW + " Paused") : "");
     }
 
     /**
@@ -392,5 +392,9 @@ public abstract class Queue {
 
     public boolean isInQueue(CPlayer player) {
         return queueMembers.contains(player.getUniqueId()) || fastPassMembers.contains(player.getUniqueId());
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 }
