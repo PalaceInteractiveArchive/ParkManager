@@ -26,8 +26,9 @@ public class JoinMessageCommand extends CoreCommand {
             msg.append(args[i]);
             if (i < (args.length - 1)) msg.append(" ");
         }
-        ParkManager.getConfigUtil().setJoinMessage(msg.toString());
+        String message = ChatColor.translateAlternateColorCodes('&', msg.toString());
+        ParkManager.getConfigUtil().setJoinMessage(message);
         sender.sendMessage(ChatColor.GREEN + "Set the join message to:");
-        sender.sendMessage(msg.toString());
+        sender.sendMessage(message);
     }
 }
