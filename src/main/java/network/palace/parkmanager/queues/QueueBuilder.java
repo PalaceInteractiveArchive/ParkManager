@@ -1,9 +1,12 @@
 package network.palace.parkmanager.queues;
 
+import com.google.gson.JsonObject;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.QueueType;
+import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
@@ -103,7 +106,9 @@ public class QueueBuilder extends Queue {
             //Step 5
             this.station = player.getLocation();
             player.sendMessage(ChatColor.GREEN + "Now we need to define what " + ChatColor.ITALIC + "type " + ChatColor.GREEN + "of queue you want to make. The choices are:");
-            player.sendMessage(ChatColor.YELLOW + "'block' - " + ChatColor.GREEN + "This type of queue spawns in a redstone block at a specified location when players are brought in");
+            for (QueueType qt : QueueType.values()) {
+                player.sendMessage(ChatColor.YELLOW + "'" + qt.name().toLowerCase() + "' - " + ChatColor.GREEN + qt.getDescription());
+            }
             player.sendMessage(ChatColor.GREEN + "Run " + ChatColor.YELLOW + "/queue create [type]");
             return;
         }
@@ -112,45 +117,142 @@ public class QueueBuilder extends Queue {
             if (args.length < 1 || QueueType.fromString(args[0]) == null) {
                 player.sendMessage(ChatColor.RED + "/queue create [type]");
                 player.sendMessage(ChatColor.GREEN + "The options for type are:");
-                player.sendMessage(ChatColor.YELLOW + "'block' - " + ChatColor.GREEN + "This type of queue spawns in a redstone block at a specified location when players are brought in");
+                for (QueueType qt : QueueType.values()) {
+                    player.sendMessage(ChatColor.YELLOW + "'" + qt.name().toLowerCase() + "' - " + ChatColor.GREEN + qt.getDescription());
+                }
                 return;
             }
             QueueType type = QueueType.fromString(args[0]);
             this.type = type;
-            if (type.equals(QueueType.BLOCK)) {
-                player.sendMessage(ChatColor.GREEN + "Great! All that's left is to set where the redstone block is spawned in.");
-                player.sendMessage(ChatColor.GREEN + "Stand where the redstone block should be placed, then run " + ChatColor.YELLOW + "/queue create");
-                player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "This command doesn't have any parameters because it uses where you're standing when you run it!");
-                player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "When running this, make sure you're in the exact position you want a redstone block to be placed.");
-                player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "This block is placed 1 second after players are teleported in, then removed 1 second later.");
-                player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "When the block is removed, it is set to "
-                        + ChatColor.AQUA + "AIR" + ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + ", so make sure that doesn't interfere with any builds!");
+            JsonObject rideConfig = new JsonObject();
+            switch (type) {
+                case BLOCK:
+                    player.sendMessage(ChatColor.GREEN + "Great! All that's left is to set where the redstone block is spawned in.");
+                    player.sendMessage(ChatColor.GREEN + "Stand where the redstone block should be placed, then run " + ChatColor.YELLOW + "/queue create");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "This command doesn't have any parameters because it uses where you're standing when you run it!");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "When running this, make sure you're in the exact position you want a redstone block to be placed.");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "This block is placed 1 second after players are teleported in, then removed 1 second later.");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "When the block is removed, it is set to "
+                            + ChatColor.AQUA + "AIR" + ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + ", so make sure that doesn't interfere with any builds!");
+                    break;
+                case CAROUSEL:
+                    player.sendMessage(ChatColor.GREEN + "Okay, now let's finish configuring your Carousel. Stand exactly where the center of the carousel should be and run " + ChatColor.YELLOW + "/queue create");
+                    rideConfig.addProperty("rideType", "CAROUSEL");
+                    queueTypeFields.put("rideConfig", rideConfig);
+                    break;
+                case TEACUPS:
+                    break;
+                case AERIALCAROUSEL:
+                    break;
+                case FILE:
+                    break;
             }
             return;
         }
-        if (type.equals(QueueType.BLOCK)) {
-            if (!queueTypeFields.containsKey("blockLocation")) {
-                //Step 7
-                player.getRegistry().removeEntry("queueBuilder");
-                Location loc = player.getLocation();
-                queueTypeFields.put("blockLocation", new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-                player.sendMessage(ChatColor.GREEN + "Great! Finalizing your Block Queue...");
-                Queue finalQueue = finishAndCreate();
-                if (finalQueue == null) {
-                    player.sendMessage(ChatColor.RED + "Uh oh, looks like there was an error creating this queue! Try again and if this problem persists, contact a Developer.");
-                    return;
+        switch (type) {
+            case BLOCK:
+                if (!queueTypeFields.containsKey("blockLocation")) {
+                    //Step 7
+                    player.getRegistry().removeEntry("queueBuilder");
+                    Location loc = player.getLocation();
+                    queueTypeFields.put("blockLocation", new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+                    finish(player);
                 }
-                ParkManager.getQueueManager().addQueue(finalQueue);
-                player.sendMessage(ChatColor.GREEN + "Your queue is all ready to go! It's closed by default, but you can change that with " + ChatColor.YELLOW + "/queue open");
-            }
+                break;
+            case CAROUSEL:
+                JsonObject rideConfig = (JsonObject) queueTypeFields.get("rideConfig");
+                if (!rideConfig.has("center")) {
+                    Location loc = player.getLocation();
+                    rideConfig.add("center", FileUtil.getJson(new Location(loc.getWorld(), 0.5 * (Math.round(loc.getX() / 0.5)), loc.getBlockY(), 0.5 * (Math.round(loc.getZ() / 0.5)), 0, 0)));
+                    player.sendMessage(ChatColor.GREEN + "Alright, next we're going to configure all of the standard plugin-ride settings.");
+                }
+                handlePluginQueue(player, args);
+                break;
+            case TEACUPS:
+                break;
+            case AERIALCAROUSEL:
+                break;
+            case FILE:
+                break;
         }
     }
 
-    public Queue finishAndCreate() {
-        if (type.equals(QueueType.BLOCK)) {
-            return new BlockQueue(ParkManager.getQueueManager().getNextId(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
-                    this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("blockLocation"));
+    private void handlePluginQueue(CPlayer player, String[] args) {
+        if (!queueTypeFields.containsKey("exit")) {
+            player.sendMessage(ChatColor.YELLOW + "First, we need the 'exit' location. This is where players are brought to when they exit the ride.");
+            queueTypeFields.put("exit", null);
+            return;
         }
-        return null;
+        if (queueTypeFields.get("exit") == null) {
+            Location loc = player.getLocation();
+            queueTypeFields.put("exit", new Location(loc.getWorld(), 0.5 * (Math.round(loc.getX() / 0.5)), loc.getBlockY(), 0.5 * (Math.round(loc.getZ() / 0.5)), 0, 0));
+            player.sendMessage(ChatColor.YELLOW + "Lastly, let's define the rewards a player gets from riding this ride.");
+            player.sendMessage(ChatColor.YELLOW + "Run /queue create [honor points] [amount of money] <achievement id>");
+            player.sendMessage(ChatColor.DARK_AQUA + "Honor points and a money reward is required for all rides.");
+            player.sendMessage(ChatColor.DARK_AQUA + "An achievement is optional. If you don't want an achievement to be awarded, leave the field blank or put '0' for the id.");
+            return;
+        }
+        if (!queueTypeFields.containsKey("currencyAmount")) {
+            int honor;
+            try {
+                honor = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED + args[0] + " isn't a valid integer for honor points!");
+                player.sendMessage(ChatColor.YELLOW + "Run /queue create [honor points] [amount of money] <achievement id>");
+                return;
+            }
+            int money;
+            try {
+                money = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED + args[1] + " isn't a valid integer for money!");
+                player.sendMessage(ChatColor.YELLOW + "Run /queue create [honor points] [amount of money] <achievement id>");
+                return;
+            }
+            int achievementId;
+            if (args.length > 2) {
+                try {
+                    achievementId = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + args[2] + " isn't a valid integer for achievement ID!");
+                    player.sendMessage(ChatColor.YELLOW + "Run /queue create [honor points] [amount of money] <achievement id>");
+                    return;
+                }
+            } else {
+                achievementId = 0;
+            }
+            queueTypeFields.put("honorAmount", honor);
+            queueTypeFields.put("currencyAmount", money);
+            queueTypeFields.put("achievementId", achievementId);
+            finish(player);
+        }
+    }
+
+    private void finish(CPlayer player) {
+        player.sendMessage(ChatColor.YELLOW + "Great! Finalizing your " + type.name() + " Queue...");
+        Queue finalQueue;
+        switch (type) {
+            case BLOCK:
+                finalQueue = new BlockQueue(ParkManager.getQueueManager().getNextId(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
+                        this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("blockLocation"));
+                break;
+            case CAROUSEL:
+            case TEACUPS:
+            case AERIALCAROUSEL:
+            case FILE:
+                finalQueue = new PluginQueue(ParkManager.getQueueManager().getNextId(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
+                        this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("exit"),
+                        CurrencyType.BALANCE, (int) queueTypeFields.get("currencyAmount"), (int) queueTypeFields.get("honorAmount"),
+                        (int) queueTypeFields.get("achievementId"), (JsonObject) queueTypeFields.get("rideConfig"));
+                break;
+            default:
+                finalQueue = null;
+        }
+        if (finalQueue == null) {
+            player.sendMessage(ChatColor.RED + "Uh oh, looks like there was an error creating this queue! Try again and if this problem persists, contact a Developer.");
+            return;
+        }
+        ParkManager.getQueueManager().addQueue(finalQueue);
+        player.sendMessage(ChatColor.GREEN + "Your queue is all ready to go! It's closed by default, but you can change that with " + ChatColor.YELLOW + "/queue open");
     }
 }

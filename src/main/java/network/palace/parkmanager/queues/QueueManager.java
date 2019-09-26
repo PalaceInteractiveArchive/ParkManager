@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import network.palace.core.Core;
+import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
@@ -69,11 +70,24 @@ public class QueueManager {
                         signs.add(new QueueSign(FileUtil.getLocation(signObject), name, signObject.has("fastpass") && signObject.get("fastpass").getAsBoolean(), 0));
                     }
 
-                    if (type.equals(QueueType.BLOCK)) {
-                        Location blockLocation = FileUtil.getLocation(object.getAsJsonObject("block-location"));
-                        queues.add(new BlockQueue(getNextId(), uuid, name, object.get("warp").getAsString(),
-                                object.get("group-size").getAsInt(), object.get("delay").getAsInt(),
-                                object.get("open").getAsBoolean(), station, signs, blockLocation));
+                    switch (type) {
+                        case BLOCK:
+                            Location blockLocation = FileUtil.getLocation(object.getAsJsonObject("block-location"));
+                            queues.add(new BlockQueue(getNextId(), uuid, name, object.get("warp").getAsString(),
+                                    object.get("group-size").getAsInt(), object.get("delay").getAsInt(),
+                                    object.get("open").getAsBoolean(), station, signs, blockLocation));
+                            break;
+                        case CAROUSEL:
+                        case TEACUPS:
+                        case AERIALCAROUSEL:
+                        case FILE:
+                            queues.add(new PluginQueue(getNextId(), uuid, name, object.get("warp").getAsString(),
+                                    object.get("group-size").getAsInt(), object.get("delay").getAsInt(),
+                                    object.get("open").getAsBoolean(), station, signs,
+                                    FileUtil.getLocation(object.getAsJsonObject("exit")), CurrencyType.BALANCE,
+                                    object.get("balance").getAsInt(), object.get("honor").getAsInt(),
+                                    object.get("achievement").getAsInt(), object.getAsJsonObject("rideConfig")));
+                            break;
                     }
                 }
             }
@@ -165,8 +179,26 @@ public class QueueManager {
             object.add("signs", signArray);
             object.addProperty("type", queue.getQueueType().name().toLowerCase());
 
-            if (queue.getQueueType().equals(QueueType.BLOCK)) {
-                object.add("block-location", FileUtil.getJson(((BlockQueue) queue).getBlockLocation()));
+            switch (queue.getQueueType()) {
+                case BLOCK:
+                    object.add("block-location", FileUtil.getJson(((BlockQueue) queue).getBlockLocation()));
+                    break;
+                case CAROUSEL:
+                    object.addProperty("balance", ((PluginQueue) queue).getCurrencyAmount());
+                    object.addProperty("honor", ((PluginQueue) queue).getHonorAmount());
+                    object.addProperty("achievement", ((PluginQueue) queue).getAchievementId());
+                    object.add("exit", FileUtil.getJson(((PluginQueue) queue).getRide().getExit()));
+                    JsonObject rideConfig = new JsonObject();
+                    rideConfig.addProperty("rideType", "CAROUSEL");
+                    rideConfig.add("center", FileUtil.getJson(((network.palace.ridemanager.handlers.ride.flat.CarouselRide) ((PluginQueue) queue).getRide()).getCenter()));
+                    object.add("rideConfig", rideConfig);
+                    break;
+                case TEACUPS:
+                    break;
+                case AERIALCAROUSEL:
+                    break;
+                case FILE:
+                    break;
             }
             array.add(object);
         }
