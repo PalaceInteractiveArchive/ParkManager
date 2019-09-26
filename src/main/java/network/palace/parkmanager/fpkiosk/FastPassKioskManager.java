@@ -176,6 +176,10 @@ public class FastPassKioskManager {
     }
 
     private void claimTokens(CPlayer player, Rank rank, RewardData rewardData) {
+        if (player.getRank().getRankId() <= rank.getRankId()) {
+            player.sendMessage(ChatColor.AQUA + "You must be " + rank.getFormattedName() + ChatColor.AQUA + " or above to claim these tokens!");
+            return;
+        }
         long lastClaim;
         switch (rank) {
             case SETTLER:
