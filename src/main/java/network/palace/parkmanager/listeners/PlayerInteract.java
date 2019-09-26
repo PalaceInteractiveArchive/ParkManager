@@ -2,6 +2,7 @@ package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
+import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.handlers.sign.ServerSign;
@@ -12,6 +13,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,6 +38,18 @@ public class PlayerInteract implements Listener {
                     signEntry.getHandler().onInteract(player, s, event);
                 }
                 return;
+            }
+        }
+
+        if (player.getRank().getRankId() < Rank.MOD.getRankId() && (action.equals(Action.LEFT_CLICK_BLOCK) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
+            Block clicked = event.getClickedBlock();
+            if (clicked != null) {
+                switch (clicked.getType()) {
+                    case FLOWER_POT:
+                    case ANVIL:
+                        event.setCancelled(true);
+                        return;
+                }
             }
         }
 
@@ -69,5 +83,9 @@ public class PlayerInteract implements Listener {
                 break;
         }
         if (cancel) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPrepareAnvil(PrepareAnvilEvent event) {
     }
 }
