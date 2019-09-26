@@ -62,7 +62,7 @@ public class PluginQueue extends Queue {
                 ride = new AerialCarouselRide(name, name, delay, exit, FileUtil.getLocation(rideConfig.getAsJsonObject("center")),
                         currencyType, currencyAmount, honorAmount, achievementId, rideConfig.get("aerialRadius").getAsDouble(),
                         rideConfig.get("supportRadius").getAsDouble(), rideConfig.get("small").getAsBoolean(),
-                        rideConfig.get("angle").getAsDouble(), rideConfig.get("height").getAsDouble(), rideConfig.get("movein").getAsDouble());
+                        rideConfig.get("supportAngle").getAsDouble(), rideConfig.get("height").getAsDouble(), rideConfig.get("movein").getAsDouble());
         }
         if (ride != null) RideManager.getMovementUtil().addRide(ride);
     }

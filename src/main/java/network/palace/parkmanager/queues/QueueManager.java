@@ -79,7 +79,7 @@ public class QueueManager {
                             break;
                         case CAROUSEL:
                         case TEACUPS:
-                        case AERIALCAROUSEL:
+                        case AERIAL_CAROUSEL:
                         case FILE:
                             queues.add(new PluginQueue(getNextId(), uuid, name, object.get("warp").getAsString(),
                                     object.get("group-size").getAsInt(), object.get("delay").getAsInt(),
@@ -183,7 +183,7 @@ public class QueueManager {
                 case BLOCK:
                     object.add("block-location", FileUtil.getJson(((BlockQueue) queue).getBlockLocation()));
                     break;
-                case CAROUSEL:
+                case CAROUSEL: {
                     object.addProperty("balance", ((PluginQueue) queue).getCurrencyAmount());
                     object.addProperty("honor", ((PluginQueue) queue).getHonorAmount());
                     object.addProperty("achievement", ((PluginQueue) queue).getAchievementId());
@@ -193,12 +193,49 @@ public class QueueManager {
                     rideConfig.add("center", FileUtil.getJson(((network.palace.ridemanager.handlers.ride.flat.CarouselRide) ((PluginQueue) queue).getRide()).getCenter()));
                     object.add("rideConfig", rideConfig);
                     break;
-                case TEACUPS:
+                }
+                case TEACUPS: {
+                    object.addProperty("balance", ((PluginQueue) queue).getCurrencyAmount());
+                    object.addProperty("honor", ((PluginQueue) queue).getHonorAmount());
+                    object.addProperty("achievement", ((PluginQueue) queue).getAchievementId());
+                    object.add("exit", FileUtil.getJson(((PluginQueue) queue).getRide().getExit()));
+                    JsonObject rideConfig = new JsonObject();
+                    rideConfig.addProperty("rideType", "TEACUPS");
+                    rideConfig.add("center", FileUtil.getJson(((network.palace.ridemanager.handlers.ride.flat.TeacupsRide) ((PluginQueue) queue).getRide()).getCenter()));
+                    object.add("rideConfig", rideConfig);
                     break;
-                case AERIALCAROUSEL:
+                }
+                case AERIAL_CAROUSEL: {
+                    object.addProperty("balance", ((PluginQueue) queue).getCurrencyAmount());
+                    object.addProperty("honor", ((PluginQueue) queue).getHonorAmount());
+                    object.addProperty("achievement", ((PluginQueue) queue).getAchievementId());
+                    object.add("exit", FileUtil.getJson(((PluginQueue) queue).getRide().getExit()));
+
+                    JsonObject rideConfig = new JsonObject();
+                    rideConfig.addProperty("rideType", "AERIAL_CAROUSEL");
+                    rideConfig.add("center", FileUtil.getJson(((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).getCenter()));
+                    rideConfig.addProperty("aerialRadius", ((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).getAerialRadius());
+                    rideConfig.addProperty("supportRadius", ((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).getSupportRadius());
+                    rideConfig.addProperty("small", ((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).isSmall());
+                    rideConfig.addProperty("supportAngle", ((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).getSupportAngle());
+                    rideConfig.addProperty("height", ((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).getHeight());
+                    rideConfig.addProperty("movein", ((network.palace.ridemanager.handlers.ride.flat.AerialCarouselRide) ((PluginQueue) queue).getRide()).getMovein());
+
+                    object.add("rideConfig", rideConfig);
                     break;
-                case FILE:
+                }
+                case FILE: {
+                    object.addProperty("balance", ((PluginQueue) queue).getCurrencyAmount());
+                    object.addProperty("honor", ((PluginQueue) queue).getHonorAmount());
+                    object.addProperty("achievement", ((PluginQueue) queue).getAchievementId());
+                    object.add("exit", FileUtil.getJson(((PluginQueue) queue).getRide().getExit()));
+                    JsonObject rideConfig = new JsonObject();
+                    rideConfig.addProperty("rideType", "FILE");
+                    String fileName = ((network.palace.ridemanager.handlers.ride.file.FileRide) ((PluginQueue) queue).getRide()).getRideFile().getName();
+                    rideConfig.addProperty("file", fileName.substring(0, fileName.indexOf('.')));
+                    object.add("rideConfig", rideConfig);
                     break;
+                }
             }
             array.add(object);
         }

@@ -141,10 +141,20 @@ public class QueueBuilder extends Queue {
                     queueTypeFields.put("rideConfig", rideConfig);
                     break;
                 case TEACUPS:
+                    player.sendMessage(ChatColor.GREEN + "Okay, now let's finish configuring your Teacups ride. Stand exactly where the center of the platform should be and run " + ChatColor.YELLOW + "/queue create");
+                    rideConfig.addProperty("rideType", "TEACUPS");
+                    queueTypeFields.put("rideConfig", rideConfig);
                     break;
-                case AERIALCAROUSEL:
+                case AERIAL_CAROUSEL:
+                    player.sendMessage(ChatColor.GREEN + "Okay, now let's finish configuring your Aerial Carousel. Stand exactly where the center of the carousel should be and run " + ChatColor.YELLOW + "/queue create");
+                    rideConfig.addProperty("rideType", "AERIAL_CAROUSEL");
+                    queueTypeFields.put("rideConfig", rideConfig);
                     break;
                 case FILE:
+                    player.sendMessage(ChatColor.GREEN + "Okay, now let's finish configuring your File ride. Run " + ChatColor.YELLOW + "/queue create [file]");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "[file] is the name of the ride file being used without the file extension");
+                    rideConfig.addProperty("rideType", "FILE");
+                    queueTypeFields.put("rideConfig", rideConfig);
                     break;
             }
             return;
@@ -160,6 +170,7 @@ public class QueueBuilder extends Queue {
                 }
                 break;
             case CAROUSEL:
+            case TEACUPS: {
                 JsonObject rideConfig = (JsonObject) queueTypeFields.get("rideConfig");
                 if (!rideConfig.has("center")) {
                     Location loc = player.getLocation();
@@ -168,12 +179,88 @@ public class QueueBuilder extends Queue {
                 }
                 handlePluginQueue(player, args);
                 break;
-            case TEACUPS:
+            }
+            case AERIAL_CAROUSEL: {
+                JsonObject rideConfig = (JsonObject) queueTypeFields.get("rideConfig");
+                if (!rideConfig.has("center")) {
+                    Location loc = player.getLocation();
+                    rideConfig.add("center", FileUtil.getJson(new Location(loc.getWorld(), 0.5 * (Math.round(loc.getX() / 0.5)), loc.getBlockY(), 0.5 * (Math.round(loc.getZ() / 0.5)), 0, 0)));
+                    player.sendMessage(ChatColor.GREEN + "Next, let's get the vehicle position values set. Run " + ChatColor.YELLOW + "/queue create [aerialRadius] [supportRadius] [small] [supportAngle] [height] [movein]");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "aerialRadius (rec. 6.5) is how far from the center vehicles rotate about");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "supportRadius (rec. 4.5) is how far from the center of the ride the center of the support is (usually about half aerialRadius)");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "small determines whether 12 or 16 vehicles are used");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "supportAngle (rec. 45) is the angle supports are at when the vehicles are on ground level");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "height (rec. 6) is the distance above ground level vehicles max out at (can't move any higher)");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "movein (rec. 0.9) is a value used to determine how fast vehicles move towards the center while ascending");
+                    break;
+                }
+                if (!rideConfig.has("aerialRadius")) {
+                    if (args.length < 6) {
+                        player.sendMessage(ChatColor.RED + "/queue create [aerialRadius] [supportRadius] [small] [supportAngle] [height] [movein]");
+                        break;
+                    }
+                    double aerialRadius, supportRadius, supportAngle, height, movein;
+                    boolean small;
+                    try {
+                        aerialRadius = Double.parseDouble(args[0]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + args[0] + " isn't a valid double for aerialRadius!");
+                        break;
+                    }
+                    try {
+                        supportRadius = Double.parseDouble(args[1]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + args[1] + " isn't a valid double for supportRadius!");
+                        break;
+                    }
+                    try {
+                        small = Boolean.parseBoolean(args[2]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + args[2] + " isn't a valid boolean for small!");
+                        break;
+                    }
+                    try {
+                        supportAngle = Double.parseDouble(args[3]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + args[3] + " isn't a valid double for supportAngle!");
+                        break;
+                    }
+                    try {
+                        height = Double.parseDouble(args[4]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + args[4] + " isn't a valid double for height!");
+                        break;
+                    }
+                    try {
+                        movein = Double.parseDouble(args[5]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage(ChatColor.RED + args[5] + " isn't a valid double for movein!");
+                        break;
+                    }
+                    rideConfig.addProperty("aerialRadius", aerialRadius);
+                    rideConfig.addProperty("supportRadius", supportRadius);
+                    rideConfig.addProperty("small", small);
+                    rideConfig.addProperty("supportAngle", supportAngle);
+                    rideConfig.addProperty("height", height);
+                    rideConfig.addProperty("movein", movein);
+                    player.sendMessage(ChatColor.GREEN + "Alright, next we're going to configure all of the standard plugin-ride settings.");
+                }
+                handlePluginQueue(player, args);
                 break;
-            case AERIALCAROUSEL:
+            }
+            case FILE: {
+                JsonObject rideConfig = (JsonObject) queueTypeFields.get("rideConfig");
+                if (!rideConfig.has("file")) {
+                    if (args.length < 1) {
+                        player.sendMessage(ChatColor.RED + "/queue create [file]");
+                        break;
+                    }
+                    rideConfig.addProperty("file", args[0]);
+                    player.sendMessage(ChatColor.GREEN + "Alright, next we're going to configure all of the standard plugin-ride settings.");
+                }
+                handlePluginQueue(player, args);
                 break;
-            case FILE:
-                break;
+            }
         }
     }
 
@@ -238,7 +325,7 @@ public class QueueBuilder extends Queue {
                 break;
             case CAROUSEL:
             case TEACUPS:
-            case AERIALCAROUSEL:
+            case AERIAL_CAROUSEL:
             case FILE:
                 finalQueue = new PluginQueue(ParkManager.getQueueManager().getNextId(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
                         this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("exit"),

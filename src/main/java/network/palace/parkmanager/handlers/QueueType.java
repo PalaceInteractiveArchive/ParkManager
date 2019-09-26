@@ -9,7 +9,7 @@ public enum QueueType {
     BLOCK("This type of queue spawns in a redstone block at a specified location when players are brought in"),
     CAROUSEL("A carousel with 24 horses that rotate around a central location"),
     TEACUPS("18 teacups spin on three plates around a central location"),
-    AERIALCAROUSEL("Like a carousel, but you go up and down too"),
+    AERIAL_CAROUSEL("Like a carousel, but you go up and down too"),
     FILE("The ride vehicle will follow a pre-determined path of actions along with added show elements and speed changes");
 
     @Getter @Setter String description;
