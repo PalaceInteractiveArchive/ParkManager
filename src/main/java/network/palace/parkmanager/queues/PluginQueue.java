@@ -94,6 +94,12 @@ public class PluginQueue extends Queue {
     public QueueType getQueueType() {
         if (ride instanceof CarouselRide) {
             return QueueType.CAROUSEL;
+        } else if (ride instanceof FileRide) {
+            return QueueType.FILE;
+        } else if (ride instanceof TeacupsRide) {
+            return QueueType.TEACUPS;
+        } else if (ride instanceof AerialCarouselRide) {
+            return QueueType.AERIAL_CAROUSEL;
         }
         return null;
     }

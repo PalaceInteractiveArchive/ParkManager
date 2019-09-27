@@ -42,7 +42,10 @@ public class QueueManager {
     }
 
     public void initialize() {
-        queues.forEach(Queue::emptyQueue);
+        queues.forEach(q -> {
+            q.emptyQueue();
+            if (q instanceof PluginQueue) ((PluginQueue) q).getRide().despawn();
+        });
         queues.clear();
         nextId = 0;
         FileUtil.FileSubsystem subsystem;
@@ -133,6 +136,7 @@ public class QueueManager {
     public boolean removeQueue(int id) {
         Queue queue = getQueue(id);
         if (queue == null) return false;
+        if (queue instanceof PluginQueue) ((PluginQueue) queue).getRide().despawn();
         queues.remove(queue);
         saveToFile();
         return true;

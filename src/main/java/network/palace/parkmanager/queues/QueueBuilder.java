@@ -272,7 +272,7 @@ public class QueueBuilder extends Queue {
         }
         if (queueTypeFields.get("exit") == null) {
             Location loc = player.getLocation();
-            queueTypeFields.put("exit", new Location(loc.getWorld(), 0.5 * (Math.round(loc.getX() / 0.5)), loc.getBlockY(), 0.5 * (Math.round(loc.getZ() / 0.5)), 0, 0));
+            queueTypeFields.put("exit", new Location(loc.getWorld(), 0.5 * (Math.round(loc.getX() / 0.5)), loc.getBlockY(), 0.5 * (Math.round(loc.getZ() / 0.5)), loc.getYaw(), loc.getPitch()));
             player.sendMessage(ChatColor.YELLOW + "Lastly, let's define the rewards a player gets from riding this ride.");
             player.sendMessage(ChatColor.YELLOW + "Run /queue create [honor points] [amount of money] <achievement id>");
             player.sendMessage(ChatColor.DARK_AQUA + "Honor points and a money reward is required for all rides.");
