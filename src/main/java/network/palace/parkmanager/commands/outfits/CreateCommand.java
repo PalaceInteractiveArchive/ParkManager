@@ -21,7 +21,7 @@ public class CreateCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 2) {
+        if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "/outfit create [name]");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Also, put on the outfit items before running this command!");
             return;
@@ -34,6 +34,23 @@ public class CreateCommand extends CoreCommand {
         String displayName = ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', name.toString().trim());
 
         PlayerInventory inv = player.getInventory();
+
+        if (inv.getHelmet() == null) {
+            player.sendMessage(ChatColor.RED + "You're not wearing anything in your helmet slot!");
+            return;
+        }
+        if (inv.getChestplate() == null) {
+            player.sendMessage(ChatColor.RED + "You're not wearing anything in your chestplate slot!");
+            return;
+        }
+        if (inv.getLeggings() == null) {
+            player.sendMessage(ChatColor.RED + "You're not wearing anything in your leggings slot!");
+            return;
+        }
+        if (inv.getBoots() == null) {
+            player.sendMessage(ChatColor.RED + "You're not wearing anything in your boots slot!");
+            return;
+        }
 
         ItemStack head = inv.getHelmet().clone();
         ItemStack shirt = inv.getChestplate().clone();
