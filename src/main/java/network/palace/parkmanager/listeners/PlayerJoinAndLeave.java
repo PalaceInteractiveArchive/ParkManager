@@ -82,16 +82,16 @@ public class PlayerJoinAndLeave implements Listener {
             Warp w = null;
             double distance = -1;
             for (Warp warp : new ArrayList<>(ParkWarp.getWarpUtil().getWarps())) {
-                if (warp.getLocation() == null
+                if (warp.getWorld() == null
                         || !warp.getServer().equals(Core.getServerType())
                         || (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId()))
                     continue;
                 if (distance == -1) {
                     w = warp;
-                    distance = warp.getLocation().distance(player.getLocation());
+                    distance = warp.distance(player.getLocation());
                     continue;
                 }
-                double d = warp.getLocation().distance(player.getLocation());
+                double d = warp.distance(player.getLocation());
                 if (d < distance) {
                     w = warp;
                     distance = d;
@@ -101,7 +101,7 @@ public class PlayerJoinAndLeave implements Listener {
                 player.performCommand("spawn");
                 return;
             }
-            player.teleport(w.getLocation());
+            player.teleport(w);
         }
     }
 
@@ -119,5 +119,6 @@ public class PlayerJoinAndLeave implements Listener {
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
         if (player == null) return;
         ParkManager.getStorageManager().logout(player);
+        ParkManager.getQueueManager().leaveAllQueues(player);
     }
 }

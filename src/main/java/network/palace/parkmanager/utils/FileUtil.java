@@ -66,7 +66,7 @@ public class FileUtil {
     }
 
     @AllArgsConstructor
-    public class FileSubsystem {
+    public static class FileSubsystem {
         private String name;
 
         public File getDirectory() {

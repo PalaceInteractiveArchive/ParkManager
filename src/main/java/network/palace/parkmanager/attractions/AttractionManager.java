@@ -9,7 +9,6 @@ import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.AttractionCategory;
 import network.palace.parkmanager.utils.FileUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.io.IOException;

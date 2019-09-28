@@ -16,5 +16,6 @@ public class PlayerTeleport implements Listener {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer());
         if (player == null) return;
         ParkManager.getTeleportUtil().log(player, player.getLocation());
+        ParkManager.getQueueManager().leaveAllQueues(player);
     }
 }

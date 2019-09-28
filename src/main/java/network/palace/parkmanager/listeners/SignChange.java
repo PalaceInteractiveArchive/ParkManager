@@ -100,13 +100,7 @@ public class SignChange implements Listener {
                     player.sendMessage(ChatColor.RED + "That warp does not exist, sorry!");
                     return;
                 }
-                if (!warp.getServer().equalsIgnoreCase(Core.getInstanceName())) {
-                    ParkWarp.getWarpUtil().crossServerWarp(player.getUniqueId(), warp.getName(), warp.getServer());
-                    return;
-                }
-                player.teleport(warp.getLocation());
-                player.sendMessage(ChatColor.BLUE + "You have arrived at " + ChatColor.WHITE + "[" +
-                        ChatColor.GREEN + warp.getName() + ChatColor.WHITE + "]");
+                player.getBukkitPlayer().chat("/warp " + warp.getName());
             }
         });
         ServerSign.registerSign("[Queue]", new ServerSign.SignHandler() {

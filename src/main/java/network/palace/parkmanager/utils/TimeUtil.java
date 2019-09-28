@@ -14,7 +14,7 @@ public class TimeUtil {
 
     public TimeUtil() {
         long milliseconds = System.currentTimeMillis() - ((System.currentTimeMillis() / 1000) * 1000);
-        long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000));
+        long delay = (long) Math.floor(20 - ((milliseconds * 20) / 1000.0));
         Core.runTaskTimer(ParkManager.getInstance(), () -> {
             String watchText = getWatchTimeText();
             watchViewers.forEach(uuid -> {

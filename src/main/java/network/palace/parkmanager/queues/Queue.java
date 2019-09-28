@@ -62,6 +62,7 @@ public abstract class Queue {
             player.sendMessage(ChatColor.RED + "This queue is currently closed, check back soon!");
             return false;
         }
+        ParkManager.getQueueManager().leaveAllQueues(player);
         queueMembers.add(player.getUniqueId());
         player.sendMessage(ChatColor.GREEN + "You've joined the queue for " + name + ChatColor.GREEN +
                 " at position #" + getPosition(player.getUniqueId()));
@@ -281,7 +282,7 @@ public abstract class Queue {
                     // Player doesn't have a FastPass
                     p.sendMessage(ChatColor.RED + "You don't have a FastPass for this ride!");
                     Warp w = ParkWarp.getWarpUtil().findWarp(getWarp());
-                    if (w != null) p.teleport(w.getLocation());
+                    if (w != null) p.teleport(w);
                     return;
                 }
                 p.sendMessage(ChatColor.GREEN + "You have been charged " + ChatColor.AQUA + "1 " + ChatColor.GREEN + "FastPass!");

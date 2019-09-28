@@ -142,6 +142,10 @@ public class QueueManager {
         return true;
     }
 
+    public void leaveAllQueues(CPlayer player) {
+        getQueues().forEach(q -> q.leaveQueue(player, true));
+    }
+
     public Queue getQueue(Sign s) {
         for (Queue queue : getQueues()) {
             for (QueueSign sign : queue.getSigns()) {

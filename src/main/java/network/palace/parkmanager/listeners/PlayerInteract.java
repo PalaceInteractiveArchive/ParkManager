@@ -13,7 +13,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -83,9 +82,5 @@ public class PlayerInteract implements Listener {
                 break;
         }
         if (cancel) event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onPrepareAnvil(PrepareAnvilEvent event) {
     }
 }
