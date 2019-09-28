@@ -6,7 +6,7 @@
 
     <groupId>network.palace</groupId>
     <artifactId>ParkManager</artifactId>
-    <version>3.0.9</version>
+    <version>3.1.0</version>
     <repositories>
         <repository>
             <id>palace</id>
