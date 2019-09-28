@@ -5,7 +5,6 @@ import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
-import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import org.bson.Document;
@@ -14,7 +13,6 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @CommandMeta(description = "Get top ride leaderboards", rank = Rank.DEVELOPER)
 public class LeaderboardCommand extends CoreCommand {
@@ -25,49 +23,49 @@ public class LeaderboardCommand extends CoreCommand {
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (args.length == 1 && args[0].equalsIgnoreCase("update")) {
-            sender.sendMessage(ChatColor.GREEN + "Updating Ride Counter Leaderboards...");
-            Core.runTaskAsynchronously(() -> {
-                ParkManager.getInstance().getLeaderboardManager().update();
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.RED + "/leaderboard [update]");
+            sender.sendMessage(ChatColor.RED + "/leaderboard [top #] [ride]");
+            return;
+        }
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("update")) {
+                sender.sendMessage(ChatColor.GREEN + "Updating Ride Counter Leaderboards...");
+                ParkManager.getLeaderboardManager().update();
                 sender.sendMessage(ChatColor.GREEN + "Leaderboards updated!");
-            });
+                return;
+            }
+            sender.sendMessage(ChatColor.RED + "/leaderboard [update]");
+            sender.sendMessage(ChatColor.RED + "/leaderboard [top #] [ride]");
             return;
         }
-        if (args.length < 2 || !MiscUtil.checkIfInt(args[0])) {
-            sender.sendMessage(ChatColor.RED + "/leaderboard [Top #] [Ride]");
-            return;
-        }
-
-        sender.sendMessage(ChatColor.AQUA + "Gathering leaderboard data...");
-
-        Core.runTaskAsynchronously(() -> {
-            int top = Integer.parseInt(args[0]);
+        if (args.length > 1) {
+            int top;
+            try {
+                top = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "'" + args[0] + "' is not a number!");
+                return;
+            }
             StringBuilder name = new StringBuilder();
             for (int i = 1; i < args.length; i++) {
                 name.append(args[i]).append(" ");
             }
-
             String rideName = name.toString().trim();
+            sender.sendMessage(ChatColor.AQUA + "Gathering leaderboard data for " + rideName + "...");
+            Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
 
-            List<Document> list = Core.getMongoHandler().getRideCounterLeaderboard(rideName, top);
+                List<Document> list = Core.getMongoHandler().getRideCounterLeaderboard(rideName, top);
 
-            List<String> messages = new ArrayList<>();
-            for (Document doc : list) {
-                UUID uuid = UUID.fromString(doc.getString("uuid"));
-                String n;
-                if (ParkManager.getInstance().getUserCache().containsKey(uuid)) {
-                    n = ParkManager.getInstance().getUserCache().get(uuid);
-                } else {
-                    n = Core.getMongoHandler().uuidToUsername(uuid);
-                    ParkManager.getInstance().addToUserCache(uuid, n);
+                List<String> messages = new ArrayList<>();
+                for (Document doc : list) {
+                    messages.add(ChatColor.BLUE + LeaderboardManager.getFormattedName(doc));
                 }
-                Rank r = Core.getMongoHandler().getRank(uuid);
-                int count = doc.getInteger("total");
-                messages.add(ChatColor.BLUE + "" + count + ": " + r.getTagColor() + n);
-            }
-            LeaderboardManager.sortLeaderboardMessages(messages);
-            sender.sendMessage(ChatColor.BLUE + "Ride Counter Leaderboard for " + ChatColor.GOLD + rideName + ":");
-            messages.forEach(sender::sendMessage);
-        });
+                LeaderboardManager.sortLeaderboardMessages(messages);
+
+                sender.sendMessage(ChatColor.BLUE + "Ride Counter Leaderboard for " + ChatColor.GOLD + rideName + ":");
+                messages.forEach(sender::sendMessage);
+            });
+        }
     }
 }

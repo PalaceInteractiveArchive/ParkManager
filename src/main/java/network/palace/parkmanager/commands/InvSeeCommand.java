@@ -1,15 +1,13 @@
 package network.palace.parkmanager.commands;
 
+import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.PlayerData;
-import org.bukkit.Bukkit;
+import network.palace.parkmanager.handlers.storage.StorageData;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 @CommandMeta(description = "Look into a player's inventory", rank = Rank.MOD)
 public class InvSeeCommand extends CoreCommand {
@@ -20,34 +18,39 @@ public class InvSeeCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length == 2) {
-            Player tp = Bukkit.getPlayer(args[0]);
-            if (tp == null) {
-                player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
-            }
-            String type = args[1];
-            PlayerData data = ParkManager.getInstance().getPlayerData(tp.getUniqueId());
-            if (data != null && data.getLocker() != null && data.getBackpack() != null) {
-                switch (type.toLowerCase()) {
-                    case "backpack": {
-                        player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Backpack!");
-                        player.openInventory(data.getBackpack().getInventory());
-                        return;
-                    }
-                    case "locker": {
-                        player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Locker!");
-                        player.openInventory(data.getLocker().getInventory());
-                        return;
-                    }
-                }
-            } else {
-                player.sendMessage(ChatColor.RED + "Player data not found for " + args[0] + ", showing main inventory");
-            }
-            player.sendMessage(ChatColor.GREEN + "Now looking in " + tp.getName() + "'s Main Inventory!");
-            player.openInventory(tp.getInventory());
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "/invsee [username] [main/backpack/locker]");
             return;
         }
-        player.sendMessage(ChatColor.RED + "/invsee [Username] [Main/Backpack/Locker]");
+        CPlayer target = Core.getPlayerManager().getPlayer(args[0]);
+        if (target == null) {
+            player.sendMessage(ChatColor.RED + "Player not found!");
+            return;
+        }
+        switch (args[1].toLowerCase()) {
+            case "main": {
+                player.openInventory(target.getInventory());
+                return;
+            }
+            case "backpack": {
+                if (!target.getRegistry().hasEntry("storageData")) {
+                    player.sendMessage(ChatColor.RED + "There was an error opening " + target.getName() + "'s backpack!");
+                    return;
+                }
+                StorageData data = (StorageData) target.getRegistry().getEntry("storageData");
+                player.openInventory(data.getBackpack());
+                return;
+            }
+            case "locker": {
+                if (!target.getRegistry().hasEntry("storageData")) {
+                    player.sendMessage(ChatColor.RED + "There was an error opening " + target.getName() + "'s locker!");
+                    return;
+                }
+                StorageData data = (StorageData) target.getRegistry().getEntry("storageData");
+                player.openInventory(data.getLocker());
+                return;
+            }
+        }
+        player.sendMessage(ChatColor.RED + "/invsee [username] [main/backpack/locker]");
     }
 }

@@ -4,10 +4,9 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import network.palace.core.Core;
-import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.listeners.PlayerInteract;
 import org.bson.Document;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -31,13 +30,6 @@ public class LeaderboardSign {
     }
 
     public void update() {
-        List<Document> list = Core.getMongoHandler().getRideCounterLeaderboard(rideName, 10);
-        cachedMap.clear();
-        for (Document doc : list) {
-            UUID uuid = UUID.fromString(doc.getString("uuid"));
-            int amount = doc.getInteger("total");
-            cachedMap.put(uuid, amount);
-        }
         Sign s;
         try {
             s = ((Sign) getLocation().getBlock().getState());
@@ -47,53 +39,43 @@ public class LeaderboardSign {
         if (s == null) {
             return;
         }
-        s.setLine(0, PlayerInteract.rideLeaderboard);
-        if (list.size() >= 1) {
-            Document doc = list.get(0);
-            UUID uuid = UUID.fromString(doc.getString("uuid"));
-            String name;
-            if (ParkManager.getInstance().getUserCache().containsKey(uuid)) {
-                name = ParkManager.getInstance().getUserCache().get(uuid);
-            } else {
-                name = Core.getMongoHandler().uuidToUsername(uuid);
-                ParkManager.getInstance().addToUserCache(uuid, name);
+        s.setLine(0, ChatColor.BLUE + "[Leaderboard]");
+        s.setLine(1, "");
+        s.setLine(2, ChatColor.AQUA + "Updating...");
+        s.setLine(3, "");
+        s.update();
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            List<Document> list = Core.getMongoHandler().getRideCounterLeaderboard(rideName, 10);
+            cachedMap.clear();
+            for (Document doc : list) {
+                UUID uuid = UUID.fromString(doc.getString("uuid"));
+                int amount = doc.getInteger("total");
+                cachedMap.put(uuid, amount);
             }
-            Rank rank = Core.getMongoHandler().getRank(uuid);
-            String line = doc.getInteger("total") + ": " + rank.getTagColor() + name;
-            line = line.substring(0, line.length() < 18 ? line.length() : 18);
-            s.setLine(1, line);
-        }
-        if (list.size() >= 2) {
-            Document doc = list.get(1);
-            UUID uuid = UUID.fromString(doc.getString("uuid"));
-            String name;
-            if (ParkManager.getInstance().getUserCache().containsKey(uuid)) {
-                name = ParkManager.getInstance().getUserCache().get(uuid);
-            } else {
-                name = Core.getMongoHandler().uuidToUsername(uuid);
-                ParkManager.getInstance().addToUserCache(uuid, name);
+            switch (list.size()) {
+                case 0:
+                    s.setLine(1, "");
+                case 1:
+                    s.setLine(2, "");
+                case 2:
+                    s.setLine(3, "");
             }
-            Rank rank = Core.getMongoHandler().getRank(uuid);
-            String line = doc.getInteger("total") + ": " + rank.getTagColor() + name;
-            line = line.substring(0, line.length() < 18 ? line.length() : 18);
-            s.setLine(2, line);
-        }
-        if (list.size() >= 3) {
-            Document doc = list.get(2);
-            UUID uuid = UUID.fromString(doc.getString("uuid"));
-            String name;
-            if (ParkManager.getInstance().getUserCache().containsKey(uuid)) {
-                name = ParkManager.getInstance().getUserCache().get(uuid);
-            } else {
-                name = Core.getMongoHandler().uuidToUsername(uuid);
-                ParkManager.getInstance().addToUserCache(uuid, name);
+            if (list.size() >= 1) {
+                s.setLine(1, getLine(list.get(0)));
             }
-            Rank rank = Core.getMongoHandler().getRank(uuid);
-            String line = doc.getInteger("total") + ": " + rank.getTagColor() + name;
-            line = line.substring(0, line.length() < 18 ? line.length() : 18);
-            s.setLine(3, line);
-        }
-        Core.runTask(s::update);
+            if (list.size() >= 2) {
+                s.setLine(2, getLine(list.get(1)));
+            }
+            if (list.size() >= 3) {
+                s.setLine(3, getLine(list.get(2)));
+            }
+            Core.runTask(ParkManager.getInstance(), s::update);
+        });
+    }
+
+    private String getLine(Document doc) {
+        String name = LeaderboardManager.getFormattedName(doc);
+        return name.substring(0, Math.min(name.length(), 18));
     }
 
     public JsonObject toJsonObject() {

@@ -4,9 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-/**
- * Created by Marc on 7/8/16
- */
 @Getter
 @RequiredArgsConstructor
 public class RideCount {

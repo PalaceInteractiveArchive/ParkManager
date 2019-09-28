@@ -1,150 +1,77 @@
 package network.palace.parkmanager.commands;
 
+import com.google.common.base.Joiner;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import network.palace.core.utils.ItemUtil;
-import network.palace.parkmanager.utils.NumberUtil;
+import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by Marc on 3/10/15
- */
-@CommandMeta(description = "Give player an item", aliases = "i", rank = Rank.TRAINEEBUILD)
+import java.util.Arrays;
+import java.util.HashMap;
+
+@CommandMeta(description = "Get an item", rank = Rank.TRAINEEBUILD, aliases = "i")
 public class ItemCommand extends CoreCommand {
+    private static final HashMap<String, Material> alternatives = new HashMap<>();
+
+    static {
+        alternatives.put("CMD", Material.COMMAND);
+        alternatives.put("ENDERCHEST", Material.ENDER_CHEST);
+        alternatives.put("ARMORSTAND", Material.ARMOR_STAND);
+        alternatives.put("FIREWORK", Material.FIREWORK);
+    }
 
     public ItemCommand() {
         super("item");
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this! Try /give instead.");
+    @SuppressWarnings("deprecation")
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {
+        if (args.length < 1) {
+            player.sendMessage(ChatColor.RED + "/i [item] <amount> <NBT Data>");
+            player.sendMessage(ChatColor.RED + "Ex: /i cooked_porkchop 1 {display:{Name:\"\\\"Turkey Leg\\\"\"}}");
             return;
         }
-        Player player = (Player) sender;
-        if (args.length == 1) {
-            if (!NumberUtil.isInt(args[0])) {
-                try {
-                    if (args[0].contains(":")) {
-                        String[] list = args[0].split(":");
-                        int id;
-                        byte data;
-                        if (list.length > 1) {
-                            id = Integer.parseInt(list[0]);
-                            data = Byte.parseByte(list[1]);
-                        } else {
-                            id = Integer.parseInt(args[0]);
-                            data = (byte) 0;
-                        }
-                        ItemStack item = ItemUtil.create(Material.getMaterial(id), 64, data);
-                        player.getInventory().addItem(item);
-                        player.sendMessage(ChatColor.GRAY + "Giving 64 of " +
-                                item.getType().name().toLowerCase().replaceAll("_", " "));
-                        return;
-                    }
-                    Material mat = Material.getMaterial(args[0].toUpperCase());
-                    if (mat != null) {
-                        ItemStack item = new ItemStack(mat, 64);
-                        player.getInventory().addItem(item);
-                        player.sendMessage(ChatColor.GRAY + "Giving 64 of " +
-                                item.getType().name().toLowerCase().replaceAll("_", " "));
-                        return;
-                    }
-                } catch (Exception e) {
-                    player.sendMessage(ChatColor.RED + "/i [Numeric ID] [Amount]");
-                    return;
-                }
-                player.sendMessage(ChatColor.RED + "/i [Numeric ID] [Amount]");
-                return;
-            }
-            String[] list = args[0].split(":");
+        String itemString = args[0];
+        Material type = getMaterial(itemString);
+        if (type == null) {
+            player.sendMessage(ChatColor.RED + "Unknown item '" + itemString + "'!");
+            return;
+        }
+        int amount;
+        if (args.length > 1) {
             try {
-                int id;
-                byte data;
-                if (list.length > 1) {
-                    id = Integer.parseInt(list[0]);
-                    data = Byte.parseByte(list[1]);
-                } else {
-                    id = Integer.parseInt(args[0]);
-                    data = (byte) 0;
-                }
-                ItemStack item = ItemUtil.create(Material.getMaterial(id), 64, data);
-                player.getInventory().addItem(item);
-                player.sendMessage(ChatColor.GRAY + "Giving 64 of " +
-                        item.getType().name().toLowerCase().replaceAll("_", " "));
-            } catch (Exception e) {
-                player.sendMessage(ChatColor.RED + "There was an error, sorry!");
+                amount = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                amount = type.getMaxStackSize();
             }
-            return;
+        } else {
+            amount = type.getMaxStackSize();
         }
-        if (args.length == 2) {
-            if (!NumberUtil.isInt(args[1])) {
-                player.sendMessage(ChatColor.RED + "/i [Numeric ID] [Amount]");
-                return;
-            }
-            int amount = Integer.parseInt(args[1]);
-            if (!NumberUtil.isInt(args[0])) {
-                try {
-                    if (args[0].contains(":")) {
-                        String[] list = args[0].split(":");
-                        int id;
-                        byte data;
-                        if (list.length > 1) {
-                            id = Integer.parseInt(list[0]);
-                            data = Byte.parseByte(list[1]);
-                        } else {
-                            id = Integer.parseInt(args[0]);
-                            data = (byte) 0;
-                        }
-                        ItemStack item = ItemUtil.create(Material.getMaterial(id), amount, data);
-                        player.getInventory().addItem(item);
-                        player.sendMessage(ChatColor.GRAY + "Giving " + amount + " of " +
-                                item.getType().name().toLowerCase().replaceAll("_", " "));
-                        return;
-                    }
-                    Material mat = Material.getMaterial(args[0].toUpperCase());
-                    if (mat != null) {
-                        ItemStack item = new ItemStack(mat, amount);
-                        player.getInventory().addItem(item);
-                        player.sendMessage(ChatColor.GRAY + "Giving " + amount + " of " +
-                                item.getType().name().toLowerCase().replaceAll("_", " "));
-                        return;
-                    }
-                } catch (Exception e) {
-                    player.sendMessage(ChatColor.RED + "/i [Numeric ID] [Amount]");
-                    return;
-                }
-                player.sendMessage(ChatColor.RED + "/i [Numeric ID] [Amount]");
-                return;
-            }
-            String[] list = args[0].split(":");
+        if (amount < 1) amount = 1;
+        ItemStack item = new ItemStack(type, amount);
+        if (args.length > 2 && args[2].startsWith("{")) {
             try {
-                int id;
-                byte data;
-                if (list.length > 1) {
-                    id = Integer.parseInt(list[0]);
-                    data = Byte.parseByte(list[1]);
-                } else {
-                    id = Integer.parseInt(args[0]);
-                    data = (byte) 0;
-                }
-                ItemStack item = ItemUtil.create(Material.getMaterial(id), amount, data);
-                player.getInventory().addItem(item);
-                player.sendMessage(ChatColor.GRAY + "Giving " + amount + " of " +
-                        item.getType().name().toLowerCase().replaceAll("_", " "));
-            } catch (Exception e) {
-                player.sendMessage(ChatColor.RED + "There was an error, sorry!");
+                ParkManager.getInstance().getServer().getUnsafe().modifyItemStack(item, Joiner.on(' ').join(Arrays.asList(args).subList(2, args.length)));
+            } catch (NullPointerException npe) {
+                player.sendMessage(ChatColor.RED + "The provided item meta is invalid: '" + args[2] + "'");
+                return;
             }
-            return;
         }
-        player.sendMessage(ChatColor.RED + "/i [Numeric ID] [Amount]");
+        player.getInventory().addItem(item);
+        player.sendMessage(ChatColor.GRAY + "Given " + amount + " " + type.name().toLowerCase());
+    }
+
+    private Material getMaterial(String s) {
+        if (alternatives.containsKey(s.toUpperCase())) {
+            return alternatives.get(s.toUpperCase());
+        } else {
+            return Material.matchMaterial(s);
+        }
     }
 }

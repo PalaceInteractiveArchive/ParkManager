@@ -1,14 +1,16 @@
 package network.palace.parkmanager.autograph;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * Created by Marc on 8/16/15
- */
-@AllArgsConstructor
+@Getter
 public class Signature {
-    @Getter private final String signer;
-    @Getter private final String message;
-    @Getter private final long time;
+    private final String signer;
+    private final String message;
+    private final long time;
+
+    public Signature(String signer, String message, long time) {
+        this.signer = signer.replaceAll("_", " ").replaceAll(" {2}", " ").trim();
+        this.message = message;
+        this.time = time;
+    }
 }

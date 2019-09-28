@@ -1,23 +1,16 @@
 package network.palace.parkmanager.handlers;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * Created by Marc on 4/7/17.
- */
+@AllArgsConstructor
 public enum Resort {
     WDW(0), DLR(1), USO(2);
 
     @Getter private int id;
 
-    Resort(int id) {
-        this.id = id;
-    }
-
     public static Resort fromString(String s) {
-        if (s == null) {
-            return WDW;
-        }
+        if (s == null) return WDW;
         switch (s.toLowerCase()) {
             case "wdw":
                 return WDW;

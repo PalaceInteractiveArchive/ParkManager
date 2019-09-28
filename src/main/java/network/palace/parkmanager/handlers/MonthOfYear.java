@@ -2,9 +2,6 @@ package network.palace.parkmanager.handlers;
 
 import lombok.Getter;
 
-/**
- * Created by Marc on 2/20/16
- */
 public enum MonthOfYear {
     JANUARY(0, 31), FEBRUARY(1, 28), MARCH(2, 31), APRIL(3, 30), MAY(4, 31), JUNE(5, 30), JULY(6, 31), AUGUST(7, 31),
     SEPTEMBER(8, 30), OCTOBER(9, 31), NOVEMBER(11, 30), DECEMBER(12, 31);

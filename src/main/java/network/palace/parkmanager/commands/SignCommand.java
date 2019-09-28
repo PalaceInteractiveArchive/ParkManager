@@ -1,17 +1,14 @@
 package network.palace.parkmanager.commands;
 
+import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-/**
- * Created by Marc on 8/14/15
- */
 @CommandMeta(description = "Sign an autograph book", aliases = "s", rank = Rank.SPECIALGUEST)
 public class SignCommand extends CoreCommand {
 
@@ -21,11 +18,6 @@ public class SignCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (player.getRank().getRankId() <= Rank.DWELLER.getRankId()) {
-            player.sendMessage(ChatColor.RED + "You must be the " + Rank.SPECIALGUEST.getFormattedName() +
-                    ChatColor.RED + " Rank or higher to do this!");
-            return;
-        }
         StringBuilder msg = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
             msg.append(args[i]);
@@ -33,10 +25,9 @@ public class SignCommand extends CoreCommand {
                 msg.append(" ");
             }
         }
-        String finalMsg = msg.toString();
-        Bukkit.getScheduler().runTaskAsynchronously(ParkManager.getInstance(), () -> {
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
             player.sendMessage(ChatColor.GREEN + "Signing book...");
-            ParkManager.getInstance().getAutographManager().sign(player, finalMsg);
+            ParkManager.getAutographManager().sign(player, msg.toString());
         });
     }
 }

@@ -1,16 +1,17 @@
 package network.palace.parkmanager.commands;
 
+import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.WeatherType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Change player weather", rank = Rank.MOD)
+@CommandMeta(description = "Set player weather", rank = Rank.MOD)
 public class PlayerWeatherCommand extends CoreCommand {
 
     public PlayerWeatherCommand() {
@@ -18,104 +19,66 @@ public class PlayerWeatherCommand extends CoreCommand {
     }
 
     @Override
-    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (!(sender instanceof Player)) {
-            if (args.length == 2) {
-                Player tp = Bukkit.getPlayer(args[1]);
-                if (tp == null) {
-                    sender.sendMessage(ChatColor.RED + "Player not found!");
-                    return;
-                }
-                args[0] = args[0].toLowerCase();
-                switch (args[0]) {
-                    case "sun":
-                        tp.setPlayerWeather(WeatherType.CLEAR);
-                        sender.sendMessage(ChatColor.DARK_AQUA + tp.getName()
-                                + "'s " + ChatColor.GREEN
-                                + "weather has been set to " + ChatColor.DARK_AQUA
-                                + "Clear" + ChatColor.GREEN + "!");
-                        break;
-                    case "rain":
-                        tp.setPlayerWeather(WeatherType.DOWNFALL);
-                        sender.sendMessage(ChatColor.DARK_AQUA + tp.getName()
-                                + "'s " + ChatColor.GREEN
-                                + "weather has been set to " + ChatColor.DARK_AQUA
-                                + "Storm" + ChatColor.GREEN + "!");
-                        break;
-                    case "reset":
-                        tp.resetPlayerWeather();
-                        sender.sendMessage(ChatColor.DARK_AQUA + tp.getName()
-                                + "'s " + ChatColor.GREEN
-                                + "weather now matches the server.");
-                    default:
-                        sender.sendMessage(ChatColor.RED
-                                + "/pweather [rain/sun/reset] [Username]");
-                        break;
-                }
-                return;
-            }
-            sender.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {
+        if (args.length < 1) {
+            player.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
             return;
         }
-        Player player = (Player) sender;
-        if (args.length == 1) {
-            args[0] = args[0].toLowerCase();
-            switch (args[0]) {
-                case "sun":
-                    player.setPlayerWeather(WeatherType.CLEAR);
-                    player.sendMessage(ChatColor.GREEN
-                            + "Your weather has been set to " + ChatColor.DARK_AQUA
-                            + "Clear" + ChatColor.GREEN + "!");
-                    break;
-                case "rain":
-                    player.setPlayerWeather(WeatherType.DOWNFALL);
-                    player.sendMessage(ChatColor.GREEN
-                            + "Your weather has been set to " + ChatColor.DARK_AQUA
-                            + "Storm" + ChatColor.GREEN + "!");
-                    break;
-                case "reset":
-                    player.resetPlayerWeather();
-                    player.sendMessage(ChatColor.GREEN + "Your weather now matches the server");
-                    break;
-                default:
-                    player.sendMessage(ChatColor.RED
-                            + "/pweather [rain/sun/reset] [Username]");
-                    break;
-            }
-            return;
-        }
-        if (args.length == 2) {
-            Player tp = Bukkit.getPlayer(args[1]);
-            if (tp == null) {
+        if (args.length < 2) {
+            setPlayerWeather(player.getBukkitPlayer(), player, args[0]);
+        } else {
+            CPlayer target = Core.getPlayerManager().getPlayer(args[1]);
+            if (target == null) {
                 player.sendMessage(ChatColor.RED + "Player not found!");
                 return;
             }
-            args[0] = args[0].toLowerCase();
-            switch (args[0]) {
-                case "sun":
-                    tp.setPlayerWeather(WeatherType.CLEAR);
-                    player.sendMessage(ChatColor.DARK_AQUA + tp.getName() + "'s "
-                            + ChatColor.GREEN + "weather has been set to "
-                            + ChatColor.DARK_AQUA + "Clear" + ChatColor.GREEN + "!");
-                    break;
-                case "rain":
-                    tp.setPlayerWeather(WeatherType.DOWNFALL);
-                    player.sendMessage(ChatColor.DARK_AQUA + tp.getName() + "'s "
-                            + ChatColor.GREEN + "weather has been set to "
-                            + ChatColor.DARK_AQUA + "Storm" + ChatColor.GREEN + "!");
-                    break;
-                case "reset":
-                    tp.resetPlayerWeather();
-                    player.sendMessage(ChatColor.DARK_AQUA + tp.getName() + "'s "
-                            + ChatColor.GREEN + "weather now matches the server.");
-                    break;
-                default:
-                    player.sendMessage(ChatColor.RED
-                            + "/pweather [rain/sun/reset] [Username]");
-                    break;
-            }
+            setPlayerWeather(player.getBukkitPlayer(), target, args[0]);
+        }
+    }
+
+    @Override
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
             return;
         }
-        player.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
+        CPlayer target = Core.getPlayerManager().getPlayer(args[1]);
+        if (target == null) {
+            sender.sendMessage(ChatColor.RED + "Player not found!");
+            return;
+        }
+        setPlayerWeather(sender, target, args[0]);
+    }
+
+    private void setPlayerWeather(CommandSender sender, CPlayer target, String s) {
+        boolean same = (sender instanceof Player) && ((Player) sender).getUniqueId().equals(target.getUniqueId());
+        WeatherType type;
+        switch (s.toLowerCase()) {
+            case "day": {
+                type = WeatherType.CLEAR;
+                break;
+            }
+            case "noon": {
+                type = WeatherType.DOWNFALL;
+                break;
+            }
+            case "reset": {
+                type = null;
+                break;
+            }
+            default: {
+                sender.sendMessage(ChatColor.RED + "/pweather [rain/sun/reset] [Username]");
+                return;
+            }
+        }
+        if (type == null) {
+            target.getBukkitPlayer().resetPlayerWeather();
+            sender.sendMessage(ChatColor.DARK_AQUA + (same ? "Your" : (target.getName() + "'s")) + ChatColor.GREEN +
+                    " weather now matches the server.");
+        } else {
+            target.getBukkitPlayer().setPlayerWeather(type);
+            sender.sendMessage(ChatColor.DARK_AQUA + (same ? "Your" : (target.getName() + "'s")) + ChatColor.GREEN +
+                    " weather has been set to " + ChatColor.DARK_AQUA + type.name().toLowerCase() + ChatColor.GREEN + "!");
+        }
     }
 }

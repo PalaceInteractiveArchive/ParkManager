@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,16 +30,19 @@ public class OutlineSession {
     public Location outline(double length, double heading) {
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
         if (player == null || sessionPoint == null) return null;
+
         int y = player.getLocation().getBlockY();
         double radAngle = heading / 180.0D * Math.PI;
         int x = sessionPoint.getX() + (int) Math.round(length * Math.sin(radAngle));
         int z = sessionPoint.getZ() - (int) Math.round(length * Math.cos(radAngle));
         Location loc = new Location(player.getWorld(), x, y, z);
+
         Block b = loc.getBlock();
         undoLocation = loc.clone();
         undoType = b.getType();
         undoData = b.getData();
         b.setType(type);
+
         return loc;
     }
 

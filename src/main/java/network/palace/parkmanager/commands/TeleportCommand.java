@@ -1,18 +1,21 @@
 package network.palace.parkmanager.commands;
 
+import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
+import network.palace.core.utils.MathUtil;
 import network.palace.parkmanager.ParkManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Teleport a player", rank = Rank.TRAINEE)
+@CommandMeta(description = "Teleport command", rank = Rank.TRAINEE)
 public class TeleportCommand extends CoreCommand {
 
     public TeleportCommand() {
@@ -20,138 +23,215 @@ public class TeleportCommand extends CoreCommand {
     }
 
     @Override
-    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (!(sender instanceof Player)) {
-            if (args.length == 2) {
-                Player tp1 = Bukkit.getPlayer(args[0]);
-                Player tp2 = Bukkit.getPlayer(args[1]);
-                if (tp1 == null || tp2 == null) {
-                    sender.sendMessage(ChatColor.RED + "Player not found!");
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {
+        switch (args.length) {
+            case 1: {
+                CPlayer target = Core.getPlayerManager().getPlayer(args[0]);
+                if (target == null) {
+                    player.sendMessage(ChatColor.RED + "Player not found!");
+                    player.sendMessage(ChatColor.RED + "/tp " + ChatColor.BOLD + "[player]");
                     return;
                 }
-                if (tp1.isInsideVehicle()) {
-                    sender.sendMessage(ChatColor.RED + tp1.getName() + " is on a ride, you can't teleport them!");
-                    return;
-                }
-                if (tp2.isInsideVehicle() && !tp2.getGameMode().equals(GameMode.SPECTATOR)) {
-                    sender.sendMessage(ChatColor.RED + tp2.getName() + " is on a ride, you can't teleport to them! " +
-                            "They must be in Spectator Mode to teleport to players on rides.");
-                    return;
-                }
-                ParkManager.getInstance().getTeleportUtil().log(tp1, tp1.getLocation());
-                tp1.teleport(tp2);
-                sender.sendMessage(ChatColor.GRAY + tp1.getName() + " has been teleported to " + tp2.getName());
+                teleport(player.getBukkitPlayer(), player, target, false);
                 return;
             }
-            if (args.length == 4) {
+            case 2: {
+                teleport(player.getBukkitPlayer(),
+                        Core.getPlayerManager().getPlayer(args[0]),
+                        Core.getPlayerManager().getPlayer(args[1]),
+                        false);
+                return;
+            }
+            case 3:
+            case 5:
                 try {
-                    Player tp = Bukkit.getPlayer(args[0]);
-                    double x = args[1].startsWith("~") ? tp.getLocation().getX() + num(args[1].substring(1)) : num(args[1]);
-                    double y = args[2].startsWith("~") ? tp.getLocation().getY() + num(args[2].substring(1)) : num(args[2]);
-                    double z = args[3].startsWith("~") ? tp.getLocation().getZ() + num(args[3].substring(1)) : num(args[3]);
-                    Location loc = new Location(tp.getWorld(), x, y, z, tp
-                            .getLocation().getYaw(), tp.getLocation().getPitch());
-                    if (tp.isInsideVehicle()) {
-                        sender.sendMessage(ChatColor.RED + tp.getName() + " is on a ride, you can't teleport them!");
-                        return;
+                    Location target;
+                    if (args.length == 3) {
+                        Location playerLoc = player.getLocation();
+                        target = new Location(player.getWorld(),
+                                getDouble(player.getBukkitPlayer(), args[0], "x"),
+                                getDouble(player.getBukkitPlayer(), args[1], "y"),
+                                getDouble(player.getBukkitPlayer(), args[2], "z"),
+                                playerLoc.getYaw(),
+                                playerLoc.getPitch());
+                    } else {
+                        target = new Location(player.getWorld(),
+                                getDouble(player.getBukkitPlayer(), args[0], "x"),
+                                getDouble(player.getBukkitPlayer(), args[1], "y"),
+                                getDouble(player.getBukkitPlayer(), args[2], "z"),
+                                (float) getDouble(player.getBukkitPlayer(), args[3], "yaw"),
+                                (float) getDouble(player.getBukkitPlayer(), args[4], "pitch"));
                     }
-                    ParkManager.getInstance().getTeleportUtil().log(tp, tp.getLocation());
-                    tp.teleport(loc);
-                    sender.sendMessage(ChatColor.GRAY + tp.getName() + " has been teleported to " + x + ", " + y + ", "
-                            + z);
-                    return;
+                    teleport(player.getBukkitPlayer(), player, target);
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(ChatColor.RED + "Error with numbers!");
+                    player.sendMessage(e.getMessage());
+                }
+                return;
+            case 4:
+            case 6: {
+                CPlayer moving = Core.getPlayerManager().getPlayer(args[0]);
+                if (moving == null) {
+                    player.sendMessage(ChatColor.RED + "Player not found!");
+                    player.sendMessage(ChatColor.RED + "/tp " + ChatColor.BOLD + "[player] " + ChatColor.RED
+                            + "[x] [y] [z] <yaw> <pitch>");
                     return;
                 }
-            }
-            sender.sendMessage(ChatColor.RED + "/tp [Player] <Target> or <x> <y> <z>");
-            return;
-        }
-        Player player = (Player) sender;
-        if (args.length == 1) {
-            Player tp = Bukkit.getPlayer(args[0]);
-            if (tp == null) {
-                player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
-            }
-            if (tp.isInsideVehicle() && !player.getUniqueId().equals(tp.getUniqueId()) && !player.getGameMode().equals(GameMode.SPECTATOR)) {
-                sender.sendMessage(ChatColor.RED + tp.getName() + " is on a ride, you can't teleport to them! " +
-                        "You must be in Spectator Mode to teleport to players on rides.");
-                return;
-            }
-            ParkManager.getInstance().getTeleportUtil().log(player, player.getLocation());
-            player.teleport(tp);
-            player.sendMessage(ChatColor.GRAY + "You teleported to " + tp.getName());
-            return;
-        }
-        if (args.length == 2) {
-            Player tp1 = Bukkit.getPlayer(args[0]);
-            Player tp2 = Bukkit.getPlayer(args[1]);
-            if (tp1 == null || tp2 == null) {
-                sender.sendMessage(ChatColor.RED + "Player not found!");
-                return;
-            }
-            if (tp1.isInsideVehicle()) {
-                sender.sendMessage(ChatColor.RED + tp1.getName() + " is on a ride, you can't teleport them!");
-                return;
-            }
-            if (tp2.isInsideVehicle() && !tp2.getGameMode().equals(GameMode.SPECTATOR)) {
-                sender.sendMessage(ChatColor.RED + tp2.getName() + " is on a ride, you can't teleport to them!");
-                return;
-            }
-            ParkManager.getInstance().getTeleportUtil().log(tp1, tp1.getLocation());
-            tp1.teleport(tp2);
-            player.sendMessage(ChatColor.GRAY + tp1.getName()
-                    + " has been teleported to " + tp2.getName());
-            return;
-        }
-        if (args.length == 3) {
-            try {
-                double x = args[0].startsWith("~") ? player.getLocation().getX() + num(args[0].substring(1)) : num(args[0]);
-                double y = args[1].startsWith("~") ? player.getLocation().getY() + num(args[1].substring(1)) : num(args[1]);
-                double z = args[2].startsWith("~") ? player.getLocation().getZ() + num(args[2].substring(1)) : num(args[2]);
-                Location loc = new Location(player.getWorld(), x, y, z, player.getLocation().getYaw(), player.getLocation().getPitch());
-                ParkManager.getInstance().getTeleportUtil().log(player, player.getLocation());
-                player.teleport(loc);
-                player.sendMessage(ChatColor.GRAY + "You teleported to " + x + ", " + y + ", " + z);
-                return;
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Error with numbers!");
-                return;
-            }
-        }
-        if (args.length == 4) {
-            try {
-                Player tp = Bukkit.getPlayer(args[0]);
-                double x = args[1].startsWith("~") ? player.getLocation().getX() + num(args[1].substring(1)) : num(args[1]);
-                double y = args[2].startsWith("~") ? player.getLocation().getY() + num(args[2].substring(1)) : num(args[2]);
-                double z = args[3].startsWith("~") ? player.getLocation().getZ() + num(args[3].substring(1)) : num(args[3]);
-                Location loc = new Location(tp.getWorld(), x, y, z, player.getLocation().getYaw(), player.getLocation().getPitch());
-                if (tp.isInsideVehicle()) {
-                    sender.sendMessage(ChatColor.RED + tp.getName() + " is on a ride, you can't teleport to them!");
-                    return;
+                try {
+                    teleport(player.getBukkitPlayer(), moving, getLocation(args, player.getBukkitPlayer(), moving));
+                } catch (NumberFormatException e) {
+                    player.sendMessage(e.getMessage());
                 }
-                ParkManager.getInstance().getTeleportUtil().log(tp, tp.getLocation());
-                tp.teleport(loc);
-                player.sendMessage(ChatColor.GRAY + tp.getName() + " has been teleported to " + x + ", " + y + ", " + z);
-                return;
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Error with numbers!");
                 return;
             }
         }
-        player.sendMessage(ChatColor.RED + "/tp [Player] <Target> or /tp <x> <y> <z> or /tp [Player] <x> <y> <z>");
+        player.sendMessage(ChatColor.RED + "/tp [player] <target>");
+        player.sendMessage(ChatColor.RED + "/tp [x] [y] [z] <yaw> <pitch>");
+        player.sendMessage(ChatColor.RED + "/tp [player] [x] [y] [z] <yaw> <pitch>");
     }
 
-    private double num(String s) {
-        if (s == null) {
-            return 0;
+    @Override
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        switch (args.length) {
+            case 2: {
+                teleport(sender, Core.getPlayerManager().getPlayer(args[0]),
+                        Core.getPlayerManager().getPlayer(args[1]), true);
+                return;
+            }
+            case 4:
+            case 6: {
+                CPlayer moving = Core.getPlayerManager().getPlayer(args[0]);
+                if (moving == null) {
+                    sender.sendMessage(ChatColor.RED + "Player not found!");
+                    sender.sendMessage(ChatColor.RED + "/tp " + ChatColor.BOLD + "[player] " + ChatColor.RED
+                            + "[x] [y] [z] <yaw> <pitch>");
+                    return;
+                }
+                try {
+                    teleport(sender, moving, getLocation(args, sender, moving));
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(e.getMessage());
+                }
+                return;
+            }
         }
+        sender.sendMessage(ChatColor.RED + "/tp [player] [target]");
+        sender.sendMessage(ChatColor.RED + "/tp [player] [x] [y] [z] <yaw> <pitch>");
+    }
+
+    private Location getLocation(String[] args, CommandSender sender, CPlayer target) throws NumberFormatException {
+        if (args.length == 4) {
+            Location playerLoc = target.getLocation();
+            return new Location(target.getWorld(),
+                    getDouble(sender, args[1], "x"),
+                    getDouble(sender, args[2], "y"),
+                    getDouble(sender, args[3], "z"),
+                    playerLoc.getYaw(),
+                    playerLoc.getPitch());
+        }
+        return new Location(target.getWorld(),
+                getDouble(sender, args[1], "x"),
+                getDouble(sender, args[2], "y"),
+                getDouble(sender, args[3], "z"),
+                (float) getDouble(sender, args[4], "yaw"),
+                (float) getDouble(sender, args[5], "pitch"));
+    }
+
+    /**
+     * Teleport a player to another player
+     *
+     * @param messenger     the handler to send messages to
+     * @param player        the player being teleported
+     * @param target        the target of the teleportation
+     * @param consoleSender whether the command is being sent by console
+     */
+    private void teleport(CommandSender messenger, CPlayer player, CPlayer target, boolean consoleSender) {
+        if (player == null) {
+            messenger.sendMessage(ChatColor.RED + "First player not found!");
+            messenger.sendMessage(ChatColor.RED + "/tp " + ChatColor.BOLD + "[player] " + ChatColor.RED +
+                    (consoleSender ? "[target]" : "<target>"));
+            return;
+        }
+        if (target == null) {
+            messenger.sendMessage(ChatColor.RED + "Second player not found!");
+            messenger.sendMessage(ChatColor.RED + "/tp [player] " + ChatColor.BOLD +
+                    (consoleSender ? "[target]" : "<target>"));
+            return;
+        }
+        if (!player.getGamemode().equals(GameMode.SPECTATOR) && target.isInVehicle()) {
+            messenger.sendMessage(ChatColor.RED + "Can't teleport to " + target.getName() + ", they're on a ride!");
+            return;
+        }
+        teleport(null, player, target.getLocation());
+        messenger.sendMessage(ChatColor.GRAY + "Teleported " +
+                ((messenger instanceof Player) && ((Player) messenger).getUniqueId().equals(player.getUniqueId()) ? "you" : player.getName())
+                + " to " + target.getName() + "!");
+    }
+
+    /**
+     * Teleport a player to a location
+     *
+     * @param messenger the handler to send messages to
+     * @param player    the player being teleported
+     * @param loc       the location
+     * @implNote if no messages should be sent, pass in 'null' for messenger
+     */
+    private void teleport(CommandSender messenger, CPlayer player, Location loc) {
+        if (loc == null) return;
+        ParkManager.getTeleportUtil().log(player);
+        player.teleport(loc);
+        MathUtil.round(loc, 4);
+        if (messenger != null) {
+            messenger.sendMessage(ChatColor.GRAY + "Teleported " +
+                    ((messenger instanceof Player) && ((Player) messenger).getUniqueId().equals(player.getUniqueId()) ? "you" : player.getName())
+                    + " to [" + loc.getX() + "," + loc.getY() + "," + loc.getZ()
+                    + " | " + loc.getYaw() + "," + loc.getPitch() + "]");
+        }
+    }
+
+    private double getDouble(CommandSender sender, String s, String arg) throws NumberFormatException {
         try {
+            if (s.startsWith("~")) {
+                Location loc = null;
+                if (sender instanceof Player) {
+                    loc = ((Player) sender).getLocation();
+                } else if (sender instanceof BlockCommandSender) {
+                    loc = ((BlockCommandSender) sender).getBlock().getLocation().add(0.5, 0, 0.5);
+                }
+                if (loc != null) {
+                    double value;
+                    switch (arg) {
+                        case "x":
+                            value = loc.getX();
+                            break;
+                        case "y":
+                            value = loc.getY();
+                            break;
+                        case "z":
+                            value = loc.getZ();
+                            break;
+                        case "yaw":
+                            value = loc.getYaw();
+                            break;
+                        case "pitch":
+                            value = loc.getPitch();
+                            break;
+                        default:
+                            return 0;
+                    }
+                    if (s.length() > 1) {
+                        try {
+                            double addition = Double.parseDouble(s.substring(1));
+                            return value + addition;
+                        } catch (NumberFormatException ignored) {
+                        }
+                    } else {
+                        return value;
+                    }
+                }
+            }
             return Double.parseDouble(s);
-        } catch (NumberFormatException ignored) {
-            return 0;
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException(ChatColor.RED + "Couldn't parse [" + arg + "] number: " + s);
         }
     }
 }

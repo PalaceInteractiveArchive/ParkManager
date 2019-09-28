@@ -3,9 +3,6 @@ package network.palace.parkmanager.dashboard.packets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * Created by Marc on 9/18/16
- */
 @AllArgsConstructor
 public enum PacketID {
     HEARTBEAT(0), LOGIN(1), KICK(2), GLOBAL_PLAY_ONCE(3), AREA_START(4), AREA_STOP(5), CLIENT_ACCEPTED(6), AUDIO_SYNC(7),

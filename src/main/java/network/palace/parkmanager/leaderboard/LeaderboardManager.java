@@ -1,11 +1,13 @@
 package network.palace.parkmanager.leaderboard;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import network.palace.core.Core;
-import network.palace.parkmanager.listeners.PlayerInteract;
+import network.palace.core.player.Rank;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.utils.FileUtil;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,71 +15,43 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class LeaderboardManager {
-    private File configFile;
     private List<LeaderboardSign> signs = new ArrayList<>();
 
     public LeaderboardManager() throws IOException {
-        configFile = new File("plugins/ParkManager/leaderboards.json");
-        if (!configFile.exists()) {
-            configFile.createNewFile();
-        }
-        Core.runTaskTimerAsynchronously(this::update, 400L, 10 * 60 * 20L);
-
-        JsonArray array = new Gson().fromJson(getJsonFromFile(), JsonArray.class);
-
-        if (array == null) return;
-
-        for (JsonElement element : array) {
-            try {
-                JsonObject leaderboardObject = (JsonObject) element;
-                String name = leaderboardObject.get("name").getAsString();
-                double x = leaderboardObject.get("x").getAsDouble();
-                double y = leaderboardObject.get("y").getAsDouble();
-                double z = leaderboardObject.get("z").getAsDouble();
-                String worldName = leaderboardObject.get("world").getAsString();
-                World world = Bukkit.getWorld(worldName);
-                if (world == null) continue;
-                signs.add(new LeaderboardSign(name, x, y, z, world));
-            } catch (Exception ignored) {
+        FileUtil.FileSubsystem subsystem = ParkManager.getFileUtil().registerSubsystem("leaderboard");
+        try {
+            JsonElement element = subsystem.getFileContents("leaderboards");
+            if (element.isJsonArray()) {
+                JsonArray array = element.getAsJsonArray();
+                for (JsonElement entry : array) {
+                    JsonObject leaderboardObject = (JsonObject) entry;
+                    String name = leaderboardObject.get("name").getAsString();
+                    double x = leaderboardObject.get("x").getAsDouble();
+                    double y = leaderboardObject.get("y").getAsDouble();
+                    double z = leaderboardObject.get("z").getAsDouble();
+                    String worldName = leaderboardObject.get("world").getAsString();
+                    World world = Bukkit.getWorld(worldName);
+                    if (world == null) continue;
+                    signs.add(new LeaderboardSign(name, x, y, z, world));
+                }
+            } else {
+                saveToFile();
             }
+        } catch (IOException e) {
+            Core.logMessage("LeaderboardManager", "There was an error loading the LeaderboardManager config!");
+            e.printStackTrace();
         }
+        Core.runTaskTimer(ParkManager.getInstance(), this::update, 400L, 10 * 60 * 20L);
     }
 
-    public String[] registerLeaderboardSign(String[] lines, Block block) {
-        Sign sign = (Sign) block.getState();
-        String name = (lines[1] + " " + lines[2] + " " + lines[3]).trim();
-        for (LeaderboardSign s : getSigns()) {
-            if (s.getRideName().equals(name)) {
-                return null;
-            }
-        }
-        Location loc = sign.getLocation();
-        LeaderboardSign signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
-        signs.add(signObject);
-        Core.runTaskAsynchronously(signObject::update);
-        saveFile();
-        return new String[]{PlayerInteract.rideLeaderboard, "", "", ""};
-    }
-
-    public void deleteSign(Location loc) {
-        for (LeaderboardSign sign : getSigns()) {
-            if (!sign.getLocation().equals(loc)) continue;
-            signs.remove(sign);
-            saveFile();
-        }
+    private List<LeaderboardSign> getSigns() {
+        return new ArrayList<>(signs);
     }
 
     public LeaderboardSign getSign(Location loc) {
@@ -89,57 +63,76 @@ public class LeaderboardManager {
         return null;
     }
 
-    private List<LeaderboardSign> getSigns() {
-        return new ArrayList<>(signs);
+    /**
+     * Register a leaderboard sign
+     *
+     * @param lines the lines from the sign
+     * @param block the sign block
+     * @return true if successful, false if not
+     */
+    public boolean registerLeaderboardSign(String[] lines, Block block) {
+        Sign sign = (Sign) block.getState();
+        String name = (lines[1] + " " + lines[2] + " " + lines[3]).trim();
+        for (LeaderboardSign s : getSigns()) {
+            if (s.getRideName().equals(name)) return false;
+        }
+        Location loc = sign.getLocation();
+        LeaderboardSign signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
+        signs.add(signObject);
+        Core.runTaskAsynchronously(ParkManager.getInstance(), signObject::update);
+        saveToFile();
+        return true;
     }
 
-    public String getJsonFromFile() {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(configFile));
-
-            StringBuilder json = new StringBuilder();
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                json.append(line);
-            }
-
-            return json.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "{}";
+    public void deleteSign(Location loc) {
+        for (LeaderboardSign sign : getSigns()) {
+            if (!sign.getLocation().equals(loc)) continue;
+            signs.remove(sign);
         }
-    }
-
-    public void saveFile() {
-        JsonArray array = new JsonArray();
-        for (LeaderboardSign sign : signs) {
-            array.add(sign.toJsonObject());
-        }
-        Path file = Paths.get(configFile.toURI());
-        try {
-            Files.write(file, Collections.singletonList(array.toString()), Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void update() {
-        Core.logMessage("LeaderboardManager", "Updating ride counter leaderboards...");
-        getSigns().forEach(LeaderboardSign::update);
-        Core.logMessage("LeaderboardManager", "Finished updating ride counter leaderboards!");
+        saveToFile();
     }
 
     public static void sortLeaderboardMessages(List<String> messages) {
         messages.sort((o1, o2) -> {
             String nocolor1 = ChatColor.stripColor(o1);
             String nocolor2 = ChatColor.stripColor(o2);
-            String substr1 = nocolor1.substring(0, nocolor1.indexOf(":"));
-            String substr2 = nocolor2.substring(0, nocolor2.indexOf(":"));
-            int i1 = Integer.parseInt(substr1);
-            int i2 = Integer.parseInt(substr2);
+            int i1 = Integer.parseInt(nocolor1.substring(0, nocolor1.indexOf(":")));
+            int i2 = Integer.parseInt(nocolor2.substring(0, nocolor2.indexOf(":")));
             return i2 - i1;
         });
+    }
 
+    public static String getFormattedName(Document doc) {
+        return getFormattedName(UUID.fromString(doc.getString("uuid")), doc.getInteger("total"));
+    }
+
+    public static String getFormattedName(UUID uuid, int total) {
+        String name;
+        if (ParkManager.getPlayerUtil().getUserCache().containsKey(uuid)) {
+            name = ParkManager.getPlayerUtil().getUserCache().get(uuid);
+        } else {
+            name = Core.getMongoHandler().uuidToUsername(uuid);
+            ParkManager.getPlayerUtil().addToUserCache(uuid, name);
+        }
+        Rank rank = Core.getMongoHandler().getRank(uuid);
+        return total + ": " + rank.getTagColor() + name;
+    }
+
+    public void update() {
+        Core.logMessage("LeaderboardManager", "Updating ride counter leaderboards...");
+        getSigns().forEach(LeaderboardSign::update);
+    }
+
+    public void saveToFile() {
+        JsonArray array = new JsonArray();
+        for (LeaderboardSign sign : signs) {
+            array.add(sign.toJsonObject());
+        }
+        try {
+            ParkManager.getFileUtil().getSubsystem("leaderboard").writeFileContents("leaderboards", array);
+        } catch (IOException e) {
+            Core.logMessage("LeaderboardManager", "There was an error writing to the LeaderboardManager config!");
+            e.printStackTrace();
+        }
     }
 }

@@ -1,119 +1,146 @@
 package network.palace.parkmanager.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import lombok.AllArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class FileUtil {
+    public static final String mainPath = "plugins/ParkManager";
+    private HashMap<String, FileSubsystem> subsystems = new HashMap<>();
 
-    private FileUtil() {
-    }
-
-    private static File blockchanger = new File("plugins/ParkManager/blockchanger.yml");
-    private static File configuration = new File("plugins/ParkManager/config.yml");
-    private static File menus = new File("plugins/ParkManager/menus.yml");
-    private static File packs = new File("plugins/ParkManager/packs.yml");
-    private static File shops = new File("plugins/ParkManager/shops.yml");
-    public static File SERVICE_ACCOUNT_PKCS12_FILE = new File("plugins/ParkManager/key.p12");
-
-    public static File blockchangerFile() {
-        return blockchanger;
-    }
-
-    public static File configurationFile() {
-        return configuration;
-    }
-
-    public static File menuFile() {
-        return menus;
-    }
-
-    public static File packsFile() {
-        return packs;
-    }
-
-    public static File shopsFile() {
-        return shops;
-    }
-
-    public static YamlConfiguration configurationYaml() {
-        return YamlConfiguration.loadConfiguration(configurationFile());
-    }
-
-    public static YamlConfiguration menuYaml() {
-        return YamlConfiguration.loadConfiguration(menuFile());
-    }
-
-    public static YamlConfiguration packsYaml() {
-        return YamlConfiguration.loadConfiguration(packsFile());
-    }
-
-    public static YamlConfiguration shopsYaml() {
-        return YamlConfiguration.loadConfiguration(shopsFile());
-    }
-
-    public static String getResort() {
-        return configurationYaml().getString("resort");
-    }
-
-    public static boolean isHotelServer() {
-        return configurationYaml().getBoolean("hotel");
-    }
-
-    public static void setupConfig() {
-        try {
-            File file = FileUtil.configurationFile();
-            if (file.exists()) {
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-                if (!config.contains("resort")) {
-                    config.set("resort", "wdw");
-                    config.save(file);
-                }
-                return;
-            }
-            if (!file.createNewFile()) {
-                return;
-            }
-            YamlConfiguration config = configurationYaml();
-            config.set("server-name", "Hub");
-            config.set("resort", "wdw");
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public FileUtil() {
+        File pluginDirectory = new File(mainPath);
+        if (!pluginDirectory.exists()) {
+            pluginDirectory.mkdirs();
         }
     }
 
-    public static void setSpawn(Location loc) {
-        File file = FileUtil.configurationFile();
-        YamlConfiguration config = configurationYaml();
-        config.set("spawn.world", loc.getWorld().getName());
-        config.set("spawn.x", loc.getX());
-        config.set("spawn.y", loc.getY());
-        config.set("spawn.z", loc.getZ());
-        config.set("spawn.yaw", loc.getYaw());
-        config.set("spawn.pitch", loc.getPitch());
-        saveFile(file, config);
+    /**
+     * Creates (or does nothing if exists) a directory for the subsystem within the plugin directory
+     * ex: 'plugins/ParkManager/outline' for OutlineManager
+     *
+     * @param name the name of the directory, preferably lowercase with only letters/numbers
+     */
+    public FileSubsystem registerSubsystem(String name) throws IllegalArgumentException {
+        if (isSubsystemRegistered(name))
+            throw new IllegalArgumentException("A subsystem already exists by the name '" + name + "'!");
+        FileSubsystem subsystem = new FileSubsystem(name);
+        File dir = subsystem.getDirectory();
+        if (!dir.exists()) dir.mkdirs();
+        subsystems.put(name, subsystem);
+        return subsystem;
     }
 
-    public static void setHub(Location loc) {
-        File file = FileUtil.configurationFile();
-        YamlConfiguration config = configurationYaml();
-        config.set("hub.world", loc.getWorld().getName());
-        config.set("hub.x", loc.getX());
-        config.set("hub.y", loc.getY());
-        config.set("hub.z", loc.getZ());
-        config.set("hub.yaw", loc.getYaw());
-        config.set("hub.pitch", loc.getPitch());
-        saveFile(file, config);
+    /**
+     * Get a registered subsystem
+     *
+     * @param name the name
+     * @return FileSubsystem if it exists, null if not
+     */
+    public FileSubsystem getSubsystem(String name) {
+        return subsystems.get(name);
     }
 
-    public static void saveFile(File file, YamlConfiguration config) {
-        try {
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+    /**
+     * Check if a subsystem is registered by name
+     *
+     * @param name the name
+     * @return true if a subsystem has been registered by that name
+     */
+    public boolean isSubsystemRegistered(String name) {
+        return subsystems.containsKey(name);
+    }
+
+    @AllArgsConstructor
+    public static class FileSubsystem {
+        private String name;
+
+        public File getDirectory() {
+            return new File(mainPath + "/" + name);
         }
+
+        /**
+         * Get a file within the subsystem's directory
+         * If it doesn't exist, attempt to create it
+         *
+         * @param name the name of the file
+         * @return the File
+         * @throws IOException if there was an error creating the file
+         */
+        public File getFile(String name) throws IOException {
+            File file = new File(getDirectory().getPath() + "/" + name + ".json");
+            if (!file.exists()) file.createNewFile();
+            return file;
+        }
+
+        /**
+         * Get the JSON contents of a subsystem file
+         *
+         * @param name the name of the file
+         * @return JsonElement with the contents of the file
+         * @throws IOException         if there was an error reading the file
+         * @throws JsonSyntaxException if there was an error parsing the file as JSON
+         * @see #getFile(String)
+         */
+        public JsonElement getFileContents(String name) throws IOException, JsonSyntaxException {
+            File file = getFile(name);
+            StringBuilder json = new StringBuilder();
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                json.append(line);
+            }
+            JsonElement element = new Gson().fromJson(json.toString(), JsonElement.class);
+            if (element == null) {
+                return new JsonObject();
+            } else {
+                return element;
+            }
+        }
+
+        /**
+         * Write JSON content to a subsystem file
+         *
+         * @param name    the name of the file
+         * @param element the JSON data being written to the file
+         * @throws IOException if there was an error writing to the file
+         * @see #getFile(String)
+         */
+        public void writeFileContents(String name, JsonElement element) throws IOException {
+            Files.write(Paths.get(getFile(name).toURI()), Collections.singletonList(element.toString()), Charset.forName("UTF-8"));
+        }
+    }
+
+    public static Location getLocation(JsonObject object) {
+        if (object == null) return null;
+        return new Location(Bukkit.getWorld(object.get("world").getAsString()), object.get("x").getAsDouble(),
+                object.get("y").getAsDouble(), object.get("z").getAsDouble(), object.get("yaw").getAsFloat(), object.get("pitch").getAsFloat());
+    }
+
+    public static JsonObject getJson(Location location) {
+        JsonObject object = new JsonObject();
+        if (location != null) {
+            object.addProperty("x", location.getX());
+            object.addProperty("y", location.getY());
+            object.addProperty("z", location.getZ());
+            object.addProperty("yaw", location.getYaw());
+            object.addProperty("pitch", location.getPitch());
+            object.addProperty("world", location.getWorld().getName());
+        }
+        return object;
     }
 }

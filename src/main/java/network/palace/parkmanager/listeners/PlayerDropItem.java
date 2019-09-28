@@ -3,7 +3,8 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import org.bukkit.entity.Player;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -11,19 +12,16 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class PlayerDropItem implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-        CPlayer cplayer = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cplayer.getRank().getRankId() < Rank.MOD.getRankId()) {
+        CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
+        if (player.getRank().getRankId() < Rank.MOD.getRankId()) {
+            // Non-mods can't drop items
             event.setCancelled(true);
             return;
         }
-        if (BlockEdit.isInBuildMode(player.getUniqueId())) {
-            return;
-        }
-        if (player.getInventory().getHeldItemSlot() >= 4) {
-            event.setCancelled(true);
-        }
+        if (ParkManager.getBuildUtil().isInBuildMode(player.getUniqueId())) return;
+
+        if (InventoryUtil.isReservedSlot(player.getHeldItemSlot())) event.setCancelled(true);
     }
 }

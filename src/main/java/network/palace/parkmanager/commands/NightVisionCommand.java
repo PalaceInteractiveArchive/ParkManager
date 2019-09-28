@@ -6,15 +6,11 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collection;
 
-/**
- * Created by Marc on 4/11/15
- */
 @CommandMeta(description = "Night vision", rank = Rank.TRAINEE)
 public class NightVisionCommand extends CoreCommand {
 
@@ -23,8 +19,7 @@ public class NightVisionCommand extends CoreCommand {
     }
 
     @Override
-    protected void handleCommand(CPlayer cp, String[] args) throws CommandException {
-        Player player = cp.getBukkitPlayer();
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         Collection<PotionEffect> effects = player.getActivePotionEffects();
         boolean contains = false;
         for (PotionEffect e : effects) {

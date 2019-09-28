@@ -8,6 +8,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @CommandMeta(description = "Set the movement speed of a player", rank = Rank.MOD)
 public class SpeedCommand extends CoreCommand {
@@ -22,37 +23,13 @@ public class SpeedCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "/speed [speed] <player>");
             return;
         }
-
-        boolean isFly;
-        float speed;
-        if (args.length == 1) {
-            isFly = player.isFlying();
-            speed = getMoveSpeed(args[0]);
+        CPlayer target;
+        if (args.length > 1) {
+            target = Core.getPlayerManager().getPlayer(args[1]);
         } else {
-            CPlayer tp = Core.getPlayerManager().getPlayer(args[1]);
-            if (tp == null) {
-                player.sendMessage(ChatColor.RED + "Player not found!");
-                return;
-            }
-            isFly = tp.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && tp.isFlying();
-            speed = getMoveSpeed(args[0]);
-            if (isFly) {
-                tp.getBukkitPlayer().setFlySpeed(getRealMoveSpeed(speed, isFly, player.getRank().getRankId() >= Rank.MOD.getRankId()));
-                player.sendMessage(ChatColor.GREEN + "Set " + tp.getName() + "'s flying speed to " + speed);
-            } else {
-                tp.getBukkitPlayer().setWalkSpeed(getRealMoveSpeed(speed, isFly, player.getRank().getRankId() >= Rank.MOD.getRankId()));
-                player.sendMessage(ChatColor.GREEN + "Set " + tp.getName() + "'s walking speed to " + speed);
-            }
-            return;
+            target = player;
         }
-
-        if (isFly) {
-            player.getBukkitPlayer().setFlySpeed(getRealMoveSpeed(speed, isFly, player.getRank().getRankId() >= Rank.MOD.getRankId()));
-            player.sendMessage(ChatColor.GREEN + "Set your flying speed to " + speed);
-        } else {
-            player.getBukkitPlayer().setWalkSpeed(getRealMoveSpeed(speed, isFly, player.getRank().getRankId() >= Rank.MOD.getRankId()));
-            player.sendMessage(ChatColor.GREEN + "Set your walking speed to " + speed);
-        }
+        setSpeed(player.getBukkitPlayer(), target, args[0]);
     }
 
     @Override
@@ -61,41 +38,32 @@ public class SpeedCommand extends CoreCommand {
             sender.sendMessage(ChatColor.RED + "/speed [speed] [player]");
             return;
         }
+        setSpeed(sender, Core.getPlayerManager().getPlayer(args[1]), args[0]);
+    }
 
-        CPlayer tp = Core.getPlayerManager().getPlayer(args[1]);
-        if (tp == null) {
+    private void setSpeed(CommandSender sender, CPlayer target, String s) {
+        if (target == null) {
             sender.sendMessage(ChatColor.RED + "Player not found!");
             return;
         }
-
-        boolean isFlying = tp.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && tp.isFlying();
-        float speed = getMoveSpeed(args[0]);
-        float realSpeed = getRealMoveSpeed(speed, isFlying, tp.getRank().getRankId() >= Rank.MOD.getRankId());
+        boolean isFlying = target.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && target.isFlying();
+        float speed = getMoveSpeed(s);
         if (isFlying) {
-            tp.getBukkitPlayer().setFlySpeed(realSpeed);
-            sender.sendMessage(ChatColor.GREEN + "Set " + tp.getName() + "'s flying speed to " + speed);
-        }
-        else {
-            tp.getBukkitPlayer().setWalkSpeed(realSpeed);
-            sender.sendMessage(ChatColor.GREEN + "Set " + tp.getName() + "'s walking speed to " + speed);
-        }
-    }
-
-    private float getRealMoveSpeed(final float userSpeed, final boolean isFly, final boolean isBypass) {
-        final float defaultSpeed = isFly ? 0.1f : 0.2f;
-        float maxSpeed = 1f;
-        if (!isBypass) {
-            maxSpeed = (float) 10;
-        }
-
-        if (userSpeed < 1f) {
-            return defaultSpeed * userSpeed;
+            target.setFlySpeed(getRealMoveSpeed(speed, true, target.getRank().getRankId() >= Rank.MOD.getRankId()));
         } else {
-            float ratio = ((userSpeed - 1) / 9) * (maxSpeed - defaultSpeed);
-            return ratio + defaultSpeed;
+            target.setWalkSpeed(getRealMoveSpeed(speed, false, target.getRank().getRankId() >= Rank.MOD.getRankId()));
         }
+        sender.sendMessage(ChatColor.GREEN + "Set " +
+                (((sender instanceof Player) && ((Player) sender).getUniqueId().equals(target.getUniqueId())) ? "your" : (target.getName() + "'s"))
+                + " " + (isFlying ? "flying" : "walking") + " speed to " + speed);
     }
 
+    /**
+     * Convert string speed to floating point value
+     *
+     * @param moveSpeed the speed in string format
+     * @return a float representing the movement speed
+     */
     private float getMoveSpeed(final String moveSpeed) {
         float userSpeed;
         try {
@@ -109,5 +77,28 @@ public class SpeedCommand extends CoreCommand {
             return 1;
         }
         return userSpeed;
+    }
+
+    /**
+     * Convert a 0.0-10.0 float to the Minecraft-scale for walk/fly speed
+     *
+     * @param userSpeed the 0.0-10.0 float
+     * @param isFly     whether this is flight speed
+     * @param isBypass  whether the player can bypass the max of 10.0
+     * @return movement speed scaled for Minecraft
+     */
+    private float getRealMoveSpeed(final float userSpeed, final boolean isFly, final boolean isBypass) {
+        final float defaultSpeed = isFly ? 0.1f : 0.2f;
+        float maxSpeed = 1f;
+        if (!isBypass) {
+            maxSpeed = (float) 10;
+        }
+
+        if (userSpeed < 1f) {
+            return defaultSpeed * userSpeed;
+        } else {
+            float ratio = ((userSpeed - 1) / 9) * (maxSpeed - defaultSpeed);
+            return ratio + defaultSpeed;
+        }
     }
 }

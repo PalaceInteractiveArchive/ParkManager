@@ -2,7 +2,7 @@ package network.palace.parkmanager.autograph;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import network.palace.parkmanager.ParkManager;
+import network.palace.core.utils.ItemUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -12,10 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * @author Marc
- * @since 9/8/17
- */
 @Getter
 @AllArgsConstructor
 public class Book {
@@ -33,11 +29,10 @@ public class Book {
     }
 
     public ItemStack getBook() {
-        AutographManager manager = ParkManager.getInstance().getAutographManager();
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+        ItemStack book = ItemUtil.create(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
-        meta.setTitle(manager.BOOK_TITLE + " #" + id);
-        String extra = "";
+        meta.setTitle(AutographManager.BOOK_TITLE + " #" + id);
+        String extra;
         if (signatures.isEmpty()) {
             extra = "\n" + ChatColor.RED + "" + ChatColor.ITALIC + "No Autographs";
         } else if (signatures.size() == 1) {
@@ -46,9 +41,9 @@ public class Book {
             extra = ChatColor.BLUE + "" + ChatColor.ITALIC + getFirstName() + ChatColor.GREEN +
                     " to " + ChatColor.BLUE + "" + ChatColor.ITALIC + getLastName();
         }
-        meta.addPage(manager.FIRST_PAGE + extra);
+        meta.addPage(AutographManager.FIRST_PAGE + extra);
         meta.setAuthor(name);
-        meta.setLore(Arrays.asList(ChatColor.GREEN + "Contains:", "", extra.replaceAll("\n", "")));
+        meta.setLore(Arrays.asList("", ChatColor.GREEN + "Contains:", "", extra.replaceAll("\n", "")));
         for (Signature signature : signatures) {
             meta.addPage(ChatColor.translateAlternateColorCodes('&', signature.getMessage()) +
                     ChatColor.YELLOW + "\n- " + ChatColor.BLUE + "" + ChatColor.ITALIC + "" + signature.getSigner());

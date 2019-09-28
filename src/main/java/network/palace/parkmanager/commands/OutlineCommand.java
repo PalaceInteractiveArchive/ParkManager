@@ -14,10 +14,6 @@ import org.bukkit.Material;
 
 import java.util.List;
 
-/**
- * @author Marc
- * @since 10/20/17
- */
 @CommandMeta(description = "Outline command", aliases = "out", rank = Rank.MOD)
 public class OutlineCommand extends CoreCommand {
 
@@ -31,10 +27,9 @@ public class OutlineCommand extends CoreCommand {
             helpMenu("main", player);
             return;
         }
-        OutlineSession session = ParkManager.getInstance().getOutlineManager().getSession(player.getUniqueId());
-        String s1 = args[0];
+        OutlineSession session = ParkManager.getOutlineManager().getSession(player.getUniqueId());
         if (args.length == 1) {
-            if (s1.equalsIgnoreCase("undo")) {
+            if (args[0].equalsIgnoreCase("undo")) {
                 if (session.undo()) {
                     player.sendMessage(ChatColor.GREEN + "Undo successful!");
                 } else {
@@ -42,15 +37,14 @@ public class OutlineCommand extends CoreCommand {
                 }
                 return;
             }
-            helpMenu(s1, player);
+            helpMenu(args[0], player);
             return;
         }
-        String s2 = args[1];
         if (args.length == 2) {
-            switch (s1.toLowerCase()) {
+            switch (args[0].toLowerCase()) {
                 case "point": {
-                    if (s2.equalsIgnoreCase("list")) {
-                        List<Point> points = ParkManager.getInstance().getOutlineManager().getPoints();
+                    if (args[1].equalsIgnoreCase("list")) {
+                        List<Point> points = ParkManager.getOutlineManager().getPoints();
                         if (points.isEmpty()) {
                             player.sendMessage(ChatColor.RED + "No points exist on this server!");
                             return;
@@ -61,7 +55,7 @@ public class OutlineCommand extends CoreCommand {
                         }
                         return;
                     }
-                    Point p = ParkManager.getInstance().getOutlineManager().getPoint(s2);
+                    Point p = ParkManager.getOutlineManager().getPoint(args[1]);
                     if (p == null) {
                         helpMenu("point", player);
                         return;
@@ -71,9 +65,9 @@ public class OutlineCommand extends CoreCommand {
                     return;
                 }
                 case "setblock": {
-                    Material type = Material.valueOf(s2);
+                    Material type = Material.valueOf(args[1]);
                     if (type == null) {
-                        player.sendMessage(ChatColor.RED + "No block type '" + s2 + "'!");
+                        player.sendMessage(ChatColor.RED + "No block type '" + args[1] + "'!");
                         return;
                     }
                     session.setType(type);
@@ -82,8 +76,8 @@ public class OutlineCommand extends CoreCommand {
                 }
                 default: {
                     try {
-                        double length = Double.parseDouble(s1);
-                        double heading = Double.parseDouble(s2);
+                        double length = Double.parseDouble(args[0]);
+                        double heading = Double.parseDouble(args[1]);
                         Location loc = session.outline(length, heading);
                         if (loc == null) {
                             player.sendMessage(ChatColor.RED + "There was an error creating that outline! Do you have a starting point selected!");
@@ -98,31 +92,33 @@ public class OutlineCommand extends CoreCommand {
                 }
             }
         }
-        String s3 = args[2];
         if (args.length == 3) {
-            if (!s1.equalsIgnoreCase("point") || !s2.equalsIgnoreCase("remove")) {
+            if (!args[0].equalsIgnoreCase("point") || !args[1].equalsIgnoreCase("remove")) {
                 helpMenu("main", player);
                 return;
             }
-            if (ParkManager.getInstance().getOutlineManager().removePoint(s3)) {
+            if (ParkManager.getOutlineManager().removePoint(args[2])) {
                 player.sendMessage(ChatColor.GREEN + "Point removed successfully!");
             } else {
-                player.sendMessage(ChatColor.RED + "No point exists with the name '" + s3 + "'!");
+                player.sendMessage(ChatColor.RED + "No point exists with the name '" + args[2] + "'!");
             }
             return;
         }
-        String s4 = args[3];
         if (args.length == 4) {
-            if (!s1.equalsIgnoreCase("point") || !s2.equalsIgnoreCase("create")) {
+            if (!args[0].equalsIgnoreCase("point") || !args[1].equalsIgnoreCase("create")) {
                 helpMenu("main", player);
                 return;
             }
             try {
-                String[] list = s4.split(",");
+                if (ParkManager.getOutlineManager().getPoint(args[2]) != null) {
+                    player.sendMessage(ChatColor.RED + "A point already exists named '" + args[2] + "'!");
+                    return;
+                }
+                String[] list = args[3].split(",");
                 int x = Integer.parseInt(list[0]);
                 int z = Integer.parseInt(list[1]);
-                Point p = new Point(s3, x, z);
-                ParkManager.getInstance().getOutlineManager().addPoint(p);
+                Point p = new Point(args[2], x, z);
+                ParkManager.getOutlineManager().addPoint(p);
                 player.sendMessage(ChatColor.GREEN + "Point added successfully!");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -134,31 +130,26 @@ public class OutlineCommand extends CoreCommand {
     }
 
     public static void helpMenu(String menu, CPlayer player) {
-        switch (menu) {
-            case "point": {
-                player.sendMessage(ChatColor.GREEN + "Point Commands:");
-                player.sendMessage(ChatColor.GREEN + "/outline point list " + ChatColor.AQUA +
-                        "- List all configured outline points");
-                player.sendMessage(ChatColor.GREEN + "/outline point create [name] [x,z] " + ChatColor.AQUA +
-                        "- Save a new outline point");
-                player.sendMessage(ChatColor.GREEN + "/outline point remove [name] " + ChatColor.AQUA +
-                        "- Remove a saved point");
-                player.sendMessage(ChatColor.GREEN + "/outline point [name] " + ChatColor.AQUA +
-                        "- Select a starting point for your session");
-                break;
-            }
-            default: {
-                player.sendMessage(ChatColor.GREEN + "Outline Commands:");
-                player.sendMessage(ChatColor.GREEN + "/outline point " + ChatColor.AQUA +
-                        "- Commands for managing starting points");
-                player.sendMessage(ChatColor.GREEN + "/outline [length] [heading]" + ChatColor.AQUA +
-                        "- Place a block at this outline location");
-                player.sendMessage(ChatColor.GREEN + "/outline undo" + ChatColor.AQUA +
-                        "- Undo your latest outline");
-                player.sendMessage(ChatColor.GREEN + "/outline setblock [type] " + ChatColor.AQUA +
-                        "- Set the block type for your session (optional, default is gold block)");
-                break;
-            }
+        if (menu.equals("point")) {
+            player.sendMessage(ChatColor.GREEN + "Point Commands:");
+            player.sendMessage(ChatColor.GREEN + "/outline point list " + ChatColor.AQUA +
+                    "- List all configured outline points");
+            player.sendMessage(ChatColor.GREEN + "/outline point create [name] [x,z] " + ChatColor.AQUA +
+                    "- Save a new outline point");
+            player.sendMessage(ChatColor.GREEN + "/outline point remove [name] " + ChatColor.AQUA +
+                    "- Remove a saved point");
+            player.sendMessage(ChatColor.GREEN + "/outline point [name] " + ChatColor.AQUA +
+                    "- Select a starting point for your session");
+            return;
         }
+        player.sendMessage(ChatColor.GREEN + "Outline Commands:");
+        player.sendMessage(ChatColor.GREEN + "/outline point " + ChatColor.AQUA +
+                "- Commands for managing starting points");
+        player.sendMessage(ChatColor.GREEN + "/outline [length] [heading]" + ChatColor.AQUA +
+                "- Place a block at this outline location");
+        player.sendMessage(ChatColor.GREEN + "/outline undo" + ChatColor.AQUA +
+                "- Undo your latest outline");
+        player.sendMessage(ChatColor.GREEN + "/outline setblock [type] " + ChatColor.AQUA +
+                "- Set the block type for your session (optional, default is gold block)");
     }
 }

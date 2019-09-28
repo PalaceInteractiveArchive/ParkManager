@@ -8,10 +8,7 @@ import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 
-/**
- * Created by Marc on 10/25/15
- */
-@CommandMeta(description = "Go to previous location", rank = Rank.MOD)
+@CommandMeta(description = "Go to your previous location", rank = Rank.MOD)
 public class BackCommand extends CoreCommand {
 
     public BackCommand() {
@@ -20,7 +17,7 @@ public class BackCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (!ParkManager.getInstance().getTeleportUtil().back(player)) {
+        if (!ParkManager.getTeleportUtil().back(player)) {
             player.sendMessage(ChatColor.GRAY + "No location to teleport back to!");
         }
     }

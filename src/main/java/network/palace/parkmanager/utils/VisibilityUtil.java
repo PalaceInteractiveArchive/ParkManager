@@ -1,91 +1,141 @@
 package network.palace.parkmanager.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.handlers.PlayerData;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by Marc on 1/14/17.
- */
 public class VisibilityUtil {
-    private List<UUID> hideall = new ArrayList<>();
 
-    private void hidePlayerForOthers(CPlayer player) {
+    /**
+     * Update whether this player can see other players or not
+     *
+     * @param player the player
+     */
+    private void updatePlayerVisibility(CPlayer player) {
         for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-            if (tp.getUniqueId().equals(player.getUniqueId())) {
-                continue;
-            }
-            tp.hidePlayer(ParkManager.getInstance(), player);
-        }
-    }
-
-    private void showPlayerForOthers(CPlayer player) {
-        for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-            if (tp.getUniqueId().equals(player.getUniqueId())) {
-                continue;
-            }
-            if (hideall.contains(tp.getUniqueId())) {
-                continue;
-            }
-            if (ParkManager.getInstance().getPlayerData(tp.getUniqueId()).isVisibility()) {
-                tp.showPlayer(ParkManager.getInstance(), player);
-            }
-        }
-    }
-
-    public void logout(CPlayer player) {
-        hideall.remove(player.getUniqueId());
-    }
-
-    public void addToHideAll(CPlayer player) {
-        PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
-        List<UUID> friends = data.getFriendList();
-        hideall.add(player.getUniqueId());
-        for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-            if (friends.contains(tp.getUniqueId()) && tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId() ||
-                    tp.getUniqueId().equals(player.getUniqueId())) {
-                continue;
-            }
-            if (tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+            if (shouldSee(player, tp)) {
+                player.showPlayer(ParkManager.getInstance(), tp);
+            } else {
                 player.hidePlayer(ParkManager.getInstance(), tp);
             }
         }
     }
 
-    public void removeFromHideAll(CPlayer player) {
-        hideall.remove(player.getUniqueId());
-        for (CPlayer tp : Core.getPlayerManager().getOnlinePlayers()) {
-            if (tp.getUniqueId().equals(player.getUniqueId())) {
-                continue;
-            }
-            if (tp.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-                player.showPlayer(ParkManager.getInstance(), tp);
-            }
+    /**
+     * Check if player1 should be able to see player2
+     *
+     * @param player1 the first player
+     * @param player2 the second player
+     * @return if player1 should be able to see player2
+     */
+    private boolean shouldSee(CPlayer player1, CPlayer player2) {
+        if (player1.getUniqueId().equals(player2.getUniqueId())) return false;
+        Setting setting = getSetting(player1);
+        switch (setting) {
+            case ONLY_STAFF_AND_FRIENDS:
+                if (player2.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) return true;
+            case ONLY_FRIENDS:
+                return isFriend(player1, player2);
+            case ALL_HIDDEN:
+                return true;
         }
+        return true;
     }
 
-    public boolean isInHideAll(UUID uuid) {
-        return hideall.contains(uuid);
+    /**
+     * Check if player1 and player2 are friends
+     *
+     * @param player1 the first player
+     * @param player2 the second player
+     * @return if the two players are friends
+     */
+    private boolean isFriend(CPlayer player1, CPlayer player2) {
+        return ((List<UUID>) player1.getRegistry().getEntry("friends")).contains(player2.getUniqueId());
     }
 
-    public void login(CPlayer player) {
-        if (player.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
-            PlayerData data = ParkManager.getInstance().getPlayerData(player.getUniqueId());
-            List<UUID> friends = data.getFriendList();
-            for (UUID uuid : hideall) {
-                if (friends.contains(uuid)) {
-                    continue;
-                }
-                try {
-                    Core.getPlayerManager().getPlayer(uuid).hidePlayer(ParkManager.getInstance(), player);
-                } catch (Exception ignored) {
-                }
+    public boolean toggleVisibility(CPlayer player) {
+        if (player.getRegistry().hasEntry("visibilityDelay") && (System.currentTimeMillis() < ((long) player.getRegistry().getEntry("visibilityDelay")))) {
+            player.sendMessage(ChatColor.RED + "You must wait 5s between changing visibility settings!");
+            return false;
+        }
+        player.getRegistry().addEntry("visibilityDelay", System.currentTimeMillis() + 5000);
+        Setting currentSetting = getSetting(player);
+        if (currentSetting.equals(Setting.ALL_HIDDEN)) {
+            setSetting(player, Setting.ALL_VISIBLE, true);
+        } else {
+            setSetting(player, Setting.ALL_HIDDEN, true);
+        }
+        return true;
+    }
+
+    public Setting getSetting(CPlayer player) {
+        if (!player.getRegistry().hasEntry("visibilitySetting"))
+            player.getRegistry().addEntry("visibilitySetting", Setting.ALL_VISIBLE);
+        return (Setting) player.getRegistry().getEntry("visibilitySetting");
+    }
+
+    public boolean setSetting(CPlayer player, Setting setting, boolean delayBypass) {
+        if (!delayBypass) {
+            if (player.getRegistry().hasEntry("visibilityDelay") && (System.currentTimeMillis() < ((long) player.getRegistry().getEntry("visibilityDelay")))) {
+                player.sendMessage(ChatColor.RED + "You must wait 5s between changing visibility settings!");
+                return false;
+            }
+            player.getRegistry().addEntry("visibilityDelay", System.currentTimeMillis() + 5000);
+        }
+        player.getRegistry().addEntry("visibilitySetting", setting);
+        updatePlayerVisibility(player);
+        return true;
+    }
+
+    public void handleJoin(CPlayer player, String visibility) {
+        setSetting(player, Setting.fromString(visibility), false);
+        Core.getPlayerManager().getOnlinePlayers().stream().filter(p -> !shouldSee(p, player)).forEach(p -> p.hidePlayer(player));
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum Setting {
+        ALL_VISIBLE("Visible", ChatColor.GREEN, Material.STAINED_CLAY, 13),
+        ONLY_STAFF_AND_FRIENDS("Staff & Friends", ChatColor.YELLOW, Material.STAINED_CLAY, 4),
+        ONLY_FRIENDS("Friends", ChatColor.GOLD, Material.STAINED_CLAY, 1),
+        ALL_HIDDEN("Hidden", ChatColor.RED, Material.STAINED_CLAY, 14);
+
+        String text;
+        ChatColor color;
+        Material block;
+        int data;
+
+        public String toString() {
+            switch (this) {
+                case ALL_VISIBLE:
+                    return "all";
+                case ONLY_STAFF_AND_FRIENDS:
+                    return "staff_friends";
+                case ONLY_FRIENDS:
+                    return "friends";
+            }
+            return "none";
+        }
+
+        public static Setting fromString(String visibility) {
+            if (visibility == null) return ALL_VISIBLE;
+            switch (visibility.toLowerCase()) {
+                case "staff_friends":
+                    return ONLY_STAFF_AND_FRIENDS;
+                case "friends":
+                    return ONLY_FRIENDS;
+                case "none":
+                    return ALL_HIDDEN;
+                default:
+                    return ALL_VISIBLE;
             }
         }
     }

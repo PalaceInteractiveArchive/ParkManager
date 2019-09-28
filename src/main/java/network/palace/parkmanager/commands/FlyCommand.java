@@ -4,13 +4,11 @@ import network.palace.core.Core;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
+import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Toggle fly mode", rank = Rank.SPECIALGUEST)
+@CommandMeta(description = "Toggle player flight", rank = Rank.SPECIALGUEST)
 public class FlyCommand extends CoreCommand {
 
     public FlyCommand() {
@@ -18,68 +16,30 @@ public class FlyCommand extends CoreCommand {
     }
 
     @Override
-    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (!(sender instanceof Player)) {
-            if (args.length == 1) {
-                Player player = Bukkit.getPlayer(args[0]);
-                if (player == null) {
-                    sender.sendMessage(ChatColor.RED
-                            + "I can'commands find that player!");
-                    return;
-                }
-                if (player.getAllowFlight()) {
-                    player.setAllowFlight(false);
-                    player.setFlying(false);
-                    player.sendMessage(ChatColor.RED + "You can't fly anymore!");
-                    sender.sendMessage(player.getName() + " can't fly anymore!");
-                    return;
-                }
-                player.setAllowFlight(true);
-                player.sendMessage(ChatColor.GREEN + "You can fly!");
-                sender.sendMessage(player.getName() + " can now fly!");
-                return;
-            }
-            sender.sendMessage(ChatColor.RED + "/fly [Username]");
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {
+        if (args.length < 1 || player.getRank().getRankId() < Rank.TRAINEE.getRankId()) {
+            toggleFlight(player, player);
             return;
         }
-        Player player = (Player) sender;
-        if (args.length == 1) {
-            Rank rank = Core.getPlayerManager().getPlayer(player.getUniqueId()).getRank();
-            if (rank.getRankId() < Rank.MOD.getRankId()) {
-                if (player.getAllowFlight()) {
-                    player.setAllowFlight(false);
-                    player.setFlying(false);
-                    player.sendMessage(ChatColor.RED + "You can't fly anymore!");
-                    return;
-                }
-                player.setAllowFlight(true);
-                player.sendMessage(ChatColor.GREEN + "You can fly!");
-                return;
-            }
-            Player tp = Bukkit.getPlayer(args[0]);
-            if (tp == null) {
-                player.sendMessage(ChatColor.RED + "I can't find that player!");
-                return;
-            }
-            if (tp.getAllowFlight()) {
-                tp.setAllowFlight(false);
-                tp.setFlying(false);
-                tp.sendMessage(ChatColor.RED + "You can't fly anymore!");
-                player.sendMessage(ChatColor.RED + tp.getName() + " can't fly anymore!");
-                return;
-            }
-            tp.setAllowFlight(true);
-            tp.sendMessage(ChatColor.GREEN + "You can fly!");
-            player.sendMessage(ChatColor.GREEN + tp.getName() + " can now fly!");
+        CPlayer target = Core.getPlayerManager().getPlayer(args[0]);
+        if (target == null) {
+            player.sendMessage(ChatColor.RED + "Player not found!");
             return;
         }
-        if (player.getAllowFlight()) {
-            player.setAllowFlight(false);
-            player.setFlying(false);
-            player.sendMessage(ChatColor.RED + "You can't fly anymore!");
-            return;
+        toggleFlight(player, target);
+    }
+
+    private void toggleFlight(CPlayer sender, CPlayer target) {
+        if (target.getAllowFlight()) {
+            target.setAllowFlight(false);
+            target.sendMessage(ChatColor.RED + "You can no longer fly!");
+            if (!sender.getUniqueId().equals(target.getUniqueId()))
+                sender.sendMessage(ChatColor.RED + target.getName() + " can no longer fly!");
+        } else {
+            target.setAllowFlight(true);
+            target.sendMessage(ChatColor.GREEN + "You can now fly!");
+            if (!sender.getUniqueId().equals(target.getUniqueId()))
+                sender.sendMessage(ChatColor.GREEN + target.getName() + " can now fly!");
         }
-        player.setAllowFlight(true);
-        player.sendMessage(ChatColor.GREEN + "You can fly!");
     }
 }

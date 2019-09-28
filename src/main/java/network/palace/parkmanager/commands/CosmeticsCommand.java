@@ -5,10 +5,6 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.cosmetics.Cosmetics;
 
-/**
- * @author Innectic
- * @since 6/23/2017
- */
 public class CosmeticsCommand extends CoreCommand {
 
     public CosmeticsCommand() {
@@ -17,7 +13,6 @@ public class CosmeticsCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        Cosmetics.getInstance().getCosmeticsInventory().open(player);
+        Cosmetics.getInstance().openCosmeticsInventory(player);
     }
-
 }

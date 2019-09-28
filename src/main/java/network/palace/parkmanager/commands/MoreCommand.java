@@ -25,6 +25,6 @@ public class MoreCommand extends CoreCommand {
             return;
         }
         ItemStack stack = pi.getItemInMainHand();
-        stack.setAmount(stack.getMaxStackSize());
+        stack.setAmount(stack.getMaxStackSize() == -1 ? 1 : stack.getMaxStackSize());
     }
 }

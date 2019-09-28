@@ -1,9 +1,12 @@
 package network.palace.parkmanager.outline;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import network.palace.core.Core;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.utils.FileUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,21 +22,21 @@ public class OutlineManager {
     private List<Point> points = new ArrayList<>();
 
     public OutlineManager() {
-        File file = new File("plugins/ParkManager/outline.yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+        FileUtil.FileSubsystem subsystem = ParkManager.getFileUtil().registerSubsystem("outline");
+        try {
+            JsonElement element = subsystem.getFileContents("points");
+            if (element.isJsonArray()) {
+                JsonArray array = element.getAsJsonArray();
+                for (JsonElement entry : array) {
+                    JsonObject object = entry.getAsJsonObject();
+                    points.add(new Point(object.get("name").getAsString(), object.get("x").getAsInt(), object.get("z").getAsInt()));
+                }
+            } else {
+                saveToFile();
             }
-        }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection sec = config.getConfigurationSection("points");
-        if (sec == null) {
-            sec = config.createSection("points");
-        }
-        for (String s : sec.getKeys(false)) {
-            points.add(new Point(s, sec.getInt(s + ".x"), sec.getInt(s + ".z")));
+        } catch (IOException e) {
+            Core.logMessage("OutlineManager", "There was an error loading the OutlineManager config!");
+            e.printStackTrace();
         }
     }
 
@@ -71,19 +74,18 @@ public class OutlineManager {
     }
 
     private void saveToFile() {
-        File file = new File("plugins/ParkManager/outline.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection sec = config.getConfigurationSection("points");
-        if (sec == null) {
-            sec = config.createSection("points");
-        }
+        JsonArray array = new JsonArray();
         for (Point p : getPoints()) {
-            sec.set(p.getName() + ".x", p.getX());
-            sec.set(p.getName() + ".z", p.getZ());
+            JsonObject object = new JsonObject();
+            object.addProperty("name", p.getName());
+            object.addProperty("x", p.getX());
+            object.addProperty("z", p.getZ());
+            array.add(object);
         }
         try {
-            config.save(file);
+            ParkManager.getFileUtil().getSubsystem("outline").writeFileContents("points", array);
         } catch (IOException e) {
+            Core.logMessage("OutlineManager", "There was an error writing to the OutlineManager config!");
             e.printStackTrace();
         }
     }
