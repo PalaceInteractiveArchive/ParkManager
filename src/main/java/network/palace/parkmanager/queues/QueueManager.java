@@ -35,8 +35,12 @@ public class QueueManager {
         Core.runTaskTimer(ParkManager.getInstance(), () -> {
             long currentTime = TimeUtil.getCurrentSecondInMillis();
             queues.forEach(queue -> {
-                queue.tick(currentTime);
-                queue.updateSigns();
+                try {
+                    queue.tick(currentTime);
+                    queue.updateSigns();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
         }, delay, 20L);
     }
