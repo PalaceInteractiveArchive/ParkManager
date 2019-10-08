@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
@@ -49,11 +50,19 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getWhoClicked().getUniqueId());
-        if (player == null
-                || ParkManager.getBuildUtil().isInBuildMode(player)
-                || (event.getClickedInventory() != null && !event.getClickedInventory().equals(player.getInventory()))
-                || !InventoryUtil.isReservedSlot(event.getSlot())) return;
-        event.setCancelled(true);
+        if (player == null) return;
+        InventoryUtil.InventoryState state = ParkManager.getInventoryUtil().getInventoryState(player);
+        if (state.equals(InventoryUtil.InventoryState.BUILD) ||
+                (event.getClickedInventory() != null && !event.getClickedInventory().equals(player.getInventory())))
+            //if player is in build mode or they're clicking on an inventory other than their personal inventory, skip
+            return;
+        if (state.equals(InventoryUtil.InventoryState.RIDE) ||
+                event.getSlotType().equals(InventoryType.SlotType.ARMOR) ||
+                InventoryUtil.isReservedSlot(event.getSlot())) {
+            //if player is in ride mode or is clicking on reserved/armor slots, cancel
+            event.setCancelled(true);
+        }
+        //otherwise (player is in guest mode, clicking on personal inventory slots not reserved), continue
     }
 
     @EventHandler
