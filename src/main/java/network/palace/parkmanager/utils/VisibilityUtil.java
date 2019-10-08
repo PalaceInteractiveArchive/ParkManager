@@ -45,7 +45,7 @@ public class VisibilityUtil {
             case ONLY_FRIENDS:
                 return isFriend(player1, player2);
             case ALL_HIDDEN:
-                return true;
+                return false;
         }
         return true;
     }
