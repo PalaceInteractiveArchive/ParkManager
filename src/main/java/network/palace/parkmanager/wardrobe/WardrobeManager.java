@@ -116,19 +116,19 @@ public class WardrobeManager {
                 Outfit o = getOutfit(i);
                 switch (in) {
                     case 0:
-                        c.setHead(o.getHead());
+                        c.setHead(ItemUtil.unbreakable(o.getHead()));
                         c.setHeadID(i);
                         break;
                     case 1:
-                        c.setShirt(o.getShirt());
+                        c.setShirt(ItemUtil.unbreakable(o.getShirt()));
                         c.setShirtID(i);
                         break;
                     case 2:
-                        c.setPants(o.getPants());
+                        c.setPants(ItemUtil.unbreakable(o.getPants()));
                         c.setPantsID(i);
                         break;
                     case 3:
-                        c.setBoots(o.getBoots());
+                        c.setBoots(ItemUtil.unbreakable(o.getBoots()));
                         c.setBootsID(i);
                         break;
                 }
@@ -163,7 +163,7 @@ public class WardrobeManager {
             case HEAD:
                 if (c.getHeadID() != outfitId) {
                     c.setHeadID(outfitId);
-                    c.setHead(outfit == null ? null : outfit.getHead());
+                    c.setHead(outfit == null ? null : ItemUtil.unbreakable(outfit.getHead()));
                     inv.setHelmet(c.getHead());
                     selected = true;
                 } else if (outfitId != 0) {
@@ -173,7 +173,7 @@ public class WardrobeManager {
             case SHIRT:
                 if (c.getShirtID() != outfitId) {
                     c.setShirtID(outfitId);
-                    c.setShirt(outfit == null ? null : outfit.getShirt());
+                    c.setShirt(outfit == null ? null : ItemUtil.unbreakable(outfit.getShirt()));
                     inv.setChestplate(c.getShirt());
                     selected = true;
                 } else if (outfitId != 0) {
@@ -183,7 +183,7 @@ public class WardrobeManager {
             case PANTS:
                 if (c.getPantsID() != outfitId) {
                     c.setPantsID(outfitId);
-                    c.setPants(outfit == null ? null : outfit.getPants());
+                    c.setPants(outfit == null ? null : ItemUtil.unbreakable(outfit.getPants()));
                     inv.setLeggings(c.getPants());
                     selected = true;
                 } else if (outfitId != 0) {
@@ -193,7 +193,7 @@ public class WardrobeManager {
             case BOOTS:
                 if (c.getBootsID() != outfitId) {
                     c.setBootsID(outfitId);
-                    c.setBoots(outfit == null ? null : outfit.getBoots());
+                    c.setBoots(outfit == null ? null : ItemUtil.unbreakable(outfit.getBoots()));
                     inv.setBoots(c.getBoots());
                     selected = true;
                 } else if (outfitId != 0) {
@@ -231,10 +231,10 @@ public class WardrobeManager {
         c.setPantsID(outfitId);
         c.setBootsID(outfitId);
 
-        c.setHead(outfit == null ? null : outfit.getHead());
-        c.setShirt(outfit == null ? null : outfit.getShirt());
-        c.setPants(outfit == null ? null : outfit.getPants());
-        c.setBoots(outfit == null ? null : outfit.getBoots());
+        c.setHead(outfit == null ? null : ItemUtil.unbreakable(outfit.getHead()));
+        c.setShirt(outfit == null ? null : ItemUtil.unbreakable(outfit.getShirt()));
+        c.setPants(outfit == null ? null : ItemUtil.unbreakable(outfit.getPants()));
+        c.setBoots(outfit == null ? null : ItemUtil.unbreakable(outfit.getBoots()));
 
         inv.setHelmet(c.getHead());
         inv.setChestplate(c.getShirt());
@@ -272,10 +272,10 @@ public class WardrobeManager {
         int i = 0;
         for (Outfit outfit : sublist) {
             boolean owns = purchases.contains(outfit.getId());
-            ItemStack head = outfit.getHead().clone();
-            ItemStack shirt = outfit.getShirt().clone();
-            ItemStack pants = outfit.getPants().clone();
-            ItemStack boots = outfit.getBoots().clone();
+            ItemStack head = ItemUtil.unbreakable(outfit.getHead().clone());
+            ItemStack shirt = ItemUtil.unbreakable(outfit.getShirt().clone());
+            ItemStack pants = ItemUtil.unbreakable(outfit.getPants().clone());
+            ItemStack boots = ItemUtil.unbreakable(outfit.getBoots().clone());
             if (!owns) {
                 ItemMeta hm = head.getItemMeta();
                 hm.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH +

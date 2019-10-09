@@ -2,7 +2,10 @@ package network.palace.parkmanager.storage;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableMap;
 import network.palace.core.Core;
+import network.palace.core.menu.Menu;
+import network.palace.core.menu.MenuButton;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
@@ -15,6 +18,8 @@ import network.palace.parkmanager.utils.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -340,5 +345,67 @@ public class StorageManager {
 
             inventory.setContents(arr);
         }
+    }
+
+    public void buyUpgrade(CPlayer player, Material type) {
+        boolean backpack = type.equals(Material.CHEST);
+        if (!backpack && !type.equals(Material.ENDER_CHEST)) return;
+        new Menu(27, ChatColor.BLUE + "Confirm Upgrade", player, Arrays.asList(
+                new MenuButton(4,
+                        ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Storage Upgrade", Arrays.asList(
+                                ChatColor.YELLOW + "3 rows ➠ 6 rows", ChatColor.GRAY + "Purchase a " + (backpack ? "backpack" : "locker"),
+                                ChatColor.GRAY + "upgrade for " + ChatColor.GREEN + "$250"
+                        ))
+                ),
+                new MenuButton(11,
+                        ItemUtil.create(Material.STAINED_CLAY, ChatColor.GREEN + "Decline", 14),
+                        ImmutableMap.of(ClickType.LEFT, p -> {
+                            p.sendMessage(ChatColor.RED + "Cancelled transaction!");
+                            p.closeInventory();
+                        })
+                ),
+                new MenuButton(15,
+                        ItemUtil.create(Material.STAINED_CLAY, ChatColor.GREEN + "Confirm", 13),
+                        ImmutableMap.of(ClickType.LEFT, p -> {
+                            p.sendMessage(ChatColor.GREEN + "Processing transaction...");
+                            if (p.getBalance() < 250) {
+                                p.sendMessage(ChatColor.RED + "You cannot afford this upgrade!");
+                                p.closeInventory();
+                            } else {
+                                Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
+                                    p.addBalance(-250, (backpack ? "Backpack" : "Locker") + " Upgrade");
+                                    StorageData data = (StorageData) p.getRegistry().getEntry("storageData");
+                                    if (backpack) {
+                                        data.setBackpackSize(StorageSize.LARGE);
+                                    } else {
+                                        data.setLockerSize(StorageSize.LARGE);
+                                    }
+                                    Core.runTask(ParkManager.getInstance(), () -> {
+                                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                                        p.closeInventory();
+                                        p.sendMessage(ChatColor.GREEN + "Successfully processed storage upgrade!");
+                                        Inventory newInv = Bukkit.createInventory(null, StorageSize.LARGE.getSlots(), ChatColor.BLUE + "Your " + (backpack ? "Backpack" : "Locker"));
+                                        newInv.setContents((backpack ? data.getBackpack() : data.getLocker()).getContents());
+                                        StorageData newData = new StorageData(
+                                                backpack ? newInv : data.getBackpack(),
+                                                backpack ? StorageSize.LARGE : data.getBackpackSize(),
+                                                data.getBackpackHash(),
+                                                data.getDbBackpackSize(),
+                                                backpack ? data.getLocker() : newInv,
+                                                backpack ? data.getLockerSize() : StorageSize.LARGE,
+                                                data.getLockerHash(),
+                                                data.getDbLockerSize(),
+                                                data.getBase(),
+                                                data.getBaseHash(),
+                                                data.getBuild(),
+                                                data.getBuildHash()
+                                        );
+                                        p.getRegistry().addEntry("storageData", newData);
+                                    });
+                                });
+                            }
+                        })
+                )
+        )).open();
     }
 }

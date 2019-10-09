@@ -18,6 +18,8 @@ import network.palace.parkmanager.handlers.RideCount;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.handlers.shop.Shop;
+import network.palace.parkmanager.handlers.storage.StorageData;
+import network.palace.parkmanager.handlers.storage.StorageSize;
 import network.palace.parkmanager.queues.Queue;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.apache.commons.lang.WordUtils;
@@ -25,12 +27,14 @@ import org.bson.Document;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
+@SuppressWarnings("DuplicatedCode")
 public class MagicBandManager {
 
     public void openInventory(CPlayer player, BandInventory inventory) {
@@ -45,9 +49,6 @@ public class MagicBandManager {
                 profile.setItemMeta(meta);
 
                 List<MenuButton> buttons = new ArrayList<>(Arrays.asList(
-                        new MenuButton(2, ItemUtil.create(Material.BED, ChatColor.AQUA + "Hotels and Resorts",
-                                Arrays.asList(ChatColor.GREEN + "Visit and rent a room", ChatColor.GREEN + "from a Resort Hotel!")),
-                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.HOTELS))),
                         new MenuButton(4, profile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
                         new MenuButton(10, ItemUtil.create(Material.POTATO_ITEM, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
@@ -82,24 +83,28 @@ public class MagicBandManager {
                                         openInventory(p, BandInventory.MAIN);
                                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 2);
                                     }
-                                }))
+                                })),
+                        new MenuButton(6, ItemUtil.create(Material.CHEST, ChatColor.AQUA + "Storage Upgrade",
+                                Arrays.asList(ChatColor.GREEN + "Expand the space available", ChatColor.GREEN + "in your backpack and locker")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.STORAGE_UPGRADE)))
                 ));
 
                 if (!ParkManager.getResort().equals(Resort.USO)) {
                     ItemStack band = getMagicBandItem(player);
                     meta = band.getItemMeta();
-                    meta.setDisplayName(ChatColor.GREEN + "Customize your MagicBand");
-                    meta.setLore(Arrays.asList("", ChatColor.GRAY + "Choose from a variety of MagicBand",
-                            ChatColor.GRAY + "designs and customize the color",
-                            ChatColor.GRAY + "of the name for your MagicBand!"));
+                    meta.setDisplayName(ChatColor.AQUA + "Customize your MagicBand");
+                    meta.setLore(Arrays.asList("", ChatColor.GREEN + "Choose from a variety of MagicBand",
+                            ChatColor.GREEN + "designs and customize the color",
+                            ChatColor.GREEN + "of the name for your MagicBand!"));
+                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     band.setItemMeta(meta);
-                    buttons.add(new MenuButton(player.getRank().getRankId() < Rank.NOBLE.getRankId() ? 6 : 22, band,
+                    buttons.add(new MenuButton(player.getRank().getRankId() < Rank.NOBLE.getRankId() ? 2 : 22, band,
                             ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.CUSTOMIZE_BAND))));
                 }
 
                 Menu menu = new Menu(27, ChatColor.BLUE + "Your " + (ParkManager.getResort().equals(Resort.USO) ? "Power Pass" : "MagicBand"), player, buttons);
                 if (player.getRank().getRankId() >= Rank.NOBLE.getRankId()) {
-                    menu.setButton(new MenuButton(6, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
+                    menu.setButton(new MenuButton(2, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
                             Arrays.asList(ChatColor.GREEN + "Change the time of day you see", ChatColor.GREEN + "for the park you're currently in!")),
                             ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PLAYER_TIME))));
                 }
@@ -136,7 +141,7 @@ public class MagicBandManager {
                         size = 54;
                         break;
                     }
-                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> {
+                    buttons.add(new MenuButton(i++, ItemUtil.unbreakable(item), ImmutableMap.of(ClickType.LEFT, p -> {
                         p.performCommand("warp " + food.getWarp());
                         p.closeInventory();
                     })));
@@ -201,6 +206,53 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.WAIT_TIMES))),
                         getBackButton(22, BandInventory.MAIN))).open();
                 break;
+            case STORAGE_UPGRADE: {
+                List<MenuButton> buttons = new ArrayList<>();
+                StorageData data = (StorageData) player.getRegistry().getEntry("storageData");
+                if (data.getBackpackSize().equals(StorageSize.SMALL)) {
+                    buttons.add(
+                            new MenuButton(11, ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Expand Backpack",
+                                    Arrays.asList(
+                                            ChatColor.YELLOW + "3 rows ➠ 6 rows", ChatColor.GRAY + "Purchase a backpack",
+                                            ChatColor.GRAY + "upgrade for " + ChatColor.GREEN + "$250"
+                                    )),
+                                    ImmutableMap.of(ClickType.LEFT, p -> ParkManager.getStorageManager().buyUpgrade(p, Material.CHEST)))
+                    );
+                } else {
+                    buttons.add(
+                            new MenuButton(11, ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Expand Backpack",
+                                    Arrays.asList(
+                                            ChatColor.RED + "You already own this!",
+                                            ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "3 rows ➠ 6 rows",
+                                            ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "Purchase a backpack",
+                                            ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "upgrade for $250"
+                                    )))
+                    );
+                }
+                if (data.getLockerSize().equals(StorageSize.SMALL)) {
+                    buttons.add(
+                            new MenuButton(15, ItemUtil.create(Material.ENDER_CHEST, ChatColor.GREEN + "Expand Locker",
+                                    Arrays.asList(
+                                            ChatColor.YELLOW + "3 rows ➠ 6 rows", ChatColor.GRAY + "Purchase a locker",
+                                            ChatColor.GRAY + "upgrade for " + ChatColor.GREEN + "$250"
+                                    )),
+                                    ImmutableMap.of(ClickType.LEFT, p -> ParkManager.getStorageManager().buyUpgrade(p, Material.ENDER_CHEST)))
+                    );
+                } else {
+                    buttons.add(
+                            new MenuButton(15, ItemUtil.create(Material.ENDER_CHEST, ChatColor.GREEN + "Expand Locker",
+                                    Arrays.asList(
+                                            ChatColor.RED + "You already own this!",
+                                            ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "3 rows ➠ 6 rows",
+                                            ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "Purchase a locker",
+                                            ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + "upgrade for $250"
+                                    )))
+                    );
+                }
+                buttons.add(getBackButton(22, BandInventory.MAIN));
+                new Menu(27, ChatColor.BLUE + "Storage Upgrade", player, buttons).open();
+                break;
+            }
             case ATTRACTION_LIST: {
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
@@ -233,7 +285,7 @@ public class MagicBandManager {
                         size = 54;
                         break;
                     }
-                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> {
+                    buttons.add(new MenuButton(i++, ItemUtil.unbreakable(item), ImmutableMap.of(ClickType.LEFT, p -> {
                         p.performCommand("warp " + attraction.getWarp());
                         p.closeInventory();
                     })));
@@ -356,7 +408,7 @@ public class MagicBandManager {
                         size = 54;
                         break;
                     }
-                    buttons.add(new MenuButton(i++, item, ImmutableMap.of(ClickType.LEFT, p -> {
+                    buttons.add(new MenuButton(i++, ItemUtil.unbreakable(item), ImmutableMap.of(ClickType.LEFT, p -> {
                         p.performCommand("warp " + shop.getWarp());
                         p.closeInventory();
                     })));
@@ -371,17 +423,6 @@ public class MagicBandManager {
             }
             case WARDROBE: {
                 ParkManager.getWardrobeManager().openWardrobePage(player, 1);
-                break;
-            }
-            case HOTELS: {
-                new Menu(27, ChatColor.BLUE + "Hotels and Resorts", player, Arrays.asList(
-                        new MenuButton(13, ItemUtil.create(Material.REDSTONE_BLOCK, ChatColor.AQUA + "Pardon Our Pixie Dust!",
-                                Arrays.asList(ChatColor.GRAY + "Resort room renting will be",
-                                        ChatColor.GRAY + "returning soon! In the meantime,",
-                                        ChatColor.GRAY + "you're welcome to visit our",
-                                        ChatColor.GRAY + "resorts at " + ChatColor.AQUA + "/join Resorts!"))),
-                        getBackButton(22, BandInventory.MAIN)
-                )).open();
                 break;
             }
             case PROFILE: {
@@ -461,18 +502,31 @@ public class MagicBandManager {
                         VisibilityUtil.Setting.ALL_HIDDEN.getColor() + VisibilityUtil.Setting.ALL_HIDDEN.getText()
                                 + (setting.equals(VisibilityUtil.Setting.ALL_HIDDEN) ? (ChatColor.YELLOW + " (SELECTED)") : ""),
                         Collections.singletonList(ChatColor.GREEN + "Hide all players"));
+                ItemMeta meta;
                 switch (setting) {
                     case ALL_VISIBLE:
                         visible.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                        meta = visible.getItemMeta();
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        visible.setItemMeta(meta);
                         break;
                     case ONLY_STAFF_AND_FRIENDS:
                         staffFriends.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                        meta = staffFriends.getItemMeta();
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        staffFriends.setItemMeta(meta);
                         break;
                     case ONLY_FRIENDS:
                         friends.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                        meta = friends.getItemMeta();
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        friends.setItemMeta(meta);
                         break;
                     case ALL_HIDDEN:
                         none.addUnsafeEnchantment(Enchantment.LUCK, 1);
+                        meta = none.getItemMeta();
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        none.setItemMeta(meta);
                         break;
                 }
                 List<MenuButton> buttons = Arrays.asList(
@@ -558,15 +612,15 @@ public class MagicBandManager {
                         new MenuButton(15, purple, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PURPLE.getDBName()))),
                         new MenuButton(16, pink, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PINK.getDBName()))),
 
-                        new MenuButton(20, ItemUtil.create(getMaterial(BandType.SORCERER_MICKEY), BandType.SORCERER_MICKEY.getName()),
+                        new MenuButton(20, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.SORCERER_MICKEY), BandType.SORCERER_MICKEY.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.SORCERER_MICKEY.getDBName()))),
-                        new MenuButton(21, ItemUtil.create(getMaterial(BandType.HAUNTED_MANSION), BandType.HAUNTED_MANSION.getName()),
+                        new MenuButton(21, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.HAUNTED_MANSION), BandType.HAUNTED_MANSION.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.HAUNTED_MANSION.getDBName()))),
-                        new MenuButton(22, ItemUtil.create(getMaterial(BandType.PRINCESSES), BandType.PRINCESSES.getName()),
+                        new MenuButton(22, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.PRINCESSES), BandType.PRINCESSES.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PRINCESSES.getDBName()))),
-                        new MenuButton(23, ItemUtil.create(getMaterial(BandType.BIG_HERO_SIX), BandType.BIG_HERO_SIX.getName()),
+                        new MenuButton(23, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.BIG_HERO_SIX), BandType.BIG_HERO_SIX.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.BIG_HERO_SIX.getDBName()))),
-                        new MenuButton(24, ItemUtil.create(getMaterial(BandType.HOLIDAY), BandType.HOLIDAY.getName()),
+                        new MenuButton(24, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.HOLIDAY), BandType.HOLIDAY.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.HOLIDAY.getDBName()))),
                         getBackButton(31, BandInventory.CUSTOMIZE_BAND)
                 );
