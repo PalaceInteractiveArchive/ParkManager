@@ -20,6 +20,7 @@ import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -131,6 +132,8 @@ public class ShopManager {
         for (ShopItem shopItem : shopItems) {
             ItemStack item = shopItem.getItem();
             ItemMeta meta = item.getItemMeta();
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
             meta.setLore(Arrays.asList("", ChatColor.YELLOW + "Cost: " + shopItem.getCurrencyType().getIcon() + shopItem.getCost()));
             item.setItemMeta(meta);
 
@@ -145,7 +148,7 @@ public class ShopManager {
 
         if (divider) {
             ItemStack dividerItem = ItemUtil.create(Material.STAINED_GLASS_PANE, ChatColor.RESET + "");
-            pos = (pos + 9) - (pos % 9);
+            pos = itemSize;
             for (int i = 0; i < 9; i++) {
                 buttons.add(new MenuButton(pos++, dividerItem));
             }
