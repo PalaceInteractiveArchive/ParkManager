@@ -45,7 +45,7 @@ public class PluginQueue extends Queue {
         RideType type = RideType.fromString(rideConfig.get("rideType").getAsString());
         switch (type) {
             case FILE:
-                ride = new FileRide(name, name, groupSize, delay, exit, rideConfig.get("fileName").getAsString(),
+                ride = new FileRide(name, name, groupSize, delay, exit, rideConfig.get("file").getAsString(),
                         currencyType, currencyAmount, honorAmount, achievementId);
                 break;
             case TEACUPS:
