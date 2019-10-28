@@ -10,7 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Set the movement speed of a player", rank = Rank.MOD)
+@CommandMeta(description = "Set the movement speed of a player", rank = Rank.TRAINEEBUILD)
 public class SpeedCommand extends CoreCommand {
 
     public SpeedCommand() {
