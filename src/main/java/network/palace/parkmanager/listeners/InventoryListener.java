@@ -54,7 +54,9 @@ public class InventoryListener implements Listener {
         if (player == null) return;
         InventoryUtil.InventoryState state = ParkManager.getInventoryUtil().getInventoryState(player);
         if (state.equals(InventoryUtil.InventoryState.BUILD) ||
-                (event.getClickedInventory() != null && !event.getClickedInventory().equals(player.getInventory())))
+                (event.getClickedInventory() != null &&
+                        !event.getClickedInventory().equals(player.getInventory()) &&
+                        !event.getClick().equals(ClickType.NUMBER_KEY)))
             //if player is in build mode or they're clicking on an inventory other than their personal inventory, skip
             return;
         if (state.equals(InventoryUtil.InventoryState.RIDE) ||
