@@ -17,6 +17,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -58,8 +59,9 @@ public class InventoryListener implements Listener {
             return;
         if (state.equals(InventoryUtil.InventoryState.RIDE) ||
                 event.getSlotType().equals(InventoryType.SlotType.ARMOR) ||
-                InventoryUtil.isReservedSlot(event.getSlot())) {
-            //if player is in ride mode or is clicking on reserved/armor slots, cancel
+                InventoryUtil.isReservedSlot(event.getSlot()) ||
+                (event.getClick().equals(ClickType.NUMBER_KEY) && InventoryUtil.isReservedSlot(event.getHotbarButton()))) {
+            //if player is in ride mode, or is clicking on reserved/armor slots, or is swapping items to reserved slots, cancel
             event.setCancelled(true);
         }
         //otherwise (player is in guest mode, clicking on personal inventory slots not reserved), continue
