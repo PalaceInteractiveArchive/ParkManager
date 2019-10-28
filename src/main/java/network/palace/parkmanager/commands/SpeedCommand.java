@@ -70,8 +70,8 @@ public class SpeedCommand extends CoreCommand {
             userSpeed = Float.parseFloat(moveSpeed);
             if (userSpeed > 10f) {
                 userSpeed = 10f;
-            } else if (userSpeed < 0.0001f) {
-                userSpeed = 0.0001f;
+            } else if (userSpeed < 0f) {
+                userSpeed = 0f;
             }
         } catch (NumberFormatException e) {
             return 1;
