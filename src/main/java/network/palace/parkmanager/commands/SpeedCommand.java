@@ -41,17 +41,17 @@ public class SpeedCommand extends CoreCommand {
         setSpeed(sender, Core.getPlayerManager().getPlayer(args[1]), args[0]);
     }
 
-    private void setSpeed(CommandSender sender, CPlayer target, String s) {
+    private void setSpeed(CommandSender sender, CPlayer target, String speedString) {
         if (target == null) {
             sender.sendMessage(ChatColor.RED + "Player not found!");
             return;
         }
         boolean isFlying = target.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && target.isFlying();
-        float speed = getMoveSpeed(s);
+        float speed = getMoveSpeed(speedString);
         if (isFlying) {
-            target.setFlySpeed(getRealMoveSpeed(speed, true, target.getRank().getRankId() >= Rank.MOD.getRankId()));
+            target.setFlySpeed(getRealMoveSpeed(speed, true));
         } else {
-            target.setWalkSpeed(getRealMoveSpeed(speed, false, target.getRank().getRankId() >= Rank.MOD.getRankId()));
+            target.setWalkSpeed(getRealMoveSpeed(speed, false));
         }
         sender.sendMessage(ChatColor.GREEN + "Set " +
                 (((sender instanceof Player) && ((Player) sender).getUniqueId().equals(target.getUniqueId())) ? "your" : (target.getName() + "'s"))
@@ -84,15 +84,11 @@ public class SpeedCommand extends CoreCommand {
      *
      * @param userSpeed the 0.0-10.0 float
      * @param isFly     whether this is flight speed
-     * @param isBypass  whether the player can bypass the max of 10.0
      * @return movement speed scaled for Minecraft
      */
-    private float getRealMoveSpeed(final float userSpeed, final boolean isFly, final boolean isBypass) {
+    private float getRealMoveSpeed(float userSpeed, boolean isFly) {
         final float defaultSpeed = isFly ? 0.1f : 0.2f;
         float maxSpeed = 1f;
-        if (!isBypass) {
-            maxSpeed = (float) 10;
-        }
 
         if (userSpeed < 1f) {
             return defaultSpeed * userSpeed;
