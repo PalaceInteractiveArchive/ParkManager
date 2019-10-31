@@ -42,7 +42,8 @@ public enum ShowType {
     //Seasonal
     BITHM(ChatColor.AQUA + "Believe in the Holiday Magic", Material.BLAZE_ROD),
     //Anniversary
-    MCMD(ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST);
+    MCMD(ChatColor.LIGHT_PURPLE + "Dreams", Material.GLOWSTONE_DUST),
+    MAGICAL(ChatColor.AQUA + "Magical!", Material.CONCRETE_POWDER, (byte) 3);
 
     private String name;
     private Material type;
