@@ -11,6 +11,7 @@ import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent;
+import network.palace.parkmanager.handlers.Resort;
 import network.palace.parkmanager.handlers.storage.StorageData;
 import network.palace.parkmanager.handlers.storage.StorageSize;
 import network.palace.parkmanager.utils.HashUtil;
@@ -21,8 +22,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +39,19 @@ public class StorageManager {
     // Map used to store players that need their inventory set after joining
     // Boolean represents build mode
     private HashMap<UUID, Boolean> joinList = new HashMap<>();
+    private final ItemStack backpack;
+
+    public StorageManager() {
+        if (ParkManager.getResort().equals(Resort.WDW)) {
+            backpack = ItemUtil.create(Material.DIAMOND_HOE, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)",47);
+            ItemMeta meta = backpack.getItemMeta();
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            backpack.setItemMeta(meta);
+        } else {
+            backpack = ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)");
+        }
+    }
 
     public void initialize() {
         Core.runTaskTimer(ParkManager.getInstance(), () -> Core.getPlayerManager().getOnlinePlayers().forEach(this::updateCachedInventory), 0L, 1200L);
@@ -233,8 +249,7 @@ public class StorageManager {
         inv.clear();
         ItemStack compass = player.getRank().getRankId() >= Rank.MOD.getRankId() ? ItemUtil.create(Material.COMPASS) : null;
         ItemStack[] contents = new ItemStack[]{
-                compass, null, null, null, null,
-                ItemUtil.create(Material.CHEST, ChatColor.GREEN + "Backpack " + ChatColor.GRAY + "(Right-Click)"),
+                compass, null, null, null, null, backpack,
                 ItemUtil.create(Material.WATCH, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
                         Arrays.asList(ChatColor.GRAY + "Right-Click to open", ChatColor.GRAY + "the Show Timetable")),
                 null, ParkManager.getMagicBandManager().getMagicBandItem(player),
