@@ -19,7 +19,7 @@ import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.packs.PackManager;
 import network.palace.parkmanager.queues.QueueManager;
 import network.palace.parkmanager.shop.ShopManager;
-import network.palace.parkmanager.showschedule.ScheduleManager;
+import network.palace.parkmanager.shows.schedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
 import network.palace.parkmanager.wardrobe.WardrobeManager;
@@ -27,7 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
-@PluginInfo(name = "ParkManager", version = "3.1.4", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager"})
+@PluginInfo(name = "ParkManager", version = "3.1.4", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
 public class ParkManager extends Plugin {
     @Getter private static ParkManager instance;
     @Getter private static AttractionManager attractionManager;
