@@ -106,7 +106,6 @@ public class ParkManager extends Plugin {
         registerCommand(new CosmeticsCommand());
         registerCommand(new DayCommand());
         registerCommand(new DelayCommand());
-        registerCommand(new FlyCommand());
         registerCommand(new FoodCommand());
         registerCommand(new HealCommand());
         registerCommand(new InvSeeCommand());
