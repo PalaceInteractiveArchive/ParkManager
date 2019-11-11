@@ -19,6 +19,7 @@ import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.packs.PackManager;
 import network.palace.parkmanager.queues.QueueManager;
 import network.palace.parkmanager.shop.ShopManager;
+import network.palace.parkmanager.shows.ShowMenu;
 import network.palace.parkmanager.shows.schedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
@@ -27,7 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
-@PluginInfo(name = "ParkManager", version = "3.1.4", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
+@PluginInfo(name = "ParkManager", version = "3.1.5", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
 public class ParkManager extends Plugin {
     @Getter private static ParkManager instance;
     @Getter private static AttractionManager attractionManager;
@@ -48,6 +49,7 @@ public class ParkManager extends Plugin {
     @Getter private static RideCounterUtil rideCounterUtil;
     @Getter private static ScheduleManager scheduleManager;
     @Getter private static ShopManager shopManager;
+    @Getter private static ShowMenu showMenu;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
@@ -77,6 +79,7 @@ public class ParkManager extends Plugin {
         rideCounterUtil = new RideCounterUtil();
         scheduleManager = new ScheduleManager();
         shopManager = new ShopManager();
+        showMenu = new ShowMenu();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();
@@ -127,6 +130,7 @@ public class ParkManager extends Plugin {
         registerCommand(new QueueCommand());
         registerCommand(new ShopCommand());
         registerCommand(new ShowScheduleCommand());
+        registerCommand(new ShowsCommand());
         registerCommand(new SignCommand());
         registerCommand(new SpawnCommand());
         registerCommand(new SpeedCommand());
