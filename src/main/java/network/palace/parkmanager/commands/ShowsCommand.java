@@ -28,41 +28,41 @@ public class ShowsCommand extends CoreCommand {
             return;
         }
         if (player.getRank().equals(Rank.SHAREHOLDER)) {
-            ParkManager.getShowMenu().openShowMenu(player);
+            ParkManager.getShowMenuManager().openShowMenu(player);
             return;
         }
         if (player.getRank().getRankId() < Rank.DEVELOPER.getRankId()) {
-            ParkManager.getShowMenu().openRequestMenu(player);
+            ParkManager.getShowMenuManager().openRequestMenu(player);
             return;
         }
         if (args.length == 1) {
             switch (args[0].toLowerCase()) {
                 case "list": {
-                    ParkManager.getShowMenu().listShows(player);
+                    ParkManager.getShowMenuManager().listShows(player);
                     return;
                 }
                 case "reload": {
                     player.sendMessage(ChatColor.BLUE + "Reloading Shareholder Show Menu...");
-                    ParkManager.getShowMenu().initialize();
+                    ParkManager.getShowMenuManager().initialize();
                     player.sendMessage(ChatColor.BLUE + "Reloaded Shareholder Show Menu!");
                     return;
                 }
                 case "menu": {
-                    ParkManager.getShowMenu().openShowMenu(player);
+                    ParkManager.getShowMenuManager().openShowMenu(player);
                     return;
                 }
                 case "requests": {
-                    ParkManager.getShowMenu().openRequestMenu(player);
+                    ParkManager.getShowMenuManager().openRequestMenu(player);
                     return;
                 }
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-            ShowEntry entry = ParkManager.getShowMenu().getShow(args[1]);
+            ShowEntry entry = ParkManager.getShowMenuManager().getShow(args[1]);
             if (entry == null) {
                 player.sendMessage(ChatColor.RED + "A show isn't in the menu with the file '" + args[1] + "'!");
                 return;
             }
-            if (ParkManager.getShowMenu().removeShow(entry)) {
+            if (ParkManager.getShowMenuManager().removeShow(entry)) {
                 player.sendMessage(ChatColor.GREEN + "Removed the show file '" + args[1] + "' from the Shareholder Show Menu!");
             } else {
                 player.sendMessage(ChatColor.RED + "There was an error removing the show file '" + args[1] + "' from the Shareholder Show Menu!");
@@ -74,7 +74,7 @@ public class ShowsCommand extends CoreCommand {
                 name.append(args[i]).append(" ");
             }
             ShowEntry entry = new ShowEntry(args[1], args[2], ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
-            ParkManager.getShowMenu().addShow(entry);
+            ParkManager.getShowMenuManager().addShow(entry);
             player.sendMessage(ChatColor.GREEN + "Added a new file '" + entry.getShowFile() + "' to the Shareholder Show Menu!");
             return;
         }

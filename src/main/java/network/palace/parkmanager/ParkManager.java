@@ -19,7 +19,7 @@ import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.packs.PackManager;
 import network.palace.parkmanager.queues.QueueManager;
 import network.palace.parkmanager.shop.ShopManager;
-import network.palace.parkmanager.shows.ShowMenu;
+import network.palace.parkmanager.shows.ShowMenuManager;
 import network.palace.parkmanager.shows.schedule.ScheduleManager;
 import network.palace.parkmanager.storage.StorageManager;
 import network.palace.parkmanager.utils.*;
@@ -49,7 +49,7 @@ public class ParkManager extends Plugin {
     @Getter private static RideCounterUtil rideCounterUtil;
     @Getter private static ScheduleManager scheduleManager;
     @Getter private static ShopManager shopManager;
-    @Getter private static ShowMenu showMenu;
+    @Getter private static ShowMenuManager showMenuManager;
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
@@ -79,7 +79,7 @@ public class ParkManager extends Plugin {
         rideCounterUtil = new RideCounterUtil();
         scheduleManager = new ScheduleManager();
         shopManager = new ShopManager();
-        showMenu = new ShowMenu();
+        showMenuManager = new ShowMenuManager();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();

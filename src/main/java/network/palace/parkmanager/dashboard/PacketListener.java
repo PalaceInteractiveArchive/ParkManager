@@ -55,7 +55,7 @@ public class PacketListener implements Listener {
              */
             case 78: {
                 PacketShowRequestResponse packet = new PacketShowRequestResponse().fromJSON(object);
-                ParkManager.getShowMenu().handlePacket(packet);
+                ParkManager.getShowMenuManager().handlePacket(packet);
                 break;
             }
         }

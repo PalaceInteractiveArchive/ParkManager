@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import network.palace.core.Core;
 import network.palace.core.menu.Menu;
 import network.palace.core.menu.MenuButton;
@@ -18,6 +20,7 @@ import network.palace.parkmanager.dashboard.packets.parks.PacketShowRequestRespo
 import network.palace.parkmanager.utils.FileUtil;
 import network.palace.show.Show;
 import network.palace.show.ShowPlugin;
+import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -28,12 +31,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class ShowMenu {
+public class ShowMenuManager {
     private List<ShowEntry> shows = new ArrayList<>();
     private List<ShowRequest> requests = new ArrayList<>();
     private FileUtil.FileSubsystem subsystem;
 
-    public ShowMenu() {
+    public ShowMenuManager() {
         initialize();
     }
 
@@ -198,6 +201,10 @@ public class ShowMenu {
             ShowPlugin.startShow(request.getShow().getShowFile(), new Show(ParkManager.getInstance(), file));
 
             updateLimitsFile(player, request);
+            Core.getMongoHandler().getDatabase().getCollection("players")
+                    .updateOne(Filters.eq("uuid", player.getUniqueId().toString()),
+                            Updates.set("showRequests", new Document("lastShow", request.getShow().getShowFile())
+                                    .append("lastRan", System.currentTimeMillis() / 1000)));
         } else {
             requester.sendMessage(ChatColor.RED + "A staff member has declined your request to run a show. Please try again soon!");
         }
