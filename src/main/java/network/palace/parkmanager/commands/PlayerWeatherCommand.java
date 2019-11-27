@@ -54,11 +54,11 @@ public class PlayerWeatherCommand extends CoreCommand {
         boolean same = (sender instanceof Player) && ((Player) sender).getUniqueId().equals(target.getUniqueId());
         WeatherType type;
         switch (s.toLowerCase()) {
-            case "day": {
+            case "sun": {
                 type = WeatherType.CLEAR;
                 break;
             }
-            case "noon": {
+            case "rain": {
                 type = WeatherType.DOWNFALL;
                 break;
             }
