@@ -9,6 +9,7 @@ import network.palace.core.events.IncomingPacketEvent;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent;
+import network.palace.parkmanager.dashboard.packets.parks.PacketShowRequestResponse;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -47,6 +48,14 @@ public class PacketListener implements Listener {
                 PacketUpdateEconomy packet = new PacketUpdateEconomy().fromJSON(object);
                 UUID uuid = packet.getUniqueId();
 //                ParkManager.getFpKioskManager().updateVoteData(uuid);
+                break;
+            }
+            /**
+             * Shareholder Show Request response
+             */
+            case 78: {
+                PacketShowRequestResponse packet = new PacketShowRequestResponse().fromJSON(object);
+                ParkManager.getShowMenuManager().handlePacket(packet);
                 break;
             }
         }

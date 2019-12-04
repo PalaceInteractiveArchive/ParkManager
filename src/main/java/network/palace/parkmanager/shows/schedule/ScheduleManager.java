@@ -1,4 +1,4 @@
-package network.palace.parkmanager.showschedule;
+package network.palace.parkmanager.shows.schedule;
 
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.Block;

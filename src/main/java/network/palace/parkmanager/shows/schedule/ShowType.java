@@ -1,4 +1,4 @@
-package network.palace.parkmanager.showschedule;
+package network.palace.parkmanager.shows.schedule;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

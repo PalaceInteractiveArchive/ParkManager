@@ -6,7 +6,7 @@
 
     <groupId>network.palace</groupId>
     <artifactId>ParkManager</artifactId>
-    <version>3.1.4</version>
+    <version>3.1.5</version>
     <repositories>
         <repository>
             <id>palace</id>
@@ -56,7 +56,12 @@
         <dependency>
             <groupId>network.palace</groupId>
             <artifactId>Vanish</artifactId>
-            <version>1.1.4</version>
+            <version>1.1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>network.palace</groupId>
+            <artifactId>Show</artifactId>
+            <version>1.4.4</version>
         </dependency>
         <dependency>
             <groupId>network.palace</groupId>
