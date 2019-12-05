@@ -103,6 +103,31 @@ public class PlayerJoinAndLeave implements Listener {
             }
             player.teleport(w);
         }
+
+        player.giveAchievement(0);
+        switch (Core.getServerType()) {
+            case "MK":
+                player.giveAchievement(3);
+                break;
+            case "Epcot":
+                player.giveAchievement(4);
+                break;
+            case "DHS":
+                player.giveAchievement(5);
+                break;
+            case "AK":
+                player.giveAchievement(6);
+                break;
+            case "Typhoon":
+                player.giveAchievement(7);
+                break;
+            case "DCL":
+                player.giveAchievement(8);
+                break;
+            case "USO":
+                player.giveAchievement(21);
+                break;
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
