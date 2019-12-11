@@ -28,7 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
-@PluginInfo(name = "ParkManager", version = "3.1.6", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
+@PluginInfo(name = "ParkManager", version = "3.1.7", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
 public class ParkManager extends Plugin {
     @Getter private static ParkManager instance;
     @Getter private static AttractionManager attractionManager;
@@ -116,7 +116,6 @@ public class ParkManager extends Plugin {
         registerCommand(new KioskCommand());
         registerCommand(new LeaderboardCommand());
         registerCommand(new MoreCommand());
-        registerCommand(new MsgCommand());
         registerCommand(new MuteChatCommand());
         registerCommand(new NightCommand());
         registerCommand(new NightVisionCommand());
