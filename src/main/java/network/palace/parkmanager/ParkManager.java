@@ -28,16 +28,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
-@PluginInfo(name = "ParkManager", version = "3.1.7", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
+@PluginInfo(name = "ParkManager", version = "3.1.7", depend = {"Core", "ProtocolLib", "WorldEdit", "WorldGuard", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show", "MultiWorld"})
 public class ParkManager extends Plugin {
     @Getter private static ParkManager instance;
+    @Getter private static FileUtil fileUtil;
+    @Getter private static ParkUtil parkUtil;
+
     @Getter private static AttractionManager attractionManager;
     @Getter private static AutographManager autographManager;
     @Getter private static BuildUtil buildUtil;
     @Getter private static ConfigUtil configUtil;
     @Getter private static DelayUtil delayUtil;
     @Getter private static FastPassKioskManager fastPassKioskManager;
-    @Getter private static FileUtil fileUtil;
     @Getter private static FoodManager foodManager;
     @Getter private static InventoryUtil inventoryUtil;
     @Getter private static LeaderboardManager leaderboardManager;
@@ -61,6 +63,7 @@ public class ParkManager extends Plugin {
         instance = this;
 
         fileUtil = new FileUtil();
+        parkUtil = new ParkUtil();
 
         attractionManager = new AttractionManager();
         autographManager = new AutographManager();

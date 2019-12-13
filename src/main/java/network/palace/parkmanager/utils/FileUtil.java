@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -21,12 +21,14 @@ import java.util.HashMap;
 public class FileUtil {
     public static final String mainPath = "plugins/ParkManager";
     private HashMap<String, FileSubsystem> subsystems = new HashMap<>();
+    @Getter private FileSubsystem rootSubsystem;
 
     public FileUtil() {
         File pluginDirectory = new File(mainPath);
         if (!pluginDirectory.exists()) {
             pluginDirectory.mkdirs();
         }
+        rootSubsystem = new RootFileSubsystem();
     }
 
     /**
@@ -52,6 +54,7 @@ public class FileUtil {
      * @return FileSubsystem if it exists, null if not
      */
     public FileSubsystem getSubsystem(String name) {
+        if (name.equals("root")) return rootSubsystem;
         return subsystems.get(name);
     }
 
@@ -65,9 +68,12 @@ public class FileUtil {
         return subsystems.containsKey(name);
     }
 
-    @AllArgsConstructor
     public static class FileSubsystem {
         private String name;
+
+        FileSubsystem(String name) {
+            this.name = name;
+        }
 
         public File getDirectory() {
             return new File(mainPath + "/" + name);
@@ -121,7 +127,19 @@ public class FileUtil {
          * @see #getFile(String)
          */
         public void writeFileContents(String name, JsonElement element) throws IOException {
-            Files.write(Paths.get(getFile(name).toURI()), Collections.singletonList(element.toString()), Charset.forName("UTF-8"));
+            Files.write(Paths.get(getFile(name).toURI()), Collections.singletonList(element.toString()), StandardCharsets.UTF_8);
+        }
+    }
+
+    public static class RootFileSubsystem extends FileSubsystem {
+
+        RootFileSubsystem() {
+            super("");
+        }
+
+        @Override
+        public File getDirectory() {
+            return new File(mainPath);
         }
     }
 
