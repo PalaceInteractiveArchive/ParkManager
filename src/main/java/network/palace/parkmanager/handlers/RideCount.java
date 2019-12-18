@@ -9,7 +9,7 @@ import lombok.Setter;
 public class RideCount {
     private final String name;
     private final String server;
-    @Setter private int count = 1;
+    @Setter private int count = 0;
 
     public void addCount(int i) {
         this.count += i;
