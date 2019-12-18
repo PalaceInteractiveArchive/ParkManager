@@ -150,6 +150,7 @@ public class ParkManager extends Plugin {
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
         registerListener(new PlayerTeleport());
+        registerListener(new RideListener());
         registerListener(new SignChange());
     }
 

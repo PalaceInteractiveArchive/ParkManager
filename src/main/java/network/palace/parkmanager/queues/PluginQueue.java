@@ -88,6 +88,9 @@ public class PluginQueue extends Queue {
         stationCountdown = 10;
         atStation.clear();
         atStation.addAll(players);
+        if (getQueueType().equals(QueueType.FILE)) {
+            ((FileRide) ride).spawn(10000);
+        }
     }
 
     @Override
