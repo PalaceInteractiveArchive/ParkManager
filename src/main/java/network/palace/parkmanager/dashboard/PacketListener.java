@@ -3,9 +3,11 @@ package network.palace.parkmanager.dashboard;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import network.palace.core.Core;
+import network.palace.core.dashboard.packets.dashboard.PacketAudioConnect;
 import network.palace.core.dashboard.packets.dashboard.PacketUpdateEconomy;
 import network.palace.core.events.DashboardConnectEvent;
 import network.palace.core.events.IncomingPacketEvent;
+import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent;
@@ -26,6 +28,19 @@ public class PacketListener implements Listener {
         }
         int id = object.get("id").getAsInt();
         switch (id) {
+            /**
+             * Connected to
+             * Audio server
+             */
+            case 51: {
+                PacketAudioConnect packet = new PacketAudioConnect().fromJSON(object);
+                UUID uuid = packet.getUniqueId();
+                CPlayer player = Core.getPlayerManager().getPlayer(uuid);
+                if (player != null) {
+                    player.giveAchievement(16);
+                }
+                break;
+            }
             /**
              * Cross-server Inventory
              */
