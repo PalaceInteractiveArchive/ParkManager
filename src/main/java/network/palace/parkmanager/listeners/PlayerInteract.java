@@ -68,6 +68,7 @@ public class PlayerInteract implements Listener {
             case 6:
                 //open watch menu
                 ParkManager.getMagicBandManager().openInventory(player, BandInventory.TIMETABLE);
+                player.giveAchievement(11);
                 break;
             case 7:
                 //autograph book
@@ -79,6 +80,7 @@ public class PlayerInteract implements Listener {
             case 8:
                 //open magicband
                 ParkManager.getMagicBandManager().openInventory(player, BandInventory.MAIN);
+                player.giveAchievement(2);
                 break;
         }
         if (cancel) event.setCancelled(true);
