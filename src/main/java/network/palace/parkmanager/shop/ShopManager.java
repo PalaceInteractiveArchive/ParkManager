@@ -30,7 +30,6 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class ShopManager {
-    private int nextId = 0;
     private List<Shop> shops = new ArrayList<>();
 
     public ShopManager() {
@@ -39,7 +38,6 @@ public class ShopManager {
 
     public void initialize() {
         shops.clear();
-        nextId = 0;
         FileUtil.FileSubsystem subsystem;
         if (ParkManager.getFileUtil().isSubsystemRegistered("shop")) {
             subsystem = ParkManager.getFileUtil().getSubsystem("shop");
@@ -52,6 +50,12 @@ public class ShopManager {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement entry : array) {
                     JsonObject object = entry.getAsJsonObject();
+                    String id;
+                    if (object.has("id")) {
+                        id = object.get("id").getAsString();
+                    } else {
+                        id = object.get("warp").getAsString().toLowerCase();
+                    }
 
                     JsonArray shopItems = object.getAsJsonArray("items");
                     List<ShopItem> items = new ArrayList<>();
@@ -69,7 +73,7 @@ public class ShopManager {
                         outfits.add(new ShopOutfit(outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
                     }
 
-                    shops.add(new Shop(nextId++, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
+                    shops.add(new Shop(id, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
                             object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items, outfits));
                 }
             }
@@ -85,20 +89,16 @@ public class ShopManager {
         return new ArrayList<>(shops);
     }
 
-    public int getNextId() {
-        return nextId++;
-    }
-
-    public Shop getShop(int id) {
+    public Shop getShopById(String id) {
         for (Shop shop : getShops()) {
-            if (shop.getId() == id) {
+            if (shop.getId().equals(id)) {
                 return shop;
             }
         }
         return null;
     }
 
-    public Shop getShop(String s) {
+    public Shop getShopByName(String s) {
         for (Shop shop : getShops()) {
             if (shop.getName().contains(s)) {
                 return shop;
@@ -112,8 +112,8 @@ public class ShopManager {
         saveToFile();
     }
 
-    public boolean removeShop(int id) {
-        Shop shop = getShop(id);
+    public boolean removeShop(String id) {
+        Shop shop = getShopById(id);
         if (shop == null) return false;
         shops.remove(shop);
         saveToFile();

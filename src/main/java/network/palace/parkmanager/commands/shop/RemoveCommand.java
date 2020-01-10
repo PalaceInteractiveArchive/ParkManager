@@ -4,7 +4,6 @@ import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
-import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.shop.Shop;
 import org.bukkit.ChatColor;
@@ -23,17 +22,12 @@ public class RemoveCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the shop id from /shop list!");
             return;
         }
-        if (!MiscUtil.checkIfInt(args[0])) {
-            player.sendMessage(ChatColor.RED + args[0] + " is not an integer!");
-            return;
-        }
-        int id = Integer.parseInt(args[0]);
-        Shop shop = ParkManager.getShopManager().getShop(id);
+        Shop shop = ParkManager.getShopManager().getShopById(args[0]);
         if (shop == null) {
-            player.sendMessage(ChatColor.RED + "Could not find a shop by id " + id + "!");
+            player.sendMessage(ChatColor.RED + "Could not find a shop by id " + args[0] + "!");
             return;
         }
-        if (ParkManager.getShopManager().removeShop(id)) {
+        if (ParkManager.getShopManager().removeShop(args[0])) {
             player.sendMessage(ChatColor.GREEN + "Successfully removed " + shop.getName() + "!");
         } else {
             player.sendMessage(ChatColor.RED + "There was an error removing " + shop.getName() + "!");

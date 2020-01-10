@@ -219,8 +219,8 @@ public class SignChange implements Listener {
                     player.sendMessage(ChatColor.RED + "'" + event.getLine(1) + "' is not a shop id, it's not an integer!");
                     return;
                 }
-                int id = Integer.parseInt(event.getLine(1));
-                Shop shop = ParkManager.getShopManager().getShop(id);
+                String id = event.getLine(1);
+                Shop shop = ParkManager.getShopManager().getShopById(id);
                 if (shop == null) {
                     player.sendMessage(ChatColor.RED + "Couldn't find a shop with id " + id + "!");
                     return;
@@ -230,7 +230,7 @@ public class SignChange implements Listener {
 
             @Override
             public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
-                Shop shop = ParkManager.getShopManager().getShop(ChatColor.stripColor(s.getLine(1)));
+                Shop shop = ParkManager.getShopManager().getShopByName(ChatColor.stripColor(s.getLine(1)));
                 if (shop == null) {
                     player.sendMessage(ChatColor.RED + "Could not find a shop named " + s.getLine(1) + "!");
                     return;

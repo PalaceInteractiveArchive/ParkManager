@@ -3,8 +3,6 @@ package network.palace.parkmanager.handlers.shop;
 import lombok.Getter;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.outfits.Outfit;
-import network.palace.parkmanager.handlers.shop.ShopItem;
-import network.palace.parkmanager.handlers.shop.ShopOutfit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Comparator;
@@ -13,14 +11,14 @@ import java.util.List;
 @Getter
 public class Shop {
     private int nextItemId;
-    private int id;
+    private String id;
     private String name;
     private String warp;
     private ItemStack item;
     private List<ShopItem> items;
     private List<ShopOutfit> outfits;
 
-    public Shop(int id, String name, String warp, ItemStack item, List<ShopItem> items, List<ShopOutfit> outfits) {
+    public Shop(String id, String name, String warp, ItemStack item, List<ShopItem> items, List<ShopOutfit> outfits) {
         nextItemId = 0;
         this.id = id;
         this.name = name;

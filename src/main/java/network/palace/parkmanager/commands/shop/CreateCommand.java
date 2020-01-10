@@ -22,10 +22,14 @@ public class CreateCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "/shop create [warp] [name]");
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.RED + "/shop create [id] [warp] [name]");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Also, hold the item for the shop in your hand!");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the shop.");
+            return;
+        }
+        if (ParkManager.getShopManager().getShopById(args[0]) != null) {
+            player.sendMessage(ChatColor.RED + "A shop already exists with the id " + args[0] + "!");
             return;
         }
         ItemStack item = player.getItemInMainHand().clone();
@@ -34,7 +38,7 @@ public class CreateCommand extends CoreCommand {
             return;
         }
         StringBuilder name = new StringBuilder();
-        for (int i = 1; i < args.length; i++) {
+        for (int i = 2; i < args.length; i++) {
             name.append(args[i]).append(" ");
         }
         String displayName = ChatColor.translateAlternateColorCodes('&', name.toString().trim());
@@ -44,7 +48,7 @@ public class CreateCommand extends CoreCommand {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getShopManager().addShop(new Shop(ParkManager.getShopManager().getNextId(), displayName, args[0], item, new ArrayList<>(), new ArrayList<>()));
-        player.sendMessage(ChatColor.GREEN + "Created new shop " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
+        ParkManager.getShopManager().addShop(new Shop(args[0], displayName, args[1], item, new ArrayList<>(), new ArrayList<>()));
+        player.sendMessage(ChatColor.GREEN + "Created new shop " + displayName + ChatColor.GREEN + " at /warp " + args[1] + "!");
     }
 }

@@ -27,7 +27,7 @@ public class CreateCommand extends CoreCommand {
             return;
         }
         if (ParkManager.getFoodManager().getFoodLocation(args[0]) != null) {
-            player.sendMessage(ChatColor.RED + "An attraction already exists with the id " + args[0] + "!");
+            player.sendMessage(ChatColor.RED + "A food location already exists with the id " + args[0] + "!");
             return;
         }
         ItemStack item = player.getItemInMainHand().clone();
