@@ -20,10 +20,14 @@ public class CreateCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "/food create [warp] [name]");
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.RED + "/food create [id] [warp] [name]");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Also, hold the item for the food location in your hand!");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the food location.");
+            return;
+        }
+        if (ParkManager.getFoodManager().getFoodLocation(args[0]) != null) {
+            player.sendMessage(ChatColor.RED + "An attraction already exists with the id " + args[0] + "!");
             return;
         }
         ItemStack item = player.getItemInMainHand().clone();
@@ -32,14 +36,14 @@ public class CreateCommand extends CoreCommand {
             return;
         }
         StringBuilder name = new StringBuilder();
-        for (int i = 1; i < args.length; i++) {
+        for (int i = 2; i < args.length; i++) {
             name.append(args[i]).append(" ");
         }
         String displayName = ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', name.toString().trim());
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getFoodManager().addFoodLocation(new FoodLocation(ParkManager.getFoodManager().getNextId(), displayName, args[0], item));
-        player.sendMessage(ChatColor.GREEN + "Created new food location " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
+        ParkManager.getFoodManager().addFoodLocation(new FoodLocation(args[0], displayName, args[1], item));
+        player.sendMessage(ChatColor.GREEN + "Created new food location " + displayName + ChatColor.GREEN + " at /warp " + args[1] + "!");
     }
 }

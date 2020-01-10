@@ -31,6 +31,10 @@ public class CreateCommand extends CoreCommand {
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "For a list of categories, run /attraction categories");
             return;
         }
+        if (ParkManager.getAttractionManager().getAttraction(args[0]) != null) {
+            player.sendMessage(ChatColor.RED + "An attraction already exists with the id " + args[0] + "!");
+            return;
+        }
         ItemStack item = player.getItemInMainHand().clone();
         if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) {
             player.sendMessage(ChatColor.RED + "Hold the item in your hand that will represent the attraction in the menu!");

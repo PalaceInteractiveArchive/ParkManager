@@ -54,7 +54,6 @@ public class AttractionManager {
                     } else {
                         id = object.get("warp").getAsString().toLowerCase();
                     }
-
                     attractions.add(new Attraction(id, object.get("name").getAsString(), object.get("warp").getAsString(),
                             object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
                             ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));

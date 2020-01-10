@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 @Getter
 @AllArgsConstructor
 public class FoodLocation {
-    private int id;
+    private String id;
     private String name;
     private String warp;
     private ItemStack item;

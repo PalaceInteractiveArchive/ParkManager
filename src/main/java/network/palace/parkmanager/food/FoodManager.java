@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FoodManager {
-    private int nextId = 0;
     private List<FoodLocation> foodLocations = new ArrayList<>();
 
     public FoodManager() {
@@ -25,7 +24,6 @@ public class FoodManager {
 
     public void initialize() {
         foodLocations.clear();
-        nextId = 0;
         FileUtil.FileSubsystem subsystem;
         if (ParkManager.getFileUtil().isSubsystemRegistered("food")) {
             subsystem = ParkManager.getFileUtil().getSubsystem("food");
@@ -38,7 +36,13 @@ public class FoodManager {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement entry : array) {
                     JsonObject object = entry.getAsJsonObject();
-                    foodLocations.add(new FoodLocation(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
+                    String id;
+                    if (object.has("id")) {
+                        id = object.get("id").getAsString();
+                    } else {
+                        id = object.get("warp").getAsString().toLowerCase();
+                    }
+                    foodLocations.add(new FoodLocation(id, object.get("name").getAsString(), object.get("warp").getAsString(),
                             ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                 }
             }
@@ -54,13 +58,9 @@ public class FoodManager {
         return new ArrayList<>(foodLocations);
     }
 
-    public int getNextId() {
-        return nextId++;
-    }
-
-    public FoodLocation getFoodLocation(int id) {
+    public FoodLocation getFoodLocation(String id) {
         for (FoodLocation food : getFoodLocations()) {
-            if (food.getId() == id) {
+            if (food.getId().equals(id)) {
                 return food;
             }
         }
@@ -72,7 +72,7 @@ public class FoodManager {
         saveToFile();
     }
 
-    public boolean removeFoodLocation(int id) {
+    public boolean removeFoodLocation(String id) {
         FoodLocation food = getFoodLocation(id);
         if (food == null) return false;
         foodLocations.remove(food);
@@ -85,6 +85,7 @@ public class FoodManager {
         foodLocations.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (FoodLocation food : foodLocations) {
             JsonObject object = new JsonObject();
+            object.addProperty("id", food.getId());
             object.addProperty("name", food.getName());
             object.addProperty("warp", food.getWarp());
             object.add("item", ItemUtil.getJsonFromItemNew(food.getItem()));
