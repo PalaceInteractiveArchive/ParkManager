@@ -2,7 +2,6 @@ package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
-import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.sign.ServerSign;
@@ -106,10 +105,6 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Queue]", new ServerSign.SignHandler() {
             @Override
             public void onSignChange(CPlayer player, SignChangeEvent event) {
-                if (!MiscUtil.checkIfInt(event.getLine(1))) {
-                    player.sendMessage(ChatColor.RED + "'" + event.getLine(1) + "' is not a queue id, it's not an integer!");
-                    return;
-                }
                 String id = event.getLine(1);
                 Queue queue = ParkManager.getQueueManager().getQueueById(id);
                 if (queue == null) {
@@ -215,10 +210,6 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Shop]", new ServerSign.SignHandler() {
             @Override
             public void onSignChange(CPlayer player, SignChangeEvent event) {
-                if (!MiscUtil.checkIfInt(event.getLine(1))) {
-                    player.sendMessage(ChatColor.RED + "'" + event.getLine(1) + "' is not a shop id, it's not an integer!");
-                    return;
-                }
                 String id = event.getLine(1);
                 Shop shop = ParkManager.getShopManager().getShopById(id);
                 if (shop == null) {
