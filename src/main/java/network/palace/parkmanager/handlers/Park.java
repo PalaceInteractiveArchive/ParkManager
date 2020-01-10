@@ -8,7 +8,7 @@ import org.bukkit.World;
 @Getter
 @AllArgsConstructor
 public class Park {
-    private String id;
+    private ParkType id;
     private World world;
     private ProtectedRegion region;
 }

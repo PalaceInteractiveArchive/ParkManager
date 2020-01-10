@@ -9,8 +9,7 @@ import network.palace.core.Core;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.Park;
-import network.palace.parkwarp.ParkWarp;
-import network.palace.parkwarp.handlers.Warp;
+import network.palace.parkmanager.handlers.ParkType;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -22,6 +21,10 @@ public class ParkUtil {
     private List<Park> parks = new ArrayList<>();
 
     public ParkUtil() {
+        initialize();
+    }
+
+    public void initialize() {
         FileUtil.FileSubsystem subsystem = ParkManager.getFileUtil().getRootSubsystem();
         try {
             JsonElement element = subsystem.getFileContents("parks");
@@ -31,8 +34,6 @@ public class ParkUtil {
                     JsonObject object = entry.getAsJsonObject();
 
                     String id = object.get("id").getAsString();
-                    String displayName = object.get("displayName").getAsString();
-                    Warp warp = ParkWarp.getWarpUtil().findWarp(object.get("warp").getAsString());
                     World world = Bukkit.getWorld(object.get("world").getAsString());
 
                     ProtectedRegion region;
@@ -46,7 +47,7 @@ public class ParkUtil {
                         continue;
                     }
 
-                    parks.add(new Park(id, displayName, warp, world, region));
+                    parks.add(new Park(ParkType.fromString(id.toUpperCase()), world, region));
                 }
             }
             saveToFile();
@@ -61,7 +62,7 @@ public class ParkUtil {
         return new ArrayList<>(parks);
     }
 
-    public Park getPark(String id) {
+    public Park getPark(ParkType id) {
         for (Park park : getParks()) {
             if (park.getId().equals(id)) {
                 return park;
@@ -75,7 +76,7 @@ public class ParkUtil {
         saveToFile();
     }
 
-    public boolean removePark(String id) {
+    public boolean removePark(ParkType id) {
         Park park = getPark(id);
         if (park == null) return false;
         parks.remove(park);
@@ -87,9 +88,7 @@ public class ParkUtil {
         JsonArray array = new JsonArray();
         for (Park park : parks) {
             JsonObject object = new JsonObject();
-            object.addProperty("id", park.getId());
-            object.addProperty("displayName", park.getDisplayName());
-            object.addProperty("warp", park.getWarp().getName());
+            object.addProperty("id", park.getId().name());
             object.addProperty("world", park.getWorld().getName());
             object.addProperty("region", park.getRegion().getId());
             array.add(object);

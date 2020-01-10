@@ -1,4 +1,4 @@
-package network.palace.parkmanager.commands.park;
+package network.palace.parkmanager.commands.config.park;
 
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
@@ -6,6 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.Park;
+import network.palace.parkmanager.handlers.ParkType;
 import org.bukkit.ChatColor;
 
 @CommandMeta(description = "Remove an existing park")
@@ -23,12 +24,17 @@ public class RemoveCommand extends CoreCommand {
             return;
         }
         String id = args[0];
-        Park park = ParkManager.getParkUtil().getPark(id);
-        if (park == null) {
-            player.sendMessage(ChatColor.RED + "Could not find a park by id " + id + "!");
+        ParkType type = ParkType.fromString(id);
+        if (type == null) {
+            player.sendMessage(ChatColor.RED + "That isn't a valid park id!");
             return;
         }
-        if (ParkManager.getParkUtil().removePark(id)) {
+        Park park = ParkManager.getParkUtil().getPark(type);
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "A park doesn't exist on this server with the id " + id + "!");
+            return;
+        }
+        if (ParkManager.getParkUtil().removePark(type)) {
             player.sendMessage(ChatColor.GREEN + "Successfully removed " + park.getId() + "!");
         } else {
             player.sendMessage(ChatColor.RED + "There was an error removing " + park.getId() + "!");
