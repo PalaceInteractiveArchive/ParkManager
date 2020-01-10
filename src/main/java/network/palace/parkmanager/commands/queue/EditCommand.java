@@ -25,17 +25,32 @@ public class EditCommand extends CoreCommand {
             helpMenu(player);
             return;
         }
-        if (!MiscUtil.checkIfInt(args[0])) {
-            player.sendMessage(ChatColor.RED + args[0] + " is not an integer!");
-            return;
-        }
-        int id = Integer.parseInt(args[0]);
-        Queue queue = ParkManager.getQueueManager().getQueue(id);
+        Queue queue = ParkManager.getQueueManager().getQueueById(args[0]);
         if (queue == null) {
-            player.sendMessage(ChatColor.RED + "Could not find an queue by id " + id + "!");
+            player.sendMessage(ChatColor.RED + "Could not find an queue by id " + args[0] + "!");
             return;
         }
         switch (args[1].toLowerCase()) {
+            case "id": {
+                if (args.length < 3) {
+                    helpMenu(player);
+                    return;
+                }
+                String newId = args[2];
+                if (ParkManager.getQueueManager().getQueueById(args[2]) != null) {
+                    player.sendMessage(ChatColor.RED + "This id is already used by another queue!");
+                    player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "See current queue ids with: " + ChatColor.YELLOW + "/queue list");
+                    return;
+                }
+
+                player.sendMessage(ChatColor.GREEN + "Set " + queue.getName() + "'s " + ChatColor.GREEN +
+                        "id to " + ChatColor.YELLOW + newId);
+
+                queue.setId(newId);
+
+                ParkManager.getQueueManager().saveToFile();
+                return;
+            }
             case "name": {
                 if (args.length < 3) {
                     helpMenu(player);
@@ -132,6 +147,7 @@ public class EditCommand extends CoreCommand {
     }
 
     private void helpMenu(CPlayer player) {
+        player.sendMessage(ChatColor.RED + "/queue edit [current id] id [new id]");
         player.sendMessage(ChatColor.RED + "/queue edit [id] name [name]");
         player.sendMessage(ChatColor.RED + "/queue edit [id] warp [warp]");
         player.sendMessage(ChatColor.RED + "/queue edit [id] groupsize [groupSize]");

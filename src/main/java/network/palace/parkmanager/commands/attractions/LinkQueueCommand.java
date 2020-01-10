@@ -31,7 +31,7 @@ public class LinkQueueCommand extends CoreCommand {
             return;
         }
         String queueID = args[1];
-        Queue queue = ParkManager.getQueueManager().getQueue(queueID);
+        Queue queue = ParkManager.getQueueManager().getQueueById(queueID);
         if (queue == null) {
             player.sendMessage(ChatColor.RED + "Could not find a queue by id " + queueID + "!");
             return;

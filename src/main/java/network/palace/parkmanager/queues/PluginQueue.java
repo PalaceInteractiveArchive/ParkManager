@@ -34,7 +34,7 @@ public class PluginQueue extends Queue {
     private List<CPlayer> atStation = new ArrayList<>();
     private int stationCountdown = -1;
 
-    public PluginQueue(int id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs,
+    public PluginQueue(String id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs,
                        Location exit, CurrencyType currencyType, int currencyAmount, int honorAmount, int achievementId, JsonObject rideConfig) {
         super(id, uuid, name, warp, groupSize, delay, open, station, signs);
         this.currencyType = currencyType;

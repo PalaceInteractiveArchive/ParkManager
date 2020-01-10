@@ -14,7 +14,7 @@ import java.util.UUID;
 public class BlockQueue extends Queue {
     @Getter @Setter private Location blockLocation;
 
-    public BlockQueue(int id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs, Location blockLocation) {
+    public BlockQueue(String id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs, Location blockLocation) {
         super(id, uuid, name, warp, groupSize, delay, open, station, signs);
         this.blockLocation = blockLocation;
     }
