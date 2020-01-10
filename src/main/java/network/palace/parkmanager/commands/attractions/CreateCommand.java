@@ -24,8 +24,8 @@ public class CreateCommand extends CoreCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        if (args.length < 3) {
-            player.sendMessage(ChatColor.RED + "/attraction create [warp] [category1,category2] [name]");
+        if (args.length < 4) {
+            player.sendMessage(ChatColor.RED + "/attraction create [id] [warp] [category1,category2] [name]");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "Also, hold the item for the attraction in your hand!");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the attraction.");
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "For a list of categories, run /attraction categories");
@@ -37,7 +37,7 @@ public class CreateCommand extends CoreCommand {
             return;
         }
         StringBuilder name = new StringBuilder();
-        for (int i = 2; i < args.length; i++) {
+        for (int i = 3; i < args.length; i++) {
             name.append(args[i]).append(" ");
         }
         String displayName = ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', name.toString().trim());
@@ -46,7 +46,7 @@ public class CreateCommand extends CoreCommand {
         item.setItemMeta(meta);
 
         List<AttractionCategory> categories = new ArrayList<>();
-        for (String s : args[1].split(",")) {
+        for (String s : args[2].split(",")) {
             AttractionCategory category = AttractionCategory.fromString(s);
             if (category == null) {
                 player.sendMessage(ChatColor.RED + "Unknown category '" + s + "'!");
@@ -55,8 +55,8 @@ public class CreateCommand extends CoreCommand {
             categories.add(category);
         }
 
-        ParkManager.getAttractionManager().addAttraction(new Attraction(ParkManager.getAttractionManager().getNextId(),
-                displayName, args[0], "", categories, true, item, null));
-        player.sendMessage(ChatColor.GREEN + "Created new attraction " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
+        ParkManager.getAttractionManager().addAttraction(new Attraction(args[0], displayName, args[1], "",
+                categories, true, item, null));
+        player.sendMessage(ChatColor.GREEN + "Created new attraction " + displayName + ChatColor.GREEN + " at /warp " + args[1] + "!");
     }
 }

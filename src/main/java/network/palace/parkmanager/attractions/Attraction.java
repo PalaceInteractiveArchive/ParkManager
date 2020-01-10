@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 public class Attraction {
-    private int id;
+    private String id;
     @Setter private String name;
     @Setter private String warp;
     @Setter private String description;

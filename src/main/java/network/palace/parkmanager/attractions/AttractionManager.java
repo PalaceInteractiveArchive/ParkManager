@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class AttractionManager {
-    private int nextId = 0;
     private List<Attraction> attractions = new ArrayList<>();
 
     public AttractionManager() {
@@ -27,7 +26,6 @@ public class AttractionManager {
 
     public void initialize() {
         attractions.clear();
-        nextId = 0;
         FileUtil.FileSubsystem subsystem;
         if (ParkManager.getFileUtil().isSubsystemRegistered("attraction")) {
             subsystem = ParkManager.getFileUtil().getSubsystem("attraction");
@@ -50,8 +48,14 @@ public class AttractionManager {
                     } else {
                         linkedQueue = null;
                     }
+                    String id;
+                    if (object.has("id")) {
+                        id = object.get("id").getAsString();
+                    } else {
+                        id = object.get("warp").getAsString().toLowerCase();
+                    }
 
-                    attractions.add(new Attraction(nextId++, object.get("name").getAsString(), object.get("warp").getAsString(),
+                    attractions.add(new Attraction(id, object.get("name").getAsString(), object.get("warp").getAsString(),
                             object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
                             ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));
                 }
@@ -68,13 +72,9 @@ public class AttractionManager {
         return new ArrayList<>(attractions);
     }
 
-    public int getNextId() {
-        return nextId++;
-    }
-
-    public Attraction getAttraction(int id) {
+    public Attraction getAttraction(String id) {
         for (Attraction attraction : getAttractions()) {
-            if (attraction.getId() == id) {
+            if (attraction.getId().equals(id)) {
                 return attraction;
             }
         }
@@ -86,7 +86,7 @@ public class AttractionManager {
         saveToFile();
     }
 
-    public boolean removeAttraction(int id) {
+    public boolean removeAttraction(String id) {
         Attraction attraction = getAttraction(id);
         if (attraction == null) return false;
         attractions.remove(attraction);
@@ -99,6 +99,7 @@ public class AttractionManager {
         attractions.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (Attraction attraction : attractions) {
             JsonObject object = new JsonObject();
+            object.addProperty("id", attraction.getId());
             object.addProperty("name", attraction.getName());
             object.addProperty("warp", attraction.getWarp());
             object.addProperty("description", attraction.getDescription());

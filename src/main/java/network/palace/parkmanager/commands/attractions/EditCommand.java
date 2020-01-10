@@ -4,7 +4,6 @@ import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
-import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.handlers.AttractionCategory;
@@ -29,14 +28,9 @@ public class EditCommand extends CoreCommand {
             helpMenu(player);
             return;
         }
-        if (!MiscUtil.checkIfInt(args[0])) {
-            player.sendMessage(ChatColor.RED + args[0] + " is not an integer!");
-            return;
-        }
-        int id = Integer.parseInt(args[0]);
-        Attraction attraction = ParkManager.getAttractionManager().getAttraction(id);
+        Attraction attraction = ParkManager.getAttractionManager().getAttraction(args[0]);
         if (attraction == null) {
-            player.sendMessage(ChatColor.RED + "Could not find an attraction by id " + id + "!");
+            player.sendMessage(ChatColor.RED + "Could not find an attraction by id " + args[0] + "!");
             return;
         }
         switch (args[1].toLowerCase()) {
