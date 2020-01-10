@@ -12,9 +12,7 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.food.FoodLocation;
-import network.palace.parkmanager.handlers.AttractionCategory;
-import network.palace.parkmanager.handlers.Resort;
-import network.palace.parkmanager.handlers.RideCount;
+import network.palace.parkmanager.handlers.*;
 import network.palace.parkmanager.handlers.magicband.BandType;
 import network.palace.parkmanager.handlers.magicband.MenuType;
 import network.palace.parkmanager.handlers.shop.Shop;
@@ -126,10 +124,12 @@ public class MagicBandManager {
                 break;
             }
             case FOOD: {
+                ParkType currentPark = currentParkOrOpenParkMenu(player);
+                if (currentPark == null) return;
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
                 int size = 18;
-                for (FoodLocation food : ParkManager.getFoodManager().getFoodLocations()) {
+                for (FoodLocation food : ParkManager.getFoodManager().getFoodLocations(currentPark)) {
                     ItemStack item = food.getItem();
                     ItemMeta meta = item.getItemMeta();
                     meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + food.getWarp()));
@@ -728,6 +728,21 @@ public class MagicBandManager {
                 break;
             }
         }
+    }
+
+    /**
+     * Get the park a player is currently in.
+     * If they aren't in a park, open the park selection menu.
+     *
+     * @param player the player
+     * @return a ParkType representing the park they're in, or null if not in a park
+     * @implNote do nothing if the return is null, as this method will open a menu
+     */
+    private ParkType currentParkOrOpenParkMenu(CPlayer player) {
+        Park p = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (p != null) return p.getId();
+        openInventory(player, BandInventory.PARKS);
+        return null;
     }
 
     public void openRideCounterPage(CPlayer player, int page) {

@@ -6,6 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.food.FoodLocation;
+import network.palace.parkmanager.handlers.Park;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,11 @@ public class CreateCommand extends CoreCommand {
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the food location.");
             return;
         }
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
         ItemStack item = player.getItemInMainHand().clone();
         if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) {
             player.sendMessage(ChatColor.RED + "Hold the item in your hand that will represent the food location in the menu!");
@@ -39,7 +45,7 @@ public class CreateCommand extends CoreCommand {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getFoodManager().addFoodLocation(new FoodLocation(ParkManager.getFoodManager().getNextId(), displayName, args[0], item));
+        ParkManager.getFoodManager().addFoodLocation(new FoodLocation(ParkManager.getFoodManager().getNextId(), park.getId(), displayName, args[0], item));
         player.sendMessage(ChatColor.GREEN + "Created new food location " + displayName + ChatColor.GREEN + " at /warp " + args[0] + "!");
     }
 }

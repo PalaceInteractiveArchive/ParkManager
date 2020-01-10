@@ -11,6 +11,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.ParkType;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.io.IOException;
@@ -67,6 +68,14 @@ public class ParkUtil {
             if (park.getId().equals(id)) {
                 return park;
             }
+        }
+        return null;
+    }
+
+    public Park getPark(Location loc) {
+        for (Park park : getParks()) {
+            ProtectedRegion region = park.getRegion();
+            if (region.contains(loc.getBlockX(), region.getMinimumPoint().getBlockY(), loc.getBlockZ())) return park;
         }
         return null;
     }
