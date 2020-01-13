@@ -10,7 +10,6 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.utils.FileUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.io.File;
@@ -53,12 +52,6 @@ public class FoodManager {
                         } else {
                             id = object.get("warp").getAsString().toLowerCase();
                         }
-//                        ParkType park;
-//                        if (!object.has("park")) {
-//                            park = ParkType.MK;
-//                        } else {
-//                            park = ParkType.fromString(object.get("park").getAsString());
-//                        }
                         foodLocations.add(new FoodLocation(id, park.getId(), object.get("name").getAsString(),
                                 object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                     }

@@ -7,6 +7,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
 import network.palace.parkmanager.handlers.AttractionCategory;
+import network.palace.parkmanager.handlers.Park;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +32,12 @@ public class CreateCommand extends CoreCommand {
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "For a list of categories, run /attraction categories");
             return;
         }
-        if (ParkManager.getAttractionManager().getAttraction(args[0]) != null) {
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
+        if (ParkManager.getAttractionManager().getAttraction(args[0], park.getId()) != null) {
             player.sendMessage(ChatColor.RED + "An attraction already exists with the id " + args[0] + "!");
             return;
         }
@@ -59,7 +65,7 @@ public class CreateCommand extends CoreCommand {
             categories.add(category);
         }
 
-        ParkManager.getAttractionManager().addAttraction(new Attraction(args[0], displayName, args[1], "",
+        ParkManager.getAttractionManager().addAttraction(new Attraction(args[0], park.getId(), displayName, args[1], "",
                 categories, true, item, null));
         player.sendMessage(ChatColor.GREEN + "Created new attraction " + displayName + ChatColor.GREEN + " at /warp " + args[1] + "!");
     }

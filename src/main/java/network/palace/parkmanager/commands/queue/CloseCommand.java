@@ -6,6 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.attractions.Attraction;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
 
@@ -23,6 +24,11 @@ public class CloseCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the queue id from /queue list!");
             return;
         }
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
         Queue queue = ParkManager.getQueueManager().getQueueById(args[0]);
         if (queue == null) {
             player.sendMessage(ChatColor.RED + "Could not find a queue by id " + args[0] + "!");
@@ -30,7 +36,7 @@ public class CloseCommand extends CoreCommand {
         }
         queue.setOpen(false);
         boolean attractionUpdate = false;
-        for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
+        for (Attraction attraction : ParkManager.getAttractionManager().getAttractions(park.getId())) {
             if (attraction.getLinkedQueue() == null || !attraction.getLinkedQueue().equals(queue.getUuid())) continue;
             attraction.setOpen(false);
             attractionUpdate = true;

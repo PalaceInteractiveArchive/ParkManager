@@ -254,10 +254,12 @@ public class MagicBandManager {
                 break;
             }
             case ATTRACTION_LIST: {
+                ParkType currentPark = currentParkOrOpenParkMenu(player);
+                if (currentPark == null) return;
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
                 int size = 18;
-                for (Attraction attraction : ParkManager.getAttractionManager().getAttractions()) {
+                for (Attraction attraction : ParkManager.getAttractionManager().getAttractions(currentPark)) {
                     ItemStack item = attraction.getItem();
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore = new ArrayList<>(Collections.singletonList(""));
@@ -745,6 +747,7 @@ public class MagicBandManager {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public void openRideCounterPage(CPlayer player, int page) {
         List<MenuButton> buttons = new ArrayList<>();
         TreeMap<String, RideCount> data = (TreeMap<String, RideCount>) player.getRegistry().getEntry("rideCounterCache");
