@@ -54,7 +54,7 @@ public class AddCommand extends CoreCommand {
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName.toString()));
         item.setItemMeta(meta);
 
-        shop.addItem(new ShopItem(item, cost, CurrencyType.fromString(args[2])));
+        shop.addItem(new ShopItem(shop.nextId(), item, cost, CurrencyType.fromString(args[2])));
         ParkManager.getShopManager().saveToFile();
 
         player.sendMessage(ChatColor.GREEN + "Added a new item to " + shop.getName() + ChatColor.GREEN + " named " + ChatColor.translateAlternateColorCodes('&', displayName.toString()) + "!");
