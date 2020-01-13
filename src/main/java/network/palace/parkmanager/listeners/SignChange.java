@@ -2,7 +2,6 @@ package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
-import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.sign.ServerSign;
@@ -106,12 +105,8 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Queue]", new ServerSign.SignHandler() {
             @Override
             public void onSignChange(CPlayer player, SignChangeEvent event) {
-                if (!MiscUtil.checkIfInt(event.getLine(1))) {
-                    player.sendMessage(ChatColor.RED + "'" + event.getLine(1) + "' is not a queue id, it's not an integer!");
-                    return;
-                }
-                int id = Integer.parseInt(event.getLine(1));
-                Queue queue = ParkManager.getQueueManager().getQueue(id);
+                String id = event.getLine(1);
+                Queue queue = ParkManager.getQueueManager().getQueueById(id);
                 if (queue == null) {
                     player.sendMessage(ChatColor.RED + "Couldn't find a queue with id " + id + "!");
                     return;
@@ -188,7 +183,7 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Wait Times]", new ServerSign.SignHandler() {
             @Override
             public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
-                Queue queue = ParkManager.getQueueManager().getQueue(s.getLine(3));
+                Queue queue = ParkManager.getQueueManager().getQueueByName(s.getLine(3));
                 if (queue == null) return;
                 if (!queue.isOpen()) {
                     player.sendMessage(ChatColor.GREEN + "This queue is currently " + ChatColor.RED + "closed!");
@@ -201,7 +196,7 @@ public class SignChange implements Listener {
 
             @Override
             public void onBreak(CPlayer player, Sign s, BlockBreakEvent event) {
-                Queue queue = ParkManager.getQueueManager().getQueue(s.getLine(3));
+                Queue queue = ParkManager.getQueueManager().getQueueByName(s.getLine(3));
                 if (queue == null) return;
                 if (!player.getMainHand().getType().equals(Material.GOLD_AXE)) {
                     event.setCancelled(true);
@@ -215,12 +210,8 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Shop]", new ServerSign.SignHandler() {
             @Override
             public void onSignChange(CPlayer player, SignChangeEvent event) {
-                if (!MiscUtil.checkIfInt(event.getLine(1))) {
-                    player.sendMessage(ChatColor.RED + "'" + event.getLine(1) + "' is not a shop id, it's not an integer!");
-                    return;
-                }
-                int id = Integer.parseInt(event.getLine(1));
-                Shop shop = ParkManager.getShopManager().getShop(id);
+                String id = event.getLine(1);
+                Shop shop = ParkManager.getShopManager().getShopById(id);
                 if (shop == null) {
                     player.sendMessage(ChatColor.RED + "Couldn't find a shop with id " + id + "!");
                     return;
@@ -230,7 +221,7 @@ public class SignChange implements Listener {
 
             @Override
             public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
-                Shop shop = ParkManager.getShopManager().getShop(ChatColor.stripColor(s.getLine(1)));
+                Shop shop = ParkManager.getShopManager().getShopByName(ChatColor.stripColor(s.getLine(1)));
                 if (shop == null) {
                     player.sendMessage(ChatColor.RED + "Could not find a shop named " + s.getLine(1) + "!");
                     return;

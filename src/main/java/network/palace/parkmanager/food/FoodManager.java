@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FoodManager {
-    private int nextId = 0;
     private List<FoodLocation> foodLocations = new ArrayList<>();
 
     public FoodManager() {
@@ -33,7 +32,6 @@ public class FoodManager {
             file.renameTo(newName);
         }
         foodLocations.clear();
-        nextId = 0;
         FileUtil.FileSubsystem subsystem;
         if (ParkManager.getFileUtil().isSubsystemRegistered("food")) {
             subsystem = ParkManager.getFileUtil().getSubsystem("food");
@@ -46,13 +44,19 @@ public class FoodManager {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement entry : array) {
                     JsonObject object = entry.getAsJsonObject();
+                    String id;
+                    if (object.has("id")) {
+                        id = object.get("id").getAsString();
+                    } else {
+                        id = object.get("warp").getAsString().toLowerCase();
+                    }
                     ParkType park;
                     if (!object.has("park")) {
                         park = ParkType.MK;
                     } else {
                         park = ParkType.fromString(object.get("park").getAsString());
                     }
-                    foodLocations.add(new FoodLocation(nextId++, park, object.get("name").getAsString(),
+                    foodLocations.add(new FoodLocation(id, park, object.get("name").getAsString(),
                             object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                 }
             }
@@ -68,13 +72,9 @@ public class FoodManager {
         return foodLocations.stream().filter(food -> food.getPark().equals(park)).collect(Collectors.toList());
     }
 
-    public int getNextId() {
-        return nextId++;
-    }
-
-    public FoodLocation getFoodLocation(int id, ParkType park) {
+    public FoodLocation getFoodLocation(String id, ParkType park) {
         for (FoodLocation food : getFoodLocations(park)) {
-            if (food.getId() == id) {
+            if (food.getId().equals(id)) {
                 return food;
             }
         }
@@ -86,7 +86,7 @@ public class FoodManager {
         saveToFile();
     }
 
-    public boolean removeFoodLocation(int id, ParkType park) {
+    public boolean removeFoodLocation(String id, ParkType park) {
         FoodLocation food = getFoodLocation(id, park);
         if (food == null) return false;
         foodLocations.remove(food);
@@ -99,6 +99,7 @@ public class FoodManager {
         foodLocations.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (FoodLocation food : foodLocations) {
             JsonObject object = new JsonObject();
+            object.addProperty("id", food.getId());
             object.addProperty("name", food.getName());
             object.addProperty("warp", food.getWarp());
             object.add("item", ItemUtil.getJsonFromItemNew(food.getItem()));

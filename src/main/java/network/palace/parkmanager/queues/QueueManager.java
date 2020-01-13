@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class QueueManager {
-    private int nextId = 0;
     private List<Queue> queues = new ArrayList<>();
 
     public QueueManager() {
@@ -51,7 +50,6 @@ public class QueueManager {
             if (q instanceof PluginQueue) ((PluginQueue) q).getRide().despawn();
         });
         queues.clear();
-        nextId = 0;
         FileUtil.FileSubsystem subsystem;
         if (ParkManager.getFileUtil().isSubsystemRegistered("queue")) {
             subsystem = ParkManager.getFileUtil().getSubsystem("queue");
@@ -60,6 +58,7 @@ public class QueueManager {
         }
         try {
             JsonElement element = subsystem.getFileContents("queues");
+            boolean duplicateIdCheck = false;
             if (element.isJsonArray()) {
                 JsonArray array = element.getAsJsonArray();
                 for (JsonElement entry : array) {
@@ -68,6 +67,7 @@ public class QueueManager {
                     UUID uuid = UUID.fromString(object.get("uuid").getAsString());
                     String name = ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString());
                     QueueType type = QueueType.fromString(object.get("type").getAsString());
+                    if (type == null) continue;
                     Location station = FileUtil.getLocation(object.getAsJsonObject("station"));
                     List<QueueSign> signs = new ArrayList<>();
 
@@ -76,11 +76,17 @@ public class QueueManager {
                         JsonObject signObject = (JsonObject) signElement;
                         signs.add(new QueueSign(FileUtil.getLocation(signObject), name, signObject.has("fastpass") && signObject.get("fastpass").getAsBoolean(), 0));
                     }
-
+                    String id;
+                    if (object.has("id")) {
+                        id = object.get("id").getAsString();
+                    } else {
+                        id = object.get("warp").getAsString().toLowerCase();
+                        duplicateIdCheck = true;
+                    }
                     switch (type) {
                         case BLOCK:
                             Location blockLocation = FileUtil.getLocation(object.getAsJsonObject("block-location"));
-                            queues.add(new BlockQueue(getNextId(), uuid, name, object.get("warp").getAsString(),
+                            queues.add(new BlockQueue(id, uuid, name, object.get("warp").getAsString(),
                                     object.get("group-size").getAsInt(), object.get("delay").getAsInt(),
                                     object.get("open").getAsBoolean(), station, signs, blockLocation));
                             break;
@@ -88,13 +94,28 @@ public class QueueManager {
                         case TEACUPS:
                         case AERIAL_CAROUSEL:
                         case FILE:
-                            queues.add(new PluginQueue(getNextId(), uuid, name, object.get("warp").getAsString(),
+                            queues.add(new PluginQueue(id, uuid, name, object.get("warp").getAsString(),
                                     object.get("group-size").getAsInt(), object.get("delay").getAsInt(),
                                     object.get("open").getAsBoolean(), station, signs,
                                     FileUtil.getLocation(object.getAsJsonObject("exit")), CurrencyType.BALANCE,
                                     object.get("balance").getAsInt(), object.get("honor").getAsInt(),
                                     object.get("achievement").getAsInt(), object.getAsJsonObject("rideConfig")));
                             break;
+                    }
+                }
+            }
+            if (duplicateIdCheck) {
+                for (Queue queue : queues) {
+                    for (Queue search : getQueues()) {
+                        if (queue.getUuid().equals(search.getUuid())) continue;
+                        if (queue.getId().equals(search.getId())) {
+                            int id = 2;
+                            while (getQueueById(search.getId() + id) != null) {
+                                id++;
+                            }
+                            search.setId(search.getId() + id);
+                            break;
+                        }
                     }
                 }
             }
@@ -110,13 +131,9 @@ public class QueueManager {
         return new ArrayList<>(queues);
     }
 
-    public int getNextId() {
-        return nextId++;
-    }
-
-    public Queue getQueue(int id) {
+    public Queue getQueueById(String id) {
         for (Queue queue : getQueues()) {
-            if (queue.getId() == id) {
+            if (queue.getId().equals(id)) {
                 return queue;
             }
         }
@@ -137,8 +154,8 @@ public class QueueManager {
         saveToFile();
     }
 
-    public boolean removeQueue(int id) {
-        Queue queue = getQueue(id);
+    public boolean removeQueue(String id) {
+        Queue queue = getQueueById(id);
         if (queue == null) return false;
         if (queue instanceof PluginQueue) ((PluginQueue) queue).getRide().despawn();
         queues.remove(queue);
@@ -161,7 +178,7 @@ public class QueueManager {
         return null;
     }
 
-    public Queue getQueue(String name) {
+    public Queue getQueueByName(String name) {
         name = ChatColor.stripColor(name);
         for (Queue queue : getQueues()) {
             if (ChatColor.stripColor(queue.getName()).startsWith(name)) return queue;
@@ -174,6 +191,7 @@ public class QueueManager {
         queues.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
         for (Queue queue : queues) {
             JsonObject object = new JsonObject();
+            object.addProperty("id", queue.getId());
             object.addProperty("uuid", queue.getUuid().toString());
             object.addProperty("name", queue.getName().replaceAll(ChatColor.COLOR_CHAR + "", "&"));
             object.addProperty("warp", queue.getWarp());

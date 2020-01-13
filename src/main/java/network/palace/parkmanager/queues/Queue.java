@@ -16,7 +16,7 @@ import java.util.*;
 
 @Getter
 public abstract class Queue {
-    private int id;
+    @Setter protected String id;
     private final UUID uuid;
     @Setter protected String name, warp;
     @Setter protected int groupSize, delay;
@@ -37,7 +37,7 @@ public abstract class Queue {
      */
     private boolean bringInFastPass = false;
 
-    public Queue(int id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs) {
+    public Queue(String id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs) {
         this.id = id;
         this.uuid = uuid;
         this.name = name;

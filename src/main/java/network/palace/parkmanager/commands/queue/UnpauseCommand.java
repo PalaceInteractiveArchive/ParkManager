@@ -3,7 +3,6 @@ package network.palace.parkmanager.commands.queue;
 import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
-import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.queues.Queue;
 import org.bukkit.ChatColor;
@@ -23,14 +22,9 @@ public class UnpauseCommand extends CoreCommand {
             sender.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the queue id from /queue list!");
             return;
         }
-        if (!MiscUtil.checkIfInt(args[0])) {
-            sender.sendMessage(ChatColor.RED + args[0] + " is not an integer!");
-            return;
-        }
-        int id = Integer.parseInt(args[0]);
-        Queue queue = ParkManager.getQueueManager().getQueue(id);
+        Queue queue = ParkManager.getQueueManager().getQueueById(args[0]);
         if (queue == null) {
-            sender.sendMessage(ChatColor.RED + "Could not find a queue by id " + id + "!");
+            sender.sendMessage(ChatColor.RED + "Could not find a queue by id " + args[0] + "!");
             return;
         }
         queue.setPaused(false);

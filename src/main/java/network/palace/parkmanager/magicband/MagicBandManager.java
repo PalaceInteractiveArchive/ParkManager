@@ -747,7 +747,7 @@ public class MagicBandManager {
 
     public void openRideCounterPage(CPlayer player, int page) {
         List<MenuButton> buttons = new ArrayList<>();
-        HashMap<String, RideCount> data = (HashMap<String, RideCount>) player.getRegistry().getEntry("rideCounterCache");
+        TreeMap<String, RideCount> data = (TreeMap<String, RideCount>) player.getRegistry().getEntry("rideCounterCache");
 
         List<RideCount> rides = new ArrayList<>(data.values());
         rides.sort((o1, o2) -> {
@@ -821,7 +821,7 @@ public class MagicBandManager {
         player.getRegistry().addEntry("bandType", bandtype);
         player.getRegistry().addEntry("bandNameColor", namecolor);
         Core.runTaskAsynchronously(() -> {
-            HashMap<String, RideCount> data = new HashMap<>();
+            TreeMap<String, RideCount> data = new TreeMap<>();
             for (Object o : Core.getMongoHandler().getRideCounterData(player.getUniqueId())) {
                 Document d = (Document) o;
                 String name = d.getString("name").trim();

@@ -40,12 +40,16 @@ public class PlayerInteract implements Listener {
             }
         }
 
-        if (player.getRank().getRankId() < Rank.MOD.getRankId() && (action.equals(Action.LEFT_CLICK_BLOCK) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
+        if (player.getRank().getRankId() < Rank.TRAINEEBUILD.getRankId() && (action.equals(Action.LEFT_CLICK_BLOCK) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
             Block clicked = event.getClickedBlock();
             if (clicked != null) {
                 switch (clicked.getType()) {
                     case FLOWER_POT:
                     case ANVIL:
+                    case ENCHANTMENT_TABLE:
+                    case WORKBENCH:
+                    case FURNACE:
+                    case BURNING_FURNACE:
                         event.setCancelled(true);
                         return;
                 }
@@ -68,6 +72,7 @@ public class PlayerInteract implements Listener {
             case 6:
                 //open watch menu
                 ParkManager.getMagicBandManager().openInventory(player, BandInventory.TIMETABLE);
+                player.giveAchievement(11);
                 break;
             case 7:
                 //autograph book
@@ -79,6 +84,7 @@ public class PlayerInteract implements Listener {
             case 8:
                 //open magicband
                 ParkManager.getMagicBandManager().openInventory(player, BandInventory.MAIN);
+                player.giveAchievement(2);
                 break;
         }
         if (cancel) event.setCancelled(true);

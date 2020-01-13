@@ -7,8 +7,8 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.outfits.Outfit;
-import network.palace.parkmanager.handlers.shop.ShopOutfit;
 import network.palace.parkmanager.handlers.shop.Shop;
+import network.palace.parkmanager.handlers.shop.ShopOutfit;
 import org.bukkit.ChatColor;
 
 @CommandMeta(description = "Add a new shop outfit")
@@ -24,10 +24,6 @@ public class AddCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "/shop outfit add [shop id] [outfit id] [cost in tokens]");
             return;
         }
-        if (!MiscUtil.checkIfInt(args[0])) {
-            player.sendMessage(ChatColor.RED + args[0] + " is not an integer!");
-            return;
-        }
         if (!MiscUtil.checkIfInt(args[1])) {
             player.sendMessage(ChatColor.RED + args[1] + " is not an integer!");
             return;
@@ -36,11 +32,9 @@ public class AddCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + args[2] + " is not an integer!");
             return;
         }
-
-        int shopId = Integer.parseInt(args[0]);
-        Shop shop = ParkManager.getShopManager().getShop(shopId);
+        Shop shop = ParkManager.getShopManager().getShopById(args[0]);
         if (shop == null) {
-            player.sendMessage(ChatColor.RED + "Could not find a shop by id " + shopId + "!");
+            player.sendMessage(ChatColor.RED + "Could not find a shop by id " + args[0] + "!");
             return;
         }
 

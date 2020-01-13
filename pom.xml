@@ -6,7 +6,7 @@
 
     <groupId>network.palace</groupId>
     <artifactId>ParkManager</artifactId>
-    <version>3.1.7</version>
+    <version>3.2.1</version>
     <repositories>
         <repository>
             <id>palace</id>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>network.palace</groupId>
             <artifactId>RideManager</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>network.palace</groupId>

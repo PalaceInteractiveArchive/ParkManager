@@ -20,7 +20,7 @@ public class QueueBuilder extends Queue {
     private HashMap<String, Object> queueTypeFields = new HashMap<>();
 
     public QueueBuilder() {
-        super(0, null, null, null, 0, 0, false, null, new ArrayList<>());
+        super(null, null, null, null, 0, 0, false, null, new ArrayList<>());
     }
 
     @Override
@@ -33,6 +33,23 @@ public class QueueBuilder extends Queue {
     }
 
     public void nextStep(CPlayer player, String[] args) {
+        if (id == null) {
+            //Step 0
+            if (args.length < 1) {
+                player.sendMessage(ChatColor.RED + "/queue create [id]");
+                return;
+            }
+            if (ParkManager.getQueueManager().getQueueById(args[0]) != null) {
+                player.sendMessage(ChatColor.RED + "This id is already used by another queue! Try again: " + ChatColor.YELLOW + "/queue create [id]");
+                player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "See current queue ids with: " + ChatColor.YELLOW + "/queue list");
+                return;
+            }
+            this.id = args[0];
+            player.sendMessage(ChatColor.GREEN + "Great! Now, let's give your queue a display name. Run " + ChatColor.YELLOW + "/queue create [name]");
+            player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "This name supports color codes! For example, '&aExample &dQueue' becomes '"
+                    + ChatColor.GREEN + "Example " + ChatColor.LIGHT_PURPLE + "Queue" + ChatColor.DARK_AQUA + "'.");
+            return;
+        }
         if (name == null) {
             //Step 1
             if (args.length < 1) {
@@ -123,6 +140,15 @@ public class QueueBuilder extends Queue {
                 return;
             }
             QueueType type = QueueType.fromString(args[0]);
+            if (type == null) {
+                player.sendMessage(ChatColor.RED + "That isn't a valid queue type!");
+                player.sendMessage(ChatColor.RED + "/queue create [type]");
+                player.sendMessage(ChatColor.GREEN + "The options for type are:");
+                for (QueueType qt : QueueType.values()) {
+                    player.sendMessage(ChatColor.YELLOW + "'" + qt.name().toLowerCase() + "' - " + ChatColor.GREEN + qt.getDescription());
+                }
+                return;
+            }
             this.type = type;
             JsonObject rideConfig = new JsonObject();
             switch (type) {
@@ -320,14 +346,14 @@ public class QueueBuilder extends Queue {
         Queue finalQueue;
         switch (type) {
             case BLOCK:
-                finalQueue = new BlockQueue(ParkManager.getQueueManager().getNextId(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
+                finalQueue = new BlockQueue(this.id, UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
                         this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("blockLocation"));
                 break;
             case CAROUSEL:
             case TEACUPS:
             case AERIAL_CAROUSEL:
             case FILE:
-                finalQueue = new PluginQueue(ParkManager.getQueueManager().getNextId(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
+                finalQueue = new PluginQueue(this.id, UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
                         this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("exit"),
                         CurrencyType.BALANCE, (int) queueTypeFields.get("currencyAmount"), (int) queueTypeFields.get("honorAmount"),
                         (int) queueTypeFields.get("achievementId"), (JsonObject) queueTypeFields.get("rideConfig"));

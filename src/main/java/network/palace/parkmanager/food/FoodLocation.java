@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 @Getter
 @AllArgsConstructor
 public class FoodLocation {
-    private int id;
+    private String id;
     private ParkType park;
     private String name;
     private String warp;

@@ -27,10 +27,6 @@ public class AddCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "/shop item add [shop id] [cost] [balance/tokens] [display name]");
             return;
         }
-        if (!MiscUtil.checkIfInt(args[0])) {
-            player.sendMessage(ChatColor.RED + args[0] + " is not an integer!");
-            return;
-        }
         if (!MiscUtil.checkIfInt(args[1])) {
             player.sendMessage(ChatColor.RED + args[1] + " is not an integer!");
             return;
@@ -40,11 +36,9 @@ public class AddCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "Hold the shop item in your hand!");
             return;
         }
-
-        int shopId = Integer.parseInt(args[0]);
-        Shop shop = ParkManager.getShopManager().getShop(shopId);
+        Shop shop = ParkManager.getShopManager().getShopById(args[0]);
         if (shop == null) {
-            player.sendMessage(ChatColor.RED + "Could not find a shop by id " + shopId + "!");
+            player.sendMessage(ChatColor.RED + "Could not find a shop by id " + args[0] + "!");
             return;
         }
 

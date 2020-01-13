@@ -28,7 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
-@PluginInfo(name = "ParkManager", version = "3.1.7", depend = {"Core", "ProtocolLib", "WorldEdit", "WorldGuard", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show", "MultiWorld"})
+@PluginInfo(name = "ParkManager", version = "3.2.1", depend = {"Core", "ProtocolLib", "WorldEdit", "Cosmetics", "ParkWarp"}, softdepend = {"RideManager", "Show"})
 public class ParkManager extends Plugin {
     @Getter private static ParkManager instance;
     @Getter private static FileUtil fileUtil;
@@ -153,6 +153,7 @@ public class ParkManager extends Plugin {
         registerListener(new PlayerInteract());
         registerListener(new PlayerJoinAndLeave());
         registerListener(new PlayerTeleport());
+        registerListener(new RideListener());
         registerListener(new SignChange());
     }
 

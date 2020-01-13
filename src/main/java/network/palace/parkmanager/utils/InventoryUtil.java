@@ -84,6 +84,7 @@ public class InventoryUtil {
                 break;
             case BUILD: {
                 player.setGamemode(GameMode.CREATIVE);
+                ParkManager.getTimeUtil().unselectWatch(player);
 
                 //Clear inventory and set basic build items
                 inv.setContents(new ItemStack[]{ItemUtil.create(Material.COMPASS), ItemUtil.create(Material.WOOD_AXE)});
