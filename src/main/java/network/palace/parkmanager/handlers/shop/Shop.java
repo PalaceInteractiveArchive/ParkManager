@@ -8,18 +8,17 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Comparator;
 import java.util.List;
 
-@Getter
 public class Shop {
     private int nextItemId;
-    private String id;
-    private String name;
-    private String warp;
-    private ItemStack item;
-    private List<ShopItem> items;
-    private List<ShopOutfit> outfits;
+    @Getter private String id;
+    @Getter private String name;
+    @Getter private String warp;
+    @Getter private ItemStack item;
+    @Getter private List<ShopItem> items;
+    @Getter private List<ShopOutfit> outfits;
 
     public Shop(String id, String name, String warp, ItemStack item, List<ShopItem> items, List<ShopOutfit> outfits) {
-        nextItemId = 0;
+        nextItemId = items.size();
         this.id = id;
         this.name = name;
         this.warp = warp;
@@ -76,5 +75,9 @@ public class Shop {
     public void removeOutfit(int id) {
         ShopOutfit outfit = getOutfit(id);
         if (outfit != null) outfits.remove(outfit);
+    }
+
+    public int nextId() {
+        return nextItemId++;
     }
 }

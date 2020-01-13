@@ -32,6 +32,7 @@ public class ListCommand extends CoreCommand {
         player.sendMessage(ChatColor.GREEN + "Shop Outfits:");
         for (ShopOutfit shopOutfit : shop.getOutfits()) {
             Outfit outfit = ParkManager.getWardrobeManager().getOutfit(shopOutfit.getOutfitId());
+            if (outfit == null) continue;
             player.sendMessage(ChatColor.AQUA + "- [" + shopOutfit.getId() + "] " + ChatColor.YELLOW + outfit.getName() + " " + shopOutfit.getCurrencyType().getIcon() + shopOutfit.getCost());
         }
     }

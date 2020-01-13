@@ -59,18 +59,20 @@ public class ShopManager {
 
                     JsonArray shopItems = object.getAsJsonArray("items");
                     List<ShopItem> items = new ArrayList<>();
+                    int nextId = 0;
                     for (JsonElement itemElement : shopItems) {
                         JsonObject itemObject = (JsonObject) itemElement;
-                        items.add(new ShopItem(ItemUtil.getItemFromJsonNew(itemObject.getAsJsonObject("item").toString()),
+                        items.add(new ShopItem(nextId++, ItemUtil.getItemFromJsonNew(itemObject.getAsJsonObject("item").toString()),
                                 itemObject.get("cost").getAsInt(),
                                 CurrencyType.fromString(itemObject.get("currency").getAsString())));
                     }
 
                     JsonArray shopOutfits = object.getAsJsonArray("outfits");
                     List<ShopOutfit> outfits = new ArrayList<>();
+                    nextId = 0;
                     for (JsonElement outfitElement : shopOutfits) {
                         JsonObject outfitObject = (JsonObject) outfitElement;
-                        outfits.add(new ShopOutfit(outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
+                        outfits.add(new ShopOutfit(nextId++, outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
                     }
 
                     shops.add(new Shop(id, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),

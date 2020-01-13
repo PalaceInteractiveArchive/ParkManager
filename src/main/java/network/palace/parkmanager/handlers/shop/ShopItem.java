@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 public class ShopItem extends ShopEntry {
     @Getter private ItemStack item;
 
-    public ShopItem(ItemStack item, int cost, CurrencyType currencyType) {
-        super(cost, currencyType);
+    public ShopItem(int id, ItemStack item, int cost, CurrencyType currencyType) {
+        super(id, cost, currencyType);
         this.item = item;
     }
 }

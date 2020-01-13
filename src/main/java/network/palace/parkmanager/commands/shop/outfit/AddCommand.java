@@ -51,7 +51,7 @@ public class AddCommand extends CoreCommand {
             return;
         }
 
-        shop.addOutfit(new ShopOutfit(outfitId, cost));
+        shop.addOutfit(new ShopOutfit(shop.nextId(), outfitId, cost));
         ParkManager.getShopManager().saveToFile();
 
         player.sendMessage(ChatColor.GREEN + "Added the " + outfit.getName() + ChatColor.GREEN + " outfit to " + shop.getName() + "!");
