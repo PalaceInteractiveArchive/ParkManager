@@ -23,7 +23,7 @@ public class ListCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
             return;
         }
-        player.sendMessage(ChatColor.GREEN + "Food locations:");
+        player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + park.getId().getTitle() + ChatColor.GREEN + " Food locations:");
         for (FoodLocation food : ParkManager.getFoodManager().getFoodLocations(park.getId())) {
             player.sendMessage(ChatColor.AQUA + "- [" + food.getId() + "] " + ChatColor.YELLOW + food.getName() + ChatColor.GREEN + " at " + ChatColor.YELLOW + "/warp " + food.getWarp());
         }
