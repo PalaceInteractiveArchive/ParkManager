@@ -1,7 +1,6 @@
 package network.palace.parkmanager.shows;
 
 import lombok.Getter;
-import network.palace.core.player.CPlayer;
 
 import java.util.UUID;
 

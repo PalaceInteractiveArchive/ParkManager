@@ -3,8 +3,8 @@ package network.palace.parkmanager.commands;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.commands.config.*;
 import network.palace.parkmanager.commands.config.SpawnCommand;
+import network.palace.parkmanager.commands.config.*;
 
 @CommandMeta(description = "Manage park config settings", rank = Rank.MOD)
 public class ParkConfigCommand extends CoreCommand {
