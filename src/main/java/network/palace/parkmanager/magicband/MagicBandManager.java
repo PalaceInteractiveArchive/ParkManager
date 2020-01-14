@@ -271,7 +271,7 @@ public class MagicBandManager {
                             "", ChatColor.GREEN + "Status: " + (attraction.isOpen() ? "OPEN" : ChatColor.RED + "CLOSED"),
                             "", ChatColor.GREEN + "Categories:"));
                     if (attraction.getLinkedQueue() != null) {
-                        Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
+                        Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue(), currentPark);
                         if (queue != null)
                             lore.addAll(5 + descriptionList.length, Arrays.asList("", ChatColor.GREEN + "Wait: " + ChatColor.YELLOW + queue.getWaitFor(null)));
                     }
@@ -301,10 +301,12 @@ public class MagicBandManager {
                 break;
             }
             case WAIT_TIMES: {
+                ParkType currentPark = currentParkOrOpenParkMenu(player);
+                if (currentPark == null) return;
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
                 int size = 18;
-                for (Queue queue : ParkManager.getQueueManager().getQueues()) {
+                for (Queue queue : ParkManager.getQueueManager().getQueues(currentPark)) {
                     ItemStack item = ItemUtil.create(Material.SIGN);
                     ItemMeta meta = item.getItemMeta();
                     meta.setDisplayName(queue.getName());

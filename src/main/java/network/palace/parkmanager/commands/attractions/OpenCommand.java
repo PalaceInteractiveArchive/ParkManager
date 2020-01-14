@@ -37,7 +37,7 @@ public class OpenCommand extends CoreCommand {
         attraction.setOpen(true);
         boolean queueUpdated = false;
         if (attraction.getLinkedQueue() != null) {
-            Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue());
+            Queue queue = ParkManager.getQueueManager().getQueue(attraction.getLinkedQueue(), park.getId());
             if (queue != null) {
                 queue.setOpen(true);
                 queueUpdated = true;

@@ -6,6 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.QueueType;
 import network.palace.parkmanager.queues.BlockQueue;
 import network.palace.parkmanager.queues.Queue;
@@ -25,7 +26,12 @@ public class EditCommand extends CoreCommand {
             helpMenu(player);
             return;
         }
-        Queue queue = ParkManager.getQueueManager().getQueueById(args[0]);
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
+        Queue queue = ParkManager.getQueueManager().getQueueById(args[0], park.getId());
         if (queue == null) {
             player.sendMessage(ChatColor.RED + "Could not find an queue by id " + args[0] + "!");
             return;
@@ -37,7 +43,7 @@ public class EditCommand extends CoreCommand {
                     return;
                 }
                 String newId = args[2];
-                if (ParkManager.getQueueManager().getQueueById(args[2]) != null) {
+                if (ParkManager.getQueueManager().getQueueById(args[2], park.getId()) != null) {
                     player.sendMessage(ChatColor.RED + "This id is already used by another queue!");
                     player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "See current queue ids with: " + ChatColor.YELLOW + "/queue list");
                     return;

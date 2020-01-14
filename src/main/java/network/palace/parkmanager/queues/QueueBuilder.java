@@ -5,6 +5,7 @@ import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.QueueType;
 import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
@@ -19,8 +20,8 @@ public class QueueBuilder extends Queue {
     private QueueType type = null;
     private HashMap<String, Object> queueTypeFields = new HashMap<>();
 
-    public QueueBuilder() {
-        super(null, null, null, null, 0, 0, false, null, new ArrayList<>());
+    public QueueBuilder(ParkType park) {
+        super(null, park, null, null, null, 0, 0, false, null, new ArrayList<>());
     }
 
     @Override
@@ -39,7 +40,7 @@ public class QueueBuilder extends Queue {
                 player.sendMessage(ChatColor.RED + "/queue create [id]");
                 return;
             }
-            if (ParkManager.getQueueManager().getQueueById(args[0]) != null) {
+            if (ParkManager.getQueueManager().getQueueById(args[0], getPark()) != null) {
                 player.sendMessage(ChatColor.RED + "This id is already used by another queue! Try again: " + ChatColor.YELLOW + "/queue create [id]");
                 player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "See current queue ids with: " + ChatColor.YELLOW + "/queue list");
                 return;
@@ -346,14 +347,14 @@ public class QueueBuilder extends Queue {
         Queue finalQueue;
         switch (type) {
             case BLOCK:
-                finalQueue = new BlockQueue(this.id, UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
+                finalQueue = new BlockQueue(this.id, getPark(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
                         this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("blockLocation"));
                 break;
             case CAROUSEL:
             case TEACUPS:
             case AERIAL_CAROUSEL:
             case FILE:
-                finalQueue = new PluginQueue(this.id, UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
+                finalQueue = new PluginQueue(this.id, getPark(), UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', this.name),
                         this.warp, this.groupSize, this.delay, false, this.station, new ArrayList<>(), (Location) queueTypeFields.get("exit"),
                         CurrencyType.BALANCE, (int) queueTypeFields.get("currencyAmount"), (int) queueTypeFields.get("honorAmount"),
                         (int) queueTypeFields.get("achievementId"), (JsonObject) queueTypeFields.get("rideConfig"));

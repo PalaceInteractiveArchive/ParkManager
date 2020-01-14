@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.QueueType;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,8 +15,8 @@ import java.util.UUID;
 public class BlockQueue extends Queue {
     @Getter @Setter private Location blockLocation;
 
-    public BlockQueue(String id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs, Location blockLocation) {
-        super(id, uuid, name, warp, groupSize, delay, open, station, signs);
+    public BlockQueue(String id, ParkType park, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs, Location blockLocation) {
+        super(id, park, uuid, name, warp, groupSize, delay, open, station, signs);
         this.blockLocation = blockLocation;
     }
 

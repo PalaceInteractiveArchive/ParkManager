@@ -5,6 +5,7 @@ import lombok.Getter;
 import network.palace.core.economy.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.TextUtil;
+import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.QueueType;
 import network.palace.parkmanager.utils.FileUtil;
 import network.palace.ridemanager.RideManager;
@@ -34,9 +35,9 @@ public class PluginQueue extends Queue {
     private List<CPlayer> atStation = new ArrayList<>();
     private int stationCountdown = -1;
 
-    public PluginQueue(String id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs,
+    public PluginQueue(String id, ParkType park, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs,
                        Location exit, CurrencyType currencyType, int currencyAmount, int honorAmount, int achievementId, JsonObject rideConfig) {
-        super(id, uuid, name, warp, groupSize, delay, open, station, signs);
+        super(id, park, uuid, name, warp, groupSize, delay, open, station, signs);
         this.currencyType = currencyType;
         this.currencyAmount = currencyAmount;
         this.honorAmount = honorAmount;

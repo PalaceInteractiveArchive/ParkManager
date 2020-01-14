@@ -5,6 +5,7 @@ import lombok.Setter;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.QueueType;
 import network.palace.parkmanager.utils.TimeUtil;
 import network.palace.parkwarp.ParkWarp;
@@ -17,6 +18,7 @@ import java.util.*;
 @Getter
 public abstract class Queue {
     @Setter protected String id;
+    private ParkType park;
     private final UUID uuid;
     @Setter protected String name, warp;
     @Setter protected int groupSize, delay;
@@ -37,8 +39,9 @@ public abstract class Queue {
      */
     private boolean bringInFastPass = false;
 
-    public Queue(String id, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs) {
+    public Queue(String id, ParkType park, UUID uuid, String name, String warp, int groupSize, int delay, boolean open, Location station, List<QueueSign> signs) {
         this.id = id;
+        this.park = park;
         this.uuid = uuid;
         this.name = name;
         this.warp = warp;

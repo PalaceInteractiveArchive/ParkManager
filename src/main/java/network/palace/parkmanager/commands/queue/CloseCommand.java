@@ -29,7 +29,7 @@ public class CloseCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
             return;
         }
-        Queue queue = ParkManager.getQueueManager().getQueueById(args[0]);
+        Queue queue = ParkManager.getQueueManager().getQueueById(args[0], park.getId());
         if (queue == null) {
             player.sendMessage(ChatColor.RED + "Could not find a queue by id " + args[0] + "!");
             return;

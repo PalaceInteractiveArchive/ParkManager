@@ -56,13 +56,13 @@ public class FoodManager {
                                 object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                     }
                 }
-                saveToFile();
                 Core.logMessage("FoodManager", "Loaded " + foodLocations.size() + " food location" + TextUtil.pluralize(foodLocations.size()) + "!");
             } catch (IOException e) {
                 Core.logMessage("FoodManager", "There was an error loading the FoodManager config!");
                 e.printStackTrace();
             }
         }
+        saveToFile();
     }
 
     public List<FoodLocation> getFoodLocations(ParkType park) {

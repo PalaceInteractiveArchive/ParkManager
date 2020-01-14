@@ -69,13 +69,13 @@ public class AttractionManager {
                                 ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));
                     }
                 }
-                saveToFile();
                 Core.logMessage("AttractionManager", "Loaded " + attractions.size() + " attraction" + TextUtil.pluralize(attractions.size()) + "!");
             } catch (IOException e) {
                 Core.logMessage("AttractionManager", "There was an error loading the AttractionManager config!");
                 e.printStackTrace();
             }
         }
+        saveToFile();
     }
 
     public List<Attraction> getAttractions(ParkType park) {

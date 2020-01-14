@@ -4,6 +4,8 @@ import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
+import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.queues.QueueBuilder;
 import org.bukkit.ChatColor;
 
@@ -25,7 +27,12 @@ public class CreateCommand extends CoreCommand {
             ((QueueBuilder) player.getRegistry().getEntry("queueBuilder")).nextStep(player, args);
             return;
         }
-        QueueBuilder queue = new QueueBuilder();
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
+        QueueBuilder queue = new QueueBuilder(park.getId());
         player.getRegistry().addEntry("queueBuilder", queue);
         player.sendMessage(ChatColor.GREEN + "You've started creating a new queue! We're going to go step-by-step through this. " + ChatColor.YELLOW + "(Exit at any time with /queue create exit)");
         player.sendMessage(ChatColor.GREEN + "First, let's give your queue an id. This id is used to reference this queue in commands. Run " + ChatColor.YELLOW + "/queue create [id]");

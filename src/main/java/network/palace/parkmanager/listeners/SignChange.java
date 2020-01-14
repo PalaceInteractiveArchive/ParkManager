@@ -3,6 +3,7 @@ package network.palace.parkmanager.listeners;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.sign.ServerSign;
 import network.palace.parkmanager.leaderboard.LeaderboardManager;
@@ -105,8 +106,13 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Queue]", new ServerSign.SignHandler() {
             @Override
             public void onSignChange(CPlayer player, SignChangeEvent event) {
+                Park currentPark = ParkManager.getParkUtil().getPark(event.getBlock().getLocation());
+                if (currentPark == null) {
+                    player.sendMessage(ChatColor.RED + "This sign must be made within a park!");
+                    return;
+                }
                 String id = event.getLine(1);
-                Queue queue = ParkManager.getQueueManager().getQueueById(id);
+                Queue queue = ParkManager.getQueueManager().getQueueById(id, currentPark.getId());
                 if (queue == null) {
                     player.sendMessage(ChatColor.RED + "Couldn't find a queue with id " + id + "!");
                     return;
@@ -183,7 +189,12 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Wait Times]", new ServerSign.SignHandler() {
             @Override
             public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
-                Queue queue = ParkManager.getQueueManager().getQueueByName(s.getLine(3));
+                Park currentPark = ParkManager.getParkUtil().getPark(event.getClickedBlock().getLocation());
+                if (currentPark == null) {
+                    player.sendMessage(ChatColor.RED + "This sign must be used within a park!");
+                    return;
+                }
+                Queue queue = ParkManager.getQueueManager().getQueueByName(s.getLine(3), currentPark.getId());
                 if (queue == null) return;
                 if (!queue.isOpen()) {
                     player.sendMessage(ChatColor.GREEN + "This queue is currently " + ChatColor.RED + "closed!");
@@ -196,7 +207,9 @@ public class SignChange implements Listener {
 
             @Override
             public void onBreak(CPlayer player, Sign s, BlockBreakEvent event) {
-                Queue queue = ParkManager.getQueueManager().getQueueByName(s.getLine(3));
+                Park currentPark = ParkManager.getParkUtil().getPark(event.getBlock().getLocation());
+                if (currentPark == null) return;
+                Queue queue = ParkManager.getQueueManager().getQueueByName(s.getLine(3), currentPark.getId());
                 if (queue == null) return;
                 if (!player.getMainHand().getType().equals(Material.GOLD_AXE)) {
                     event.setCancelled(true);
