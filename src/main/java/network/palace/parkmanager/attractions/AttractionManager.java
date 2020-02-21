@@ -69,9 +69,9 @@ public class AttractionManager {
                                 ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));
                     }
                 }
-                Core.logMessage("AttractionManager", "Loaded " + attractions.size() + " attraction" + TextUtil.pluralize(attractions.size()) + "!");
+                Core.logMessage("AttractionManager", "Loaded " + attractions.size() + " attraction" + TextUtil.pluralize(attractions.size()) + " for park " + park.getId().getTitle() + "!");
             } catch (IOException e) {
-                Core.logMessage("AttractionManager", "There was an error loading the AttractionManager config!");
+                Core.logMessage("AttractionManager", "There was an error loading the AttractionManager config for park " + park.getId().getTitle() + "!");
                 e.printStackTrace();
             }
         }

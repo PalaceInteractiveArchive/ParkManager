@@ -5,6 +5,7 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.shop.ShopItem;
 import org.bukkit.ChatColor;
@@ -23,7 +24,12 @@ public class ListCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "/shop item list [shop id]");
             return;
         }
-        Shop shop = ParkManager.getShopManager().getShopById(args[0]);
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
+        Shop shop = ParkManager.getShopManager().getShopById(args[0], park.getId());
         if (shop == null) {
             player.sendMessage(ChatColor.RED + "Could not find a shop by id " + args[0] + "!");
             return;

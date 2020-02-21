@@ -5,6 +5,7 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.shop.Shop;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,7 +29,12 @@ public class CreateCommand extends CoreCommand {
             player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "The name of the item will be changed to the name of the shop.");
             return;
         }
-        if (ParkManager.getShopManager().getShopById(args[0]) != null) {
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
+        if (ParkManager.getShopManager().getShopById(args[0], park.getId()) != null) {
             player.sendMessage(ChatColor.RED + "A shop already exists with the id " + args[0] + "!");
             return;
         }
@@ -48,7 +54,7 @@ public class CreateCommand extends CoreCommand {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
-        ParkManager.getShopManager().addShop(new Shop(args[0], displayName, args[1], item, new ArrayList<>(), new ArrayList<>()));
+        ParkManager.getShopManager().addShop(new Shop(args[0], park.getId(), displayName, args[1], item, new ArrayList<>(), new ArrayList<>()));
         player.sendMessage(ChatColor.GREEN + "Created new shop " + displayName + ChatColor.GREEN + " at /warp " + args[1] + "!");
     }
 }

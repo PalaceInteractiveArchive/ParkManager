@@ -129,9 +129,9 @@ public class QueueManager {
                         }
                     }
                 }
-                Core.logMessage("QueueManager", "Loaded " + queues.size() + " queue" + TextUtil.pluralize(queues.size()) + "!");
+                Core.logMessage("QueueManager", "Loaded " + queues.size() + " queue" + TextUtil.pluralize(queues.size()) + " for park " + park.getId().getTitle() + "!");
             } catch (Exception e) {
-                Core.logMessage("QueueManager", "There was an error loading the QueueManager config!");
+                Core.logMessage("QueueManager", "There was an error loading the QueueManager config for park " + park.getId().getTitle() + "!");
                 e.printStackTrace();
             }
         }

@@ -56,9 +56,9 @@ public class FoodManager {
                                 object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString())));
                     }
                 }
-                Core.logMessage("FoodManager", "Loaded " + foodLocations.size() + " food location" + TextUtil.pluralize(foodLocations.size()) + "!");
+                Core.logMessage("FoodManager", "Loaded " + foodLocations.size() + " food location" + TextUtil.pluralize(foodLocations.size()) + " for park " + park.getId().getTitle() + "!");
             } catch (IOException e) {
-                Core.logMessage("FoodManager", "There was an error loading the FoodManager config!");
+                Core.logMessage("FoodManager", "There was an error loading the FoodManager config for park " + park.getId().getTitle() + "!");
                 e.printStackTrace();
             }
         }

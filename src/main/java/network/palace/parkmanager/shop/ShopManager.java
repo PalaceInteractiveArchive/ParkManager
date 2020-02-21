@@ -12,6 +12,8 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
+import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.outfits.Outfit;
 import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.shop.ShopItem;
@@ -25,8 +27,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class ShopManager {
@@ -44,55 +48,62 @@ public class ShopManager {
         } else {
             subsystem = ParkManager.getFileUtil().registerSubsystem("shop");
         }
-        try {
-            JsonElement element = subsystem.getFileContents("shops");
-            if (element.isJsonArray()) {
-                JsonArray array = element.getAsJsonArray();
-                for (JsonElement entry : array) {
-                    JsonObject object = entry.getAsJsonObject();
-                    String id;
-                    if (object.has("id")) {
-                        id = object.get("id").getAsString();
-                    } else {
-                        id = object.get("warp").getAsString().toLowerCase();
-                    }
-
-                    JsonArray shopItems = object.getAsJsonArray("items");
-                    List<ShopItem> items = new ArrayList<>();
-                    int nextId = 0;
-                    for (JsonElement itemElement : shopItems) {
-                        JsonObject itemObject = (JsonObject) itemElement;
-                        items.add(new ShopItem(nextId++, ItemUtil.getItemFromJsonNew(itemObject.getAsJsonObject("item").toString()),
-                                itemObject.get("cost").getAsInt(),
-                                CurrencyType.fromString(itemObject.get("currency").getAsString())));
-                    }
-
-                    JsonArray shopOutfits = object.getAsJsonArray("outfits");
-                    List<ShopOutfit> outfits = new ArrayList<>();
-                    nextId = 0;
-                    for (JsonElement outfitElement : shopOutfits) {
-                        JsonObject outfitObject = (JsonObject) outfitElement;
-                        outfits.add(new ShopOutfit(nextId++, outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
-                    }
-
-                    shops.add(new Shop(id, ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
-                            object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items, outfits));
-                }
-            }
-            saveToFile();
-            Core.logMessage("ShopManager", "Loaded " + shops.size() + " shop" + TextUtil.pluralize(shops.size()) + "!");
-        } catch (IOException e) {
-            Core.logMessage("ShopManager", "There was an error loading the ShopManager config!");
-            e.printStackTrace();
+        File file = new File("plugins/ParkManager/shop/shops.json");
+        if (file.exists()) {
+            File newName = new File("plugins/ParkManager/shop/epcot.json");
+            file.renameTo(newName);
         }
+        for (Park park : ParkManager.getParkUtil().getParks()) {
+            try {
+                JsonElement element = subsystem.getFileContents(park.getId().name().toLowerCase());
+                if (element.isJsonArray()) {
+                    JsonArray array = element.getAsJsonArray();
+                    for (JsonElement entry : array) {
+                        JsonObject object = entry.getAsJsonObject();
+                        String id;
+                        if (object.has("id")) {
+                            id = object.get("id").getAsString();
+                        } else {
+                            id = object.get("warp").getAsString().toLowerCase();
+                        }
+
+                        JsonArray shopItems = object.getAsJsonArray("items");
+                        List<ShopItem> items = new ArrayList<>();
+                        int nextId = 0;
+                        for (JsonElement itemElement : shopItems) {
+                            JsonObject itemObject = (JsonObject) itemElement;
+                            items.add(new ShopItem(nextId++, ItemUtil.getItemFromJsonNew(itemObject.getAsJsonObject("item").toString()),
+                                    itemObject.get("cost").getAsInt(),
+                                    CurrencyType.fromString(itemObject.get("currency").getAsString())));
+                        }
+
+                        JsonArray shopOutfits = object.getAsJsonArray("outfits");
+                        List<ShopOutfit> outfits = new ArrayList<>();
+                        nextId = 0;
+                        for (JsonElement outfitElement : shopOutfits) {
+                            JsonObject outfitObject = (JsonObject) outfitElement;
+                            outfits.add(new ShopOutfit(nextId++, outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
+                        }
+
+                        shops.add(new Shop(id, park.getId(), ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),
+                                object.get("warp").getAsString(), ItemUtil.getItemFromJsonNew(object.getAsJsonObject("item").toString()), items, outfits));
+                    }
+                }
+                Core.logMessage("ShopManager", "Loaded " + shops.size() + " shop" + TextUtil.pluralize(shops.size()) + " for park " + park.getId().getTitle() + "!");
+            } catch (IOException e) {
+                Core.logMessage("ShopManager", "There was an error loading the ShopManager config for park " + park.getId().getTitle() + "!");
+                e.printStackTrace();
+            }
+        }
+        saveToFile();
     }
 
-    public List<Shop> getShops() {
-        return new ArrayList<>(shops);
+    public List<Shop> getShops(ParkType park) {
+        return shops.stream().filter(shop -> shop.getPark().equals(park)).collect(Collectors.toList());
     }
 
-    public Shop getShopById(String id) {
-        for (Shop shop : getShops()) {
+    public Shop getShopById(String id, ParkType park) {
+        for (Shop shop : getShops(park)) {
             if (shop.getId().equals(id)) {
                 return shop;
             }
@@ -100,8 +111,8 @@ public class ShopManager {
         return null;
     }
 
-    public Shop getShopByName(String s) {
-        for (Shop shop : getShops()) {
+    public Shop getShopByName(String s, ParkType park) {
+        for (Shop shop : getShops(park)) {
             if (shop.getName().contains(s)) {
                 return shop;
             }
@@ -114,8 +125,8 @@ public class ShopManager {
         saveToFile();
     }
 
-    public boolean removeShop(String id) {
-        Shop shop = getShopById(id);
+    public boolean removeShop(String id, ParkType park) {
+        Shop shop = getShopById(id, park);
         if (shop == null) return false;
         shops.remove(shop);
         saveToFile();
@@ -285,40 +296,42 @@ public class ShopManager {
     }
 
     public void saveToFile() {
-        JsonArray array = new JsonArray();
         shops.sort(Comparator.comparing(o -> ChatColor.stripColor(o.getName().toLowerCase())));
-        for (Shop shop : shops) {
-            JsonObject object = new JsonObject();
-            object.addProperty("name", shop.getName());
-            object.addProperty("warp", shop.getWarp());
-            object.add("item", ItemUtil.getJsonFromItemNew(shop.getItem()));
+        for (Park park : ParkManager.getParkUtil().getParks()) {
+            JsonArray array = new JsonArray();
+            shops.stream().filter(shop -> shop.getPark().equals(park.getId())).forEach(shop -> {
+                JsonObject object = new JsonObject();
+                object.addProperty("name", shop.getName());
+                object.addProperty("warp", shop.getWarp());
+                object.add("item", ItemUtil.getJsonFromItemNew(shop.getItem()));
 
-            JsonArray items = new JsonArray();
-            for (ShopItem item : shop.getItems()) {
-                JsonObject shopItem = new JsonObject();
-                shopItem.add("item", ItemUtil.getJsonFromItemNew(item.getItem()));
-                shopItem.addProperty("cost", item.getCost());
-                shopItem.addProperty("currency", item.getCurrencyType().name().toLowerCase());
-                items.add(shopItem);
+                JsonArray items = new JsonArray();
+                for (ShopItem item : shop.getItems()) {
+                    JsonObject shopItem = new JsonObject();
+                    shopItem.add("item", ItemUtil.getJsonFromItemNew(item.getItem()));
+                    shopItem.addProperty("cost", item.getCost());
+                    shopItem.addProperty("currency", item.getCurrencyType().name().toLowerCase());
+                    items.add(shopItem);
+                }
+                object.add("items", items);
+
+                JsonArray outfits = new JsonArray();
+                for (ShopOutfit outfit : shop.getOutfits()) {
+                    JsonObject shopOutfit = new JsonObject();
+                    shopOutfit.addProperty("outfit-id", outfit.getOutfitId());
+                    shopOutfit.addProperty("cost", outfit.getCost());
+                    outfits.add(shopOutfit);
+                }
+                object.add("outfits", outfits);
+
+                array.add(object);
+            });
+            try {
+                ParkManager.getFileUtil().getSubsystem("shop").writeFileContents(park.getId().name().toLowerCase(), array);
+            } catch (IOException e) {
+                Core.logMessage("ShopManager", "There was an error writing to the ShopManager config!");
+                e.printStackTrace();
             }
-            object.add("items", items);
-
-            JsonArray outfits = new JsonArray();
-            for (ShopOutfit outfit : shop.getOutfits()) {
-                JsonObject shopOutfit = new JsonObject();
-                shopOutfit.addProperty("outfit-id", outfit.getOutfitId());
-                shopOutfit.addProperty("cost", outfit.getCost());
-                outfits.add(shopOutfit);
-            }
-            object.add("outfits", outfits);
-
-            array.add(object);
-        }
-        try {
-            ParkManager.getFileUtil().getSubsystem("shop").writeFileContents("shops", array);
-        } catch (IOException e) {
-            Core.logMessage("ShopManager", "There was an error writing to the ShopManager config!");
-            e.printStackTrace();
         }
     }
 }

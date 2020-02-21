@@ -223,8 +223,13 @@ public class SignChange implements Listener {
         ServerSign.registerSign("[Shop]", new ServerSign.SignHandler() {
             @Override
             public void onSignChange(CPlayer player, SignChangeEvent event) {
+                Park currentPark = ParkManager.getParkUtil().getPark(event.getBlock().getLocation());
+                if (currentPark == null) {
+                    player.sendMessage(ChatColor.RED + "This sign must be used within a park!");
+                    return;
+                }
                 String id = event.getLine(1);
-                Shop shop = ParkManager.getShopManager().getShopById(id);
+                Shop shop = ParkManager.getShopManager().getShopById(id, currentPark.getId());
                 if (shop == null) {
                     player.sendMessage(ChatColor.RED + "Couldn't find a shop with id " + id + "!");
                     return;
@@ -234,7 +239,12 @@ public class SignChange implements Listener {
 
             @Override
             public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
-                Shop shop = ParkManager.getShopManager().getShopByName(ChatColor.stripColor(s.getLine(1)));
+                Park currentPark = ParkManager.getParkUtil().getPark(event.getClickedBlock().getLocation());
+                if (currentPark == null) {
+                    player.sendMessage(ChatColor.RED + "This sign must be used within a park!");
+                    return;
+                }
+                Shop shop = ParkManager.getShopManager().getShopByName(ChatColor.stripColor(s.getLine(1)), currentPark.getId());
                 if (shop == null) {
                     player.sendMessage(ChatColor.RED + "Could not find a shop named " + s.getLine(1) + "!");
                     return;

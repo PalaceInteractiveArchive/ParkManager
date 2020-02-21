@@ -108,5 +108,12 @@ public class ParkUtil {
             Core.logMessage("ParkUtil", "There was an error writing to parks.json!");
             e.printStackTrace();
         }
+        try {
+            ParkManager.getAttractionManager().initialize();
+            ParkManager.getFoodManager().initialize();
+            ParkManager.getQueueManager().initialize();
+            ParkManager.getShopManager().initialize();
+        } catch (NullPointerException ignored) {
+        }
     }
 }

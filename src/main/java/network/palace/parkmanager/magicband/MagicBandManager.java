@@ -59,13 +59,7 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.ATTRACTION_MENU))),
                         new MenuButton(13, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Park Menu",
                                 Arrays.asList(ChatColor.GREEN + "Travel to all of our", ChatColor.GREEN + "available theme parks!")),
-                                ImmutableMap.of(ClickType.LEFT, p -> {
-                                    if (ParkManager.getResort().equals(Resort.WDW)) {
-                                        openInventory(p, BandInventory.PARKS_WDW);
-                                    } else {
-                                        openInventory(p, BandInventory.PARKS);
-                                    }
-                                })),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PARKS))),
                         new MenuButton(14, ItemUtil.create(Material.GOLD_BOOTS, ChatColor.AQUA + "Shop",
                                 Arrays.asList(ChatColor.GREEN + "Purchase souveniers and", ChatColor.GREEN + "all kinds of collectibles!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SHOP))),
@@ -337,48 +331,29 @@ public class MagicBandManager {
             }
             case PARKS: {
                 List<MenuButton> buttons = Arrays.asList(
-                        new MenuButton(10, ItemUtil.create(Material.MAP, ChatColor.AQUA + "Universal Orlando Resort", Collections.singletonList(ChatColor.GREEN + "/warp USO")),
+                        new MenuButton(4, ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Walt Disney World Resort", Collections.singletonList(ChatColor.GREEN + "/warp WDW")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
-                                    p.performCommand("warp uso");
+                                    p.performCommand("warp wdw");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(13, ItemUtil.create(Material.MAP, ChatColor.AQUA + "Walt Disney World Resort", Collections.singletonList(ChatColor.GREEN + "/warp WDW")),
-                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(player, BandInventory.PARKS_WDW))),
-                        new MenuButton(16, ItemUtil.create(Material.SNOW_BALL, ChatColor.AQUA + "Seasonal", Collections.singletonList(ChatColor.GREEN + "/warp Seasonal")),
-                                ImmutableMap.of(ClickType.LEFT, p -> {
-                                    p.performCommand("warp seasonal");
-                                    p.closeInventory();
-                                })),
-                        getBackButton(22, BandInventory.MAIN)
-                );
-                new Menu(27, ChatColor.BLUE + "Park Menu", player, buttons).open();
-                break;
-            }
-            case PARKS_WDW: {
-                List<MenuButton> buttons = Arrays.asList(
-                        new MenuButton(10, ItemUtil.create(Material.DIAMOND_HOE, ChatColor.AQUA + "Magic Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp MK")),
+                        new MenuButton(11, ItemUtil.create(Material.DIAMOND_HOE, ChatColor.AQUA + "Magic Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp MK")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp mk");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(11, ItemUtil.create(Material.SNOW_BALL, ChatColor.AQUA + "Epcot", Collections.singletonList(ChatColor.GREEN + "/warp Epcot")),
+                        new MenuButton(12, ItemUtil.create(Material.SNOW_BALL, ChatColor.AQUA + "Epcot", Collections.singletonList(ChatColor.GREEN + "/warp Epcot")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp epcot");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(12, ItemUtil.create(Material.JUKEBOX, ChatColor.AQUA + "Disney's Hollywood Studios", Collections.singletonList(ChatColor.GREEN + "/warp DHS")),
+                        new MenuButton(13, ItemUtil.create(Material.JUKEBOX, ChatColor.AQUA + "Disney's Hollywood Studios", Collections.singletonList(ChatColor.GREEN + "/warp DHS")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp dhs");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(13, ItemUtil.create(Material.SAPLING, ChatColor.AQUA + "Disney's Animal Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp AK")),
+                        new MenuButton(14, ItemUtil.create(Material.SAPLING, 1, 5, ChatColor.AQUA + "Animal Kingdom", Collections.singletonList(ChatColor.GREEN + "/warp AK")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp ak");
-                                    p.closeInventory();
-                                })),
-                        new MenuButton(14, ItemUtil.create(Material.BED, ChatColor.AQUA + "Resorts", Collections.singletonList(ChatColor.GREEN + "/warp Resorts")),
-                                ImmutableMap.of(ClickType.LEFT, p -> {
-                                    p.performCommand("warp resorts");
                                     p.closeInventory();
                                 })),
                         new MenuButton(15, ItemUtil.create(Material.WATER_BUCKET, ChatColor.AQUA + "Typhoon Lagoon", Collections.singletonList(ChatColor.GREEN + "/warp Typhoon")),
@@ -386,21 +361,43 @@ public class MagicBandManager {
                                     p.performCommand("warp typhoon");
                                     p.closeInventory();
                                 })),
-                        new MenuButton(16, ItemUtil.create(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line", Collections.singletonList(ChatColor.GREEN + "/warp DCL")),
+                        new MenuButton(28, ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Seasonal", Collections.singletonList(ChatColor.GREEN + "/warp Seasonal")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.performCommand("warp seasonal");
+                                    p.closeInventory();
+                                })),
+                        new MenuButton(31, ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Universal Orlando Resort", Collections.singletonList(ChatColor.GREEN + "/warp UOR")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.performCommand("warp uso");
+                                    p.closeInventory();
+                                })),
+                        new MenuButton(34, ItemUtil.create(Material.BOAT, ChatColor.AQUA + "Disney Cruise Line", Collections.singletonList(ChatColor.GREEN + "/warp DCL")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     p.performCommand("warp dcl");
                                     p.closeInventory();
                                 })),
-                        getBackButton(22, BandInventory.PARKS)
+                        new MenuButton(39, ItemUtil.create(Material.JUKEBOX, ChatColor.AQUA + "Universal Studios Florida", Collections.singletonList(ChatColor.GREEN + "/warp USF")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.performCommand("warp usf");
+                                    p.closeInventory();
+                                })),
+                        new MenuButton(41, ItemUtil.create(Material.JUKEBOX, ChatColor.AQUA + "Islands of Adventure", Collections.singletonList(ChatColor.GREEN + "/warp IOA")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.performCommand("warp ioa");
+                                    p.closeInventory();
+                                })),
+                        getBackButton(49, BandInventory.MAIN)
                 );
-                new Menu(27, ChatColor.BLUE + "Park Menu - WDW", player, buttons).open();
+                new Menu(54, ChatColor.BLUE + "Park Menu", player, buttons).open();
                 break;
             }
             case SHOP: {
+                ParkType currentPark = currentParkOrOpenParkMenu(player);
+                if (currentPark == null) return;
                 List<MenuButton> buttons = new ArrayList<>();
                 int i = 0;
                 int size = 18;
-                for (Shop shop : ParkManager.getShopManager().getShops()) {
+                for (Shop shop : ParkManager.getShopManager().getShops(currentPark)) {
                     ItemStack item = shop.getItem();
                     ItemMeta meta = item.getItemMeta();
                     meta.setLore(Arrays.asList("", ChatColor.YELLOW + "/warp " + shop.getWarp()));

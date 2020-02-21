@@ -6,6 +6,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.shop.ShopItem;
 import org.bukkit.ChatColor;
@@ -24,11 +25,16 @@ public class RemoveCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "Get the shop item id from /shop item list [shop id]!");
             return;
         }
+        Park park = ParkManager.getParkUtil().getPark(player.getLocation());
+        if (park == null) {
+            player.sendMessage(ChatColor.RED + "You must be inside a park when running this command!");
+            return;
+        }
         if (!MiscUtil.checkIfInt(args[1])) {
             player.sendMessage(ChatColor.RED + args[1] + " is not an integer!");
             return;
         }
-        Shop shop = ParkManager.getShopManager().getShopById(args[0]);
+        Shop shop = ParkManager.getShopManager().getShopById(args[0], park.getId());
         if (shop == null) {
             player.sendMessage(ChatColor.RED + "Could not find a shop by id " + args[0] + "!");
             return;

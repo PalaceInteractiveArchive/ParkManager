@@ -2,6 +2,7 @@ package network.palace.parkmanager.handlers.shop;
 
 import lombok.Getter;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.outfits.Outfit;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,15 +12,17 @@ import java.util.List;
 public class Shop {
     private int nextItemId;
     @Getter private String id;
+    @Getter private ParkType park;
     @Getter private String name;
     @Getter private String warp;
     @Getter private ItemStack item;
     @Getter private List<ShopItem> items;
     @Getter private List<ShopOutfit> outfits;
 
-    public Shop(String id, String name, String warp, ItemStack item, List<ShopItem> items, List<ShopOutfit> outfits) {
+    public Shop(String id, ParkType park, String name, String warp, ItemStack item, List<ShopItem> items, List<ShopOutfit> outfits) {
         nextItemId = items.size();
         this.id = id;
+        this.park = park;
         this.name = name;
         this.warp = warp;
         this.item = item;

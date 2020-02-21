@@ -5,8 +5,6 @@ public enum BandInventory {
     MAIN, FOOD, SHOWS, ATTRACTION_MENU, PARKS, SHOP, WARDROBE, PROFILE, VISIBILITY, CUSTOMIZE_BAND, PLAYER_TIME, STORAGE_UPGRADE,
     // Attractions Menu
     ATTRACTION_LIST, WAIT_TIMES,
-    // Parks Menu
-    PARKS_WDW,
     // Customize MagicBand
     CUSTOMIZE_BAND_TYPE, CUSTOMIZE_BAND_NAME,
     // Profile
