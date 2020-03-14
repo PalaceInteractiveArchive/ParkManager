@@ -127,6 +127,7 @@ public class ParkManager extends Plugin {
         registerCommand(new PlayerTimeCommand());
         registerCommand(new PlayerWeatherCommand());
         registerCommand(new QueueCommand());
+        registerCommand(new SetSignCommand());
         registerCommand(new ShopCommand());
         registerCommand(new ShowScheduleCommand());
         registerCommand(new ShowsCommand());
