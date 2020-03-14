@@ -26,10 +26,10 @@ public class SetSignCommand extends CoreCommand {
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         if (args.length < 4) {
             sender.sendMessage(ChatColor.AQUA + "Set sign lines:");
-            sender.sendMessage(ChatColor.AQUA + "/setsign [x] [y] [z] \"line 1\" \"line 2\" \"line 3\" \"line 4\"");
-            sender.sendMessage(ChatColor.AQUA + "\"\" leaves a line blank");
+            sender.sendMessage(ChatColor.AQUA + "/setsign [x] [y] [z] line 1;line 2;line 3;line 4");
             sender.sendMessage(ChatColor.AQUA + "You need to provide text for the first line, but the rest are optional");
-            sender.sendMessage(ChatColor.AQUA + "For example, '/setsign 1 1 1 \"hey\" \"there\"' will skip the last two lines");
+            sender.sendMessage(ChatColor.AQUA + "For example, '/setsign 1 1 1 hey;there' will skip the last two lines");
+            sender.sendMessage(ChatColor.AQUA + "You can make a line blank as well, like '/setsign 1 1 1 hey;;there' (line two is blank)");
             return;
         }
         int x, y, z;
@@ -94,7 +94,7 @@ public class SetSignCommand extends CoreCommand {
         for (int i = 3; i < args.length; i++) {
             command.append(args[i]).append(" ");
         }
-        String[] commandLines = command.toString().trim().split(";");
+        String[] commandLines = command.toString().trim().replaceAll(";;", "; ;").split(";");
         int size = Math.min(commandLines.length, 4);
         sender.sendMessage(ChatColor.GREEN + "Updating " + size + " lines...");
         for (int i = 0; i < size; i++) {
