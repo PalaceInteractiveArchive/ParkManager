@@ -5,7 +5,6 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.MiscUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -73,18 +72,21 @@ public class SetSignCommand extends CoreCommand {
         x = Integer.parseInt(args[0]);
         y = Integer.parseInt(args[1]);
         z = Integer.parseInt(args[2]);
+        Location loc;
+        if (sender instanceof BlockCommandSender) {
+            loc = ((BlockCommandSender) sender).getBlock().getLocation();
+        } else if (sender instanceof Player) {
+            loc = ((Player) sender).getLocation();
+        } else {
+            sender.sendMessage(ChatColor.RED + "Only players and command blocks can use this command!");
+            return;
+        }
         if (relativeX || relativeY || relativeZ) {
-            Location loc = null;
-            if (sender instanceof BlockCommandSender) {
-                loc = ((BlockCommandSender) sender).getBlock().getLocation();
-            } else if (sender instanceof Player) {
-                loc = ((Player) sender).getLocation();
-            }
             if (relativeX) x = loc.getBlockX() + x;
             if (relativeY) y = loc.getBlockY() + y;
             if (relativeZ) z = loc.getBlockZ() + z;
         }
-        Block b = Bukkit.getWorlds().get(0).getBlockAt(x, y, z);
+        Block b = loc.getWorld().getBlockAt(x, y, z);
         if (!b.getType().equals(Material.SIGN) && !b.getType().equals(Material.SIGN_POST) && !b.getType().equals(Material.WALL_SIGN)) {
             sender.sendMessage(ChatColor.RED + "There is no sign at " + x + "," + y + "," + z);
             return;
