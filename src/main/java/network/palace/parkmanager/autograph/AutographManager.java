@@ -96,12 +96,14 @@ public class AutographManager {
      */
     public void giveBook(CPlayer player) {
         if (ParkManager.getBuildUtil().isInBuildMode(player)) return;
-        ItemStack book = ItemUtil.create(Material.WRITTEN_BOOK);
-        BookMeta bm = (BookMeta) book.getItemMeta();
-        bm.setTitle(BOOK_TITLE);
-        bm.setAuthor(player.getName());
-        book.setItemMeta(bm);
-        player.setInventorySlot(7, book);
+        Core.runTask(() -> {
+            ItemStack book = ItemUtil.create(Material.WRITTEN_BOOK);
+            BookMeta bm = (BookMeta) book.getItemMeta();
+            bm.setTitle(BOOK_TITLE);
+            bm.setAuthor(player.getName());
+            book.setItemMeta(bm);
+            player.setInventorySlot(7, book);
+        });
     }
 
     /**
