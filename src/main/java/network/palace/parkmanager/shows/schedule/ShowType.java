@@ -13,6 +13,7 @@ public enum ShowType {
     //Normal Shows
     HEA(ChatColor.YELLOW + "Happily Ever After", Material.GLOWSTONE_DUST),
     WISHES(ChatColor.AQUA + "Wishes", Material.BLAZE_ROD),
+    EPCOT(ChatColor.DARK_PURPLE + "Epcot Forever", Material.SNOW_BALL),
     IROE(ChatColor.GREEN + "Illuminations: Reflections of Earth", Material.NETHER_STAR),
     SITS(ChatColor.GOLD + "Symphony in the Stars", Material.DIAMOND_SWORD),
     SPECIAL(ChatColor.DARK_PURPLE + "Special Event", Material.DIAMOND),
