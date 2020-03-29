@@ -7,6 +7,7 @@ import network.palace.parkmanager.handlers.RideCount;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
 import java.util.TreeMap;
@@ -61,7 +62,7 @@ public class RideCounterUtil {
             player.giveAchievement(12);
         }
 
-        if (sender != null)
+        if (sender != null && !(sender instanceof BlockCommandSender))
             sender.sendMessage(ChatColor.GREEN + "Added 1 to " + player.getName() + "'s counter for " + rideName);
 
         player.sendMessage(ChatColor.GREEN + "--------------" + ChatColor.GOLD + "" + ChatColor.BOLD +

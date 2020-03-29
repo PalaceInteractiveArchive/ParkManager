@@ -9,6 +9,7 @@ import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import org.bson.Document;
 import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class LeaderboardCommand extends CoreCommand {
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        if (args.length == 0) {
+        if (args.length == 0 || sender instanceof BlockCommandSender) {
             sender.sendMessage(ChatColor.RED + "/leaderboard [update]");
             sender.sendMessage(ChatColor.RED + "/leaderboard [top #] [ride]");
             return;
