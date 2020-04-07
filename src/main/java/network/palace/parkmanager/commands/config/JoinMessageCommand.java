@@ -16,6 +16,16 @@ public class JoinMessageCommand extends CoreCommand {
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        if (args.length == 0) {
+            String message = ParkManager.getConfigUtil().getJoinMessage();
+            if (message.equals("none")) {
+                sender.sendMessage(ChatColor.GREEN + "This server has no join message!");
+            } else {
+                sender.sendMessage(ChatColor.GREEN + "Current join message:");
+                sender.sendMessage(message);
+            }
+            return;
+        }
         if (args.length == 1 && args[0].equalsIgnoreCase("none")) {
             ParkManager.getConfigUtil().setJoinMessage("none");
             sender.sendMessage(ChatColor.RED + "Disable the join message for this server!");

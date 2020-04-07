@@ -469,17 +469,13 @@ public class AutographManager {
         char block = '▉';
 
         StringBuilder s = new StringBuilder(ChatColor.DARK_GREEN + "");
-        for (int i = 0; i < darkGreenBlocks; i++) {
-            //dark green blocks
-            s.append(block);
-        }
+        //dark green blocks
+        s.append(String.valueOf(block).repeat(Math.max(0, darkGreenBlocks)));
         if (greenBlocks == 1) {
             s.append(ChatColor.GREEN).append(block);
         }
         s.append(ChatColor.RED);
-        for (int i = 0; i < (10 - darkGreenBlocks) - greenBlocks; i++) {
-            s.append(block);
-        }
+        s.append(String.valueOf(block).repeat(Math.max(0, (10 - darkGreenBlocks) - greenBlocks)));
         return s.toString();
     }
 }
