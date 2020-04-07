@@ -1,7 +1,7 @@
 package network.palace.parkmanager.handlers.shop;
 
 import lombok.Getter;
-import network.palace.core.economy.CurrencyType;
+import network.palace.core.economy.currency.CurrencyType;
 
 @Getter
 public abstract class ShopEntry {

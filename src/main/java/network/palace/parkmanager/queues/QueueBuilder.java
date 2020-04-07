@@ -1,7 +1,7 @@
 package network.palace.parkmanager.queues;
 
 import com.google.gson.JsonObject;
-import network.palace.core.economy.CurrencyType;
+import network.palace.core.economy.currency.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;

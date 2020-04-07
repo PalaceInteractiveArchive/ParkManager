@@ -79,7 +79,7 @@ public class LeaderboardManager {
         Location loc = sign.getLocation();
         LeaderboardSign signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
         signs.add(signObject);
-        Core.runTaskAsynchronously(ParkManager.getInstance(), signObject::update);
+        signObject.update();
         saveToFile();
         return true;
     }

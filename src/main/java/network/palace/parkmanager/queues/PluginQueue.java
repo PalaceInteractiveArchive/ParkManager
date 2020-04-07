@@ -2,7 +2,7 @@ package network.palace.parkmanager.queues;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import network.palace.core.economy.CurrencyType;
+import network.palace.core.economy.currency.CurrencyType;
 import network.palace.core.player.CPlayer;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.handlers.ParkType;

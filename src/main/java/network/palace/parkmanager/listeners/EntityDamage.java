@@ -83,7 +83,7 @@ public class EntityDamage implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         switch (event.getRightClicked().getType()) {
             case ITEM_FRAME:
