@@ -48,11 +48,6 @@ public class ShopManager {
         } else {
             subsystem = ParkManager.getFileUtil().registerSubsystem("shop");
         }
-        File file = new File("plugins/ParkManager/shop/shops.json");
-        if (file.exists()) {
-            File newName = new File("plugins/ParkManager/shop/epcot.json");
-            file.renameTo(newName);
-        }
         for (Park park : ParkManager.getParkUtil().getParks()) {
             try {
                 JsonElement element = subsystem.getFileContents(park.getId().name().toLowerCase());

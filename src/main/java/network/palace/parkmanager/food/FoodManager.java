@@ -34,11 +34,6 @@ public class FoodManager {
         } else {
             subsystem = ParkManager.getFileUtil().registerSubsystem("food");
         }
-        File file = new File("plugins/ParkManager/food/locations.json");
-        if (file.exists()) {
-            File newName = new File("plugins/ParkManager/food/epcot.json");
-            file.renameTo(newName);
-        }
         for (Park park : ParkManager.getParkUtil().getParks()) {
             try {
                 JsonElement element = subsystem.getFileContents(park.getId().name().toLowerCase());

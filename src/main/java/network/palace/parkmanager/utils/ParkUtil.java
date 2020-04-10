@@ -16,10 +16,11 @@ import org.bukkit.World;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ParkUtil {
-    private List<Park> parks = new ArrayList<>();
+    private HashMap<ParkType, Park> parks = new HashMap<>();
 
     public ParkUtil() {
         initialize();
@@ -42,13 +43,17 @@ public class ParkUtil {
                         region = WorldGuardPlugin.inst()
                                 .getRegionManager(world)
                                 .getRegion(object.get("region").getAsString());
+                        if (region == null) {
+                            throw new NullPointerException();
+                        }
                     } catch (Exception e) {
                         Core.logMessage("ParkUtil", "There was an error loading the '" + id + "' park: Invalid region " +
                                 object.get("region").getAsString() + " in world " + object.get("world").getAsString());
                         continue;
                     }
 
-                    parks.add(new Park(ParkType.fromString(id.toUpperCase()), world, region));
+                    ParkType type = ParkType.fromString(id.toUpperCase());
+                    parks.put(type, new Park(type, world, region));
                 }
             }
             saveToFile();
@@ -60,7 +65,7 @@ public class ParkUtil {
     }
 
     public List<Park> getParks() {
-        return new ArrayList<>(parks);
+        return new ArrayList<>(parks.values());
     }
 
     public Park getPark(ParkType id) {
@@ -81,21 +86,19 @@ public class ParkUtil {
     }
 
     public void addPark(Park park) {
-        parks.add(park);
+        parks.put(park.getId(), park);
         saveToFile();
     }
 
     public boolean removePark(ParkType id) {
-        Park park = getPark(id);
-        if (park == null) return false;
-        parks.remove(park);
+        parks.remove(id);
         saveToFile();
         return true;
     }
 
     public void saveToFile() {
         JsonArray array = new JsonArray();
-        for (Park park : parks) {
+        for (Park park : parks.values()) {
             JsonObject object = new JsonObject();
             object.addProperty("id", park.getId().name());
             object.addProperty("world", park.getWorld().getName());

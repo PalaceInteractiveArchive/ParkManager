@@ -60,11 +60,6 @@ public class QueueManager {
         } else {
             subsystem = ParkManager.getFileUtil().registerSubsystem("queue");
         }
-        File file = new File("plugins/ParkManager/queue/queues.json");
-        if (file.exists()) {
-            File newName = new File("plugins/ParkManager/queue/epcot.json");
-            file.renameTo(newName);
-        }
         for (Park park : ParkManager.getParkUtil().getParks()) {
             try {
                 JsonElement element = subsystem.getFileContents(park.getId().name().toLowerCase());

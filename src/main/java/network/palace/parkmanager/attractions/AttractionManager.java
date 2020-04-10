@@ -13,7 +13,6 @@ import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.utils.FileUtil;
 import org.bukkit.ChatColor;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,12 +35,8 @@ public class AttractionManager {
         } else {
             subsystem = ParkManager.getFileUtil().registerSubsystem("attraction");
         }
-        File file = new File("plugins/ParkManager/attraction/attractions.json");
-        if (file.exists()) {
-            File newName = new File("plugins/ParkManager/attraction/epcot.json");
-            file.renameTo(newName);
-        }
         for (Park park : ParkManager.getParkUtil().getParks()) {
+            int c = 0;
             try {
                 JsonElement element = subsystem.getFileContents(park.getId().name().toLowerCase());
                 if (element.isJsonArray()) {
@@ -67,9 +62,10 @@ public class AttractionManager {
                         attractions.add(new Attraction(id, park.getId(), object.get("name").getAsString(), object.get("warp").getAsString(),
                                 object.get("description").getAsString(), categoryList, object.get("open").getAsBoolean(),
                                 ItemUtil.getItemFromJsonNew(object.get("item").getAsJsonObject().toString()), linkedQueue));
+                        c++;
                     }
                 }
-                Core.logMessage("AttractionManager", "Loaded " + attractions.size() + " attraction" + TextUtil.pluralize(attractions.size()) + " for park " + park.getId().getTitle() + "!");
+                Core.logMessage("AttractionManager", "Loaded " + c + " attraction" + TextUtil.pluralize(c) + " for park " + park.getId().getTitle() + "!");
             } catch (IOException e) {
                 Core.logMessage("AttractionManager", "There was an error loading the AttractionManager config for park " + park.getId().getTitle() + "!");
                 e.printStackTrace();
