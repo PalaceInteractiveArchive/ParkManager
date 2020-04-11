@@ -82,9 +82,10 @@ public class PlayerJoinAndLeave implements Listener {
             Warp w = null;
             double distance = -1;
             for (Warp warp : new ArrayList<>(ParkWarp.getWarpUtil().getWarps())) {
-                if (warp.getWorld() == null
-                        || !warp.getServer().equals(Core.getServerType())
-                        || (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId()))
+                if (warp.getWorld() == null ||
+                        !warp.getWorld().equals(player.getWorld()) ||
+                        !warp.getServer().equals(Core.getServerType()) ||
+                        (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId()))
                     continue;
                 if (distance == -1) {
                     w = warp;

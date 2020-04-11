@@ -336,7 +336,8 @@ public class MagicBandManager {
                 List<MenuButton> buttons = Arrays.asList(
                         new MenuButton(0, ItemUtil.create(Material.END_CRYSTAL, ChatColor.AQUA + "Park Servers",
                                 Arrays.asList(ChatColor.GREEN + "Transfer to a different park server", "",
-                                        ChatColor.YELLOW + "Current Server: " + ChatColor.GREEN + Core.getInstanceName())),
+                                        ChatColor.YELLOW + "Current Server: " + ChatColor.GREEN + Core.getInstanceName(),
+                                        ChatColor.AQUA + "" + ChatColor.ITALIC + "Coming Soon - use /f and /p for now")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.SERVER_LIST))),
 
                         new MenuButton(4, ItemUtil.create(Material.EMPTY_MAP, ChatColor.AQUA + "Walt Disney World Resort", Collections.singletonList(ChatColor.GREEN + "/warp WDW")),
