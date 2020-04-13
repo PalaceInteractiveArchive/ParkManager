@@ -148,7 +148,7 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no food locations in this park!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.MAIN));
-                new Menu(size, ChatColor.BLUE + "Food Locations", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Food Locations (" + currentPark.getId() + ")", player, buttons).open();
                 break;
             }
             case SHOWS: {
@@ -294,7 +294,7 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no attractions on this server!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.ATTRACTION_MENU));
-                new Menu(size, ChatColor.BLUE + "Attractions List", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Attractions List (" + currentPark.getId() + ")", player, buttons).open();
                 break;
             }
             case WAIT_TIMES: {
@@ -329,7 +329,8 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no queues on this server!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.ATTRACTION_MENU));
-                new Menu(size, ChatColor.BLUE + "Wait Times", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Wait Times (" + currentPark.getId() + ")", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Wait Times (" + currentPark.getId() + ")", player, buttons).open();
                 break;
             }
             case PARKS: {
@@ -428,7 +429,7 @@ public class MagicBandManager {
                             Arrays.asList(ChatColor.GRAY + "Sorry, it looks like there are", ChatColor.GRAY + "no shops on this server!"))));
                 }
                 buttons.add(getBackButton(size - 5, BandInventory.MAIN));
-                new Menu(size, ChatColor.BLUE + "Shop List", player, buttons).open();
+                new Menu(size, ChatColor.BLUE + "Shop List (" + currentPark.getId() + ")", player, buttons).open();
                 break;
             }
             case WARDROBE: {

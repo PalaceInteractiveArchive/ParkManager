@@ -11,6 +11,10 @@ public enum ParkType {
 
     String title;
 
+    public String getId() {
+        return this.equals(EPCOT) ? "Epcot" : name();
+    }
+
     public static String listIDs() {
         StringBuilder s = new StringBuilder();
         ParkType[] values = values();

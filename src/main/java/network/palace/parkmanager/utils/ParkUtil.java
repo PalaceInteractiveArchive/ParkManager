@@ -79,6 +79,7 @@ public class ParkUtil {
 
     public Park getPark(Location loc) {
         for (Park park : getParks()) {
+            if (!park.getWorld().getUID().equals(loc.getWorld().getUID())) continue;
             ProtectedRegion region = park.getRegion();
             if (region.contains(loc.getBlockX(), region.getMinimumPoint().getBlockY(), loc.getBlockZ())) return park;
         }
