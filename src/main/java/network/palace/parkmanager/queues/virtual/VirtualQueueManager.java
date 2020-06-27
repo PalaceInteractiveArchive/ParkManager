@@ -68,6 +68,7 @@ public class VirtualQueueManager {
     public void handleUpdate(UpdateQueuePacket packet) {
         VirtualQueue queue = getQueueById(packet.getQueueId());
         if (queue == null) return;
+        queue.setOpen(packet.isOpen());
         queue.updateQueue(packet.getQueue());
     }
 }

@@ -20,7 +20,8 @@ public class ListCommand extends CoreCommand {
         player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Virtual" + ChatColor.GREEN + " Queues:");
         for (VirtualQueue queue : ParkManager.getVirtualQueueManager().getQueues()) {
             player.sendMessage(ChatColor.AQUA + "- [" + queue.getId() + "] " + ChatColor.YELLOW + queue.getName() +
-                    ChatColor.GREEN + " on " + ChatColor.YELLOW + queue.getServer());
+                    ChatColor.GREEN + " on " + ChatColor.YELLOW + queue.getServer() + ChatColor.GREEN + " is " +
+                    (queue.isOpen() ? ChatColor.GREEN + "open" : ChatColor.RED + "closed"));
         }
     }
 }

@@ -96,7 +96,6 @@ public class ParkManager extends Plugin {
 
         registerListeners();
         registerCommands();
-        Core.getDashboardConnection().send(new PacketImAPark());
     }
 
     @Override

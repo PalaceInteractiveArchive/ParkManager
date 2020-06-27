@@ -144,4 +144,8 @@ public class VirtualQueue {
         this.queue.clear();
         this.queue.addAll(queue);
     }
+
+    public boolean cantEdit() {
+        return !Core.getInstanceName().equals(server);
+    }
 }
