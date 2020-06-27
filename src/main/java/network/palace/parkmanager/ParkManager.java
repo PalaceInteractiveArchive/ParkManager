@@ -18,6 +18,7 @@ import network.palace.parkmanager.magicband.MagicBandManager;
 import network.palace.parkmanager.outline.OutlineManager;
 import network.palace.parkmanager.packs.PackManager;
 import network.palace.parkmanager.queues.QueueManager;
+import network.palace.parkmanager.queues.virtual.VirtualQueueManager;
 import network.palace.parkmanager.shop.ShopManager;
 import network.palace.parkmanager.shows.ShowMenuManager;
 import network.palace.parkmanager.shows.schedule.ScheduleManager;
@@ -55,6 +56,7 @@ public class ParkManager extends Plugin {
     @Getter private static StorageManager storageManager;
     @Getter private static TeleportUtil teleportUtil;
     @Getter private static TimeUtil timeUtil;
+    @Getter private static VirtualQueueManager virtualQueueManager;
     @Getter private static VisibilityUtil visibilityUtil;
     @Getter private static WardrobeManager wardrobeManager;
 
@@ -86,6 +88,7 @@ public class ParkManager extends Plugin {
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
         timeUtil = new TimeUtil();
+        virtualQueueManager = new VirtualQueueManager();
         visibilityUtil = new VisibilityUtil();
         wardrobeManager = new WardrobeManager();
 
@@ -138,6 +141,7 @@ public class ParkManager extends Plugin {
         registerCommand(new SpawnCommand());
         registerCommand(new SpeedCommand());
         registerCommand(new TeleportCommand());
+        registerCommand(new VirtualQueueCommand());
     }
 
     public void registerListeners() {
