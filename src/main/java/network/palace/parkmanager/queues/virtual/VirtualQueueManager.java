@@ -50,7 +50,7 @@ public class VirtualQueueManager {
         VirtualQueue queue = getQueueById(id);
         if (queue == null) return false;
         queues.remove(queue);
-        if (queue.getServer().equals(Core.getInstanceName()))
+        if (!queue.isOpen() && queue.getServer().equals(Core.getInstanceName()))
             Core.getDashboardConnection().send(new RemoveQueuePacket(queue.getId()));
         return true;
     }
