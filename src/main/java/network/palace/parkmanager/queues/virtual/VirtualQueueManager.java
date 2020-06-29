@@ -71,4 +71,8 @@ public class VirtualQueueManager {
         queue.setOpen(packet.isOpen());
         queue.updateQueue(packet.getQueue());
     }
+
+    public void clearQueues() {
+        queues.clear();
+    }
 }

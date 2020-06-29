@@ -6,6 +6,7 @@ import network.palace.core.Core;
 import network.palace.core.dashboard.packets.dashboard.PacketAudioConnect;
 import network.palace.core.dashboard.packets.dashboard.PacketUpdateEconomy;
 import network.palace.core.events.DashboardConnectEvent;
+import network.palace.core.events.DashboardDisconnectEvent;
 import network.palace.core.events.IncomingPacketEvent;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
@@ -103,5 +104,10 @@ public class PacketListener implements Listener {
     @EventHandler
     public void onDashboardConnect(DashboardConnectEvent event) {
         Core.getDashboardConnection().send(new PacketImAPark());
+    }
+
+    @EventHandler
+    public void onDashboardDisconnect(DashboardDisconnectEvent event) {
+        ParkManager.getVirtualQueueManager().clearQueues();
     }
 }
