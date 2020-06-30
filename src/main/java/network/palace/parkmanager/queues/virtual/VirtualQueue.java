@@ -7,7 +7,10 @@ import network.palace.core.player.CPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 public class VirtualQueue {
     // id of the queue
@@ -44,34 +47,6 @@ public class VirtualQueue {
         if (this.open == open) return;
         this.open = open;
         updated = true;
-        ListIterator<UUID> iterator = queue.listIterator();
-        UUID uuid;
-        int position = 1;
-        String msg = open ? (ChatColor.GREEN + "The virtual queue " + name + " has opened! You're in position #") :
-                (ChatColor.AQUA + "The virtual queue " + name + " has been closed! You're still in line, but you will lose your place if you leave the queue.");
-        while (iterator.hasNext()) {
-            uuid = iterator.next();
-            position++;
-            CPlayer tp;
-            if (uuid != null && ((tp = Core.getPlayerManager().getPlayer(uuid)) != null)) {
-                tp.sendMessage(msg + (open ? (msg + position) : msg));
-            }
-        }
-    }
-
-    public boolean joinQueue(CPlayer player) {
-        if (!open) {
-            player.sendMessage(ChatColor.RED + "The virtual queue " + name + ChatColor.RED + " is currently closed, sorry!");
-            return false;
-        }
-        if (getPosition(player.getUniqueId()) >= 1) {
-            player.sendMessage(ChatColor.RED + "You're already in the virtual queue " + name + "!");
-            return false;
-        }
-        queue.add(player.getUniqueId());
-        updated = true;
-        player.sendMessage(ChatColor.GREEN + "You joined the virtual queue " + name + "!");
-        return true;
     }
 
     public boolean leaveQueue(CPlayer player, boolean message) {
@@ -89,43 +64,9 @@ public class VirtualQueue {
         if (position >= 0) {
             queue.remove(uuid);
             updated = true;
-            ListIterator<UUID> iterator = queue.listIterator(position);
-            UUID playerInQueue;
-            while (iterator.hasNext()) {
-                playerInQueue = iterator.next();
-                position++;
-                CPlayer tp;
-                if (playerInQueue != null && ((tp = Core.getPlayerManager().getPlayer(playerInQueue)) != null)) {
-                    sendPositionMessage(tp, position);
-                }
-            }
             return true;
         }
         return false;
-    }
-
-    public void sendPositionMessages() {
-        ListIterator<UUID> iterator = queue.listIterator();
-        UUID uuid;
-        int position = 1;
-        while (iterator.hasNext()) {
-            uuid = iterator.next();
-            position++;
-            CPlayer tp;
-            if (uuid != null && ((tp = Core.getPlayerManager().getPlayer(uuid)) != null)) {
-                sendPositionMessage(tp, position);
-            }
-        }
-    }
-
-    private void sendPositionMessage(CPlayer player) {
-        sendPositionMessage(player, getPosition(player.getUniqueId()));
-    }
-
-    private void sendPositionMessage(CPlayer player, int pos) {
-        if (pos >= 1) {
-            player.sendMessage(ChatColor.GREEN + "You are in position #" + pos + " in the virtual queue " + name + "!");
-        }
     }
 
     public int getPosition(UUID uuid) {

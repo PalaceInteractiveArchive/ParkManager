@@ -34,6 +34,10 @@ public class CloseCommand extends CoreCommand {
                     ChatColor.GREEN + queue.getServer() + ChatColor.RED + ")!");
             return;
         }
+        if (!queue.isOpen()) {
+            player.sendMessage(ChatColor.RED + "This queue is already closed!");
+            return;
+        }
         queue.setOpen(false);
         Core.getDashboardConnection().send(new UpdateQueuePacket(queue.getId(), queue.isOpen(), null));
         player.sendMessage(queue.getName() + ChatColor.RED + " has been closed!");

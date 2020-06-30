@@ -34,6 +34,10 @@ public class OpenCommand extends CoreCommand {
                     ChatColor.GREEN + queue.getServer() + ChatColor.RED + ")!");
             return;
         }
+        if (queue.isOpen()) {
+            player.sendMessage(ChatColor.RED + "This queue is already open!");
+            return;
+        }
         queue.setOpen(true);
         Core.getDashboardConnection().send(new UpdateQueuePacket(queue.getId(), queue.isOpen(), null));
         player.sendMessage(queue.getName() + ChatColor.GREEN + " has been opened!");

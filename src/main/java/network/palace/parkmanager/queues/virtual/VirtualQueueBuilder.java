@@ -80,6 +80,7 @@ public class VirtualQueueBuilder extends VirtualQueue {
             player.sendMessage(ChatColor.YELLOW + "Great! Finalizing your Virtual Queue...");
             ParkManager.getVirtualQueueManager().addQueue(new VirtualQueue(this.id, this.name, this.holdingArea, this.holdingAreaLocation, Core.getInstanceName()));
             player.sendMessage(ChatColor.GREEN + "Your queue is all ready to go! It's closed by default, but you can change that with " + ChatColor.YELLOW + "/vqueue open");
+            player.getRegistry().removeEntry("vqueueBuilder");
         }
     }
 }
