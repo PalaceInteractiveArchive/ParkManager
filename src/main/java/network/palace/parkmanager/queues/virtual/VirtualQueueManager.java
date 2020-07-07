@@ -69,7 +69,7 @@ public class VirtualQueueManager {
     public void handleCreate(CreateQueuePacket packet) {
         VirtualQueue queue = getQueueById(packet.getQueueId());
         if (queue != null) return;
-        queues.add(new VirtualQueue(packet.getQueueId(), packet.getQueueName(), packet.getHoldingArea(), null, packet.getServer(), null, null));
+        queues.add(new VirtualQueue(packet.getQueueId(), packet.getQueueName(), packet.getHoldingArea(), null, null, packet.getServer(), null, null));
     }
 
     public void handleRemove(RemoveQueuePacket packet) {

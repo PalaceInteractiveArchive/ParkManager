@@ -32,12 +32,14 @@ public class VirtualQueue {
     @Getter private boolean open = false;
     // the list of players in queue
     private final LinkedList<UUID> queue = new LinkedList<>();
+    @Getter @Setter private long lastAdvance = 0;
 
-    public VirtualQueue(String id, String name, int holdingArea, Location holdingAreaLocation, String server, Sign advanceSign, Sign stateSign) {
+    public VirtualQueue(String id, String name, int holdingArea, Location holdingAreaLocation, Location queueLocation, String server, Sign advanceSign, Sign stateSign) {
         this.id = id;
         this.name = name;
         this.holdingArea = holdingArea;
         this.holdingAreaLocation = holdingAreaLocation;
+        this.queueLocation = queueLocation;
         this.server = server;
         this.advanceSign = advanceSign;
         this.stateSign = stateSign;

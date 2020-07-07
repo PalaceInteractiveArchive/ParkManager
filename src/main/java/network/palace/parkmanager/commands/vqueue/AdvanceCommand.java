@@ -10,6 +10,9 @@ import network.palace.parkmanager.dashboard.packets.parks.queue.AdmitQueuePacket
 import network.palace.parkmanager.queues.virtual.VirtualQueue;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+import java.util.UUID;
+
 @CommandMeta(description = "Advance players in line for a virtual queue hosted on this server")
 public class AdvanceCommand extends CoreCommand {
 
@@ -30,12 +33,30 @@ public class AdvanceCommand extends CoreCommand {
             return;
         }
         if (queue.cantEdit()) {
-            player.sendMessage(ChatColor.RED + "You can only do that on the server hosting the queue (" +
+            player.sendMessage(ChatColor.AQUA + "You can only do that on the server hosting the queue (" +
                     ChatColor.GREEN + queue.getServer() + ChatColor.RED + ")!");
             return;
         }
+        if (System.currentTimeMillis() - queue.getLastAdvance() < 10000) {
+            // If it's been less than 10 seconds since the last advance
+            player.sendMessage(ChatColor.AQUA + "You must wait at least 10 seconds before advancing the queue!");
+            return;
+        }
+        if (queue.getMembers().isEmpty()) {
+            player.sendMessage(ChatColor.AQUA + "The queue is currently empty!");
+            return;
+        }
+        queue.setLastAdvance(System.currentTimeMillis());
         Core.getDashboardConnection().send(new AdmitQueuePacket(queue.getId()));
+
         player.sendMessage(queue.getName() + ChatColor.GREEN + " has been advanced! There are now " +
-                queue.getMembers().size() + " players in queue.");
+                (queue.getMembers().size() - 1) + " players in queue.");
+
+        List<UUID> holdingArea = queue.getHoldingAreaMembers();
+        CPlayer first = Core.getPlayerManager().getPlayer(holdingArea.get(0));
+        if (first != null) {
+            first.sendMessage(ChatColor.GREEN + "You've made it to the front of the queue!");
+            first.teleport(queue.getQueueLocation());
+        }
     }
 }
