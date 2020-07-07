@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 public class VirtualQueueBuilder extends VirtualQueue {
 
     public VirtualQueueBuilder() {
-        super(null, null, 0, null, null);
+        super(null, null, 0, null, null, null, null);
     }
 
     public void nextStep(CPlayer player, String[] args) {
@@ -78,8 +78,11 @@ public class VirtualQueueBuilder extends VirtualQueue {
             //Step 6
             this.queueLocation = player.getLocation();
             player.sendMessage(ChatColor.YELLOW + "Great! Finalizing your Virtual Queue...");
-            ParkManager.getVirtualQueueManager().addQueue(new VirtualQueue(this.id, this.name, this.holdingArea, this.holdingAreaLocation, Core.getInstanceName()));
             player.sendMessage(ChatColor.GREEN + "Your queue is all ready to go! It's closed by default, but you can change that with " + ChatColor.YELLOW + "/vqueue open");
+            player.sendMessage(ChatColor.GREEN + "Create signs to control the queue:");
+            player.sendMessage(ChatColor.AQUA + "[vqueue] " + ChatColor.GREEN + "on the first line, the vqueue id on the second line, and " + ChatColor.AQUA +
+                    "advance " + ChatColor.GREEN + "or " + ChatColor.AQUA + "state " + ChatColor.GREEN + "on the third line.");
+            ParkManager.getVirtualQueueManager().addQueue(new VirtualQueue(this.id, this.name, this.holdingArea, this.holdingAreaLocation, Core.getInstanceName(), this.advanceSign, this.stateSign));
             player.getRegistry().removeEntry("vqueueBuilder");
         }
     }

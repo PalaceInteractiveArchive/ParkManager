@@ -38,6 +38,14 @@ public class RemoveCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "Virtual Queues must be closed before they can be removed!");
             return;
         }
+        if (queue.getAdvanceSign() != null) {
+            queue.getAdvanceSign().setLine(1, ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + queue.getId());
+            queue.getAdvanceSign().update();
+        }
+        if (queue.getStateSign() != null) {
+            queue.getStateSign().setLine(1, ChatColor.GRAY + "" + ChatColor.STRIKETHROUGH + queue.getId());
+            queue.getStateSign().update();
+        }
         ParkManager.getVirtualQueueManager().removeQueue(args[0]);
         Core.getDashboardConnection().send(new RemoveQueuePacket(queue.getId()));
         player.sendMessage(queue.getName() + ChatColor.RED + " has been removed!");

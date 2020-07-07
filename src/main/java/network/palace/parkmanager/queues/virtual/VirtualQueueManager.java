@@ -4,6 +4,7 @@ import network.palace.core.Core;
 import network.palace.parkmanager.dashboard.packets.parks.queue.CreateQueuePacket;
 import network.palace.parkmanager.dashboard.packets.parks.queue.RemoveQueuePacket;
 import network.palace.parkmanager.dashboard.packets.parks.queue.UpdateQueuePacket;
+import org.bukkit.block.Sign;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,16 @@ public class VirtualQueueManager {
         return null;
     }
 
+    public VirtualQueue getQueue(Sign s) {
+        for (VirtualQueue queue : getQueues()) {
+            Sign advanceSign = queue.getAdvanceSign();
+            Sign stateSign = queue.getStateSign();
+            if ((advanceSign != null && advanceSign.getLocation().equals(s.getLocation()))
+                    || (stateSign != null && stateSign.getLocation().equals(s.getLocation()))) return queue;
+        }
+        return null;
+    }
+
     public void addQueue(VirtualQueue queue) {
         queues.add(queue);
         Core.getDashboardConnection().send(new CreateQueuePacket(queue.getId(), queue.getName(), queue.getHoldingArea(), queue.getServer()));
@@ -58,7 +69,7 @@ public class VirtualQueueManager {
     public void handleCreate(CreateQueuePacket packet) {
         VirtualQueue queue = getQueueById(packet.getQueueId());
         if (queue != null) return;
-        queues.add(new VirtualQueue(packet.getQueueId(), packet.getQueueName(), packet.getHoldingArea(), null, packet.getServer()));
+        queues.add(new VirtualQueue(packet.getQueueId(), packet.getQueueName(), packet.getHoldingArea(), null, packet.getServer(), null, null));
     }
 
     public void handleRemove(RemoveQueuePacket packet) {

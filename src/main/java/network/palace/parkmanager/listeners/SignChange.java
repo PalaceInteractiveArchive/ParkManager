@@ -2,6 +2,7 @@ package network.palace.parkmanager.listeners;
 
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
+import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.handlers.Park;
 import network.palace.parkmanager.handlers.shop.Shop;
@@ -10,6 +11,7 @@ import network.palace.parkmanager.leaderboard.LeaderboardManager;
 import network.palace.parkmanager.leaderboard.LeaderboardSign;
 import network.palace.parkmanager.queues.Queue;
 import network.palace.parkmanager.queues.QueueSign;
+import network.palace.parkmanager.queues.virtual.VirtualQueue;
 import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
 import org.bukkit.Bukkit;
@@ -250,6 +252,49 @@ public class SignChange implements Listener {
                     return;
                 }
                 ParkManager.getShopManager().openShopInventory(player, shop);
+            }
+        });
+        ServerSign.registerSign("[vqueue]", new ServerSign.SignHandler() {
+            @Override
+            public void onSignChange(CPlayer player, SignChangeEvent event) {
+                event.setLine(0, ChatColor.AQUA + "[Virtual Queue]");
+                String id = event.getLine(1);
+                VirtualQueue queue = ParkManager.getVirtualQueueManager().getQueueById(id);
+                if (queue == null) {
+                    player.sendMessage(ChatColor.RED + "Couldn't find a queue with id " + id + "!");
+                    return;
+                }
+                event.setLine(1, ChatColor.BLUE + id);
+                event.setLine(3, ChatColor.YELLOW + "" + queue.getMembers().size() + " Player" +
+                        TextUtil.pluralize(queue.getMembers().size()));
+                if (event.getLine(2).equalsIgnoreCase("advance")) {
+                    event.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "Advance");
+                    queue.setAdvanceSign((Sign) event.getBlock().getState());
+                } else if (event.getLine(2).equalsIgnoreCase("state")) {
+                    event.setLine(2, (queue.isOpen() ? ChatColor.GREEN : ChatColor.RED) + "" + ChatColor.BOLD +
+                            (queue.isOpen() ? "Opened" : "Closed"));
+                    queue.setStateSign((Sign) event.getBlock().getState());
+                }
+            }
+        });
+        ServerSign.registerSign("[Virtual Queue]", new ServerSign.SignHandler() {
+            @Override
+            public void onInteract(CPlayer player, Sign s, PlayerInteractEvent event) {
+                VirtualQueue queue = ParkManager.getVirtualQueueManager().getQueue(s);
+                if (queue == null) return;
+                if (s.getLine(2).startsWith(ChatColor.YELLOW.toString())) {
+                    player.performCommand("vq advance " + queue.getId());
+                } else {
+                    player.performCommand("vq " + (queue.isOpen() ? "close " : "open ") + queue.getId());
+                }
+            }
+
+            @Override
+            public void onBreak(CPlayer player, Sign s, BlockBreakEvent event) {
+                VirtualQueue queue = ParkManager.getVirtualQueueManager().getQueue(s);
+                if (queue == null) return;
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.AQUA + "You can only destroy this sign once the queue is removed!");
             }
         });
     }
