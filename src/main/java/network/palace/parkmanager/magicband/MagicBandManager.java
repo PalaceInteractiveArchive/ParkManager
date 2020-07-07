@@ -81,6 +81,12 @@ public class MagicBandManager {
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.STORAGE_UPGRADE)))
                 ));
 
+                if (!ParkManager.getVirtualQueueManager().getQueues().isEmpty()) {
+                    ItemStack queueBook = ItemUtil.create(Material.BOOK, ChatColor.GREEN + "Virtual Queues",
+                            Arrays.asList(ChatColor.AQUA + "There's a virtual queue to join!", ChatColor.YELLOW + "Click to see what's available!"));
+                    buttons.add(new MenuButton(0, queueBook, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.VIRTUAL_QUEUES))));
+                }
+
                 if (!ParkManager.getResort().equals(Resort.USO)) {
                     ItemStack band = getMagicBandItem(player);
                     meta = band.getItemMeta();
