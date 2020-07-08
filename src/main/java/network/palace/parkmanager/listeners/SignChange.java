@@ -272,7 +272,7 @@ public class SignChange implements Listener {
                     queue.setAdvanceSign((Sign) event.getBlock().getState());
                 } else if (event.getLine(2).equalsIgnoreCase("state")) {
                     event.setLine(2, (queue.isOpen() ? ChatColor.GREEN : ChatColor.RED) + "" + ChatColor.BOLD +
-                            (queue.isOpen() ? "Opened" : "Closed"));
+                            (queue.isOpen() ? "Open" : "Closed"));
                     queue.setStateSign((Sign) event.getBlock().getState());
                 }
             }

@@ -33,7 +33,7 @@ public class AdvanceCommand extends CoreCommand {
             return;
         }
         if (queue.cantEdit()) {
-            player.sendMessage(ChatColor.AQUA + "You can only do that on the server hosting the queue (" +
+            player.sendMessage(ChatColor.RED + "You can only do that on the server hosting the queue (" +
                     ChatColor.GREEN + queue.getServer() + ChatColor.RED + ")!");
             return;
         }

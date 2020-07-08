@@ -19,6 +19,7 @@ import network.palace.parkmanager.handlers.shop.Shop;
 import network.palace.parkmanager.handlers.storage.StorageData;
 import network.palace.parkmanager.handlers.storage.StorageSize;
 import network.palace.parkmanager.queues.Queue;
+import network.palace.parkmanager.queues.virtual.VirtualQueue;
 import network.palace.parkmanager.utils.VisibilityUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bson.Document;
@@ -84,6 +85,7 @@ public class MagicBandManager {
                 if (!ParkManager.getVirtualQueueManager().getQueues().isEmpty()) {
                     ItemStack queueBook = ItemUtil.create(Material.BOOK, ChatColor.GREEN + "Virtual Queues",
                             Arrays.asList(ChatColor.AQUA + "There's a virtual queue to join!", ChatColor.YELLOW + "Click to see what's available!"));
+                    queueBook.addUnsafeEnchantment(Enchantment.LUCK, 1);
                     buttons.add(new MenuButton(0, queueBook, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.VIRTUAL_QUEUES))));
                 }
 
@@ -254,6 +256,40 @@ public class MagicBandManager {
                 }
                 buttons.add(getBackButton(22, BandInventory.MAIN));
                 new Menu(27, ChatColor.BLUE + "Storage Upgrade", player, buttons).open();
+                break;
+            }
+            case VIRTUAL_QUEUES: {
+                List<VirtualQueue> queues = ParkManager.getVirtualQueueManager().getQueues();
+                if (queues.isEmpty()) return;
+                List<MenuButton> buttons = new ArrayList<>();
+                int i = 0;
+                int size = 18;
+                for (VirtualQueue queue : queues) {
+                    ItemStack item = queue.getItem(player);
+                    if (i != 0 && i % 9 == 0) {
+                        size += 9;
+                    }
+                    if (size > 54) {
+                        size = 54;
+                        break;
+                    }
+                    buttons.add(new MenuButton(i++, ItemUtil.unbreakable(item), ImmutableMap.of(ClickType.RIGHT, p -> {
+                        p.closeInventory();
+                        if (queue.getPosition(p.getUniqueId()) < 1) {
+                            queue.joinQueue(p);
+                        } else {
+                            queue.leaveQueue(p);
+                        }
+                    })));
+                }
+                if (buttons.isEmpty()) {
+                    openInventory(player, BandInventory.MAIN);
+                    break;
+                }
+                buttons.add(getBackButton(size - 5, BandInventory.MAIN));
+                Menu menu = new Menu(size, ChatColor.BLUE + "Virtual Queues", player, buttons);
+                menu.open();
+                ParkManager.getVirtualQueueManager().addToOpenMenus(player, menu);
                 break;
             }
             case ATTRACTION_LIST: {

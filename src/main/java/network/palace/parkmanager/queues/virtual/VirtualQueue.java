@@ -4,16 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import network.palace.core.Core;
 import network.palace.core.player.CPlayer;
+import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.dashboard.packets.parks.queue.PlayerQueuePacket;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class VirtualQueue {
     // id of the queue
@@ -27,6 +28,7 @@ public class VirtualQueue {
     @Getter @Setter protected Sign advanceSign;
     @Getter @Setter protected Sign stateSign;
     @Getter private final UUID uuid = UUID.randomUUID();
+    private final int itemId;
 
     // whether players can join the queue
     @Getter private boolean open = false;
@@ -34,7 +36,7 @@ public class VirtualQueue {
     private final LinkedList<UUID> queue = new LinkedList<>();
     @Getter @Setter private long lastAdvance = 0;
 
-    public VirtualQueue(String id, String name, int holdingArea, Location holdingAreaLocation, Location queueLocation, String server, Sign advanceSign, Sign stateSign) {
+    public VirtualQueue(String id, String name, int holdingArea, Location holdingAreaLocation, Location queueLocation, String server, Sign advanceSign, Sign stateSign, int itemId) {
         this.id = id;
         this.name = name;
         this.holdingArea = holdingArea;
@@ -43,6 +45,7 @@ public class VirtualQueue {
         this.server = server;
         this.advanceSign = advanceSign;
         this.stateSign = stateSign;
+        this.itemId = itemId;
     }
 
     public void admit() {
@@ -107,7 +110,7 @@ public class VirtualQueue {
             if (stateSign != null) {
                 stateSign.setLine(0, ChatColor.AQUA + "[Virtual Queue]");
                 stateSign.setLine(1, ChatColor.BLUE + id);
-                stateSign.setLine(2, (open ? ChatColor.GREEN : ChatColor.RED) + "" + ChatColor.BOLD + (open ? "Opened" : "Closed"));
+                stateSign.setLine(2, (open ? ChatColor.GREEN : ChatColor.RED) + "" + ChatColor.BOLD + (open ? "Open" : "Closed"));
                 stateSign.setLine(3, ChatColor.YELLOW + "" + size + " Player" + TextUtil.pluralize(size));
                 stateSign.update();
             }
@@ -116,5 +119,31 @@ public class VirtualQueue {
 
     public boolean cantEdit() {
         return !Core.getInstanceName().equals(server);
+    }
+
+    public ItemStack getItem(CPlayer player) {
+        int pos = getPosition(player.getUniqueId());
+        List<String> lore = new ArrayList<>(Arrays.asList(
+                ChatColor.YELLOW + "Players: " + ChatColor.GREEN + getMembers().size(),
+                ChatColor.YELLOW + "Status: " + (open ? ChatColor.GREEN + "Open" : ChatColor.RED + "Closed"),
+                ChatColor.YELLOW + "Server: " + ChatColor.GREEN + server
+        ));
+        if (pos >= 1) {
+            lore.addAll(0, Arrays.asList(ChatColor.RESET + "",
+                    ChatColor.YELLOW + "" + ChatColor.BOLD + "Place in Line: " + ChatColor.AQUA + "" + ChatColor.BOLD + pos,
+                    ChatColor.GREEN + "" + ChatColor.BOLD + "Right-Click to Leave the Queue", ChatColor.RESET + ""));
+        } else {
+            lore.addAll(Collections.singletonList(ChatColor.AQUA + "" + ChatColor.BOLD + "Right-Click to Join the Queue"));
+        }
+        return ItemUtil.create(Material.CONCRETE, 1, itemId, name, lore);
+    }
+
+    public void joinQueue(CPlayer player) {
+        Core.getDashboardConnection().send(new PlayerQueuePacket(id, player.getUniqueId(), true));
+    }
+
+    public void leaveQueue(CPlayer player) {
+        Core.getDashboardConnection().send(new PlayerQueuePacket(id, player.getUniqueId(), false));
+        if (Core.getInstanceName().equals(server)) player.performCommand("warp castle");
     }
 }
