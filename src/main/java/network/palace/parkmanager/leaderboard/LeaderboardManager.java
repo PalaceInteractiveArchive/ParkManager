@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class LeaderboardManager {
-    private List<LeaderboardSign> signs = new ArrayList<>();
+    private final List<LeaderboardSign> signs = new ArrayList<>();
+    private final List<SignUpdate> signUpdates = new ArrayList<>();
 
     public LeaderboardManager() throws IOException {
         FileUtil.FileSubsystem subsystem = ParkManager.getFileUtil().registerSubsystem("leaderboard");
@@ -38,7 +39,13 @@ public class LeaderboardManager {
                     String worldName = leaderboardObject.get("world").getAsString();
                     World world = Bukkit.getWorld(worldName);
                     if (world == null) continue;
-                    signs.add(new LeaderboardSign(name, x, y, z, world));
+                    LeaderboardSign sign;
+                    try {
+                        sign = new LeaderboardSign(name, x, y, z, world);
+                    } catch (Exception e) {
+                        continue;
+                    }
+                    signs.add(sign);
                 }
             } else {
                 saveToFile();
@@ -47,7 +54,22 @@ public class LeaderboardManager {
             Core.logMessage("LeaderboardManager", "There was an error loading the LeaderboardManager config!");
             e.printStackTrace();
         }
-        Core.runTaskTimer(ParkManager.getInstance(), this::update, 400L, 10 * 60 * 20L);
+        Core.runTaskTimer(() -> new ArrayList<>(signUpdates).forEach(update -> {
+            try {
+                LeaderboardSign sign = update.getSign();
+                Location loc = sign.getLocation();
+                Sign s = (Sign) loc.getBlock().getState();
+                String[] lines = update.getLines();
+                for (int i = 0; i < lines.length; i++) {
+                    s.setLine(i, lines[i]);
+                }
+                s.update();
+            } catch (Exception e) {
+                deleteSign(update.getSign().getLocation());
+            }
+            signUpdates.remove(update);
+        }), 0L, 600L);
+        Core.runTaskTimerAsynchronously(ParkManager.getInstance(), this::update, 400L, 10 * 60 * 20L);
     }
 
     private List<LeaderboardSign> getSigns() {
@@ -77,10 +99,18 @@ public class LeaderboardManager {
             if (s.getRideName().equals(name)) return false;
         }
         Location loc = sign.getLocation();
-        LeaderboardSign signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
-        signs.add(signObject);
-        signObject.update();
-        saveToFile();
+        LeaderboardSign signObject;
+        try {
+            signObject = new LeaderboardSign(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld());
+        } catch (Exception e) {
+            return false;
+        }
+        Core.runTaskAsynchronously(ParkManager.getInstance(), () -> {
+            SignUpdate update = signObject.update();
+            if (update != null) signUpdates.add(update);
+            signs.add(signObject);
+            saveToFile();
+        });
         return true;
     }
 
@@ -119,8 +149,13 @@ public class LeaderboardManager {
     }
 
     public void update() {
+        if (signs.isEmpty()) return;
         Core.logMessage("LeaderboardManager", "Updating ride counter leaderboards...");
-        getSigns().forEach(LeaderboardSign::update);
+        getSigns().forEach(sign -> {
+            SignUpdate update = sign.update();
+            if (update != null) signUpdates.add(update);
+        });
+        Core.logMessage("LeaderboardManager", "Finished updating ride counter leaderboards!");
     }
 
     public void saveToFile() {
