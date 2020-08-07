@@ -8,9 +8,7 @@ import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.core.utils.MathUtil;
 import network.palace.parkmanager.ParkManager;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -68,12 +66,13 @@ public class TeleportCommand extends CoreCommand {
                 }
                 return;
             case 4:
-            case 6: {
+            case 6:
+            case 7: {
                 CPlayer moving = Core.getPlayerManager().getPlayer(args[0]);
                 if (moving == null) {
                     player.sendMessage(ChatColor.RED + "Player not found!");
                     player.sendMessage(ChatColor.RED + "/tp " + ChatColor.BOLD + "[player] " + ChatColor.RED
-                            + "[x] [y] [z] <yaw> <pitch>");
+                            + "[x] [y] [z] <yaw> <pitch> <world>");
                     return;
                 }
                 try {
@@ -87,6 +86,7 @@ public class TeleportCommand extends CoreCommand {
         player.sendMessage(ChatColor.RED + "/tp [player] <target>");
         player.sendMessage(ChatColor.RED + "/tp [x] [y] [z] <yaw> <pitch>");
         player.sendMessage(ChatColor.RED + "/tp [player] [x] [y] [z] <yaw> <pitch>");
+        player.sendMessage(ChatColor.RED + "/tp [player] [x] [y] [z] <yaw> <pitch> <world>");
     }
 
     @Override
@@ -98,12 +98,13 @@ public class TeleportCommand extends CoreCommand {
                 return;
             }
             case 4:
-            case 6: {
+            case 6:
+            case 7: {
                 CPlayer moving = Core.getPlayerManager().getPlayer(args[0]);
                 if (moving == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     sender.sendMessage(ChatColor.RED + "/tp " + ChatColor.BOLD + "[player] " + ChatColor.RED
-                            + "[x] [y] [z] <yaw> <pitch>");
+                            + "[x] [y] [z] <yaw> <pitch> <world>");
                     return;
                 }
                 try {
@@ -116,24 +117,32 @@ public class TeleportCommand extends CoreCommand {
         }
         sender.sendMessage(ChatColor.RED + "/tp [player] [target]");
         sender.sendMessage(ChatColor.RED + "/tp [player] [x] [y] [z] <yaw> <pitch>");
+        sender.sendMessage(ChatColor.RED + "/tp [player] [x] [y] [z] <yaw> <pitch> <world>");
     }
 
     private Location getLocation(String[] args, CommandSender sender, CPlayer target) throws NumberFormatException {
-        if (args.length == 4) {
+        double x = getDouble(sender, args[1], "x"),
+                y = getDouble(sender, args[2], "y"),
+                z = getDouble(sender, args[3], "z");
+
+        float yaw, pitch;
+        if (args.length == 6) {
+            yaw = (float) getDouble(sender, args[4], "yaw");
+            pitch = (float) getDouble(sender, args[5], "pitch");
+        } else {
             Location playerLoc = target.getLocation();
-            return new Location(target.getWorld(),
-                    getDouble(sender, args[1], "x"),
-                    getDouble(sender, args[2], "y"),
-                    getDouble(sender, args[3], "z"),
-                    playerLoc.getYaw(),
-                    playerLoc.getPitch());
+            yaw = playerLoc.getYaw();
+            pitch = playerLoc.getPitch();
         }
-        return new Location(target.getWorld(),
-                getDouble(sender, args[1], "x"),
-                getDouble(sender, args[2], "y"),
-                getDouble(sender, args[3], "z"),
-                (float) getDouble(sender, args[4], "yaw"),
-                (float) getDouble(sender, args[5], "pitch"));
+
+        World world;
+        if (args.length == 7) {
+            world = Bukkit.getWorld(args[6]);
+        } else {
+            world = target.getWorld();
+        }
+
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
     /**
