@@ -79,7 +79,7 @@ public class PlayerJoinAndLeave implements Listener {
 
         boolean notInVirtualQueue = true;
         for (VirtualQueue queue : ParkManager.getVirtualQueueManager().getQueues()) {
-            if (queue.getMembers().contains(player.getUniqueId())) {
+            if (queue.getHoldingAreaLocation() != null && queue.getMembers().contains(player.getUniqueId())) {
                 player.teleport(queue.getHoldingAreaLocation());
                 notInVirtualQueue = false;
                 break;
