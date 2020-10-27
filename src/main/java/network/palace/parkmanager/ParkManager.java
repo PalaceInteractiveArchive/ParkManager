@@ -83,7 +83,6 @@ public class ParkManager extends Plugin {
         queueManager = new QueueManager();
         rideCounterUtil = new RideCounterUtil();
         scheduleManager = new ScheduleManager();
-        shopManager = new ShopManager();
         showMenuManager = new ShowMenuManager();
         storageManager = new StorageManager();
         teleportUtil = new TeleportUtil();
@@ -91,6 +90,7 @@ public class ParkManager extends Plugin {
         virtualQueueManager = new VirtualQueueManager();
         visibilityUtil = new VisibilityUtil();
         wardrobeManager = new WardrobeManager();
+        shopManager = new ShopManager();
 
         storageManager.initialize();
 
