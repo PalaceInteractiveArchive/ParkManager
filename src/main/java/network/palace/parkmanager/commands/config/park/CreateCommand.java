@@ -23,7 +23,8 @@ public class CreateCommand extends CoreCommand {
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
         if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "/parkconfig park create [" + ParkType.listIDs() + "] [world] [region]");
+            player.sendMessage(ChatColor.RED + "/parkconfig park create [type] [world] [region]");
+            player.sendMessage(ChatColor.AQUA + "Types: " + ParkType.listIDs());
             return;
         }
         ParkType type = ParkType.fromString(args[0].toUpperCase());

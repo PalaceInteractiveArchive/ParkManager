@@ -5,6 +5,7 @@ import network.palace.core.events.CorePlayerJoinedEvent;
 import network.palace.core.player.CPlayer;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
+import network.palace.parkmanager.queues.virtual.VirtualQueue;
 import network.palace.parkwarp.ParkWarp;
 import network.palace.parkwarp.handlers.Warp;
 import org.bson.Document;
@@ -76,33 +77,44 @@ public class PlayerJoinAndLeave implements Listener {
         ParkManager.getFastPassKioskManager().handleJoin(player, (Document) loginData.get("fastpass"));
         ParkManager.getWardrobeManager().handleJoin(player, loginData.getString("outfit"), loginData.get("outfitPurchases", ArrayList.class));
 
-        if (ParkManager.getConfigUtil().isSpawnOnJoin()) {
-            player.teleport(ParkManager.getConfigUtil().getSpawn());
-        } else if (ParkManager.getConfigUtil().isWarpOnJoin()) {
-            Warp w = null;
-            double distance = -1;
-            for (Warp warp : new ArrayList<>(ParkWarp.getWarpUtil().getWarps())) {
-                if (warp.getWorld() == null ||
-                        !warp.getWorld().equals(player.getWorld()) ||
-                        !warp.getServer().equals(Core.getServerType()) ||
-                        (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId()))
-                    continue;
-                if (distance == -1) {
-                    w = warp;
-                    distance = warp.distance(player.getLocation());
-                    continue;
-                }
-                double d = warp.distance(player.getLocation());
-                if (d < distance) {
-                    w = warp;
-                    distance = d;
-                }
+        boolean notInVirtualQueue = true;
+        for (VirtualQueue queue : ParkManager.getVirtualQueueManager().getQueues()) {
+            if (queue.getHoldingAreaLocation() != null && queue.getMembers().contains(player.getUniqueId())) {
+                player.teleport(queue.getHoldingAreaLocation());
+                notInVirtualQueue = false;
+                break;
             }
-            if (w == null) {
-                player.performCommand("spawn");
-                return;
+        }
+
+        if (notInVirtualQueue) {
+            if (ParkManager.getConfigUtil().isSpawnOnJoin()) {
+                player.teleport(ParkManager.getConfigUtil().getSpawn());
+            } else if (ParkManager.getConfigUtil().isWarpOnJoin()) {
+                Warp w = null;
+                double distance = -1;
+                for (Warp warp : new ArrayList<>(ParkWarp.getWarpUtil().getWarps())) {
+                    if (warp.getWorld() == null ||
+                            !warp.getWorld().equals(player.getWorld()) ||
+                            !warp.getServer().equals(Core.getServerType()) ||
+                            (warp.getRank() != null && player.getRank().getRankId() < warp.getRank().getRankId()))
+                        continue;
+                    if (distance == -1) {
+                        w = warp;
+                        distance = warp.distance(player.getLocation());
+                        continue;
+                    }
+                    double d = warp.distance(player.getLocation());
+                    if (d < distance) {
+                        w = warp;
+                        distance = d;
+                    }
+                }
+                if (w == null) {
+                    player.performCommand("spawn");
+                    return;
+                }
+                player.teleport(w);
             }
-            player.teleport(w);
         }
 
         player.giveAchievement(0);

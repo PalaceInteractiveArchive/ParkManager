@@ -6,12 +6,16 @@ import network.palace.core.Core;
 import network.palace.core.dashboard.packets.dashboard.PacketAudioConnect;
 import network.palace.core.dashboard.packets.dashboard.PacketUpdateEconomy;
 import network.palace.core.events.DashboardConnectEvent;
+import network.palace.core.events.DashboardDisconnectEvent;
 import network.palace.core.events.IncomingPacketEvent;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.dashboard.packets.parks.PacketInventoryContent;
 import network.palace.parkmanager.dashboard.packets.parks.PacketShowRequestResponse;
+import network.palace.parkmanager.dashboard.packets.parks.queue.CreateQueuePacket;
+import network.palace.parkmanager.dashboard.packets.parks.queue.RemoveQueuePacket;
+import network.palace.parkmanager.dashboard.packets.parks.queue.UpdateQueuePacket;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -28,7 +32,7 @@ public class PacketListener implements Listener {
         }
         int id = object.get("id").getAsInt();
         switch (id) {
-            /**
+            /*
              * Connected to
              * Audio server
              */
@@ -41,7 +45,7 @@ public class PacketListener implements Listener {
                 }
                 break;
             }
-            /**
+            /*
              * Cross-server Inventory
              */
             case 58: {
@@ -49,13 +53,13 @@ public class PacketListener implements Listener {
                 Core.runTask(ParkManager.getInstance(), () -> ParkManager.getStorageManager().processIncomingPacket(packet));
                 break;
             }
-            /**
+            /*
              * Refresh Hotel Rooms
              */
             case 59: {
                 break;
             }
-            /**
+            /*
              * Update economy
              * Used for voting
              */
@@ -65,12 +69,33 @@ public class PacketListener implements Listener {
 //                ParkManager.getFpKioskManager().updateVoteData(uuid);
                 break;
             }
-            /**
+            /*
              * Shareholder Show Request response
              */
             case 78: {
                 PacketShowRequestResponse packet = new PacketShowRequestResponse().fromJSON(object);
                 ParkManager.getShowMenuManager().handlePacket(packet);
+                break;
+            }
+            /*
+             * Create VirtualQueue
+             */
+            case 81: {
+                ParkManager.getVirtualQueueManager().handleCreate(new CreateQueuePacket().fromJSON(object));
+                break;
+            }
+            /*
+             * Remove VirtualQueue
+             */
+            case 82: {
+                ParkManager.getVirtualQueueManager().handleRemove(new RemoveQueuePacket().fromJSON(object));
+                break;
+            }
+            /*
+             * Update VirtualQueue
+             */
+            case 83: {
+                ParkManager.getVirtualQueueManager().handleUpdate(new UpdateQueuePacket().fromJSON(object));
                 break;
             }
         }
@@ -79,5 +104,10 @@ public class PacketListener implements Listener {
     @EventHandler
     public void onDashboardConnect(DashboardConnectEvent event) {
         Core.getDashboardConnection().send(new PacketImAPark());
+    }
+
+    @EventHandler
+    public void onDashboardDisconnect(DashboardDisconnectEvent event) {
+        ParkManager.getVirtualQueueManager().clearQueues();
     }
 }
