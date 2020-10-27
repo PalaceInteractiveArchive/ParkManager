@@ -77,7 +77,10 @@ public class ShopManager {
                         nextId = 0;
                         for (JsonElement outfitElement : shopOutfits) {
                             JsonObject outfitObject = (JsonObject) outfitElement;
-                            outfits.add(new ShopOutfit(nextId++, outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
+                            Outfit outfit = ParkManager.getWardrobeManager().getOutfit(outfitObject.get("outfit-id").getAsInt());
+                            if (outfit != null) {
+                                outfits.add(new ShopOutfit(nextId++, outfitObject.get("outfit-id").getAsInt(), outfitObject.get("cost").getAsInt()));
+                            }
                         }
 
                         shops.add(new Shop(id, park.getId(), ChatColor.translateAlternateColorCodes('&', object.get("name").getAsString()),

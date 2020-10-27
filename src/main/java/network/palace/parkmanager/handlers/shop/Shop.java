@@ -6,8 +6,10 @@ import network.palace.parkmanager.handlers.ParkType;
 import network.palace.parkmanager.handlers.outfits.Outfit;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Shop {
     private int nextItemId;
@@ -60,10 +62,14 @@ public class Shop {
     }
 
     private void sortOutfits() {
+        List<Integer> toRemove = new ArrayList<>();
         outfits.sort(Comparator.comparing(o -> {
             Outfit outfit = ParkManager.getWardrobeManager().getOutfit(o.getOutfitId());
-            return outfit.getName();
+            if (outfit != null) return outfit.getName();
+            toRemove.add(o.getOutfitId());
+            return null;
         }));
+        outfits.removeIf(shopOutfit -> toRemove.contains(shopOutfit.getOutfitId()));
     }
 
     public ShopOutfit getOutfit(int id) {
