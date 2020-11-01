@@ -29,6 +29,7 @@ public enum ShowType {
     FOF(ChatColor.DARK_AQUA + "Festival of Fantasy Parade", Material.INK_SACK, (byte) 12),
     MSEP(ChatColor.YELLOW + "Main Street Electrical Parade", Material.BLAZE_POWDER),
     MISIP(ChatColor.GREEN + "Move It! Shake It! MousekeDance It!", Material.SUGAR),
+    MAGICHAPPENS(ChatColor.DARK_GREEN + "Magic Happens", Material.END_CRYSTAL),
     //Fourth of July
     CA(ChatColor.RED + "Celebrate " + ChatColor.BLUE + "America", Material.BANNER),
     //Halloween
