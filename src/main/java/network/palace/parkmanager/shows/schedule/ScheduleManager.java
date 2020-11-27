@@ -25,9 +25,8 @@ import java.util.*;
 
 public class ScheduleManager {
     private List<ScheduledShow> shows = new ArrayList<>();
-    private List<String> times = new ArrayList<>();
-    @Getter
-    private List<MenuButton> buttons = new ArrayList<>();
+    private final List<String> times = new ArrayList<>();
+    @Getter private final List<MenuButton> buttons = new ArrayList<>();
 
     public ScheduleManager() {
         Core.runTaskTimerAsynchronously(ParkManager.getInstance(), this::updateShows, 0L, 36000L);
@@ -254,10 +253,10 @@ public class ScheduleManager {
     @Getter
     @AllArgsConstructor
     public static class ScheduledShow {
-        private ShowType type;
-        private ShowDay day;
-        private int rawTime;
-        private String time;
+        private final ShowType type;
+        private final ShowDay day;
+        private final int rawTime;
+        private final String time;
     }
 
     public enum ShowDay {
