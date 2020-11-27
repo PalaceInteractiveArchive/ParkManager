@@ -25,6 +25,7 @@ public enum ShowType {
     FNTM(ChatColor.BLUE + "Finding Nemo: The Musical", Material.RAW_FISH, (byte) 2),
     JEDI(ChatColor.BLUE + "Jedi Training", Material.IRON_SWORD),
     MRFF(ChatColor.GOLD + "Mickey’s Royal Friendship Faire", Material.INK_SACK),
+    GRINCHMAS(ChatColor.DARK_GREEN + "Grinchmas Wholiday Spectacular", Material.SAPLING, (byte) 0),
     //Parades
     FOF(ChatColor.DARK_AQUA + "Festival of Fantasy Parade", Material.INK_SACK, (byte) 12),
     MSEP(ChatColor.YELLOW + "Main Street Electrical Parade", Material.BLAZE_POWDER),
