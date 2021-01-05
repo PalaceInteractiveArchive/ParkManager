@@ -544,7 +544,7 @@ public class MagicBandManager {
                                     p.performCommand("pp toggle");
                                     p.closeInventory();
                                 })),
-                        getBackButton(22, BandInventory.MAIN)
+                        getBackButton(22, BandInventory.PARKS)
                 )).open();
                 break;
             }
