@@ -49,6 +49,9 @@ public class MagicBandManager {
 
                 List<MenuButton> buttons = new ArrayList<>(Arrays.asList(
                         new MenuButton(4, profile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
+                        new MenuButton(8, ItemUtil.create(Material.CLAY_BRICK, ChatColor.AQUA + "PhotoPass Settings",
+                                Arrays.asList(ChatColor.GREEN + "Manage Settings for", ChatColor.GREEN + "Ride Photos and Photo Spots!")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.RIDE_PHOTOS))),
                         new MenuButton(10, ItemUtil.create(Material.POTATO_ITEM, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.FOOD))),
@@ -531,6 +534,18 @@ public class MagicBandManager {
             }
             case RIDE_COUNTERS: {
                 openRideCounterPage(player, 1);
+                break;
+            }
+            case RIDE_PHOTOS: {
+                new Menu(27, ChatColor.BLUE + "PhotoPass Settings", player, Arrays.asList(
+                        new MenuButton(13, ItemUtil.create(Material.LEVER, ChatColor.AQUA + "Toggle RidePhotos",
+                                Collections.singletonList(ChatColor.GREEN + "Toggle RidePhotos On/Off")),
+                                ImmutableMap.of(ClickType.LEFT, p -> {
+                                    p.performCommand("pp toggle");
+                                    p.closeInventory();
+                                })),
+                        getBackButton(22, BandInventory.MAIN)
+                )).open();
                 break;
             }
             case VISIBILITY: {

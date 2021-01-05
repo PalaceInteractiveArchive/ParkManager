@@ -8,7 +8,7 @@ public enum BandInventory {
     // Customize MagicBand
     CUSTOMIZE_BAND_TYPE, CUSTOMIZE_BAND_NAME,
     // Profile
-    RIDE_COUNTERS,
+    RIDE_COUNTERS, RIDE_PHOTOS,
     // Show Timetable
     TIMETABLE
 }
