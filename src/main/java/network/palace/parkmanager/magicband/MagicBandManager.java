@@ -49,9 +49,6 @@ public class MagicBandManager {
 
                 List<MenuButton> buttons = new ArrayList<>(Arrays.asList(
                         new MenuButton(4, profile, ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PROFILE))),
-                        new MenuButton(8, ItemUtil.create(Material.CLAY_BRICK, ChatColor.AQUA + "PhotoPass Settings",
-                                Arrays.asList(ChatColor.GREEN + "Manage Settings for", ChatColor.GREEN + "Ride Photos and Photo Spots!")),
-                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.RIDE_PHOTOS))),
                         new MenuButton(10, ItemUtil.create(Material.POTATO_ITEM, ChatColor.AQUA + "Find Food",
                                 Arrays.asList(ChatColor.GREEN + "Visit a restaurant", ChatColor.GREEN + "to get some food!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.FOOD))),
@@ -483,7 +480,7 @@ public class MagicBandManager {
             }
             case PROFILE: {
                 new Menu(27, ChatColor.BLUE + "My Profile", player, Arrays.asList(
-                        new MenuButton(10, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Website",
+                        new MenuButton(1, ItemUtil.create(Material.NETHER_STAR, ChatColor.AQUA + "Website",
                                 Collections.singletonList(ChatColor.GREEN + "Visit our website!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     new FormattedMessage("\n")
@@ -493,7 +490,7 @@ public class MagicBandManager {
                                             .link("https://palace.network").then("\n").send(p);
                                     p.closeInventory();
                                 })),
-                        new MenuButton(11, ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Store",
+                        new MenuButton(10, ItemUtil.create(Material.DIAMOND, ChatColor.AQUA + "Store",
                                 Collections.singletonList(ChatColor.GREEN + "Visit our store!")),
                                 ImmutableMap.of(ClickType.LEFT, p -> {
                                     new FormattedMessage("\n")
@@ -503,19 +500,22 @@ public class MagicBandManager {
                                             .link("https://store.palace.network").then("\n").send(p);
                                     p.closeInventory();
                                 })),
-                        new MenuButton(12, ItemUtil.create(Material.ENDER_CHEST, ChatColor.AQUA + "Locker",
+                        new MenuButton(3, ItemUtil.create(Material.ENDER_CHEST, ChatColor.AQUA + "Locker",
                                 Collections.singletonList(ChatColor.GREEN + "Click to view your Locker")),
                                 ImmutableMap.of(ClickType.LEFT, p -> ParkManager.getInventoryUtil().openMenu(p, MenuType.LOCKER))),
-                        new MenuButton(13, ItemUtil.create(Material.GOLD_INGOT, ChatColor.AQUA + "Ride Counters",
+                        new MenuButton(12, ItemUtil.create(Material.GOLD_INGOT, ChatColor.AQUA + "Ride Counters",
                                 Arrays.asList(ChatColor.GREEN + "View the number of times you've",
                                         ChatColor.GREEN + "been on different theme park rides")),
                                 ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.RIDE_COUNTERS))),
+                        new MenuButton(5, ItemUtil.create(Material.CLAY_BRICK, ChatColor.AQUA + "PhotoPass Settings",
+                                Arrays.asList(ChatColor.GREEN + "Manage Settings for", ChatColor.GREEN + "Ride Photos and Photo Spots!")),
+                                ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.RIDE_PHOTOS))),
                         new MenuButton(14, ItemUtil.create(Material.EMERALD, ChatColor.AQUA + "Achievements", Arrays.asList(ChatColor.GREEN +
                                         "You've earned " + ChatColor.YELLOW + player.getAchievementManager().getAchievements().size() + ChatColor.GREEN + " achievements!",
                                 ChatColor.GREEN + "There are " + ChatColor.YELLOW + Core.getAchievementManager().getAchievements().size() + ChatColor.GREEN + " total to earn",
                                 ChatColor.GRAY + "Click to view all of your achievements")),
                                 ImmutableMap.of(ClickType.LEFT, p -> Core.getCraftingMenu().openAchievementPage(p, 1))),
-                        new MenuButton(15, ItemUtil.create(Material.NOTE_BLOCK, ChatColor.AQUA + "Resource Packs",
+                        new MenuButton(7, ItemUtil.create(Material.NOTE_BLOCK, ChatColor.AQUA + "Resource Packs",
                                 Collections.singletonList(ChatColor.GREEN + "Manage your Resource Pack settings")),
                                 ImmutableMap.of(ClickType.LEFT, p -> ParkManager.getPackManager().openMenu(p))),
                         new MenuButton(16, ItemUtil.create(Material.COMPASS, ChatColor.AQUA + "Discord",
