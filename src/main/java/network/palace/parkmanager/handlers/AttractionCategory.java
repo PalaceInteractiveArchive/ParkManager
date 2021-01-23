@@ -2,7 +2,7 @@ package network.palace.parkmanager.handlers;
 
 public enum AttractionCategory {
     BIG_DROPS, SMALL_DROPS, SLOW_RIDE, THRILL_RIDE, WATER_RIDE, SPINNING, DARK, LOUD,
-    SCARY, CLASSIC, ANIMAL_ENCOUNTERS, INDOOR, INTERACTIVE, STAGE_SHOW, AUDIO_SERVER;
+    SCARY, CLASSIC, ANIMAL_ENCOUNTERS, INDOOR, INTERACTIVE, STAGE_SHOW, AUDIO_SERVER, PHOTOPASS;
 
     public String getShortName() {
         return name().toLowerCase().replaceAll("_", "");
