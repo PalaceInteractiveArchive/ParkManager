@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class WardrobeManager {
-    private HashMap<Integer, Outfit> outfits = new HashMap<>();
+    private final HashMap<Integer, Outfit> outfits = new HashMap<>();
     private boolean initialStarted = false;
 
     public WardrobeManager() {
@@ -60,6 +60,7 @@ public class WardrobeManager {
             for (Document doc : Core.getMongoHandler().getOutfits(ParkManager.getResort().getId())) {
                 if (doc.containsKey("seq")) continue;
                 Outfit outfit = getLegacyOutfit(doc);
+                if (outfit == null) continue;
                 outfits.put(outfit.getId(), outfit);
             }
             MongoCollection<Document> outfitsCollection = Core.getMongoHandler().getDatabase().getCollection("outfits");
@@ -97,6 +98,7 @@ public class WardrobeManager {
         return new ArrayList<>(outfits.values());
     }
 
+    @SuppressWarnings("rawtypes")
     public void handleJoin(CPlayer player, String outfitCode, ArrayList arrayList) {
         List<Integer> purchases = new ArrayList<>();
         for (Object o : arrayList) {
@@ -142,6 +144,7 @@ public class WardrobeManager {
 
     public void setOutfitItems(CPlayer player) {
         Clothing c = (Clothing) player.getRegistry().getEntry("clothing");
+        if (c == null) return;
         PlayerInventory inv = player.getInventory();
         inv.setHelmet(c.getHead());
         inv.setChestplate(c.getShirt());

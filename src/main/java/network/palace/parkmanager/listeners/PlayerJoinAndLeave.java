@@ -36,6 +36,7 @@ public class PlayerJoinAndLeave implements Listener {
     public void onRealPlayerJoin(PlayerJoinEvent event) {
         String join = ParkManager.getConfigUtil().getJoinMessage();
         if (!join.equalsIgnoreCase("none")) event.getPlayer().sendMessage(join);
+        event.getPlayer().getInventory().clear();
     }
 
     @EventHandler
@@ -154,9 +155,9 @@ public class PlayerJoinAndLeave implements Listener {
     }
 
     private void handleDisconnect(UUID uuid) {
+        ParkManager.getStorageManager().logout(uuid);
         CPlayer player = Core.getPlayerManager().getPlayer(uuid);
         if (player == null) return;
-        ParkManager.getStorageManager().logout(player);
         ParkManager.getQueueManager().leaveAllQueues(player);
     }
 }

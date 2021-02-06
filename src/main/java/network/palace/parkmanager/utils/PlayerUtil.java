@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlayerUtil {
-    private HashMap<UUID, Document> loginData = new HashMap<>();
-    @Getter private HashMap<UUID, String> userCache = new HashMap<>();
+    private final HashMap<UUID, Document> loginData = new HashMap<>();
+    @Getter private final HashMap<UUID, String> userCache = new HashMap<>();
 
     public Document getLoginData(UUID uuid) {
         return loginData.get(uuid);
