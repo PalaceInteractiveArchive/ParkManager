@@ -1,14 +1,11 @@
 package network.palace.parkmanager;
 
 import lombok.Getter;
-import network.palace.core.Core;
 import network.palace.core.plugin.Plugin;
 import network.palace.core.plugin.PluginInfo;
 import network.palace.parkmanager.attractions.AttractionManager;
 import network.palace.parkmanager.autograph.AutographManager;
 import network.palace.parkmanager.commands.*;
-import network.palace.parkmanager.dashboard.PacketListener;
-import network.palace.parkmanager.dashboard.packets.parks.PacketImAPark;
 import network.palace.parkmanager.food.FoodManager;
 import network.palace.parkmanager.fpkiosk.FastPassKioskManager;
 import network.palace.parkmanager.handlers.Resort;

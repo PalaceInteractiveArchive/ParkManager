@@ -8,9 +8,9 @@ import lombok.Getter;
 public enum StorageSize {
     SMALL(3, 0, "Small"), LARGE(6, 1, "Large");
 
-    private int rows;
-    private int size;
-    private String name;
+    private final int rows;
+    private final int size;
+    private final String name;
 
     public int getSlots() {
         return rows * 9;

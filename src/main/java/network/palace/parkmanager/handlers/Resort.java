@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum Resort {
     WDW(0), DLR(1), USO(2);
 
-    @Getter private int id;
+    @Getter private final int id;
 
     public static Resort fromString(String s) {
         if (s == null) return WDW;
