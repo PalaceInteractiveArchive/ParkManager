@@ -5,10 +5,14 @@ import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.dashboard.packets.parks.PacketBroadcast;
+import network.palace.parkmanager.message.BroadcastPacket;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.io.IOException;
 
 @CommandMeta(description = "Broadcast to the network", rank = Rank.MOD)
 public class BroadcastGlobalCommand extends CoreCommand {
@@ -23,17 +27,23 @@ public class BroadcastGlobalCommand extends CoreCommand {
             sender.sendMessage(ChatColor.RED + "/b [Message]");
             return;
         }
-        StringBuilder message = new StringBuilder();
-        for (String arg : args) {
-            message.append(arg).append(" ");
-        }
+        String message = String.join(" ", args);
         String source;
         if (!(sender instanceof Player)) {
-            source = "Console on " + Core.getInstanceName();
+            if (sender instanceof BlockCommandSender) {
+                Location loc = ((BlockCommandSender) sender).getBlock().getLocation();
+                source = "" + Core.getInstanceName() + ", CMDBLK @ " + loc.getWorld().getName().toLowerCase() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+            } else {
+                source = "Console on " + Core.getInstanceName();
+            }
         } else {
             source = sender.getName();
         }
-        PacketBroadcast packet = new PacketBroadcast(message.toString(), source);
-        Core.getDashboardConnection().send(packet);
+        try {
+            Core.getMessageHandler().sendMessage(new BroadcastPacket(source, ChatColor.translateAlternateColorCodes('&', message)), Core.getMessageHandler().ALL_PROXIES);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sender.sendMessage(ChatColor.RED + "An error occurred while sending that broadcast, check console for details.");
+        }
     }
 }

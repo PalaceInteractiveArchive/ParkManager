@@ -5,10 +5,14 @@ import network.palace.core.command.CommandException;
 import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
-import network.palace.parkmanager.dashboard.packets.parks.PacketMuteChat;
+import network.palace.parkmanager.message.ChatMutePacket;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.io.IOException;
 
 @CommandMeta(description = "Mute and unmute chat", rank = Rank.MOD)
 public class MuteChatCommand extends CoreCommand {
@@ -25,11 +29,20 @@ public class MuteChatCommand extends CoreCommand {
         }
         String source;
         if (!(sender instanceof Player)) {
-            source = "Server";
+            if (sender instanceof BlockCommandSender) {
+                Location loc = ((BlockCommandSender) sender).getBlock().getLocation();
+                source = "Server (" + Core.getInstanceName() + ", CMDBLK @ " + loc.getWorld().getName().toLowerCase() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + ")";
+            } else {
+                source = "Server (" + Core.getInstanceName() + ")";
+            }
         } else {
             source = sender.getName();
         }
-        PacketMuteChat packet = new PacketMuteChat("ParkChat", args[0].equalsIgnoreCase("mute"), source);
-        Core.getDashboardConnection().send(packet);
+        try {
+            Core.getMessageHandler().sendMessage(new ChatMutePacket("ParkChat", source, args[0].equalsIgnoreCase("mute")), Core.getMessageHandler().ALL_PROXIES);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sender.sendMessage(ChatColor.RED + "An error occurred while muting/unmuting chat, check console for details.");
+        }
     }
 }
