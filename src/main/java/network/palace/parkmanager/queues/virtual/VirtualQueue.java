@@ -2,6 +2,8 @@ package network.palace.parkmanager.queues.virtual;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.chat.ComponentSerializer;
 import network.palace.core.Core;
 import network.palace.core.messagequeue.packets.SendPlayerPacket;
 import network.palace.core.player.CPlayer;
@@ -15,7 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -36,7 +37,7 @@ public class VirtualQueue {
     @Getter private boolean open = false;
     // the list of players in queue
     private final LinkedList<UUID> queue = new LinkedList<>();
-    private final HashMap<UUID, Long> sendToServer = new HashMap<>();
+    private final HashMap<UUID, Long> joiningToHoldingArea = new HashMap<>();
 
     @Getter @Setter private long lastAdvance = 0;
     @Getter @Setter private boolean updated = false;
@@ -53,7 +54,7 @@ public class VirtualQueue {
         this.itemId = itemId;
     }
 
-    public void admit() throws IOException {
+    public void admit() throws Exception {
         if (queue.isEmpty()) return;
         if (isHost()) {
             UUID uuid = queue.getFirst();
@@ -101,8 +102,14 @@ public class VirtualQueue {
             return;
         }
         if (getPosition(uuid) >= 1) {
-            if (isHost())
-                Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.RED + "You're already in the virtual queue " + name + "!", false);
+            if (isHost()) {
+                if (joiningToHoldingArea.containsKey(uuid)) {
+                    joiningToHoldingArea.remove(uuid);
+                    sendToServer(uuid);
+                } else {
+                    Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.RED + "You're already in the virtual queue " + name + "!", false);
+                }
+            }
             return;
         }
         queue.add(uuid);
@@ -118,37 +125,33 @@ public class VirtualQueue {
         }
     }
 
-    public void leaveQueue(CPlayer player) throws IOException {
-        leaveQueue(player, true);
-    }
-
-    public void leaveQueue(CPlayer player, boolean message) throws IOException {
+    public void leaveQueue(CPlayer player) throws Exception {
         if (!isHost()) {
             Core.getMessageHandler().sendMessage(new PlayerQueuePacket(id, player.getUniqueId(), false), Core.getMessageHandler().permanentClients.get("all_parks"));
             return;
         }
         if (leaveQueue(player.getUniqueId())) {
             player.getRegistry().removeEntry("virtualQueueHoldingArea");
-            if (message) player.sendMessage(ChatColor.GREEN + "You have left the virtual queue " + name + "!");
-            if (Core.getInstanceName().equals(server)) player.performCommand("warp castle");
-        } else {
-            if (message) player.sendMessage(ChatColor.RED + "You aren't in the virtual queue " + name + "!");
+            if (isHost()) player.performCommand("warp castle");
         }
     }
 
-    public boolean leaveQueue(UUID uuid) throws IOException {
+    public boolean leaveQueue(UUID uuid) throws Exception {
         if (!isHost()) {
             Core.getMessageHandler().sendMessage(new PlayerQueuePacket(id, uuid, false), Core.getMessageHandler().permanentClients.get("all_parks"));
             return false;
         }
+        joiningToHoldingArea.remove(uuid);
         int position = queue.indexOf(uuid);
         if (position >= 0) {
             queue.remove(uuid);
             updated = true;
             updateSigns();
-            if (isHost()) ParkManager.getVirtualQueueManager().removeQueueMember(this, uuid);
+            ParkManager.getVirtualQueueManager().removeQueueMember(this, uuid);
+            Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.GREEN + "You have left the virtual queue " + name + "!", false);
             return true;
         }
+        Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.RED + "You aren't in the virtual queue " + name + "!", false);
         return false;
     }
 
@@ -240,8 +243,8 @@ public class VirtualQueue {
         return new ArrayList<>(queue);
     }
 
-    public HashMap<UUID, Long> getSendingToServer() {
-        return new HashMap<>(sendToServer);
+    public HashMap<UUID, Long> getJoiningToHoldingArea() {
+        return new HashMap<>(joiningToHoldingArea);
     }
 
     /**
@@ -250,17 +253,22 @@ public class VirtualQueue {
      * @param uuid the uuid
      */
     public void markAsSendingToServer(UUID uuid) throws Exception {
-        if (sendToServer.containsKey(uuid) || Core.getPlayerManager().getPlayer(uuid) != null) return;
-        sendToServer.put(uuid, System.currentTimeMillis() + 10000);
-        if (isHost())
-            Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.GREEN + "In " + ChatColor.AQUA + ChatColor.BOLD + "10 seconds " +
-                    ChatColor.GREEN + "you will be sent to " + ChatColor.AQUA + server + ChatColor.GREEN +
-                    " for the queue " + name + "...", false);
+        if (joiningToHoldingArea.containsKey(uuid) || Core.getPlayerManager().getPlayer(uuid) != null) return;
+        joiningToHoldingArea.put(uuid, System.currentTimeMillis() + 15000);
+        if (isHost()) {
+            BaseComponent[] components = new ComponentBuilder("You're almost at the front of the queue for ").color(net.md_5.bungee.api.ChatColor.GREEN)
+                    .append(TextComponent.fromLegacyText(name + "! "))
+                    .append("CLICK HERE IN THE NEXT 15 SECONDS").color(net.md_5.bungee.api.ChatColor.YELLOW).bold(true)
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to advance in the queue!").color(net.md_5.bungee.api.ChatColor.AQUA).create()))
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vqjoin " + id))
+                    .append(" or you'll be removed from the queue!", ComponentBuilder.FormatRetention.NONE).color(net.md_5.bungee.api.ChatColor.AQUA).create();
+            Core.getMessageHandler().sendMessageToPlayer(uuid, ComponentSerializer.toString(components), true);
+        }
     }
 
     public void sendToServer(UUID uuid) {
         try {
-            sendToServer.remove(uuid);
+            joiningToHoldingArea.remove(uuid);
             if (isHost())
                 Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.GREEN + "Sending you to " + ChatColor.AQUA + server +
                         ChatColor.GREEN + " for the queue " + name + "...", false);
@@ -268,5 +276,9 @@ public class VirtualQueue {
         } catch (Exception e) {
             Core.getInstance().getLogger().log(Level.SEVERE, "Error sending player to host server", e);
         }
+    }
+
+    public void removeFromJoiningToHoldingArea(UUID uuid) {
+        joiningToHoldingArea.remove(uuid);
     }
 }

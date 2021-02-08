@@ -60,16 +60,22 @@ public class VirtualQueueManager {
                     if (!queue.isOpen()) return;
 
                     // Send all sendingToServer players to the host server
-                    HashMap<UUID, Long> sendingToServer = queue.getSendingToServer();
-                    sendingToServer.forEach((uuid, time) -> {
-                        if (System.currentTimeMillis() >= time) queue.sendToServer(uuid);
+                    HashMap<UUID, Long> joiningToHoldingArea = queue.getJoiningToHoldingArea();
+                    joiningToHoldingArea.forEach((uuid, time) -> {
+                        if (System.currentTimeMillis() >= time) {
+                            try {
+                                queue.leaveQueue(uuid);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     });
 
                     // Notify all players in the holdingArea that they are about to be brought to the host server
                     List<UUID> holdingAreaMembers = queue.getHoldingAreaMembers();
                     holdingAreaMembers.forEach(uuid -> {
                         try {
-                            if (sendingToServer.containsKey(uuid)) return;
+                            if (joiningToHoldingArea.containsKey(uuid)) return;
                             CPlayer player;
                             if ((player = Core.getPlayerManager().getPlayer(uuid)) != null) {
                                 if (!player.getRegistry().hasEntry("virtualQueueHoldingArea")) {
@@ -171,7 +177,7 @@ public class VirtualQueueManager {
      * @param id the id of the queue
      * @return true if successful, false if not
      */
-    public boolean removeQueue(String id) throws IOException {
+    public boolean removeQueue(String id) throws Exception {
         VirtualQueue queue = getQueueById(id);
         if (queue == null) return false;
         return removeQueue(queue);
@@ -183,19 +189,19 @@ public class VirtualQueueManager {
      * @param queue the queue
      * @return true if successful, false if not
      */
-    public boolean removeQueue(VirtualQueue queue) throws IOException {
+    public boolean removeQueue(VirtualQueue queue) throws Exception {
         queues.remove(queue);
         if (queue.isHost()) {
             queue.getMembers().forEach(uuid -> {
                 try {
                     Core.getMessageHandler().sendMessageToPlayer(uuid, ChatColor.AQUA + "The virtual queue " + queue.getName() + ChatColor.AQUA + " has been removed.", false);
-                    Core.getMessageHandler().sendStaffMessage(ChatColor.GREEN + "A virtual queue (" + queue.getName() +
-                            ChatColor.GREEN + ") has been removed from " + ChatColor.AQUA + Core.getInstanceName() +
-                            ChatColor.GREEN);
                 } catch (Exception e) {
                     Core.getInstance().getLogger().log(Level.SEVERE, "Error sending cross-server message for virtual queue", e);
                 }
             });
+            Core.getMessageHandler().sendStaffMessage(ChatColor.GREEN + "A virtual queue (" + queue.getName() +
+                    ChatColor.GREEN + ") has been removed from " + ChatColor.AQUA + Core.getInstanceName() +
+                    ChatColor.GREEN);
             virtualQueuesCollection.deleteOne(Filters.eq("queueId", queue.getId()));
             Core.getMessageHandler().sendMessage(new RemoveQueuePacket(queue.getId()), Core.getMessageHandler().permanentClients.get("all_parks"));
         }
@@ -212,7 +218,7 @@ public class VirtualQueueManager {
     public void handleRemove(RemoveQueuePacket packet) {
         try {
             removeQueue(packet.getQueueId());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Core.getInstance().getLogger().log(Level.SEVERE, "Error removing virtual queue - MessageQueue issue?", e);
         }
     }
@@ -265,7 +271,7 @@ public class VirtualQueueManager {
         } else {
             try {
                 queue.leaveQueue(packet.getPlayerUUID());
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Core.getInstance().getLogger().log(Level.SEVERE, "Error removing player from virtual queue via packet", e);
             }
         }
@@ -275,7 +281,7 @@ public class VirtualQueueManager {
         new ArrayList<>(queues).forEach(queue -> {
             try {
                 removeQueue(queue);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Core.getInstance().getLogger().log(Level.SEVERE, "Error removing hosted queue on shutdown!", e);
             }
         });
