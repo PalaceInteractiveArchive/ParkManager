@@ -14,9 +14,6 @@ import network.palace.core.player.Rank;
 import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.dashboard.packets.parks.PacketBroadcast;
-import network.palace.parkmanager.dashboard.packets.parks.PacketShowRequest;
-import network.palace.parkmanager.dashboard.packets.parks.PacketShowRequestResponse;
 import network.palace.parkmanager.utils.FileUtil;
 import network.palace.show.Show;
 import network.palace.show.ShowPlugin;
@@ -32,8 +29,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class ShowMenuManager {
-    private List<ShowEntry> shows = new ArrayList<>();
-    private List<ShowRequest> requests = new ArrayList<>();
+    private final List<ShowEntry> shows = new ArrayList<>();
+    private final List<ShowRequest> requests = new ArrayList<>();
     private FileUtil.FileSubsystem subsystem;
 
     public ShowMenuManager() {
@@ -167,19 +164,19 @@ public class ShowMenuManager {
         )).open();
     }
 
-    public void handlePacket(PacketShowRequestResponse packet) {
-        ShowRequest request = getRequest(packet.getRequestId());
-        if (request == null) return;
-        request.setCanBeApproved(true);
-    }
+//    public void handlePacket(PacketShowRequestResponse packet) {
+//        ShowRequest request = getRequest(packet.getRequestId());
+//        if (request == null) return;
+//        request.setCanBeApproved(true);
+//    }
 
     private void handleShowRequest(CPlayer player, ShowEntry entry) {
         player.closeInventory();
         player.sendMessage(ChatColor.GREEN + "Processing request...");
         UUID requestId = UUID.randomUUID();
         requests.add(new ShowRequest(requestId, player.getUniqueId(), entry));
-        Core.getDashboardConnection().send(new PacketShowRequest(requestId, player.getUniqueId(),
-                ChatColor.stripColor(entry.getDisplayName()), Core.getInstanceName()));
+//        Core.getDashboardConnection().send(new PacketShowRequest(requestId, player.getUniqueId(),
+//                ChatColor.stripColor(entry.getDisplayName()), Core.getInstanceName()));
     }
 
     public void handleRequestResposne(CPlayer player, ShowRequest request, boolean approve) {
@@ -195,9 +192,9 @@ public class ShowMenuManager {
                 handleRequestResposne(player, request, false);
                 return;
             }
-            PacketBroadcast packet = new PacketBroadcast(ChatColor.LIGHT_PURPLE + name + ChatColor.GREEN +
-                    " has started " + request.getShow().getDisplayName() + "!", player.getName());
-            Core.getDashboardConnection().send(packet);
+//            PacketBroadcast packet = new PacketBroadcast(ChatColor.LIGHT_PURPLE + name + ChatColor.GREEN +
+//                    " has started " + request.getShow().getDisplayName() + "!", player.getName());
+//            Core.getDashboardConnection().send(packet);
             ShowPlugin.startShow(request.getShow().getShowFile(), new Show(ParkManager.getInstance(), file));
 
             updateLimitsFile(player, request);

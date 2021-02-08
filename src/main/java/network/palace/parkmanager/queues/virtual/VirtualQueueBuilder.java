@@ -6,6 +6,9 @@ import network.palace.core.utils.MiscUtil;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
 public class VirtualQueueBuilder extends VirtualQueue {
 
     public VirtualQueueBuilder() {
@@ -82,9 +85,19 @@ public class VirtualQueueBuilder extends VirtualQueue {
             player.sendMessage(ChatColor.GREEN + "Create signs to control the queue:");
             player.sendMessage(ChatColor.AQUA + "[vqueue] " + ChatColor.GREEN + "on the first line, the vqueue id on the second line, and " + ChatColor.AQUA +
                     "advance " + ChatColor.GREEN + "or " + ChatColor.AQUA + "state " + ChatColor.GREEN + "on the third line.");
-            ParkManager.getVirtualQueueManager().addQueue(new VirtualQueue(this.id, this.name, this.holdingArea, this.holdingAreaLocation,
-                    this.queueLocation, Core.getInstanceName(), this.advanceSign, this.stateSign, ParkManager.getVirtualQueueManager().getRandomItemId()));
             player.getRegistry().removeEntry("vqueueBuilder");
+            if (ParkManager.getVirtualQueueManager().getQueueById(this.id) != null) {
+                player.sendMessage(ChatColor.RED + "This id is already used by another queue! Try again: " + ChatColor.YELLOW + "/vqueue create");
+                player.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.ITALIC + "See current queue ids with: " + ChatColor.YELLOW + "/vqueue list");
+                return;
+            }
+            try {
+                ParkManager.getVirtualQueueManager().addQueue(new VirtualQueue(this.id, this.name, this.holdingArea, this.holdingAreaLocation,
+                        this.queueLocation, Core.getInstanceName(), this.advanceSign, this.stateSign, ParkManager.getVirtualQueueManager().getRandomItemId()));
+            } catch (IOException e) {
+                Core.getInstance().getLogger().log(Level.SEVERE, "Error creating virtual queue", e);
+                player.sendMessage(ChatColor.RED + "An error occurred while advancing that virtual queue, check console for details");
+            }
         }
     }
 }

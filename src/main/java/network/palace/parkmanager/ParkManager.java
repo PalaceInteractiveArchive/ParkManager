@@ -90,6 +90,7 @@ public class ParkManager extends Plugin {
         shopManager = new ShopManager();
 
         storageManager.initialize();
+        virtualQueueManager.initializeFromDatabase();
 
         registerListeners();
         registerCommands();
@@ -97,6 +98,7 @@ public class ParkManager extends Plugin {
 
     @Override
     protected void onPluginDisable() throws Exception {
+        virtualQueueManager.clearQueues();
         Bukkit.getWorlds().forEach(world -> world.getEntities().stream().filter(e -> e instanceof Minecart).forEach(Entity::remove));
     }
 
