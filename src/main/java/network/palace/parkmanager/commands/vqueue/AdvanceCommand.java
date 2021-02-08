@@ -6,12 +6,10 @@ import network.palace.core.command.CommandMeta;
 import network.palace.core.command.CoreCommand;
 import network.palace.core.player.CPlayer;
 import network.palace.parkmanager.ParkManager;
-import network.palace.parkmanager.dashboard.packets.parks.queue.AdmitQueuePacket;
 import network.palace.parkmanager.queues.virtual.VirtualQueue;
 import org.bukkit.ChatColor;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.logging.Level;
 
 @CommandMeta(description = "Advance players in line for a virtual queue hosted on this server")
 public class AdvanceCommand extends CoreCommand {
@@ -32,7 +30,7 @@ public class AdvanceCommand extends CoreCommand {
             player.sendMessage(ChatColor.RED + "Could not find a queue by id " + args[0] + "!");
             return;
         }
-        if (queue.cantEdit()) {
+        if (!queue.isHost()) {
             player.sendMessage(ChatColor.RED + "You can only do that on the server hosting the queue (" +
                     ChatColor.GREEN + queue.getServer() + ChatColor.RED + ")!");
             return;
@@ -47,16 +45,19 @@ public class AdvanceCommand extends CoreCommand {
             return;
         }
         queue.setLastAdvance(System.currentTimeMillis());
-        Core.getDashboardConnection().send(new AdmitQueuePacket(queue.getId()));
 
-        player.sendMessage(queue.getName() + ChatColor.GREEN + " has been advanced! There are now " +
-                (queue.getMembers().size() - 1) + " players in queue.");
+        try {
+            queue.admit();
+        } catch (Exception e) {
+            Core.getInstance().getLogger().log(Level.SEVERE, "Error advancing virtual queue", e);
+            player.sendMessage(ChatColor.RED + "An error occurred while advancing that virtual queue, check console for details");
+        }
 
-        List<UUID> holdingArea = queue.getHoldingAreaMembers();
-        CPlayer first = Core.getPlayerManager().getPlayer(holdingArea.get(0));
-        if (first != null) {
-            first.sendMessage(ChatColor.GREEN + "You've made it to the front of the queue!");
-            first.teleport(queue.getQueueLocation());
+        if (queue.getMembers().isEmpty()) {
+            player.sendMessage(queue.getName() + ChatColor.GREEN + " has been advanced! The queue is now empty.");
+        } else {
+            player.sendMessage(queue.getName() + ChatColor.GREEN + " has been advanced! There are now " +
+                    queue.getMembers().size() + " players in queue.");
         }
     }
 }

@@ -32,6 +32,7 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.logging.Level;
 
 @SuppressWarnings("DuplicatedCode")
 public class MagicBandManager {
@@ -276,9 +277,19 @@ public class MagicBandManager {
                     buttons.add(new MenuButton(i++, ItemUtil.unbreakable(item), ImmutableMap.of(ClickType.RIGHT, p -> {
                         p.closeInventory();
                         if (queue.getPosition(p.getUniqueId()) < 1) {
-                            queue.joinQueue(p);
+                            try {
+                                queue.joinQueue(p);
+                            } catch (Exception e) {
+                                Core.getInstance().getLogger().log(Level.SEVERE, "Error joining virtual queue", e);
+                                p.sendMessage(ChatColor.RED + "An error occurred while joining that queue - try again soon!");
+                            }
                         } else {
-                            queue.leaveQueue(p);
+                            try {
+                                queue.leaveQueue(p);
+                            } catch (Exception e) {
+                                Core.getInstance().getLogger().log(Level.SEVERE, "Error joining virtual queue", e);
+                                p.sendMessage(ChatColor.RED + "An error occurred while joining that queue - try again soon!");
+                            }
                         }
                     })));
                 }

@@ -80,8 +80,11 @@ public class PlayerJoinAndLeave implements Listener {
 
         boolean notInVirtualQueue = true;
         for (VirtualQueue queue : ParkManager.getVirtualQueueManager().getQueues()) {
-            if (queue.getHoldingAreaLocation() != null && queue.getMembers().contains(player.getUniqueId())) {
+            if (queue.getHoldingAreaLocation() != null && queue.getHoldingAreaMembers().contains(player.getUniqueId())) {
                 player.teleport(queue.getHoldingAreaLocation());
+                player.getRegistry().addEntry("virtualQueueHoldingArea", true);
+                player.sendMessage(ChatColor.GREEN + "You have been brought to the holding area for " + queue.getName() + "! " +
+                        ChatColor.GREEN + "You'll be at the front of the queue soon.");
                 notInVirtualQueue = false;
                 break;
             }
