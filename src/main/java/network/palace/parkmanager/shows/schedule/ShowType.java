@@ -45,7 +45,8 @@ public enum ShowType {
     CHRISTMASTIME_FIREWORKS(ChatColor.LIGHT_PURPLE + "Minnie's Wonderful Christmastime Fireworks", Material.SNOW),
     MERRIEST_CELEBRATION(ChatColor.RED + "Mickey's Most Merriest Celebration", Material.MELON),
     OUACTP(ChatColor.AQUA + "Once Upon A Christmastime Parade", Material.SNOW_BALL),
-    JBJB(ChatColor.GREEN + "Jingle Bell, Jingle BAM!", Material.RECORD_5);
+    JBJB(ChatColor.GREEN + "Jingle Bell, Jingle BAM!", Material.RECORD_5),
+    PTN(ChatColor.DARK_AQUA + "Paint The Night", Material.STONE_SWORD);
 
     private String name;
     private Material type;
