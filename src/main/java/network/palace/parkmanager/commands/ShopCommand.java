@@ -7,7 +7,7 @@ import network.palace.parkmanager.commands.shop.ItemCommand;
 import network.palace.parkmanager.commands.shop.OutfitCommand;
 import network.palace.parkmanager.commands.shop.*;
 
-@CommandMeta(description = "Shop command", rank = Rank.MOD)
+@CommandMeta(description = "Shop command", rank = Rank.CM)
 public class ShopCommand extends CoreCommand {
 
     public ShopCommand() {

@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 
-@CommandMeta(description = "Broadcast to the network", rank = Rank.MOD)
+@CommandMeta(description = "Broadcast to the network", rank = Rank.CM)
 public class BroadcastGlobalCommand extends CoreCommand {
 
     public BroadcastGlobalCommand() {

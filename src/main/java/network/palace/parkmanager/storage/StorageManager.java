@@ -307,7 +307,7 @@ public class StorageManager {
 
         PlayerInventory inv = player.getInventory();
         inv.clear();
-        ItemStack compass = player.getRank().getRankId() >= Rank.MOD.getRankId() ? ItemUtil.create(Material.COMPASS) : null;
+        ItemStack compass = player.getRank().getRankId() >= Rank.CM.getRankId() ? ItemUtil.create(Material.COMPASS) : null;
         ItemStack[] contents = new ItemStack[]{
                 compass, null, null, null, null, backpack,
                 ItemUtil.create(Material.WATCH, ChatColor.GREEN + "Watch " + ChatColor.GRAY + "(Right-Click)",
@@ -319,7 +319,7 @@ public class StorageManager {
 
         if (data != null) {
             ItemStack[] base = data.getBase();
-            for (int i = player.getRank().getRankId() >= Rank.MOD.getRankId() ? 1 : 0; i < base.length; i++) {
+            for (int i = player.getRank().getRankId() >= Rank.CM.getRankId() ? 1 : 0; i < base.length; i++) {
                 if (InventoryUtil.isReservedSlot(i)) continue;
                 contents[i] = base[i];
             }

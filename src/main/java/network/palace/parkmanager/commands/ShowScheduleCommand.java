@@ -6,7 +6,7 @@ import network.palace.core.player.Rank;
 import network.palace.parkmanager.commands.showschedule.EditCommand;
 import network.palace.parkmanager.commands.showschedule.UpdateCommand;
 
-@CommandMeta(description = "Show schedule command", rank = Rank.MOD)
+@CommandMeta(description = "Show schedule command", rank = Rank.CM)
 public class ShowScheduleCommand extends CoreCommand {
 
     public ShowScheduleCommand() {

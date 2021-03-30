@@ -5,7 +5,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.commands.vqueue.*;
 
-@CommandMeta(rank = Rank.MOD, aliases = "vq")
+@CommandMeta(rank = Rank.CM, aliases = "vq")
 public class VirtualQueueCommand extends CoreCommand {
 
     public VirtualQueueCommand() {

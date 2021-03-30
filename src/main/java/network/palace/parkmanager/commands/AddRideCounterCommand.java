@@ -10,7 +10,7 @@ import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-@CommandMeta(description = "Add a ride counter for a player", rank = Rank.MOD)
+@CommandMeta(description = "Add a ride counter for a player", rank = Rank.CM)
 public class AddRideCounterCommand extends CoreCommand {
 
     public AddRideCounterCommand() {

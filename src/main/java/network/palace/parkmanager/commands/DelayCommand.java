@@ -12,7 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
-@CommandMeta(description = "Delay placing a redstone block", rank = Rank.MOD)
+@CommandMeta(description = "Delay placing a redstone block", rank = Rank.CM)
 public class DelayCommand extends CoreCommand {
 
     public DelayCommand() {

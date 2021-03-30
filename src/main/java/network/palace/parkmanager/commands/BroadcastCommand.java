@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-@CommandMeta(description = "Broadcast to the server", rank = Rank.MOD)
+@CommandMeta(description = "Broadcast to the server", rank = Rank.CM)
 public class BroadcastCommand extends CoreCommand {
 
     public BroadcastCommand() {

@@ -5,7 +5,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.commands.queue.*;
 
-@CommandMeta(description = "Queue command", rank = Rank.MOD)
+@CommandMeta(description = "Queue command", rank = Rank.CM)
 public class QueueCommand extends CoreCommand {
 
     public QueueCommand() {

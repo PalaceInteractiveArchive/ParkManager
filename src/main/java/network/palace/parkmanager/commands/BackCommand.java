@@ -8,7 +8,7 @@ import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 
-@CommandMeta(description = "Go to your previous location", rank = Rank.MOD)
+@CommandMeta(description = "Go to your previous location", rank = Rank.CM)
 public class BackCommand extends CoreCommand {
 
     public BackCommand() {

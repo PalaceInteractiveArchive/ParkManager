@@ -15,7 +15,7 @@ public class PlayerDropItem implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         CPlayer player = Core.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
-        if (player.getRank().getRankId() < Rank.MOD.getRankId()) {
+        if (player.getRank().getRankId() < Rank.CM.getRankId()) {
             // Non-mods can't drop items
             event.setCancelled(true);
             return;

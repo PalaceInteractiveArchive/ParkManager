@@ -49,7 +49,7 @@ public class PlayerJoinAndLeave implements Listener {
             return;
         }
 
-        if (loginData.containsKey("buildmode") && player.getRank().getRankId() >= Rank.MOD.getRankId())
+        if (loginData.containsKey("buildmode") && player.getRank().getRankId() >= Rank.CM.getRankId())
             //Only set to build if player is Mod+
             buildMode = loginData.getBoolean("buildmode");
         player.getRegistry().addEntry("friends", loginData.get("friends"));

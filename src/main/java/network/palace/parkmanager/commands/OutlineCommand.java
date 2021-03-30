@@ -14,7 +14,7 @@ import org.bukkit.Material;
 
 import java.util.List;
 
-@CommandMeta(description = "Outline command", aliases = "out", rank = Rank.MOD)
+@CommandMeta(description = "Outline command", aliases = "out", rank = Rank.CM)
 public class OutlineCommand extends CoreCommand {
 
     public OutlineCommand() {

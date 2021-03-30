@@ -10,7 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Set player time", rank = Rank.MOD)
+@CommandMeta(description = "Set player time", rank = Rank.CM)
 public class PlayerTimeCommand extends CoreCommand {
 
     public PlayerTimeCommand() {
