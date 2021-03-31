@@ -103,13 +103,13 @@ public class MagicBandManager {
                 }
 
                 Menu menu = new Menu(27, ChatColor.BLUE + "Your " + (ParkManager.getResort().equals(Resort.USO) ? "Power Pass" : "MagicBand"), player, buttons);
-                if (player.getRank().getRankId() >= Rank.NOBLE.getRankId()) {
+                if (player.getRank().getRankId() >= Rank.PASSPORT.getRankId()) {
                     menu.setButton(new MenuButton(2, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
                             Arrays.asList(ChatColor.GREEN + "Change the time of day you see", ChatColor.GREEN + "for the park you're currently in!")),
                             ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PLAYER_TIME))));
                 } else {
                     menu.setButton(new MenuButton(2, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
-                            Arrays.asList(ChatColor.GREEN + "Purchase " + Rank.NOBLE.getFormattedName() + ChatColor.GREEN + "at",
+                            Arrays.asList(ChatColor.GREEN + "Purchase " + Rank.PASSPORT.getFormattedName() + ChatColor.GREEN + "at",
                                     ChatColor.YELLOW + "/store" + ChatColor.GREEN + "to use this!"))));
                 }
                 menu.open();

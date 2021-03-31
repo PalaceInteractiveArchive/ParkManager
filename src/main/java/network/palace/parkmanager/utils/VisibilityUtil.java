@@ -41,7 +41,7 @@ public class VisibilityUtil {
         Setting setting = getSetting(player1);
         switch (setting) {
             case ONLY_STAFF_AND_FRIENDS:
-                if (player2.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) return true;
+                if (player2.getRank().getRankId() >= Rank.VIP.getRankId()) return true;
             case ONLY_FRIENDS:
                 return isFriend(player1, player2);
             case ALL_HIDDEN:

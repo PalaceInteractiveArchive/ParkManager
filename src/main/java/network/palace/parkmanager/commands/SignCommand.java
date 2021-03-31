@@ -9,7 +9,7 @@ import network.palace.core.player.Rank;
 import network.palace.parkmanager.ParkManager;
 import org.bukkit.ChatColor;
 
-@CommandMeta(description = "Sign an autograph book", aliases = "s", rank = Rank.SPECIALGUEST)
+@CommandMeta(description = "Sign an autograph book", aliases = "s", rank = Rank.VIP)
 public class SignCommand extends CoreCommand {
 
     public SignCommand() {

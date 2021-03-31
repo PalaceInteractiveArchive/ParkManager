@@ -46,7 +46,7 @@ public class SpeedCommand extends CoreCommand {
             sender.sendMessage(ChatColor.RED + "Player not found!");
             return;
         }
-        boolean isFlying = target.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId() && target.isFlying();
+        boolean isFlying = target.getRank().getRankId() >= Rank.VIP.getRankId() && target.isFlying();
         float speed = getMoveSpeed(speedString);
         if (isFlying) {
             target.setFlySpeed(getRealMoveSpeed(speed, true));
