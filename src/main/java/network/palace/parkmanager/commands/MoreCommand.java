@@ -10,7 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-@CommandMeta(description = "Give a full stack of an item", rank = Rank.MOD)
+@CommandMeta(description = "Give a full stack of an item", rank = Rank.CM)
 public class MoreCommand extends CoreCommand {
 
     public MoreCommand() {

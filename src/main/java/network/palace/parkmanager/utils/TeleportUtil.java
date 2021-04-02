@@ -27,7 +27,7 @@ public class TeleportUtil {
      * @param location the location
      */
     public void log(CPlayer player, Location location) {
-        if (player.getRank().getRankId() >= Rank.MOD.getRankId()) locations.put(player.getUniqueId(), location);
+        if (player.getRank().getRankId() >= Rank.CM.getRankId()) locations.put(player.getUniqueId(), location);
     }
 
     /**

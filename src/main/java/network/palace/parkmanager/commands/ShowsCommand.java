@@ -23,7 +23,7 @@ public class ShowsCommand extends CoreCommand {
                     " to use this! Find out more info at " + ChatColor.GREEN + "https://palnet.us/shareholder" + ChatColor.RESET + "\n");
             return;
         }
-        if (player.getRank().getRankId() < Rank.MOD.getRankId() && !player.getRank().equals(Rank.SHAREHOLDER)) {
+        if (player.getRank().getRankId() < Rank.CM.getRankId() && !player.getRank().equals(Rank.SHAREHOLDER)) {
             player.sendMessage(ChatColor.RED + "You can't use this command!");
             return;
         }

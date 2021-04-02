@@ -14,7 +14,7 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Set the lines of a sign", rank = Rank.MOD)
+@CommandMeta(description = "Set the lines of a sign", rank = Rank.CM)
 public class SetSignCommand extends CoreCommand {
 
     public SetSignCommand() {

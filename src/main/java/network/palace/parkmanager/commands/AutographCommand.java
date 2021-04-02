@@ -47,7 +47,7 @@ public class AutographCommand extends CoreCommand {
                 return;
             }
             default: {
-                if (player.getRank().getRankId() < Rank.SPECIALGUEST.getRankId()) {
+                if (player.getRank().getRankId() < Rank.VIP.getRankId()) {
                     helpMenu(player);
                     return;
                 }
@@ -69,7 +69,7 @@ public class AutographCommand extends CoreCommand {
     private void helpMenu(CPlayer player) {
         player.sendMessage(ChatColor.GREEN + "Autograph Book Commands:");
         CPlayer cp = Core.getPlayerManager().getPlayer(player.getUniqueId());
-        if (cp.getRank().getRankId() >= Rank.SPECIALGUEST.getRankId()) {
+        if (cp.getRank().getRankId() >= Rank.VIP.getRankId()) {
             player.sendMessage(ChatColor.GREEN + "/autograph [user] " + ChatColor.AQUA +
                     "- Request to sign a player's book");
         }

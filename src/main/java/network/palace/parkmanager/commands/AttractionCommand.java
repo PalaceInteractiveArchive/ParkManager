@@ -5,7 +5,7 @@ import network.palace.core.command.CoreCommand;
 import network.palace.core.player.Rank;
 import network.palace.parkmanager.commands.attractions.*;
 
-@CommandMeta(description = "Attraction command", rank = Rank.MOD)
+@CommandMeta(description = "Attraction command", rank = Rank.CM)
 public class AttractionCommand extends CoreCommand {
 
     public AttractionCommand() {

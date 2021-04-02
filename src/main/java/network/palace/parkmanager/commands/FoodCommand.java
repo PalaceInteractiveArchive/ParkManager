@@ -8,7 +8,7 @@ import network.palace.parkmanager.commands.food.ListCommand;
 import network.palace.parkmanager.commands.food.ReloadCommand;
 import network.palace.parkmanager.commands.food.RemoveCommand;
 
-@CommandMeta(description = "Food location command", rank = Rank.MOD)
+@CommandMeta(description = "Food location command", rank = Rank.CM)
 public class FoodCommand extends CoreCommand {
 
     public FoodCommand() {

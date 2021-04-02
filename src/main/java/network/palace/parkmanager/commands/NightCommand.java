@@ -11,7 +11,7 @@ import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
-@CommandMeta(description = "Set time to night", rank = Rank.MOD)
+@CommandMeta(description = "Set time to night", rank = Rank.CM)
 public class NightCommand extends CoreCommand {
 
     public NightCommand() {

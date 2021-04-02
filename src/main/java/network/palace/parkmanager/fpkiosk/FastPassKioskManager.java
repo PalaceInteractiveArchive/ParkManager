@@ -152,27 +152,27 @@ public class FastPassKioskManager {
                 ChatColor.DARK_AQUA + "Monthly Tokens - Settler", getClaimLore(settler,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "Everyone can claim this prize!"))),
-                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.SETTLER, rewardData))));
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.GUEST, rewardData))));
         menu.setButton(new MenuButton(20, ItemUtil.create(dweller ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.AQUA + "Monthly Tokens - Dweller", getClaimLore(dweller,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                                ChatColor.GRAY + "You must be " + Rank.DWELLER.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.DWELLER, rewardData))));
+                                ChatColor.GRAY + "You must be " + Rank.PASSHOLDER.getFormattedName() + ChatColor.GRAY + " or above"))),
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.PASSHOLDER, rewardData))));
         menu.setButton(new MenuButton(22, ItemUtil.create(noble ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.BLUE + "Monthly Tokens - Noble", getClaimLore(noble,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                                ChatColor.GRAY + "You must be " + Rank.NOBLE.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.NOBLE, rewardData))));
+                                ChatColor.GRAY + "You must be " + Rank.PASSPORT.getFormattedName() + ChatColor.GRAY + " or above"))),
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.PASSPORT, rewardData))));
         menu.setButton(new MenuButton(24, ItemUtil.create(majestic ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.DARK_PURPLE + "Monthly Tokens - Majestic", getClaimLore(majestic,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                                ChatColor.GRAY + "You must be " + Rank.MAJESTIC.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.MAJESTIC, rewardData))));
+                                ChatColor.GRAY + "You must be " + Rank.DVC.getFormattedName() + ChatColor.GRAY + " or above"))),
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.DVC, rewardData))));
         menu.setButton(new MenuButton(26, ItemUtil.create(honorable ? Material.IRON_INGOT : Material.DIAMOND,
                 ChatColor.LIGHT_PURPLE + "Monthly Tokens - Honorable", getClaimLore(honorable,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
-                                ChatColor.GRAY + "You must be " + Rank.HONORABLE.getFormattedName() + ChatColor.GRAY + " or above"))),
-                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.HONORABLE, rewardData))));
+                                ChatColor.GRAY + "You must be " + Rank.CLUB.getFormattedName() + ChatColor.GRAY + " or above"))),
+                ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.CLUB, rewardData))));
     }
 
     private void claimTokens(CPlayer player, Rank rank, RewardData rewardData) {
@@ -182,19 +182,19 @@ public class FastPassKioskManager {
         }
         long lastClaim;
         switch (rank) {
-            case SETTLER:
+            case GUEST:
                 lastClaim = rewardData.getSettler();
                 break;
-            case DWELLER:
+            case PASSHOLDER:
                 lastClaim = rewardData.getDweller();
                 break;
-            case NOBLE:
+            case PASSPORT:
                 lastClaim = rewardData.getNoble();
                 break;
-            case MAJESTIC:
+            case DVC:
                 lastClaim = rewardData.getMajestic();
                 break;
-            case HONORABLE:
+            case CLUB:
                 lastClaim = rewardData.getHonorable();
                 break;
             default:
@@ -207,19 +207,19 @@ public class FastPassKioskManager {
         }
         long nextClaim = System.currentTimeMillis();
         switch (rank) {
-            case SETTLER:
+            case GUEST:
                 rewardData.setSettler(nextClaim);
                 break;
-            case DWELLER:
+            case PASSHOLDER:
                 rewardData.setDweller(nextClaim);
                 break;
-            case NOBLE:
+            case PASSPORT:
                 rewardData.setNoble(nextClaim);
                 break;
-            case MAJESTIC:
+            case DVC:
                 rewardData.setMajestic(nextClaim);
                 break;
-            case HONORABLE:
+            case CLUB:
                 rewardData.setHonorable(nextClaim);
                 break;
         }

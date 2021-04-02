@@ -9,7 +9,7 @@ import network.palace.core.player.Rank;
 import network.palace.parkmanager.handlers.storage.StorageData;
 import org.bukkit.ChatColor;
 
-@CommandMeta(description = "Look into a player's inventory", rank = Rank.MOD)
+@CommandMeta(description = "Look into a player's inventory", rank = Rank.CM)
 public class InvSeeCommand extends CoreCommand {
 
     public InvSeeCommand() {

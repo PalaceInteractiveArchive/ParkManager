@@ -8,7 +8,7 @@ import network.palace.parkmanager.commands.outfits.ListCommand;
 import network.palace.parkmanager.commands.outfits.ReloadCommand;
 import network.palace.parkmanager.commands.outfits.RemoveCommand;
 
-@CommandMeta(description = "Outfit command", rank = Rank.MOD)
+@CommandMeta(description = "Outfit command", rank = Rank.CM)
 public class OutfitCommand extends CoreCommand {
 
     public OutfitCommand() {

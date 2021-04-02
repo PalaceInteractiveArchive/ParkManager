@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 
-@CommandMeta(description = "Mute and unmute chat", rank = Rank.MOD)
+@CommandMeta(description = "Mute and unmute chat", rank = Rank.CM)
 public class MuteChatCommand extends CoreCommand {
 
     public MuteChatCommand() {

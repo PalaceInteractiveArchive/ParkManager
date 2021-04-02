@@ -11,7 +11,7 @@ import org.bukkit.WeatherType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandMeta(description = "Set player weather", rank = Rank.MOD)
+@CommandMeta(description = "Set player weather", rank = Rank.CM)
 public class PlayerWeatherCommand extends CoreCommand {
 
     public PlayerWeatherCommand() {

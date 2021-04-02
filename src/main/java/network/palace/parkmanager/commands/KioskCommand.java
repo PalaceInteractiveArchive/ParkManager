@@ -6,7 +6,7 @@ import network.palace.core.player.Rank;
 import network.palace.parkmanager.commands.kiosk.CreateCommand;
 import network.palace.parkmanager.commands.kiosk.DeleteCommand;
 
-@CommandMeta(description = "Default kiosk command", rank = Rank.MOD)
+@CommandMeta(description = "Default kiosk command", rank = Rank.CM)
 public class KioskCommand extends CoreCommand {
 
     public KioskCommand() {

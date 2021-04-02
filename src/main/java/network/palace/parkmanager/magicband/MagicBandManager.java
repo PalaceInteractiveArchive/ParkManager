@@ -103,13 +103,13 @@ public class MagicBandManager {
                 }
 
                 Menu menu = new Menu(27, ChatColor.BLUE + "Your " + (ParkManager.getResort().equals(Resort.USO) ? "Power Pass" : "MagicBand"), player, buttons);
-                if (player.getRank().getRankId() >= Rank.NOBLE.getRankId()) {
+                if (player.getRank().getRankId() >= Rank.PASSPORT.getRankId()) {
                     menu.setButton(new MenuButton(2, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
                             Arrays.asList(ChatColor.GREEN + "Change the time of day you see", ChatColor.GREEN + "for the park you're currently in!")),
                             ImmutableMap.of(ClickType.LEFT, p -> openInventory(p, BandInventory.PLAYER_TIME))));
                 } else {
                     menu.setButton(new MenuButton(2, ItemUtil.create(Material.WATCH, ChatColor.AQUA + "Player Time",
-                            Arrays.asList(ChatColor.GREEN + "Purchase " + Rank.NOBLE.getFormattedName() + ChatColor.GREEN + "at",
+                            Arrays.asList(ChatColor.GREEN + "Purchase " + Rank.PASSPORT.getFormattedName() + ChatColor.GREEN + "at",
                                     ChatColor.YELLOW + "/store" + ChatColor.GREEN + "to use this!"))));
                 }
                 menu.open();
@@ -683,24 +683,27 @@ public class MagicBandManager {
                 meta.setDisplayName(BandType.PINK.getName());
                 pink.setItemMeta(meta);
                 List<MenuButton> buttons = Arrays.asList(
-                        new MenuButton(10, red, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.RED.getDBName()))),
-                        new MenuButton(11, orange, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.ORANGE.getDBName()))),
-                        new MenuButton(12, yellow, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.YELLOW.getDBName()))),
-                        new MenuButton(13, green, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.GREEN.getDBName()))),
-                        new MenuButton(14, blue, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.BLUE.getDBName()))),
-                        new MenuButton(15, purple, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PURPLE.getDBName()))),
-                        new MenuButton(16, pink, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PINK.getDBName()))),
+                        new MenuButton(1, red, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.RED.getDBName()))),
+                        new MenuButton(2, orange, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.ORANGE.getDBName()))),
+                        new MenuButton(3, yellow, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.YELLOW.getDBName()))),
+                        new MenuButton(4, green, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.GREEN.getDBName()))),
+                        new MenuButton(5, blue, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.BLUE.getDBName()))),
+                        new MenuButton(6, purple, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PURPLE.getDBName()))),
+                        new MenuButton(7, pink, ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PINK.getDBName()))),
 
-                        new MenuButton(20, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.SORCERER_MICKEY), BandType.SORCERER_MICKEY.getName())),
+                        new MenuButton(11, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.SORCERER_MICKEY), BandType.SORCERER_MICKEY.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.SORCERER_MICKEY.getDBName()))),
-                        new MenuButton(21, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.HAUNTED_MANSION), BandType.HAUNTED_MANSION.getName())),
+                        new MenuButton(12, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.HAUNTED_MANSION), BandType.HAUNTED_MANSION.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.HAUNTED_MANSION.getDBName()))),
-                        new MenuButton(22, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.PRINCESSES), BandType.PRINCESSES.getName())),
+                        new MenuButton(13, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.PRINCESSES), BandType.PRINCESSES.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.PRINCESSES.getDBName()))),
-                        new MenuButton(23, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.BIG_HERO_SIX), BandType.BIG_HERO_SIX.getName())),
+                        new MenuButton(14, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.BIG_HERO_SIX), BandType.BIG_HERO_SIX.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.BIG_HERO_SIX.getDBName()))),
-                        new MenuButton(24, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.HOLIDAY), BandType.HOLIDAY.getName())),
+                        new MenuButton(15, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.HOLIDAY), BandType.HOLIDAY.getName())),
                                 ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.HOLIDAY.getDBName()))),
+
+                        new MenuButton(22, ItemUtil.unbreakable(ItemUtil.create(getMaterial(BandType.NOOKPHONE), BandType.NOOKPHONE.getName())),
+                                ImmutableMap.of(ClickType.LEFT, p -> setBandType(p, BandType.NOOKPHONE.getDBName()))),
                         getBackButton(31, BandInventory.CUSTOMIZE_BAND)
                 );
                 new Menu(36, ChatColor.BLUE + "Customize MagicBand Type", player, buttons).open();
@@ -970,6 +973,8 @@ public class MagicBandManager {
                 return Material.IRON_BARDING;
             case HOLIDAY:
                 return Material.PAPER;
+            case NOOKPHONE:
+                return Material.RABBIT_FOOT;
             default:
                 return Material.FIREWORK_CHARGE;
         }
