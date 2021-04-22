@@ -149,27 +149,27 @@ public class FastPassKioskManager {
                         "Vote for us on Minecraft Server", ChatColor.GRAY + "Lists! Voting rewards will be",
                 ChatColor.GRAY + "returning soon!")), ImmutableMap.of(ClickType.LEFT, voteMessage::send)));
         menu.setButton(new MenuButton(18, ItemUtil.create(settler ? Material.IRON_INGOT : Material.DIAMOND,
-                ChatColor.DARK_AQUA + "Monthly Tokens - Settler", getClaimLore(settler,
+                ChatColor.GRAY + "Monthly Tokens - Guest", getClaimLore(settler,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "Everyone can claim this prize!"))),
                 ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.GUEST, rewardData))));
         menu.setButton(new MenuButton(20, ItemUtil.create(dweller ? Material.IRON_INGOT : Material.DIAMOND,
-                ChatColor.AQUA + "Monthly Tokens - Dweller", getClaimLore(dweller,
+                ChatColor.DARK_AQUA + "Monthly Tokens - Passholder", getClaimLore(dweller,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.PASSHOLDER.getFormattedName() + ChatColor.GRAY + " or above"))),
                 ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.PASSHOLDER, rewardData))));
         menu.setButton(new MenuButton(22, ItemUtil.create(noble ? Material.IRON_INGOT : Material.DIAMOND,
-                ChatColor.BLUE + "Monthly Tokens - Noble", getClaimLore(noble,
+                ChatColor.YELLOW + "Monthly Tokens - Premier Passport", getClaimLore(noble,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.PASSPORT.getFormattedName() + ChatColor.GRAY + " or above"))),
                 ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.PASSPORT, rewardData))));
         menu.setButton(new MenuButton(24, ItemUtil.create(majestic ? Material.IRON_INGOT : Material.DIAMOND,
-                ChatColor.DARK_PURPLE + "Monthly Tokens - Majestic", getClaimLore(majestic,
+                ChatColor.GOLD + "Monthly Tokens - DVC", getClaimLore(majestic,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.DVC.getFormattedName() + ChatColor.GRAY + " or above"))),
                 ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.DVC, rewardData))));
         menu.setButton(new MenuButton(26, ItemUtil.create(honorable ? Material.IRON_INGOT : Material.DIAMOND,
-                ChatColor.LIGHT_PURPLE + "Monthly Tokens - Honorable", getClaimLore(honorable,
+                ChatColor.DARK_RED + "Monthly Tokens - Club 33", getClaimLore(honorable,
                         Arrays.asList(ChatColor.GRAY + "Claim your monthly 20 Tokens!",
                                 ChatColor.GRAY + "You must be " + Rank.CLUB.getFormattedName() + ChatColor.GRAY + " or above"))),
                 ImmutableMap.of(ClickType.LEFT, p -> claimTokens(p, Rank.CLUB, rewardData))));
