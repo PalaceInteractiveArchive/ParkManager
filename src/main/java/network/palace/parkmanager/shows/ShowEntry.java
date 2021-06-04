@@ -11,15 +11,15 @@ import java.util.Random;
 
 @Getter
 public class ShowEntry {
-    private String showFile;
     private String region;
     private String displayName;
+    private String command;
     private byte data;
 
-    public ShowEntry(String showFile, String region, String displayName) {
-        this.showFile = showFile;
+    public ShowEntry(String command, String region, String displayName) {
         this.region = region;
         this.displayName = displayName;
+        this.command = command;
         data = (byte) new Random().nextInt(16);
     }
 
