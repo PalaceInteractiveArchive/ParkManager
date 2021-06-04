@@ -15,8 +15,6 @@ import network.palace.core.utils.ItemUtil;
 import network.palace.core.utils.TextUtil;
 import network.palace.parkmanager.ParkManager;
 import network.palace.parkmanager.utils.FileUtil;
-import network.palace.show.Show;
-import network.palace.show.ShowPlugin;
 import org.bson.Document;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -75,7 +73,7 @@ public class ShowMenuManager {
     public ShowEntry getShow(String name) {
         ShowEntry show = null;
         for (ShowEntry entry : shows) {
-            if (entry.getShowFile().equals(name)) {
+            if (entry.getCommand().equals(name)) {
                 show = entry;
                 break;
             }
@@ -97,7 +95,7 @@ public class ShowMenuManager {
     public void listShows(CPlayer player) {
         player.sendMessage(ChatColor.GREEN + "Shareholder Show Menu Shows:");
         for (ShowEntry entry : shows) {
-            player.sendMessage(ChatColor.AQUA + "- " + ChatColor.GREEN + entry.getShowFile() + ChatColor.YELLOW + ", " +
+            player.sendMessage(ChatColor.AQUA + "- " + ChatColor.GREEN + entry.getCommand() + ChatColor.YELLOW + ", " +
                     ChatColor.GREEN + entry.getRegion() + ChatColor.YELLOW + ", " + ChatColor.GREEN + entry.getDisplayName());
         }
     }
@@ -175,8 +173,11 @@ public class ShowMenuManager {
         player.sendMessage(ChatColor.GREEN + "Processing request...");
         UUID requestId = UUID.randomUUID();
         requests.add(new ShowRequest(requestId, player.getUniqueId(), entry));
-//        Core.getDashboardConnection().send(new PacketShowRequest(requestId, player.getUniqueId(),
-//                ChatColor.stripColor(entry.getDisplayName()), Core.getInstanceName()));
+        try {
+            Core.getMessageHandler().sendStaffMessage(ChatColor.GREEN + "A shareholder " + player.getName() + " has requested the show " + entry.getDisplayName() + "! " + ChatColor.GREEN + "To accept/deny this request, head to " + Core.getInstanceName() + " and run /shows!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleRequestResposne(CPlayer player, ShowRequest request, boolean approve) {
@@ -184,23 +185,14 @@ public class ShowMenuManager {
         requests.remove(request);
         CPlayer requester = Core.getPlayerManager().getPlayer(request.getUuid());
         if (approve) {
-            String name = requester == null ? "A Shareholder" : requester.getName();
-
-            File file = new File("plugins/Show/shows/" + request.getShow().getShowFile() + ".show");
-            if (!file.exists()) {
-                player.sendMessage(ChatColor.RED + "There was an error responding to that show request! It has been denied.");
-                handleRequestResposne(player, request, false);
-                return;
-            }
-//            PacketBroadcast packet = new PacketBroadcast(ChatColor.LIGHT_PURPLE + name + ChatColor.GREEN +
-//                    " has started " + request.getShow().getDisplayName() + "!", player.getName());
-//            Core.getDashboardConnection().send(packet);
-            ShowPlugin.startShow(request.getShow().getShowFile(), new Show(ParkManager.getInstance(), file));
-
+            String cmd = "multishow start " + request.getCommand();
+            Core.logMessage("Shareholder Show", cmd);
+            player.performCommand(cmd);
+//            ShowPlugin.startShow(request.getShow().getShowFile(), new Show(ParkManager.getInstance(), file));
             updateLimitsFile(player, request);
             Core.getMongoHandler().getDatabase().getCollection("players")
                     .updateOne(Filters.eq("uuid", player.getUniqueId().toString()),
-                            Updates.set("showRequests", new Document("lastShow", request.getShow().getShowFile())
+                            Updates.set("showRequests", new Document("lastShow", request.getShow().getCommand())
                                     .append("lastRan", System.currentTimeMillis() / 1000)));
         } else {
             requester.sendMessage(ChatColor.RED + "A staff member has declined your request to run a show. Please try again soon!");
@@ -224,7 +216,7 @@ public class ShowMenuManager {
                         JsonObject show = (JsonObject) e2;
 
                         String showFile = show.get("name").getAsString();
-                        if (showFile.equals(entry.getShowFile())) {
+                        if (showFile.equals(entry.getCommand())) {
                             if (show.get("lastRan").getAsLong() > ((System.currentTimeMillis() / 1000) - 172800)) {
                                 return "You've already run this show within the last 48 hours, try again soon!";
                             } else {
@@ -239,7 +231,7 @@ public class ShowMenuManager {
                     JsonObject show = (JsonObject) e;
 
                     String showFile = show.get("name").getAsString();
-                    if (showFile.equals(entry.getShowFile())) {
+                    if (showFile.equals(entry.getCommand())) {
                         if (show.get("lastRan").getAsLong() > ((System.currentTimeMillis() / 1000) - 43200)) {
                             return "This show was run by a Shareholder within the last 12 hours, try again soon!";
                         } else {
@@ -259,7 +251,7 @@ public class ShowMenuManager {
             JsonObject object = (JsonObject) subsystem.getFileContents("limits");
 
             JsonObject show = new JsonObject();
-            show.addProperty("name", request.getShow().getShowFile());
+            show.addProperty("name", request.getShow().getCommand());
             show.addProperty("lastRan", System.currentTimeMillis() / 1000);
 
             JsonArray users = object.getAsJsonArray("users");
@@ -278,7 +270,7 @@ public class ShowMenuManager {
                 JsonObject s = (JsonObject) e;
 
                 String showFile = s.get("name").getAsString();
-                if (showFile.equals(request.getShow().getShowFile())) userShows.remove(s);
+                if (showFile.equals(request.getShow().getCommand())) userShows.remove(s);
             }
             userShows.add(show);
 
@@ -292,7 +284,7 @@ public class ShowMenuManager {
                 JsonObject s = (JsonObject) e;
 
                 String showFile = s.get("name").getAsString();
-                if (showFile.equals(request.getShow().getShowFile())) shows.remove(s);
+                if (showFile.equals(request.getShow().getCommand())) shows.remove(s);
             }
             shows.add(show);
 
@@ -307,7 +299,7 @@ public class ShowMenuManager {
         shows.sort(Comparator.comparing(showEntry -> ChatColor.stripColor(showEntry.getDisplayName().toLowerCase())));
         for (ShowEntry entry : shows) {
             JsonObject object = new JsonObject();
-            object.addProperty("showFile", entry.getShowFile());
+            object.addProperty("showFile", entry.getCommand());
             object.addProperty("region", entry.getRegion());
             object.addProperty("displayName", entry.getDisplayName());
             array.add(object);

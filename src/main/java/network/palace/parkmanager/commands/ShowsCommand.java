@@ -70,12 +70,14 @@ public class ShowsCommand extends CoreCommand {
             return;
         } else if (args.length >= 4 && args[0].equalsIgnoreCase("add")) {
             StringBuilder name = new StringBuilder();
+            String multishowcommand = args[1].replaceAll("~", " ");
             for (int i = 3; i < args.length; i++) {
                 name.append(args[i]).append(" ");
             }
-            ShowEntry entry = new ShowEntry(args[1], args[2], ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
+
+            ShowEntry entry = new ShowEntry(multishowcommand, args[2], ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
             ParkManager.getShowMenuManager().addShow(entry);
-            player.sendMessage(ChatColor.GREEN + "Added a new file '" + entry.getShowFile() + "' to the Shareholder Show Menu!");
+            player.sendMessage(ChatColor.GREEN + "Added a new command '" + entry.getCommand() + "' to the Shareholder Show Menu!");
             return;
         }
         helpMenu(player, args);
@@ -87,7 +89,7 @@ public class ShowsCommand extends CoreCommand {
         player.sendMessage(ChatColor.AQUA + "- Reload the Shareholder Show Menu.");
         player.sendMessage(ChatColor.GREEN + "/shows add [ShowFile] [Region] [Display Name]");
         player.sendMessage(ChatColor.AQUA + "- Add a new show to the Shareholder Show Menu.");
-        player.sendMessage(ChatColor.AQUA + "- [ShowFile] is the name of the show file to run (probably a pre-show) without the '.show' extension.");
+        player.sendMessage(ChatColor.AQUA + "- [Command] is the multishow command to run (probably a pre-show) without the '/multishow start' part. Substitute spaces with a tilda (~). For example: 'PreIRoE10~dhsepcot~DHS/Epcot'");
         player.sendMessage(ChatColor.AQUA + "- Shareholders can only run the show when they're in the [Region].");
         player.sendMessage(ChatColor.AQUA + "- [Display Name] supports color codes.");
         player.sendMessage(ChatColor.GREEN + "/shows remove [ShowFile]");
